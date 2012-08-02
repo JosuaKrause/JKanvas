@@ -1,4 +1,4 @@
-package kanvas.painter;
+package kanvas.render;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -11,41 +11,62 @@ import kanvas.Canvas;
 import kanvas.Context;
 import kanvas.Painter;
 
-public abstract class BackgroundPainter extends PainterAdapter {
+/**
+ * Renders an arbitrary background that is completely filled (each pixel has its
+ * own color).
+ * 
+ * @author Joschi <josua.krause@googlemail.com>
+ */
+public abstract class BackgroundPainter implements Renderpass {
 
-  private double resolution = 1.0;
+  /** The resolution in screen pixels. */
+  private int resolution = 10;
 
-  public void setResolution(final double resolution) {
+  /**
+   * Setter.
+   * 
+   * @param resolution The resolution of the background in screen pixels.
+   * @throws IllegalArgumentException When the resolution is smaller than 1
+   *           pixel.
+   */
+  public void setResolution(final int resolution) {
+    if(resolution <= 0) throw new IllegalArgumentException("resolution must be >= 1: "+resolution)
     this.resolution = resolution;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The resolution of the background in screen pixels.
+   */
   public double getResolution() {
     return resolution;
   }
 
   @Override
-  public final void draw(final Graphics2D gfx, final Context ctx) {
-    final Graphics2D g2 = (Graphics2D) gfx.create();
-    paintBackground(g2, ctx);
-    g2.dispose();
-    drawForeground(gfx, ctx);
+  public void render(final Graphics2D gfx, final Context ctx) {
+    paintBackground(gfx, ctx);
   }
 
+  /**
+   * Paints the background.
+   * 
+   * @param g2
+   * @param ctx
+   */
   private void paintBackground(final Graphics2D g2, final Context ctx) {
     final double resolution = getResolution();
     final Rectangle2D view = ctx.getVisibleComponent();
     for(double x = view.getMinX(); x <= view.getMaxX(); x += resolution) {
       for(double y = view.getMinY(); y <= view.getMaxY(); y += resolution) {
-        final Rectangle2D pixel = ctx.toCanvasCoordinates(new Rectangle2D.Double(x, y,
-            resolution, resolution));
+        final Rectangle2D pixel = ctx.toCanvasCoordinates(
+            new Rectangle2D.Double(x, y, resolution, resolution));
         final Color c = getColorFor(pixel);
         g2.setColor(c);
         g2.fill(pixel);
       }
     }
   }
-
-  protected abstract void drawForeground(Graphics2D gfx, Context ctx);
 
   protected abstract Color getColorFor(double x, double y);
 
