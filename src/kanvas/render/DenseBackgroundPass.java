@@ -9,7 +9,7 @@ import javax.swing.WindowConstants;
 
 import kanvas.Canvas;
 import kanvas.Context;
-import kanvas.Painter;
+import kanvas.painter.RenderpassPainter;
 
 /**
  * Renders an arbitrary background that is completely filled (each pixel has its
@@ -17,7 +17,7 @@ import kanvas.Painter;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class BackgroundPainter implements Renderpass {
+public abstract class DenseBackgroundPass implements Renderpass {
 
   /** The resolution in screen pixels. */
   private int resolution = 10;
@@ -30,7 +30,8 @@ public abstract class BackgroundPainter implements Renderpass {
    *           pixel.
    */
   public void setResolution(final int resolution) {
-    if(resolution <= 0) throw new IllegalArgumentException("resolution must be >= 1: "+resolution)
+    if(resolution <= 0) throw new IllegalArgumentException("resolution must be >= 1: "
+        + resolution);
     this.resolution = resolution;
   }
 
@@ -48,11 +49,16 @@ public abstract class BackgroundPainter implements Renderpass {
     paintBackground(gfx, ctx);
   }
 
+  @Override
+  public boolean isHUD() {
+    return false;
+  }
+
   /**
    * Paints the background.
    * 
-   * @param g2
-   * @param ctx
+   * @param g2 The graphics context.
+   * @param ctx The canvas context.
    */
   private void paintBackground(final Graphics2D g2, final Context ctx) {
     final double resolution = getResolution();
@@ -68,19 +74,41 @@ public abstract class BackgroundPainter implements Renderpass {
     }
   }
 
+  /**
+   * Returns the color for the given position. This method is guaranteed to be
+   * referential transparent, thus returning the same result for same arguments.
+   * However after a call to {@link #clearCache()} the results may change.
+   * 
+   * @param x The x coordinate in canvas coordinates.
+   * @param y The y coordinate in canvas coordinates.
+   * @return The color at the given position.
+   */
   protected abstract Color getColorFor(double x, double y);
 
+  /**
+   * Determines the color of a given rectangle. This method may use super
+   * sampling to generate more accurate results.
+   * 
+   * @param r The rectangle.
+   * @return The color.
+   */
   protected Color getColorFor(final Rectangle2D r) {
     return getColorFor(r.getCenterX(), r.getCenterY());
   }
 
+  /** Clears a color cache if any. */
   public void clearCache() {
     // nothing to do yet
   }
 
+  /**
+   * A small testing application.
+   * 
+   * @param args No args.
+   */
   public static void main(final String[] args) {
     final JFrame f = new JFrame("test");
-    final Painter p = new BackgroundPainter() {
+    final Renderpass p = new DenseBackgroundPass() {
 
       @Override
       protected Color getColorFor(final double x, final double y) {
@@ -88,13 +116,10 @@ public abstract class BackgroundPainter implements Renderpass {
             (float) Math.abs(Math.cos(y)));
       }
 
-      @Override
-      protected void drawForeground(final Graphics2D gfx, final Context ctx) {
-        // nothing to do
-      }
-
     };
-    f.add(new Canvas(p, 800, 600));
+    final RenderpassPainter rp = new RenderpassPainter();
+    rp.addPass(p);
+    f.add(new Canvas(rp, 800, 600));
     f.pack();
     f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     f.setLocationRelativeTo(null);
