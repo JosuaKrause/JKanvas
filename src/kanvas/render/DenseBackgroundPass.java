@@ -10,6 +10,7 @@ import javax.swing.WindowConstants;
 import kanvas.Canvas;
 import kanvas.Context;
 import kanvas.painter.RenderpassPainter;
+import kanvas.util.MathUtil;
 
 /**
  * Renders an arbitrary background that is completely filled (each pixel has its
@@ -30,8 +31,8 @@ public abstract class DenseBackgroundPass implements Renderpass {
    *           pixel.
    */
   public void setResolution(final int resolution) {
-    if(resolution <= 0) throw new IllegalArgumentException("resolution must be >= 1: "
-        + resolution);
+    if(resolution <= 0) throw new IllegalArgumentException(
+        "resolution must be >= 1: " + resolution);
     this.resolution = resolution;
   }
 
@@ -46,7 +47,7 @@ public abstract class DenseBackgroundPass implements Renderpass {
 
   @Override
   public void render(final Graphics2D gfx, final Context ctx) {
-    paintBackground(gfx, ctx);
+    paintBackground(gfx, ctx.getVisibleComponent(), ctx);
   }
 
   @Override
@@ -55,14 +56,15 @@ public abstract class DenseBackgroundPass implements Renderpass {
   }
 
   /**
-   * Paints the background.
+   * Paints the background in the given rectangle.
    * 
    * @param g2 The graphics context.
-   * @param ctx The canvas context.
+   * @param view The rectangle.
+   * @param ctx The context.
    */
-  private void paintBackground(final Graphics2D g2, final Context ctx) {
+  private void paintBackground(final Graphics2D g2, final Rectangle2D view,
+      final Context ctx) {
     final double resolution = getResolution();
-    final Rectangle2D view = ctx.getVisibleComponent();
     for(double x = view.getMinX(); x <= view.getMaxX(); x += resolution) {
       for(double y = view.getMinY(); y <= view.getMaxY(); y += resolution) {
         final Rectangle2D pixel = ctx.toCanvasCoordinates(
@@ -112,8 +114,11 @@ public abstract class DenseBackgroundPass implements Renderpass {
 
       @Override
       protected Color getColorFor(final double x, final double y) {
-        return Color.getHSBColor((float) (x % 1.0), (float) Math.abs(Math.sin(x * y)),
-            (float) Math.abs(Math.cos(y)));
+        final double nx = (x - 400) / 100;
+        final double ny = (y - 300) / 100;
+        final double h = 120.0;
+        final double v = Math.sin(nx) * Math.sin(ny) / (Math.sqrt(nx * nx + ny * ny));
+        return Color.getHSBColor((float) h, .8f, (float) (MathUtil.clamp(v)));
       }
 
     };
