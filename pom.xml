@@ -2,19 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>joschi-mvn</groupId>
-	<artifactId>Kanvas</artifactId>
+	<artifactId>JKanvas</artifactId>
 	<version>0.0.1</version>
-	<name>Kanvas</name>
+	<name>JKanvas</name>
 	<description>A ZUI framework</description>
 	<properties>
 		<compileSource>1.6</compileSource>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-	<url>https://github.com/JosuaKrause/Kanvas</url>
+	<url>https://github.com/JosuaKrause/JKanvas</url>
 	<issueManagement>
 		<system>GitHub Tracker</system>
-		<url>https://github.com/JosuaKrause/Kanvas/issues</url>
+		<url>https://github.com/JosuaKrause/JKanvas/issues</url>
 	</issueManagement>
 	<build>
 		<plugins>
@@ -29,14 +29,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<distributionManagement>
-		<repository>
-			<id>repo</id>
-			<url>https://raw.github.com/JosuaKrause/joschi-mvn-repo/master/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshot-repo</id>
-			<url>https://raw.github.com/JosuaKrause/joschi-mvn-repo/master/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>

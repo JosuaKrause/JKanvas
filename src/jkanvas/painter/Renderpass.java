@@ -1,8 +1,9 @@
-package kanvas.render;
+package jkanvas.painter;
 
 import java.awt.Graphics2D;
 
-import kanvas.Context;
+import jkanvas.KanvasContext;
+
 
 /**
  * Render passes can be used to dynamically change what is rendered on a canvas
@@ -18,13 +19,13 @@ public interface Renderpass {
    * @param gfx The graphics context.
    * @param ctx The canvas context.
    */
-  void render(Graphics2D gfx, Context ctx);
+  void render(Graphics2D gfx, KanvasContext ctx);
 
   /**
    * Getter.
    * 
    * @return When <code>true</code>, the context during rendering is set such
-   *         that {@link Context#inCanvasCoordinates()} returns
+   *         that {@link KanvasContext#inCanvasCoordinates()} returns
    *         <code>false</code>.
    */
   boolean isHUD();

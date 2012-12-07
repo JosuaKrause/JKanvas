@@ -1,11 +1,11 @@
-package kanvas.painter;
+package jkanvas.painter;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import kanvas.Context;
-import kanvas.render.Renderpass;
+import jkanvas.KanvasContext;
+
 
 /**
  * A render pass painter renders render passes.
@@ -22,8 +22,8 @@ public class RenderpassPainter extends PainterAdapter {
 
   /** Creates an empty render pass painter. */
   public RenderpassPainter() {
-    front = new ArrayList<Renderpass>();
-    back = new ArrayList<Renderpass>();
+    front = new ArrayList<>();
+    back = new ArrayList<>();
   }
 
   /**
@@ -40,12 +40,12 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   @Override
-  public void draw(final Graphics2D gfx, final Context ctx) {
+  public final void draw(final Graphics2D gfx, final KanvasContext ctx) {
     render(gfx, ctx, back);
   }
 
   @Override
-  public void drawHUD(final Graphics2D gfx, final Context ctx) {
+  public final void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
     render(gfx, ctx, front);
   }
 
@@ -56,7 +56,7 @@ public class RenderpassPainter extends PainterAdapter {
    * @param ctx The canvas context.
    * @param list The list of renderpasses.
    */
-  private static void render(final Graphics2D gfx, final Context ctx,
+  private static void render(final Graphics2D gfx, final KanvasContext ctx,
       final List<Renderpass> list) {
     for(final Renderpass r : list) {
       final Graphics2D g = (Graphics2D) gfx.create();

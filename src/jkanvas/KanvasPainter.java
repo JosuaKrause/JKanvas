@@ -1,5 +1,4 @@
-package kanvas;
-
+package jkanvas;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -11,7 +10,7 @@ import java.awt.geom.Rectangle2D;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public interface Painter {
+public interface KanvasPainter {
 
   /**
    * Draw on a canvas. The panning and zooming of the canvas is transparent to
@@ -20,7 +19,7 @@ public interface Painter {
    * @param gfx The graphics context.
    * @param ctx The canvas context.
    */
-  void draw(Graphics2D gfx, Context ctx);
+  void draw(Graphics2D gfx, KanvasContext ctx);
 
   /**
    * Draws a HUD (Head-Up-Display) on the canvas. This method draws over the
@@ -29,11 +28,11 @@ public interface Painter {
    * @param gfx The graphics context.
    * @param ctx The canvas context.
    */
-  void drawHUD(Graphics2D gfx, Context ctx);
+  void drawHUD(Graphics2D gfx, KanvasContext ctx);
 
   /**
    * Is called when the user clicks at the component and the HUD action does not
-   * consume the event. The coordinates are in the {@link Painter Painters}
+   * consume the event. The coordinates are in the {@link KanvasPainter Painters}
    * coordinate space and therefore suitable for clicks on objects on the
    * canvas. This method is the second in the order of click processing and no
    * dragging is performed, when this method returns <code>true</code>.
@@ -80,7 +79,7 @@ public interface Painter {
 
   /**
    * Is called when the user starts a dragging operation on the canvas. The
-   * coordinates are in the {@link Painter Painters} coordinate space and
+   * coordinates are in the {@link KanvasPainter Painters} coordinate space and
    * therefore suitable for dragging of objects on the canvas.
    * 
    * @param p The position where the drag starts in canvas coordinates.

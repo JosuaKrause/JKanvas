@@ -1,5 +1,4 @@
-package kanvas;
-
+package jkanvas;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -11,7 +10,7 @@ import java.awt.geom.Rectangle2D;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public interface Context {
+public interface KanvasContext {
 
   /**
    * Converts a point from canvas to component coordinates.
@@ -30,14 +29,6 @@ public interface Context {
   double toComponentLength(double length);
 
   /**
-   * Converts a rectangle from canvas to component coordinates.
-   * 
-   * @param r The rectangle in canvas coordinates.
-   * @return The rectangle in component coordinates.
-   */
-  Rectangle2D toComponentRectangle(Rectangle2D r);
-
-  /**
    * Converts a point from component to canvas coordinates.
    * 
    * @param p The point in component coordinates.
@@ -52,14 +43,6 @@ public interface Context {
    * @return The length in canvas coordinates.
    */
   double toCanvasLength(double length);
-
-  /**
-   * Converts a rectangle from component to canvas coordinates.
-   * 
-   * @param r The rectangle in component coordinates.
-   * @return The rectangle in canvas coordinates.
-   */
-  Rectangle2D toCanvasCoordinates(Rectangle2D r);
 
   /**
    * Whether this context is currently in canvas coordinates. Meaning if a point

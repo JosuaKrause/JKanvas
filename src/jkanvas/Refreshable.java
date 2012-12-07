@@ -1,5 +1,4 @@
-package kanvas;
-
+package jkanvas;
 
 /**
  * Provides a method to actively refresh the current view.

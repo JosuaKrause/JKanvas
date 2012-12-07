@@ -1,27 +1,28 @@
-package kanvas.painter;
+package jkanvas.painter;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import kanvas.Context;
-import kanvas.Painter;
+import jkanvas.KanvasContext;
+import jkanvas.KanvasPainter;
+
 
 /**
- * Provides meaningful default implementations for a {@link Painter}.
+ * Provides meaningful default implementations for a {@link KanvasPainter}.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class PainterAdapter implements Painter {
+public class PainterAdapter implements KanvasPainter {
 
   @Override
-  public void draw(final Graphics2D gfx, final Context ctx) {
+  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     // draw nothing
   }
 
   @Override
-  public void drawHUD(final Graphics2D gfx, final Context ctx) {
+  public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
     // draw nothing
   }
 
