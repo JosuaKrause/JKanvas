@@ -4,11 +4,15 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.util.Random;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -87,7 +91,9 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
 
   private final BasicStroke stroke = new BasicStroke(1f);
 
-  private final double radius = 20.0;
+  public static final double RADIUS = 20.0;
+
+  private final double radius = RADIUS;
 
   @Override
   public Shape createNodeShape(final AnimatedPosition node) {
@@ -149,10 +155,22 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
   }
 
   public static void main(final String[] args) {
+    final int w = 800;
+    final int h = 600;
+    final int nodes = 20;
+    final int edges = 100;
     final NodelinkMain p = new NodelinkMain();
     p.setEdgeRealizer(p);
     p.setNodeRealizer(p);
-    final Canvas c = new Canvas(p, 800, 600);
+    final Random r = new Random();
+    for(int i = 0; i < nodes; ++i) {
+      p.addNode(new AnimatedPosition(RADIUS + r.nextDouble() * (w - 2 * RADIUS),
+          RADIUS + r.nextDouble() * (h - 2 * RADIUS)));
+    }
+    for(int i = 0; i < edges; ++i) {
+      p.addEdge(r.nextInt(nodes), r.nextInt(nodes));
+    }
+    final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
     p.addRefreshable(c);
     final JFrame frame = new JFrame("Nodelink") {
@@ -164,6 +182,14 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
       }
 
     };
+    c.addAction(KeyEvent.VK_Q, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        frame.dispose();
+      }
+
+    });
     frame.add(c);
     frame.pack();
     frame.setLocationRelativeTo(null);
