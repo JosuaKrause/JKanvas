@@ -107,7 +107,7 @@ implements Animator {
    * @param id The id of the node.
    * @return The corresponding node.
    */
-  protected T getNode(final int id) {
+  public T getNode(final int id) {
     return nodes.get(id);
   }
 
@@ -117,8 +117,17 @@ implements Animator {
    * @param node The node.
    * @return The corresponding id.
    */
-  protected int getId(final T node) {
+  public int getId(final T node) {
     return idMap.get(node);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The number of nodes.
+   */
+  public int nodeCount() {
+    return nodes.size();
   }
 
   /** The empty list. */
