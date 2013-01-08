@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -119,11 +121,14 @@ public class AdjacencyMain {
     };
     final KanvasPainter p = new MatrixPainter<Double>(matrix, cellColor) {
 
-      private int selRow = -1;
+      private final Set<MatrixPosition> selected = new HashSet<>();
 
       @Override
       protected boolean isSelected(final int row, final int col) {
-        return row == selRow;
+        for(final MatrixPosition pos : selected) {
+          if(row == pos.row || col == pos.col) return true;
+        }
+        return false;
       }
 
       @Override
@@ -131,10 +136,10 @@ public class AdjacencyMain {
         if(!SwingUtilities.isRightMouseButton(e)) return false;
         final MatrixPosition pos = pick(p);
         if(pos == null) return false;
-        if(pos.row == selRow) {
-          selRow = -1;
+        if(selected.contains(pos)) {
+          selected.remove(pos);
         } else {
-          selRow = pos.row;
+          selected.add(pos);
         }
         return true;
       }
