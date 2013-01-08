@@ -1,4 +1,4 @@
-package jkanvas;
+package jkanvas.examples;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.nodelink.EdgeRealizer;
 import jkanvas.nodelink.NodeRealizer;
