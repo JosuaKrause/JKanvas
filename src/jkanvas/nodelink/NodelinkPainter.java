@@ -4,12 +4,12 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import jkanvas.KanvasContext;
 import jkanvas.Refreshable;
@@ -20,20 +20,36 @@ import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 
 /**
+ * Paints a node link diagram.
+ * 
  * @author Joschi <josua.krause@googlemail.com>
- * @param <T>
+ * @param <T> The type of nodes.
  */
 public class NodelinkPainter<T extends AnimatedPosition> extends RenderpassPainter
 implements Animator {
 
-  private final Map<T, Set<T>> edges = new ConcurrentHashMap<>();
+  /** Reverse map from nodes to ids. */
+  private final Map<T, Integer> idMap = new HashMap<>();
 
+  /** Dense list of nodes. */
+  private final List<T> nodes = new ArrayList<>();
+
+  /**
+   * List containing edges. Edges always go from lower to higher indices. Nodes
+   * are stored as integers.
+   */
+  private final List<List<Integer>> edges = new ArrayList<>();
+
+  /** The node realizer. */
   private NodeRealizer<T> nodeRealizer;
 
+  /** The edge realizer. */
   private EdgeRealizer<T> edgeRealizer;
 
+  /** The internal animator. */
   private AbstractAnimator animator;
 
+  /** Creates a node link painter. */
   public NodelinkPainter() {
     addPass(new Renderpass() {
 
@@ -76,8 +92,57 @@ implements Animator {
     };
   }
 
-  protected Set<T> getNodes() {
-    return edges.keySet();
+  /**
+   * Getter.
+   * 
+   * @return The list of nodes.
+   */
+  protected List<T> getNodes() {
+    return nodes;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param id The id of the node.
+   * @return The corresponding node.
+   */
+  public T getNode(final int id) {
+    return nodes.get(id);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param node The node.
+   * @return The corresponding id.
+   */
+  public int getId(final T node) {
+    return idMap.get(node);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The number of nodes.
+   */
+  public int nodeCount() {
+    return nodes.size();
+  }
+
+  /** The empty list. */
+  private final List<Integer> EMPTY_LIST = Collections.emptyList();
+
+  /**
+   * Returns all edges from the given node. Note that this contains only nodes
+   * with a higher id.
+   * 
+   * @param node The starting id.
+   * @return All connected edges with a higher id.
+   */
+  protected List<Integer> getEdges(final int node) {
+    if(node >= edges.size() || edges.get(node) == null) return EMPTY_LIST;
+    return edges.get(node);
   }
 
   @Override
@@ -95,75 +160,101 @@ implements Animator {
     animator.quickRefresh();
   }
 
+  /**
+   * Setter.
+   * 
+   * @param edgeRealizer The edge realizer.
+   */
   public void setEdgeRealizer(final EdgeRealizer<T> edgeRealizer) {
     this.edgeRealizer = Objects.requireNonNull(edgeRealizer);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The current edge realizer.
+   */
   public EdgeRealizer<T> getEdgeRealizer() {
     return edgeRealizer;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param nodeRealizer The node realizer.
+   */
   public void setNodeRealizer(final NodeRealizer<T> nodeRealizer) {
     this.nodeRealizer = Objects.requireNonNull(nodeRealizer);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The current node realizer.
+   */
   public NodeRealizer<T> getNodeRealizer() {
     return nodeRealizer;
   }
 
-  public boolean hasEdge(final T from, final T to) {
-    return hasEdge0(from, to) || !(edgeRealizer.isDirected() || !hasEdge0(to, from));
-  }
-
-  private boolean hasEdge0(final T from, final T to) {
-    final Set<T> toNodes = edges.get(from);
-    return toNodes != null && toNodes.contains(to);
-  }
-
+  /**
+   * Adds an edge between two nodes.
+   * 
+   * @param from The first node.
+   * @param to The second node.
+   */
   public void addEdge(final T from, final T to) {
-    if(!edgeRealizer.isDirected() && hasEdge(from, to)) return;
-    addEdge0(from, to);
+    addEdge(getId(from), getId(to));
   }
 
-  private void addEdge0(final T from, final T to) {
-    Set<T> toNodes = edges.get(from);
-    if(toNodes == null) {
-      edges.put(from, toNodes = new HashSet<>());
+  /**
+   * Adds an edge between two nodes.
+   * 
+   * @param from The id of the first node.
+   * @param to The id of the second node.
+   */
+  public void addEdge(final int from, final int to) {
+    if(from == to) return;
+    if(from > to) {
+      addEdge(to, from);
+      return;
     }
-    toNodes.add(to);
-    addNode(to);
-  }
-
-  public void removeEdge(final T from, final T to) {
-    removeEdge0(from, to);
-    if(!edgeRealizer.isDirected()) {
-      removeEdge0(to, from);
+    assert from < to;
+    while(edges.size() <= from) {
+      edges.add(null);
+    }
+    if(edges.get(from) == null) {
+      edges.set(from, new ArrayList<Integer>());
+    }
+    final List<Integer> fromList = edges.get(from);
+    if(!fromList.contains(to)) {
+      fromList.add(to);
     }
   }
 
-  private void removeEdge0(final T from, final T to) {
-    final Set<T> set = edges.get(from);
-    if(set == null) return;
-    set.remove(to);
-  }
-
+  /**
+   * Adds a node.
+   * 
+   * @param node The node.
+   */
   public void addNode(final T node) {
-    if(edges.containsKey(node)) return;
-    edges.put(node, new HashSet<T>());
+    if(idMap.containsKey(node)) throw new IllegalArgumentException("node "+node+" already added");
+    idMap.put(node, nodes.size());
+    nodes.add(node);
   }
 
-  public void removeNode(final T node) {
-    for(final Set<T> toSet : edges.values()) {
-      toSet.remove(node);
-    }
-    edges.remove(node);
-  }
-
+  /**
+   * Renders all edges.
+   * 
+   * @param gfx The graphics context.
+   * @param ctx The canvas context.
+   */
   protected void renderEdges(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D visible = ctx.getVisibleCanvas();
-    for(final Entry<T, Set<T>> links : edges.entrySet()) {
-      final T from = links.getKey();
-      for(final T to : links.getValue()) {
+    final EdgeRealizer<T> edgeRealizer = getEdgeRealizer();
+    for(int i = 0; i < nodes.size(); ++i) {
+      final T from = getNode(i);
+      for(final int toId : getEdges(i)) {
+        final T to = getNode(toId);
         final Shape edgeShape = edgeRealizer.createLineShape(from, to);
         if(!edgeShape.intersects(visible)) {
           continue;
@@ -175,9 +266,16 @@ implements Animator {
     }
   }
 
+  /**
+   * Renders all nodes.
+   * 
+   * @param gfx The graphics context.
+   * @param ctx The canvas context.
+   */
   protected void renderNodes(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D visible = ctx.getVisibleCanvas();
-    for(final T node : edges.keySet()) {
+    final NodeRealizer<T> nodeRealizer = getNodeRealizer();
+    for(final T node : getNodes()) {
       final Shape nodeShape = nodeRealizer.createNodeShape(node);
       if(!nodeShape.intersects(visible)) {
         continue;
@@ -188,14 +286,23 @@ implements Animator {
     }
   }
 
+  /**
+   * Finds a node at the given position.
+   * 
+   * @param pos The position.
+   * @return The node or <code>null</code> if there is no node at the given
+   *         position.
+   */
   public T pick(final Point2D pos) {
-    for(final T node : edges.keySet()) {
+    final NodeRealizer<T> nodeRealizer = getNodeRealizer();
+    for(final T node : getNodes()) {
       final Shape shape = nodeRealizer.createNodeShape(node);
       if(shape.contains(pos)) return node;
     }
     return null;
   }
 
+  /** Disposes this painter and stops the animator. */
   public void dispose() {
     if(!animator.isDisposed()) {
       animator.dispose();

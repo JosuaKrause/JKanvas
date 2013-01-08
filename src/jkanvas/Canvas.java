@@ -401,6 +401,15 @@ public class Canvas extends JComponent implements Refreshable {
     return isMoveable;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The currently visible portion of the canvas.
+   */
+  public Rectangle2D getVisibleCanvas() {
+    return zui.toCanvas(getVisibleRect());
+  }
+
   @Override
   public void refresh() {
     repaint();

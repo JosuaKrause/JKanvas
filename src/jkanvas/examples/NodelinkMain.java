@@ -1,28 +1,37 @@
-package jkanvas;
+package jkanvas.examples;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Random;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.nodelink.EdgeRealizer;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.NodelinkPainter;
+import jkanvas.util.Interpolator;
 import jkanvas.util.VecUtil;
 
 /**
+ * A small node-link example application.
+ * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class NodelinkMain extends NodelinkPainter<AnimatedPosition> implements
+public final class NodelinkMain extends NodelinkPainter<AnimatedPosition> implements
 NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
 
   /** The color for no selection. */
@@ -34,12 +43,16 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
   /** The color for secondary selection. */
   private static final Color SEC_SEL = new Color(5, 113, 176);
 
+  /** The primary selection. */
   private AnimatedPosition primSel;
 
+  /** The start x position of the current drag. */
   private double startX;
 
+  /** The start y position of the current drag. */
   private double startY;
 
+  /** The secondary selection. */
   private AnimatedPosition secSel;
 
   @Override
@@ -85,16 +98,28 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
     primSel = null;
   }
 
+  /** A stroke with width one. */
   private final BasicStroke stroke = new BasicStroke(1f);
 
-  private final double radius = 20.0;
+  /** The default node radius. */
+  public static final double RADIUS = 20.0;
+
+  /** The node radius. */
+  private final double radius = RADIUS;
 
   @Override
   public Shape createNodeShape(final AnimatedPosition node) {
     return createEllipse(node, radius + stroke.getLineWidth() * 0.5);
   }
 
-  private Ellipse2D createEllipse(final AnimatedPosition node, final double r) {
+  /**
+   * Creates a circle with the given radius.
+   * 
+   * @param node The node providing the position.
+   * @param r The radius.
+   * @return The circle.
+   */
+  private static Ellipse2D createEllipse(final AnimatedPosition node, final double r) {
     final double r2 = r * 2;
     return new Ellipse2D.Double(node.getX() - r, node.getY() - r, r2, r2);
   }
@@ -123,7 +148,7 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
    * @param width The width of the line.
    * @return The shape of the line.
    */
-  private Shape createLine(final double x1, final double y1, final double x2,
+  private static Shape createLine(final double x1, final double y1, final double x2,
       final double y2, final double width) {
     final Point2D ortho = VecUtil.setLength(new Point2D.Double(y1 - y2, x2 - x1),
         width * 0.5);
@@ -145,14 +170,31 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
   public void drawLines(final Graphics2D g, final AnimatedPosition from,
       final AnimatedPosition to) {
     g.setColor(Color.BLACK);
-    g.draw(createLineShape(from, to));
+    g.fill(createLineShape(from, to));
   }
 
+  /**
+   * Starts the example application.
+   * 
+   * @param args No args.
+   */
   public static void main(final String[] args) {
+    final int w = 800;
+    final int h = 600;
+    final int nodes = 20;
+    final int edges = 100;
     final NodelinkMain p = new NodelinkMain();
     p.setEdgeRealizer(p);
     p.setNodeRealizer(p);
-    final Canvas c = new Canvas(p, 800, 600);
+    final Random r = new Random();
+    for(int i = 0; i < nodes; ++i) {
+      p.addNode(new AnimatedPosition(RADIUS + r.nextDouble() * (w - 2 * RADIUS),
+          RADIUS + r.nextDouble() * (h - 2 * RADIUS)));
+    }
+    for(int i = 0; i < edges; ++i) {
+      p.addEdge(r.nextInt(nodes), r.nextInt(nodes));
+    }
+    final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
     p.addRefreshable(c);
     final JFrame frame = new JFrame("Nodelink") {
@@ -164,6 +206,35 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
       }
 
     };
+    c.addAction(KeyEvent.VK_Q, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        frame.dispose();
+      }
+
+    });
+    c.addAction(KeyEvent.VK_R, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        final Rectangle2D rect = c.getVisibleCanvas();
+        final double w = rect.getWidth();
+        final double h = rect.getHeight();
+        final double r = Math.min(w, h) / 2 - RADIUS;
+        final int count = p.nodeCount();
+        final double step = 2 * Math.PI / count;
+        double angle = 0;
+        for(int i = 0; i < count; ++i) {
+          final double x = rect.getCenterX() + Math.sin(angle) * r;
+          final double y = rect.getCenterY() + Math.cos(angle) * r;
+          p.getNode(i).startAnimationTo(new Point2D.Double(x, y),
+              Interpolator.SMOOTH, AnimatedPosition.NORMAL);
+          angle += step;
+        }
+      }
+
+    });
     frame.add(c);
     frame.pack();
     frame.setLocationRelativeTo(null);
