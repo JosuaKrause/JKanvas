@@ -145,7 +145,7 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
   public void drawLines(final Graphics2D g, final AnimatedPosition from,
       final AnimatedPosition to) {
     g.setColor(Color.BLACK);
-    g.draw(createLineShape(from, to));
+    g.fill(createLineShape(from, to));
   }
 
   public static void main(final String[] args) {
