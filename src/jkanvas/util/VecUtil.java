@@ -13,7 +13,7 @@ public final class VecUtil {
 
   /** No constructor. */
   private VecUtil() {
-    // nothing to construct
+    throw new AssertionError();
   }
 
   /**

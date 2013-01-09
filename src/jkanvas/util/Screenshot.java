@@ -23,7 +23,7 @@ public final class Screenshot {
 
   /** No constructor. */
   private Screenshot() {
-    // no constructor
+    throw new AssertionError();
   }
 
   /**
@@ -32,6 +32,7 @@ public final class Screenshot {
    * @param dir The directory.
    */
   private static void ensureDir(final File dir) {
+    if(dir == null) return;
     if(dir.isFile()) return;
     if(dir.exists()) return;
     ensureDir(dir.getParentFile());
