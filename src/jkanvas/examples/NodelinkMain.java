@@ -176,7 +176,7 @@ NodeRealizer<AnimatedPosition>, EdgeRealizer<AnimatedPosition> {
   /**
    * Starts the example application.
    * 
-   * @param args No args.
+   * @param args No arguments.
    */
   public static void main(final String[] args) {
     final int w = 800;

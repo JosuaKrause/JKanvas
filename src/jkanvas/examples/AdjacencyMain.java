@@ -23,8 +23,19 @@ import jkanvas.adjacency.CellRealizer;
 import jkanvas.adjacency.MatrixPainter;
 import jkanvas.adjacency.MatrixPosition;
 
+/**
+ * An example showcasing the painting of {@link AdjacencyMatrix adjacency
+ * matrices}.
+ * 
+ * @author Joschi <josua.krause@googlemail.com>
+ */
 public class AdjacencyMain {
 
+  /**
+   * Starts the example application.
+   * 
+   * @param args No arguments.
+   */
   public static void main(final String[] args) {
     final AdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(100) {
 
