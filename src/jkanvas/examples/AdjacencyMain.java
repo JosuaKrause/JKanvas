@@ -17,7 +17,6 @@ import javax.swing.WindowConstants;
 
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
-import jkanvas.KanvasPainter;
 import jkanvas.adjacency.AbstractAdjacencyMatrix;
 import jkanvas.adjacency.AdjacencyMatrix;
 import jkanvas.adjacency.CellRealizer;
@@ -51,9 +50,9 @@ public class AdjacencyMain {
       public void drawCell(final Graphics2D g, final KanvasContext ctx,
           final Rectangle2D rect,
           final AdjacencyMatrix<Double> matrix, final int row, final int col,
-          final boolean isSelected) {
+          final boolean isSelected, final boolean hasSelection) {
         final Double val = matrix.get(row, col);
-        g.setColor(getColor(val, isSelected));
+        g.setColor(getColor(val, hasSelection && isSelected));
         g.fill(rect);
         g.setColor(Color.BLACK);
         g.draw(rect);
