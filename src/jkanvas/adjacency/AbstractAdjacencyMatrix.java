@@ -15,6 +15,8 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
 
   private final double[] heights;
 
+  private int bulkOps = 0;
+
   public AbstractAdjacencyMatrix(final int size) {
     names = new String[size];
     widths = new double[size];
@@ -51,6 +53,7 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
 
   @Override
   public void refreshAll() {
+    if(bulkOps > 0) return;
     for(final Refreshable r : refreshables) {
       r.refresh();
     }
@@ -103,6 +106,17 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
   @Override
   public int size() {
     return names.length;
+  }
+
+  @Override
+  public void startBulkOperation() {
+    ++bulkOps;
+  }
+
+  @Override
+  public void endBulkOperation() {
+    --bulkOps;
+    refreshAll();
   }
 
 }
