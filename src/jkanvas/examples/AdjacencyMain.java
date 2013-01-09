@@ -1,7 +1,5 @@
 package jkanvas.examples;
 
-import static jkanvas.util.PaintUtil.*;
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -75,23 +73,23 @@ public class AdjacencyMain {
           final StringDrawer s = new StringDrawer(g, matrix.getName(row));
           final Point2D pos = new Point2D.Double(rect.getMinX() - 10, rect.getCenterY());
           g.setColor(Color.BLACK);
-          final int h = StringDrawer.LEFT + row % 3;
-          final int v = StringDrawer.TOP + (row % 9) / 3;
+          final int h = StringDrawer.RIGHT;
+          final int v = StringDrawer.CENTER_V;
           s.draw(pos, h, v);
-          g.draw(s.getBounds(pos, h, v));
-          g.setColor(Color.RED);
-          g.fill(pixel(pos));
+          // g.draw(s.getBounds(pos, h, v));
+          // g.setColor(Color.RED);
+          // g.fill(pixel(pos));
         }
         if(row == 0) {
           final StringDrawer s = new StringDrawer(g, matrix.getName(col));
           final Point2D pos = new Point2D.Double(rect.getCenterX(), rect.getMinY() - 10);
           g.setColor(Color.BLACK);
-          final int h = StringDrawer.LEFT + col % 3;
-          final int v = StringDrawer.TOP + (col % 9) / 3;
-          s.draw(pos, h, v, Orientation.VERTICAL);
-          g.draw(s.getBounds(pos, h, v, Orientation.VERTICAL));
-          g.setColor(Color.RED);
-          g.fill(pixel(pos));
+          final int h = StringDrawer.LEFT;
+          final int v = StringDrawer.BOTTOM;
+          s.draw(pos, h, v, Orientation.DIAGONAL);
+          // g.draw(s.getBounds(pos, h, v, Orientation.DIAGONAL));
+          // g.setColor(Color.RED);
+          // g.fill(pixel(pos));
         }
       }
 
@@ -141,7 +139,7 @@ public class AdjacencyMain {
     };
     final Canvas c = new Canvas(p, 500, 500);
     matrix.addRefreshable(c);
-    c.setMargin(25);
+    c.setMargin(40);
     c.setBackground(Color.WHITE);
     final JFrame frame = new JFrame("Nodelink");
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {

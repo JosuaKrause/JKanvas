@@ -14,30 +14,48 @@ import java.awt.geom.Rectangle2D;
  */
 public class StringDrawer {
 
+  /**
+   * Orientations to draw a string.
+   * 
+   * @author Joschi <josua.krause@googlemail.com>
+   */
   public static enum Orientation {
 
+    /** Horizontal text. */
     HORIZONTAL,
 
+    /** Text going from bottom left to upper right with 45 degrees. */
     DIAGONAL,
 
+    /**
+     * Text rotated by 90 degrees counter-clockwise. Reading from bottom to top.
+     */
     VERTICAL,
 
   }
 
+  /** The point marks the left side of the text. */
   public static final int LEFT = 0;
 
+  /** The point marks the horizontal center of the text. */
   public static final int CENTER_H = 1;
 
+  /** The point marks the right side of the text. */
   public static final int RIGHT = 2;
 
+  /** The point marks the top of the text. */
   public static final int TOP = 3;
 
+  /** The point marks the vertical center of the text. */
   public static final int CENTER_V = 4;
 
+  /** The point marks the bottom of the text. */
   public static final int BOTTOM = 5;
 
+  /** Rotating by 90 degrees counter-clockwise. */
   private static final double ROT_V = -Math.PI / 2;
 
+  /** Rotating by 45 degrees counter-clockwise. */
   private static final double ROT_D = -Math.PI / 4;
 
   /** The graphics context. */
@@ -62,46 +80,27 @@ public class StringDrawer {
     bbox = fm.getStringBounds(str, g);
   }
 
-  private Rectangle2D getBounds(final double dx, final double dy, final int hpos,
-      final int vpos) {
-    return new Rectangle2D.Double(dx + getHorizontalOffset(hpos) + bbox.getX(),
-        dy + getVerticalOffset(vpos, true) + bbox.getY(),
-        bbox.getWidth(), bbox.getHeight());
-  }
-
-  private Shape getBoundsVertical(final double dx, final double dy, final int hpos,
-      final int vpos) {
-    final AffineTransform at = AffineTransform.getTranslateInstance(dx, dy);
-    at.rotate(ROT_V);
-    at.translate(getHorizontalOffset(hpos),
-        getVerticalOffset(vpos, true));
-    return at.createTransformedShape(bbox);
-  }
-
-  private Shape getBoundsDiagonal(final double dx, final double dy, final int hpos,
-      final int vpos) {
-    final AffineTransform at = AffineTransform.getTranslateInstance(dx, dy);
-    at.rotate(ROT_D);
-    at.translate(getHorizontalOffset(hpos), getVerticalOffset(vpos, true));
-    return at.createTransformedShape(bbox);
-  }
-
-  public Shape getBounds(final Point2D pos, final int hpos, final int vpos) {
-    return getBounds(pos, hpos, vpos, Orientation.HORIZONTAL);
-  }
-
+  /**
+   * Computes the bounds of the text.
+   * 
+   * @param pos The position of the text.
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @param o The orientation of the text.
+   * @return The bounds.
+   */
   public Shape getBounds(final Point2D pos,
       final int hpos, final int vpos, final Orientation o) {
     Shape res;
     switch(o) {
       case HORIZONTAL:
-        res = getBounds(pos.getX(), pos.getY(), hpos, vpos);
+        res = getBounds(pos, hpos, vpos);
         break;
       case DIAGONAL:
-        res = getBoundsDiagonal(pos.getX(), pos.getY(), hpos, vpos);
+        res = getRotatedBounds(pos, hpos, vpos, ROT_D);
         break;
       case VERTICAL:
-        res = getBoundsVertical(pos.getX(), pos.getY(), hpos, vpos);
+        res = getRotatedBounds(pos, hpos, vpos, ROT_V);
         break;
       default:
         throw new AssertionError();
@@ -110,61 +109,99 @@ public class StringDrawer {
   }
 
   /**
-   * Draws the string at the given position.
+   * Computes the bounds of the text assuming horizontal orientation.
    * 
-   * @param dx The x position.
-   * @param dy The y position.
-   * @param vpos
-   * @param hpos
+   * @param pos The position.
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @return The bounds.
    */
-  private void draw(final double dx, final double dy, final int hpos, final int vpos) {
-    final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(dx + getHorizontalOffset(hpos),
-        dy - bbox.getHeight() + getVerticalOffset(vpos, false));
-    g2.drawString(str, 0, 0);
-    g2.dispose();
+  public Rectangle2D getBounds(final Point2D pos, final int hpos, final int vpos) {
+    return new Rectangle2D.Double(pos.getX() + getHorizontalOffset(hpos) + bbox.getX(),
+        pos.getY() + getVerticalOffset(vpos, true) + bbox.getY(),
+        bbox.getWidth(), bbox.getHeight());
   }
 
-  private void drawVertical(final double dx, final double dy, final int hpos,
-      final int vpos) {
-    final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(dx, dy);
-    g2.rotate(ROT_V);
-    g2.translate(getHorizontalOffset(hpos),
-        getVerticalOffset(vpos, false) - bbox.getHeight());
-    g2.drawString(str, 0, 0);
-    g2.dispose();
+  /**
+   * Computes the bounds of rotated text.
+   * 
+   * @param pos The position of the text.
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @param theta The clockwise rotation.
+   * @return The bounds.
+   */
+  public Shape getRotatedBounds(final Point2D pos,
+      final int hpos, final int vpos, final double theta) {
+    final AffineTransform at = AffineTransform.getTranslateInstance(pos.getX(),
+        pos.getY());
+    at.rotate(theta);
+    at.translate(getHorizontalOffset(hpos), getVerticalOffset(vpos, true));
+    return at.createTransformedShape(bbox);
   }
 
-  private void drawDiagonal(final double dx, final double dy, final int hpos,
-      final int vpos) {
-    final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(dx, dy);
-    g2.rotate(ROT_D);
-    g2.translate(getHorizontalOffset(hpos),
-        getVerticalOffset(vpos, false) - bbox.getHeight());
-    g2.drawString(str, 0, 0);
-    g2.dispose();
-  }
-
-  public void draw(final Point2D pos, final int hpos, final int vpos) {
-    draw(pos, hpos, vpos, Orientation.HORIZONTAL);
-  }
-
+  /**
+   * Draws the text.
+   * 
+   * @param pos The position of the text.
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @param o The orientation of the text.
+   */
   public void draw(final Point2D pos, final int hpos, final int vpos, final Orientation o) {
     switch(o) {
       case HORIZONTAL:
-        draw(pos.getX(), pos.getY(), hpos, vpos);
+        draw(pos, hpos, vpos);
         break;
       case DIAGONAL:
-        drawDiagonal(pos.getX(), pos.getY(), hpos, vpos);
+        drawRotated(pos, hpos, vpos, ROT_D);
         break;
       case VERTICAL:
-        drawVertical(pos.getX(), pos.getY(), hpos, vpos);
+        drawRotated(pos, hpos, vpos, ROT_V);
         break;
     }
   }
 
+  /**
+   * Draws the text assuming horizontal orientation.
+   * 
+   * @param pos The position.
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   */
+  public void draw(final Point2D pos, final int hpos, final int vpos) {
+    final Graphics2D g2 = (Graphics2D) g.create();
+    g2.translate(pos.getX() + getHorizontalOffset(hpos),
+        pos.getY() - bbox.getHeight() + getVerticalOffset(vpos, false));
+    g2.drawString(str, 0, 0);
+    g2.dispose();
+  }
+
+  /**
+   * Draws rotated text.
+   * 
+   * @param pos The position of the text.
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @param theta The clockwise rotation.
+   */
+  public void drawRotated(final Point2D pos,
+      final int hpos, final int vpos, final double theta) {
+    final Graphics2D g2 = (Graphics2D) g.create();
+    g2.translate(pos.getX(), pos.getY());
+    g2.rotate(theta);
+    g2.translate(getHorizontalOffset(hpos),
+        getVerticalOffset(vpos, false) - bbox.getHeight());
+    g2.drawString(str, 0, 0);
+    g2.dispose();
+  }
+
+  /**
+   * Computes the horizontal offset of the text.
+   * 
+   * @param hpos The horizontal alignment.
+   * @return The offset.
+   */
   private double getHorizontalOffset(final int hpos) {
     double dx;
     switch(hpos) {
@@ -183,6 +220,13 @@ public class StringDrawer {
     return dx - bbox.getX();
   }
 
+  /**
+   * Computes the vertical offset of the text.
+   * 
+   * @param vpos The vertical alignment.
+   * @param isBBox Whether the offset is used to compute the bounding box.
+   * @return The offset.
+   */
   private double getVerticalOffset(final int vpos, final boolean isBBox) {
     double dy;
     switch(vpos) {
