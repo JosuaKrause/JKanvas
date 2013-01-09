@@ -33,4 +33,8 @@ public interface AdjacencyMatrix<T> {
 
   void refreshAll();
 
+  void startBulkOperation();
+
+  void endBulkOperation();
+
 }

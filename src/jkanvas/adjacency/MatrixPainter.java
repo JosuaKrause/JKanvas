@@ -40,6 +40,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
 
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+    final boolean hasSelection = hasSelection();
     double y = 0;
     for(int row = 0; row < matrix.size(); ++row) {
       double x = 0;
@@ -49,7 +50,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
         final Rectangle2D rect = new Rectangle2D.Double(x, y, w, h);
         final boolean sel = isSelected(row, col);
         final Graphics2D g = (Graphics2D) gfx.create();
-        cellDrawer.drawCell(g, ctx, rect, matrix, row, col, sel);
+        cellDrawer.drawCell(g, ctx, rect, matrix, row, col, sel, hasSelection);
         g.dispose();
         x += w;
       }
@@ -58,6 +59,10 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
   }
 
   protected abstract boolean isSelected(int row, int col);
+
+  protected boolean hasSelection() {
+    return true;
+  }
 
   protected MatrixPosition pick(final Point2D pos) {
     int col = -1;
@@ -90,6 +95,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
       w += matrix.getWidth(i);
       h += matrix.getHeight(i);
     }
+    if(w <= 0 || h <= 0) return null;
     return new Rectangle2D.Double(0, 0, w, h);
   }
 
