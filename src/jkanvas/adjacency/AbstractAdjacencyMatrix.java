@@ -5,18 +5,34 @@ import java.util.List;
 
 import jkanvas.Refreshable;
 
+/**
+ * A straight forward implementation of a dense {@link AdjacencyMatrix}.
+ * 
+ * @author Joschi <josua.krause@googlemail.com>
+ * @param <T> The content type.
+ */
 public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
 
+  /** The row / column names. */
   private final String[] names;
 
+  /** The actual matrix. */
   private final T[][] matrix;
 
+  /** The widths of the columns. */
   private final double[] widths;
 
+  /** The heights of the rows. */
   private final double[] heights;
 
+  /** The number of active bulk operations. */
   private int bulkOps = 0;
 
+  /**
+   * Creates an adjacency matrix with the given size.
+   * 
+   * @param size The size.
+   */
   public AbstractAdjacencyMatrix(final int size) {
     names = new String[size];
     widths = new double[size];
@@ -24,8 +40,15 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
     matrix = createMatrix(size);
   }
 
+  /**
+   * Creates a quadratic array with the given number of rows / columns.
+   * 
+   * @param size The number of rows / columns.
+   * @return An quadratic array.
+   */
   protected abstract T[][] createMatrix(int size);
 
+  /** The list containing all refreshables. */
   private final List<Refreshable> refreshables = new ArrayList<>();
 
   @Override
@@ -66,7 +89,7 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
 
   @Override
   public double getWidth(final int col) {
-    return heights[col];
+    return widths[col];
   }
 
   @Override
@@ -77,7 +100,7 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
 
   @Override
   public void setWidth(final int col, final double value) {
-    heights[col] = value;
+    widths[col] = value;
     refreshAll();
   }
 
