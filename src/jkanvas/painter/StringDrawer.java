@@ -88,6 +88,12 @@ public class StringDrawer {
    * @param vpos The vertical alignment.
    * @param o The orientation of the text.
    * @return The bounds.
+   * @see #LEFT
+   * @see #CENTER_H
+   * @see #RIGHT
+   * @see #TOP
+   * @see #CENTER_V
+   * @see #BOTTOM
    */
   public Shape getBounds(final Point2D pos,
       final int hpos, final int vpos, final Orientation o) {
@@ -115,6 +121,12 @@ public class StringDrawer {
    * @param hpos The horizontal alignment.
    * @param vpos The vertical alignment.
    * @return The bounds.
+   * @see #LEFT
+   * @see #CENTER_H
+   * @see #RIGHT
+   * @see #TOP
+   * @see #CENTER_V
+   * @see #BOTTOM
    */
   public Rectangle2D getBounds(final Point2D pos, final int hpos, final int vpos) {
     return new Rectangle2D.Double(pos.getX() + getHorizontalOffset(hpos) + bbox.getX(),
@@ -130,6 +142,12 @@ public class StringDrawer {
    * @param vpos The vertical alignment.
    * @param theta The clockwise rotation.
    * @return The bounds.
+   * @see #LEFT
+   * @see #CENTER_H
+   * @see #RIGHT
+   * @see #TOP
+   * @see #CENTER_V
+   * @see #BOTTOM
    */
   public Shape getRotatedBounds(final Point2D pos,
       final int hpos, final int vpos, final double theta) {
@@ -147,6 +165,12 @@ public class StringDrawer {
    * @param hpos The horizontal alignment.
    * @param vpos The vertical alignment.
    * @param o The orientation of the text.
+   * @see #LEFT
+   * @see #CENTER_H
+   * @see #RIGHT
+   * @see #TOP
+   * @see #CENTER_V
+   * @see #BOTTOM
    */
   public void draw(final Point2D pos, final int hpos, final int vpos, final Orientation o) {
     switch(o) {
@@ -168,6 +192,12 @@ public class StringDrawer {
    * @param pos The position.
    * @param hpos The horizontal alignment.
    * @param vpos The vertical alignment.
+   * @see #LEFT
+   * @see #CENTER_H
+   * @see #RIGHT
+   * @see #TOP
+   * @see #CENTER_V
+   * @see #BOTTOM
    */
   public void draw(final Point2D pos, final int hpos, final int vpos) {
     final Graphics2D g2 = (Graphics2D) g.create();
@@ -184,6 +214,12 @@ public class StringDrawer {
    * @param hpos The horizontal alignment.
    * @param vpos The vertical alignment.
    * @param theta The clockwise rotation.
+   * @see #LEFT
+   * @see #CENTER_H
+   * @see #RIGHT
+   * @see #TOP
+   * @see #CENTER_V
+   * @see #BOTTOM
    */
   public void drawRotated(final Point2D pos,
       final int hpos, final int vpos, final double theta) {
@@ -243,6 +279,52 @@ public class StringDrawer {
         throw new IllegalArgumentException("vpos: " + vpos);
     }
     return dy - bbox.getY() - (isBBox ? bbox.getHeight() : 0);
+  }
+
+  /**
+   * Draws text horizontal into the center of the given rectangle.
+   * 
+   * @param g The graphics context.
+   * @param text The text to draw.
+   * @param rect The rectangle.
+   */
+  public static final void drawInto(final Graphics2D g, final String text,
+      final Rectangle2D rect) {
+    drawCentered(g, text, new Point2D.Double(rect.getCenterX(), rect.getCenterY()));
+  }
+
+  /**
+   * Draws text centered at the given position.
+   * 
+   * @param g The graphics context.
+   * @param text The text.
+   * @param pos The position.
+   */
+  public static final void drawCentered(final Graphics2D g, final String text,
+      final Point2D pos) {
+    final StringDrawer sd = new StringDrawer(g, text);
+    sd.draw(pos, CENTER_H, CENTER_V);
+  }
+
+  /**
+   * Draws text at the given position according to the given alignment.
+   * 
+   * @param g The graphics context.
+   * @param text The text.
+   * @param pos The position.
+   * @param hAlign The horizontal alignment.
+   * @param vAlign The vertical alignment.
+   * @see #LEFT
+   * @see #CENTER_H
+   * @see #RIGHT
+   * @see #TOP
+   * @see #CENTER_V
+   * @see #BOTTOM
+   */
+  public static final void drawText(final Graphics2D g, final String text,
+      final Point2D pos, final int hAlign, final int vAlign) {
+    final StringDrawer sd = new StringDrawer(g, text);
+    sd.draw(pos, hAlign, vAlign);
   }
 
 }
