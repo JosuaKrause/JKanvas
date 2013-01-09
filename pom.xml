@@ -11,10 +11,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-	<url>https://github.com/JosuaKrause/JKanvas</url>
+	<url>https://github.com/JosuaKrause/Kanvas</url>
 	<issueManagement>
 		<system>GitHub Tracker</system>
-		<url>https://github.com/JosuaKrause/JKanvas/issues</url>
+		<url>https://github.com/JosuaKrause/Kanvas/issues</url>
 	</issueManagement>
 	<build>
 		<plugins>
