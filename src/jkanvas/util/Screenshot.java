@@ -23,7 +23,7 @@ public final class Screenshot {
 
   /** No constructor. */
   private Screenshot() {
-    // no constructor
+    throw new AssertionError();
   }
 
   /**

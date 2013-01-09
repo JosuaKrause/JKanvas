@@ -1,5 +1,7 @@
 package jkanvas.examples;
 
+import static jkanvas.util.PaintUtil.*;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -78,18 +80,18 @@ public class AdjacencyMain {
           s.draw(pos, h, v);
           g.draw(s.getBounds(pos, h, v));
           g.setColor(Color.RED);
-          g.fill(new Rectangle2D.Double(pos.getX() - 0.5, pos.getY() - 0.5, 1.0, 1.0));
+          g.fill(pixel(pos));
         }
         if(row == 0) {
           final StringDrawer s = new StringDrawer(g, matrix.getName(col));
           final Point2D pos = new Point2D.Double(rect.getCenterX(), rect.getMinY() - 10);
           g.setColor(Color.BLACK);
-          final int h = StringDrawer.LEFT + row % 3;
-          final int v = StringDrawer.TOP + (row % 9) / 3;
+          final int h = StringDrawer.LEFT + col % 3;
+          final int v = StringDrawer.TOP + (col % 9) / 3;
           s.draw(pos, h, v, Orientation.VERTICAL);
           g.draw(s.getBounds(pos, h, v, Orientation.VERTICAL));
           g.setColor(Color.RED);
-          g.fill(new Rectangle2D.Double(pos.getX() - 0.5, pos.getY() - 0.5, 1.0, 1.0));
+          g.fill(pixel(pos));
         }
       }
 

@@ -68,8 +68,10 @@ public class StringDrawer {
   }
 
   private Shape getBoundsVertical(final double dx, final double dy) {
-    final AffineTransform at = AffineTransform.getTranslateInstance(dx, dy);
-    at.concatenate(AffineTransform.getRotateInstance(ROT_V));
+    final AffineTransform at = AffineTransform.getTranslateInstance(
+        dx + bbox.getX(), dy+ bbox.getY());
+    at.rotate(ROT_V);
+    at.translate(-bbox.getX(), -bbox.getY());
     return at.createTransformedShape(bbox);
   }
 
@@ -145,9 +147,9 @@ public class StringDrawer {
 
   private void drawVertical(final double dx, final double dy) {
     final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(dx, dy);
+    g2.translate(dx, dy - bbox.getHeight());
     g2.rotate(ROT_V);
-    g2.translate(-bbox.getX(), bbox.getY() + bbox.getHeight());
+    g2.translate(-bbox.getX(), -bbox.getY());
     g2.drawString(str, 0, 0);
     g2.dispose();
   }
