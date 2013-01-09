@@ -62,22 +62,27 @@ public class StringDrawer {
     bbox = fm.getStringBounds(str, g);
   }
 
-  private Rectangle2D getBounds(final double dx, final double dy) {
-    return new Rectangle2D.Double(bbox.getX() + dx, bbox.getY() + dy,
+  private Rectangle2D getBounds(final double dx, final double dy, final int hpos,
+      final int vpos) {
+    return new Rectangle2D.Double(dx + getHorizontalOffset(hpos) + bbox.getX(),
+        dy + getVerticalOffset(vpos, true) + bbox.getY(),
         bbox.getWidth(), bbox.getHeight());
   }
 
-  private Shape getBoundsVertical(final double dx, final double dy) {
-    final AffineTransform at = AffineTransform.getTranslateInstance(
-        dx + bbox.getX(), dy+ bbox.getY());
+  private Shape getBoundsVertical(final double dx, final double dy, final int hpos,
+      final int vpos) {
+    final AffineTransform at = AffineTransform.getTranslateInstance(dx, dy);
     at.rotate(ROT_V);
-    at.translate(-bbox.getX(), -bbox.getY());
+    at.translate(getHorizontalOffset(hpos),
+        getVerticalOffset(vpos, true));
     return at.createTransformedShape(bbox);
   }
 
-  private Shape getBoundsDiagonal(final double dx, final double dy) {
+  private Shape getBoundsDiagonal(final double dx, final double dy, final int hpos,
+      final int vpos) {
     final AffineTransform at = AffineTransform.getTranslateInstance(dx, dy);
-    at.concatenate(AffineTransform.getRotateInstance(ROT_D));
+    at.rotate(ROT_D);
+    at.translate(getHorizontalOffset(hpos), getVerticalOffset(vpos, true));
     return at.createTransformedShape(bbox);
   }
 
@@ -85,46 +90,18 @@ public class StringDrawer {
     return getBounds(pos, hpos, vpos, Orientation.HORIZONTAL);
   }
 
-  public Shape getBounds(final Point2D p,
+  public Shape getBounds(final Point2D pos,
       final int hpos, final int vpos, final Orientation o) {
-    double dx;
-    switch(hpos) {
-      case LEFT:
-        dx = p.getX() - bbox.getX();
-        break;
-      case CENTER_H:
-        dx = p.getX() - bbox.getX() - bbox.getWidth() * 0.5;
-        break;
-      case RIGHT:
-        dx = p.getX() - bbox.getX() - bbox.getWidth();
-        break;
-      default:
-        throw new IllegalArgumentException("hpos: " + hpos);
-    }
-    double dy;
-    switch(vpos) {
-      case TOP:
-        dy = p.getY() - bbox.getY();
-        break;
-      case CENTER_V:
-        dy = p.getY() - bbox.getY() - bbox.getHeight() * 0.5;
-        break;
-      case BOTTOM:
-        dy = p.getY() - bbox.getY() - bbox.getHeight();
-        break;
-      default:
-        throw new IllegalArgumentException("vpos: " + vpos);
-    }
     Shape res;
     switch(o) {
       case HORIZONTAL:
-        res = getBounds(dx, dy);
+        res = getBounds(pos.getX(), pos.getY(), hpos, vpos);
         break;
       case DIAGONAL:
-        res = getBoundsDiagonal(dx, dy);
+        res = getBoundsDiagonal(pos.getX(), pos.getY(), hpos, vpos);
         break;
       case VERTICAL:
-        res = getBoundsVertical(dx, dy);
+        res = getBoundsVertical(pos.getX(), pos.getY(), hpos, vpos);
         break;
       default:
         throw new AssertionError();
@@ -137,28 +114,35 @@ public class StringDrawer {
    * 
    * @param dx The x position.
    * @param dy The y position.
+   * @param vpos
+   * @param hpos
    */
-  private void draw(final double dx, final double dy) {
+  private void draw(final double dx, final double dy, final int hpos, final int vpos) {
     final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(dx - bbox.getX(), dy - bbox.getY() - bbox.getHeight());
+    g2.translate(dx + getHorizontalOffset(hpos),
+        dy - bbox.getHeight() + getVerticalOffset(vpos, false));
     g2.drawString(str, 0, 0);
     g2.dispose();
   }
 
-  private void drawVertical(final double dx, final double dy) {
+  private void drawVertical(final double dx, final double dy, final int hpos,
+      final int vpos) {
     final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(dx, dy - bbox.getHeight());
+    g2.translate(dx, dy);
     g2.rotate(ROT_V);
-    g2.translate(-bbox.getX(), -bbox.getY());
+    g2.translate(getHorizontalOffset(hpos),
+        getVerticalOffset(vpos, false) - bbox.getHeight());
     g2.drawString(str, 0, 0);
     g2.dispose();
   }
 
-  private void drawDiagonal(final double dx, final double dy) {
+  private void drawDiagonal(final double dx, final double dy, final int hpos,
+      final int vpos) {
     final Graphics2D g2 = (Graphics2D) g.create();
     g2.translate(dx, dy);
     g2.rotate(ROT_D);
-    g2.translate(-bbox.getX(), -bbox.getY());
+    g2.translate(getHorizontalOffset(hpos),
+        getVerticalOffset(vpos, false) - bbox.getHeight());
     g2.drawString(str, 0, 0);
     g2.dispose();
   }
@@ -168,45 +152,53 @@ public class StringDrawer {
   }
 
   public void draw(final Point2D pos, final int hpos, final int vpos, final Orientation o) {
+    switch(o) {
+      case HORIZONTAL:
+        draw(pos.getX(), pos.getY(), hpos, vpos);
+        break;
+      case DIAGONAL:
+        drawDiagonal(pos.getX(), pos.getY(), hpos, vpos);
+        break;
+      case VERTICAL:
+        drawVertical(pos.getX(), pos.getY(), hpos, vpos);
+        break;
+    }
+  }
+
+  private double getHorizontalOffset(final int hpos) {
     double dx;
     switch(hpos) {
       case LEFT:
-        dx = pos.getX();
+        dx = 0;
         break;
       case CENTER_H:
-        dx = pos.getX() - bbox.getWidth() * 0.5;
+        dx = -bbox.getWidth() * 0.5;
         break;
       case RIGHT:
-        dx = pos.getX() - bbox.getWidth();
+        dx = -bbox.getWidth();
         break;
       default:
         throw new IllegalArgumentException("hpos: " + hpos);
     }
+    return dx - bbox.getX();
+  }
+
+  private double getVerticalOffset(final int vpos, final boolean isBBox) {
     double dy;
     switch(vpos) {
       case BOTTOM:
-        dy = pos.getY();
+        dy = 0;
         break;
       case CENTER_V:
-        dy = pos.getY() + bbox.getHeight() * 0.5;
+        dy = bbox.getHeight() * 0.5;
         break;
       case TOP:
-        dy = pos.getY() + bbox.getHeight();
+        dy = bbox.getHeight();
         break;
       default:
         throw new IllegalArgumentException("vpos: " + vpos);
     }
-    switch(o) {
-      case HORIZONTAL:
-        draw(dx, dy);
-        break;
-      case DIAGONAL:
-        drawDiagonal(dx, dy);
-        break;
-      case VERTICAL:
-        drawVertical(dx, dy);
-        break;
-    }
+    return dy - bbox.getY() - (isBBox ? bbox.getHeight() : 0);
   }
 
 }
