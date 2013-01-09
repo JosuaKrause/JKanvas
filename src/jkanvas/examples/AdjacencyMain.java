@@ -22,6 +22,8 @@ import jkanvas.adjacency.AdjacencyMatrix;
 import jkanvas.adjacency.CellRealizer;
 import jkanvas.adjacency.MatrixPainter;
 import jkanvas.adjacency.MatrixPosition;
+import jkanvas.painter.StringDrawer;
+import jkanvas.painter.StringDrawer.Orientation;
 
 /**
  * An example showcasing the painting of {@link AdjacencyMatrix adjacency
@@ -37,7 +39,7 @@ public class AdjacencyMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final AdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(100) {
+    final AdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(9) {
 
       @Override
       protected Double[][] createMatrix(final int size) {
@@ -46,14 +48,14 @@ public class AdjacencyMain {
 
     };
     for(int col = 0; col < matrix.size(); ++col) {
-      matrix.setName(col, "attr" + col);
+      matrix.setName(col, "Attr" + col);
       for(int row = 0; row < matrix.size(); ++row) {
         matrix.set(row, col, Math.random());
       }
     }
     for(int i = 0; i < matrix.size(); ++i) {
-      matrix.setWidth(i, 20 + Math.random() * 80);
-      matrix.setHeight(i, 20 + Math.random() * 80);
+      matrix.setWidth(i, 60); // 20 + Math.random() * 80);
+      matrix.setHeight(i, 60); // 20 + Math.random() * 80);
     }
     final CellRealizer<Double> cellColor = new CellRealizer<Double>() {
 
@@ -67,6 +69,28 @@ public class AdjacencyMain {
         g.fill(rect);
         g.setColor(Color.BLACK);
         g.draw(rect);
+        if(col == 0) {
+          final StringDrawer s = new StringDrawer(g, matrix.getName(row));
+          final Point2D pos = new Point2D.Double(rect.getMinX() - 10, rect.getCenterY());
+          g.setColor(Color.BLACK);
+          final int h = StringDrawer.LEFT + row % 3;
+          final int v = StringDrawer.TOP + (row % 9) / 3;
+          s.draw(pos, h, v);
+          g.draw(s.getBounds(pos, h, v));
+          g.setColor(Color.RED);
+          g.fill(new Rectangle2D.Double(pos.getX() - 0.5, pos.getY() - 0.5, 1.0, 1.0));
+        }
+        if(row == 0) {
+          final StringDrawer s = new StringDrawer(g, matrix.getName(col));
+          final Point2D pos = new Point2D.Double(rect.getCenterX(), rect.getMinY() - 10);
+          g.setColor(Color.BLACK);
+          final int h = StringDrawer.LEFT + row % 3;
+          final int v = StringDrawer.TOP + (row % 9) / 3;
+          s.draw(pos, h, v, Orientation.VERTICAL);
+          g.draw(s.getBounds(pos, h, v, Orientation.VERTICAL));
+          g.setColor(Color.RED);
+          g.fill(new Rectangle2D.Double(pos.getX() - 0.5, pos.getY() - 0.5, 1.0, 1.0));
+        }
       }
 
       private Color getColor(final double value, final boolean isSelected) {
@@ -115,7 +139,7 @@ public class AdjacencyMain {
     };
     final Canvas c = new Canvas(p, 500, 500);
     matrix.addRefreshable(c);
-    c.setMargin(10);
+    c.setMargin(25);
     c.setBackground(Color.WHITE);
     final JFrame frame = new JFrame("Nodelink");
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {
