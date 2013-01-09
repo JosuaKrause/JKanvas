@@ -120,6 +120,8 @@ public final class ZoomableUI {
       }
     }
 
+    if(newZoom <= 0) throw new IllegalStateException("attemp to set zoom to: "+newZoom);
+
     // P = (off - mouse) / zoom
     // P = (newOff - mouse) / newZoom
     // newOff = (off - mouse) / zoom * newZoom + mouse

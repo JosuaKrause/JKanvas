@@ -90,6 +90,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
       w += matrix.getWidth(i);
       h += matrix.getHeight(i);
     }
+    if(w <= 0 || h <= 0) return null;
     return new Rectangle2D.Double(0, 0, w, h);
   }
 

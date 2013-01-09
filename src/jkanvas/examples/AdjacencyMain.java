@@ -67,7 +67,7 @@ public class AdjacencyMain {
       }
 
     };
-    final KanvasPainter p = new MatrixPainter<Double>(matrix, cellColor) {
+    final MatrixPainter<Double> p = new MatrixPainter<Double>(matrix, cellColor) {
 
       private final Set<MatrixPosition> selected = new HashSet<>();
 
@@ -94,6 +94,7 @@ public class AdjacencyMain {
 
       @Override
       public String getTooltip(final Point2D p) {
+        final AdjacencyMatrix<Double> matrix = getMatrix();
         final MatrixPosition pos = pick(p);
         if(pos == null) return "";
         return "row: " + matrix.getName(pos.row)
