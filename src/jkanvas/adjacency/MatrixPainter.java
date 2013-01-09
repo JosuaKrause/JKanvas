@@ -10,12 +10,32 @@ import jkanvas.painter.PainterAdapter;
 
 public abstract class MatrixPainter<T> extends PainterAdapter {
 
-  private final AdjacencyMatrix<T> matrix;
-  private final CellRealizer<T> cellDrawer;
+  private AdjacencyMatrix<T> matrix;
+  private CellRealizer<T> cellDrawer;
 
   public MatrixPainter(final AdjacencyMatrix<T> matrix, final CellRealizer<T> cellColor) {
     this.matrix = Objects.requireNonNull(matrix);
     this.cellDrawer = Objects.requireNonNull(cellColor);
+  }
+
+  public void setMatrix(final AdjacencyMatrix<T> m) {
+    Objects.requireNonNull(m);
+    m.inheritRefreshables(matrix);
+    matrix = m;
+    matrix.refreshAll();
+  }
+
+  public AdjacencyMatrix<T> getMatrix() {
+    return matrix;
+  }
+
+  public void setCellRealizer(final CellRealizer<T> cellDrawer) {
+    this.cellDrawer = cellDrawer;
+    matrix.refreshAll();
+  }
+
+  public CellRealizer<T> getCellDrawer() {
+    return cellDrawer;
   }
 
   @Override

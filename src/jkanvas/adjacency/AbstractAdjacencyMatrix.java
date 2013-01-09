@@ -26,18 +26,31 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
 
   private final List<Refreshable> refreshables = new ArrayList<>();
 
+  @Override
   public void addRefreshable(final Refreshable r) {
-    if(refreshables.contains(r)) throw new IllegalArgumentException(
-        r + " already added");
+    if(refreshables.contains(r)) return;
     refreshables.add(r);
   }
 
+  @Override
   public void removeRefreshable(final Refreshable r) {
-    if(!refreshables.remove(r)) throw new IllegalArgumentException(
-        r + " was not contained");
+    refreshables.remove(r);
   }
 
-  protected void refreshAll() {
+  @Override
+  public Refreshable[] getRefreshables() {
+    return refreshables.toArray(new Refreshable[refreshables.size()]);
+  }
+
+  @Override
+  public void inheritRefreshables(final AdjacencyMatrix<T> matrix) {
+    for(final Refreshable r : matrix.getRefreshables()) {
+      addRefreshable(r);
+    }
+  }
+
+  @Override
+  public void refreshAll() {
     for(final Refreshable r : refreshables) {
       r.refresh();
     }

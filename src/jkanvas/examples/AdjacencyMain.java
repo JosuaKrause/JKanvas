@@ -27,8 +27,7 @@ import jkanvas.adjacency.MatrixPosition;
 public class AdjacencyMain {
 
   public static void main(final String[] args) {
-    final AbstractAdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(
-        100) {
+    final AdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(100) {
 
       @Override
       protected Double[][] createMatrix(final int size) {

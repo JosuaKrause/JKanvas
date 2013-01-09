@@ -1,5 +1,7 @@
 package jkanvas.adjacency;
 
+import jkanvas.Refreshable;
+
 
 public interface AdjacencyMatrix<T> {
 
@@ -20,5 +22,15 @@ public interface AdjacencyMatrix<T> {
   void set(final int row, final int col, final T value);
 
   int size();
+
+  void addRefreshable(Refreshable r);
+
+  void removeRefreshable(Refreshable r);
+
+  Refreshable[] getRefreshables();
+
+  void inheritRefreshables(AdjacencyMatrix<T> matrix);
+
+  void refreshAll();
 
 }
