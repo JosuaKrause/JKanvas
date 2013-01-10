@@ -17,6 +17,7 @@
 		<url>https://github.com/JosuaKrause/Kanvas/issues</url>
 	</issueManagement>
 	<build>
+		<sourceDirectory>${project.basedir}/src/</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
