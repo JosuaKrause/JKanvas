@@ -16,6 +16,12 @@
 		<system>GitHub Tracker</system>
 		<url>https://github.com/JosuaKrause/Kanvas/issues</url>
 	</issueManagement>
+	<licenses>
+		<license>
+			<name>License</name>
+			<url>LICENSE</url>
+		</license>
+	</licenses>
 	<build>
 		<plugins>
 			<plugin>
