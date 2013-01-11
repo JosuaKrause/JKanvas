@@ -152,6 +152,16 @@ public class Canvas extends JComponent implements Refreshable {
     return focus;
   }
 
+  /**
+   * Computes the position of a {@link MouseEvent} on the canvas.
+   * 
+   * @param e The mouse event.
+   * @return The position of the event on the canvas.
+   */
+  public Point2D getPositionOnCanvas(final MouseEvent e) {
+    return zui.getForScreen(e.getPoint());
+  }
+
   @Override
   public String getToolTipText(final MouseEvent e) {
     final Point2D p = e.getPoint();
@@ -282,6 +292,28 @@ public class Canvas extends JComponent implements Refreshable {
   }
 
   /**
+   * Returns the current canvas context. Note that it is not guaranteed that the
+   * context returns correct values if the viewport changes after a call to this
+   * method.
+   * 
+   * @return The current canvas context.
+   */
+  public CanvasContext getContext() {
+    return new CanvasContext(true);
+  }
+
+  /**
+   * Returns the current head-up display context. Note that it is not guaranteed
+   * that the context returns correct values if the viewport changes after a
+   * call to this method.
+   * 
+   * @return The current head-up display context.
+   */
+  public CanvasContext getHUDContext() {
+    return new CanvasContext(false);
+  }
+
+  /**
    * Does the actual painting.
    * 
    * @param g The graphics context.
@@ -289,9 +321,9 @@ public class Canvas extends JComponent implements Refreshable {
   private void doPaint(final Graphics2D g) {
     final Graphics2D gfx = (Graphics2D) g.create();
     zui.transform(gfx);
-    painter.draw(gfx, new CanvasContext(true));
+    painter.draw(gfx, getContext());
     gfx.dispose();
-    painter.drawHUD(g, new CanvasContext(false));
+    painter.drawHUD(g, getHUDContext());
   }
 
   /** The paint lock. */
