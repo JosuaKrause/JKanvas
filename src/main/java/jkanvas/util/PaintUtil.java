@@ -1,5 +1,7 @@
 package jkanvas.util;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -75,24 +77,70 @@ public final class PaintUtil {
    *         rectangle.
    */
   public static Rectangle2D fitInto(final Rectangle2D rect, final double w, final double h) {
-    final double verWidth = w * rect.getHeight() / h;
-    final boolean vertical = verWidth <= rect.getWidth();
+    final double rw = rect.getWidth();
+    final double rh = rect.getHeight();
+    final double verWidth = w * rh / h;
+    final boolean vertical = verWidth <= rw;
     final double px;
     final double py;
     final double nw;
     final double nh;
     if(vertical) {
       nw = verWidth;
-      nh = rect.getHeight();
-      px = (rect.getWidth() - nw) * 0.5;
+      nh = rh;
+      px = (rw - nw) * 0.5;
       py = 0;
     } else {
-      nw = rect.getWidth();
-      nh = h * rect.getWidth() / w;
+      nw = rw;
+      nh = h * rw / w;
       px = 0;
-      py = (rect.getHeight() - nh) * 0.5;
+      py = (rh - nh) * 0.5;
     }
     return new Rectangle2D.Double(rect.getX() + px, rect.getY() + py, nw, nh);
+  }
+
+  /**
+   * Sets the alpha value of a color. Hint: Consider using
+   * <code>AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)</code> and
+   * passing it via {@link Graphics2D#setComposite(java.awt.Composite)}.
+   * 
+   * @param col The color.
+   * @param alpha The new alpha value.
+   * @return The color with transparency.
+   */
+  public static Color setAlpha(final Color col, final double alpha) {
+    final float[] comp = col.getRGBComponents(null);
+    return new Color(comp[0], comp[1], comp[2], (float) alpha);
+  }
+
+  /**
+   * Multiplies the alpha value of a color. Hint: Consider using
+   * <code>AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)</code> and
+   * passing it via {@link Graphics2D#setComposite(java.awt.Composite)}.
+   * 
+   * @param col The color.
+   * @param alpha The alpha value to multiply to the previous value.
+   * @return The color with new transparency.
+   */
+  public static Color mulAlpha(final Color col, final double alpha) {
+    final float[] comp = col.getRGBComponents(null);
+    return new Color(comp[0], comp[1], comp[2], (float) (alpha * comp[3]));
+  }
+
+  /**
+   * Creates a color with transparency. Hint: Consider using
+   * <code>AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)</code> and
+   * passing it via {@link Graphics2D#setComposite(java.awt.Composite)}.
+   * 
+   * @param h The hue value. <code>1</code> represents <code>360</code> degrees.
+   * @param s The saturation value.
+   * @param b The brightness value.
+   * @param alpha The alpha value.
+   * @return The color.
+   */
+  public static Color hsbaColor(final double h, final double s, final double b,
+      final double alpha) {
+    return setAlpha(Color.getHSBColor((float) h, (float) s, (float) b), alpha);
   }
 
 }
