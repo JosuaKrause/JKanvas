@@ -14,15 +14,7 @@ import jkanvas.animation.AnimatedPosition;
 public interface EdgeRealizer<T extends AnimatedPosition> {
 
   /**
-   * Whether edges in the graph are directed.
-   * This method should always return the same result.
-   * @return Whether edges are directed.
-   */
-  boolean isDirected();
-
-  /**
-   * The shape of the edge between nodes.
-   * If {@link #isDirected()} returns <code>false</code> the order of the nodes is not defined.
+   * The shape of the edge between nodes. The order of the nodes is not defined.
    * The shape should not be smaller than the visible edge.
    * 
    * @param from The source node.
@@ -32,7 +24,7 @@ public interface EdgeRealizer<T extends AnimatedPosition> {
   Shape createLineShape(T from, T to);
 
   /**
-   * Draws edges. If {@link #isDirected()} returns <code>false</code> the order of the nodes is not defined.
+   * Draws edges. The order of the nodes is not defined.
    * 
    * @param g The graphics context.
    * @param from The source node.

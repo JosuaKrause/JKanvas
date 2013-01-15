@@ -1,5 +1,6 @@
 package jkanvas;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -68,5 +69,15 @@ public interface KanvasContext {
    * @return The visible rectangle in canvas coordinates.
    */
   Rectangle2D getVisibleCanvas();
+
+  /**
+   * Translates the context. This method should be called with a corresponding
+   * {@link Graphics2D#translate(double, double)} call.
+   * 
+   * @param dx The x offset in canvas coordinates.
+   * @param dy The y offset in canvas coordinates.
+   * @return The translated context.
+   */
+  KanvasContext translate(double dx, double dy);
 
 }

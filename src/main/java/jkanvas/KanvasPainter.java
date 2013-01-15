@@ -124,4 +124,7 @@ public interface KanvasPainter {
    */
   Rectangle2D getBoundingBox();
 
+  /** Disposes this painter. */
+  void dispose();
+
 }

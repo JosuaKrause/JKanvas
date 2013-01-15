@@ -12,12 +12,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
-import jkanvas.Refreshable;
-import jkanvas.animation.AbstractAnimator;
+import jkanvas.animation.AnimatedLayouter;
 import jkanvas.animation.AnimatedPosition;
-import jkanvas.animation.Animator;
+import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
-import jkanvas.painter.RenderpassPainter;
 
 /**
  * Paints a node link diagram.
@@ -25,8 +23,7 @@ import jkanvas.painter.RenderpassPainter;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of nodes.
  */
-public class NodelinkPainter<T extends AnimatedPosition> extends RenderpassPainter
-implements Animator {
+public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLayouter {
 
   /** Reverse map from nodes to ids. */
   private final Map<T, Integer> idMap = new HashMap<>();
@@ -46,12 +43,15 @@ implements Animator {
   /** The edge realizer. */
   private EdgeRealizer<T> edgeRealizer;
 
-  /** The internal animator. */
-  private AbstractAnimator animator;
+  /** The node render pass. */
+  private final AbstractRenderpass nodePass;
+
+  /** The edge render pass. */
+  private final AbstractRenderpass edgePass;
 
   /** Creates a node link painter. */
-  public NodelinkPainter() {
-    addPass(new Renderpass() {
+  public NodelinkLayouter() {
+    nodePass = new AbstractRenderpass(false) {
 
       @Override
       public void render(final Graphics2D gfx, final KanvasContext ctx) {
@@ -59,12 +59,22 @@ implements Animator {
       }
 
       @Override
-      public boolean isHUD() {
-        return false;
+      public double getOffsetX() {
+        return NodelinkLayouter.this.getOffsetX();
       }
 
-    });
-    addPass(new Renderpass() {
+      @Override
+      public double getOffsetY() {
+        return NodelinkLayouter.this.getOffsetY();
+      }
+
+      @Override
+      public Rectangle2D getBoundingBox() {
+        return NodelinkLayouter.this.getBoundingBox();
+      }
+
+    };
+    edgePass = new AbstractRenderpass(false) {
 
       @Override
       public void render(final Graphics2D gfx, final KanvasContext ctx) {
@@ -72,24 +82,39 @@ implements Animator {
       }
 
       @Override
-      public boolean isHUD() {
-        return false;
+      public Rectangle2D getBoundingBox() {
+        return NodelinkLayouter.this.getBoundingBox();
       }
 
-    });
-    animator = new AbstractAnimator() {
+      @Override
+      public double getOffsetX() {
+        return NodelinkLayouter.this.getOffsetX();
+      }
 
       @Override
-      protected boolean step() {
-        boolean needsRedraw = false;
-        for(final T node : getNodes()) {
-          node.animate();
-          needsRedraw = needsRedraw || node.lazyInAnimation();
-        }
-        return needsRedraw;
+      public double getOffsetY() {
+        return NodelinkLayouter.this.getOffsetY();
       }
 
     };
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The node render pass.
+   */
+  public Renderpass getNodePass() {
+    return nodePass;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The edge render pass.
+   */
+  public Renderpass getEdgePass() {
+    return edgePass;
   }
 
   /**
@@ -109,6 +134,11 @@ implements Animator {
    */
   public T getNode(final int id) {
     return nodes.get(id);
+  }
+
+  @Override
+  public Iterable<? extends AnimatedPosition> getPositions() {
+    return nodes;
   }
 
   /**
@@ -143,21 +173,6 @@ implements Animator {
   protected List<Integer> getEdges(final int node) {
     if(node >= edges.size() || edges.get(node) == null) return EMPTY_LIST;
     return edges.get(node);
-  }
-
-  @Override
-  public void addRefreshable(final Refreshable r) {
-    animator.addRefreshable(r);
-  }
-
-  @Override
-  public void forceNextFrame() {
-    animator.forceNextFrame();
-  }
-
-  @Override
-  public void quickRefresh() {
-    animator.quickRefresh();
   }
 
   /**
@@ -302,11 +317,70 @@ implements Animator {
     return null;
   }
 
-  /** Disposes this painter and stops the animator. */
-  public void dispose() {
-    if(!animator.isDisposed()) {
-      animator.dispose();
-    }
+  /**
+   * Converts a position to the real position in this layouter.
+   * 
+   * @param pos The position.
+   * @return The real position.
+   */
+  public Point2D getRealPosition(final Point2D pos) {
+    return new Point2D.Double(pos.getX() - offX, pos.getY() - offY);
+  }
+
+  /** The bounding box. */
+  protected Rectangle2D bbox;
+
+  /**
+   * Getter.
+   * 
+   * @return The bounding box of this node-link diagram or <code>null</code>.
+   */
+  public Rectangle2D getBoundingBox() {
+    return bbox;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param bbox Sets the optional bounding box.
+   */
+  public void setBoundingBox(final Rectangle2D bbox) {
+    this.bbox = bbox;
+  }
+
+  /** The x offset. */
+  private double offX;
+
+  /** The y offset. */
+  private double offY;
+
+  /**
+   * Setter.
+   * 
+   * @param x The x offset.
+   * @param y The y offset.
+   */
+  public void setOffset(final double x, final double y) {
+    offX = x;
+    offY = y;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The x offset.
+   */
+  public double getOffsetX() {
+    return offX;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The y offset.
+   */
+  public double getOffsetY() {
+    return offY;
   }
 
 }
