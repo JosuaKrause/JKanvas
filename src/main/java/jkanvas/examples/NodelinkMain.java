@@ -69,11 +69,6 @@ public final class NodelinkMain extends AnimatedPainter {
         g.fill(createLineShape(from, to));
       }
 
-      @Override
-      public boolean isDirected() {
-        return false;
-      }
-
     });
     nodelink.setNodeRealizer(new NodeRealizer<AnimatedPosition>() {
 
@@ -194,7 +189,6 @@ public final class NodelinkMain extends AnimatedPainter {
     final int nodes = 20;
     final int edges = 100;
     final NodelinkLayouter<AnimatedPosition> nodelink = new NodelinkLayouter<>();
-    nodelink.setOffset(100, 100);
     final NodelinkMain p = new NodelinkMain(nodelink);
     final Random r = new Random();
     for(int i = 0; i < nodes; ++i) {

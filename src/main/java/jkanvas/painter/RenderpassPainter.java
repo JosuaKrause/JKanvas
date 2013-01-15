@@ -67,7 +67,6 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = getBoundingBox(r);
       if(bbox != null && !view.intersects(bbox)) {
-        System.out.println("not visible");
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
