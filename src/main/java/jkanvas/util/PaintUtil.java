@@ -2,6 +2,9 @@ package jkanvas.util;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -97,6 +100,42 @@ public final class PaintUtil {
       py = (rh - nh) * 0.5;
     }
     return new Rectangle2D.Double(rect.getX() + px, rect.getY() + py, nw, nh);
+  }
+
+  /**
+   * Creates a circle with the given radius.
+   * 
+   * @param x The x position.
+   * @param y The y position.
+   * @param r The radius.
+   * @return The circle.
+   */
+  public static Ellipse2D createEllipse(final double x, final double y, final double r) {
+    final double r2 = r * 2;
+    return new Ellipse2D.Double(x - r, y - r, r2, r2);
+  }
+
+  /**
+   * Creates a line with a given width without using a stroke.
+   * 
+   * @param x1 The first x coordinate.
+   * @param y1 The first y coordinate.
+   * @param x2 The second x coordinate.
+   * @param y2 The second y coordinate.
+   * @param width The width of the line.
+   * @return The shape of the line.
+   */
+  public static Shape createLine(final double x1, final double y1,
+      final double x2, final double y2, final double width) {
+    final Point2D ortho = VecUtil.setLength(
+        new Point2D.Double(y1 - y2, x2 - x1), width * 0.5);
+    final GeneralPath gp = new GeneralPath();
+    gp.moveTo(x1 + ortho.getX(), y1 + ortho.getY());
+    gp.lineTo(x2 + ortho.getX(), y2 + ortho.getY());
+    gp.lineTo(x2 - ortho.getX(), y2 - ortho.getY());
+    gp.lineTo(x1 - ortho.getX(), y1 - ortho.getY());
+    gp.closePath();
+    return gp;
   }
 
   /**

@@ -12,12 +12,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
-import jkanvas.Refreshable;
-import jkanvas.animation.AbstractAnimator;
+import jkanvas.animation.AnimatedLayouter;
 import jkanvas.animation.AnimatedPosition;
-import jkanvas.animation.Animator;
+import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
-import jkanvas.painter.RenderpassPainter;
 
 /**
  * Paints a node link diagram.
@@ -25,8 +23,7 @@ import jkanvas.painter.RenderpassPainter;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of nodes.
  */
-public class NodelinkPainter<T extends AnimatedPosition> extends RenderpassPainter
-implements Animator {
+public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLayouter {
 
   /** Reverse map from nodes to ids. */
   private final Map<T, Integer> idMap = new HashMap<>();
@@ -46,50 +43,48 @@ implements Animator {
   /** The edge realizer. */
   private EdgeRealizer<T> edgeRealizer;
 
-  /** The internal animator. */
-  private AbstractAnimator animator;
+  /** The node render pass. */
+  private final AbstractRenderpass nodePass;
+
+  /** The edge render pass. */
+  private final AbstractRenderpass edgePass;
 
   /** Creates a node link painter. */
-  public NodelinkPainter() {
-    addPass(new Renderpass() {
+  public NodelinkLayouter() {
+    nodePass = new AbstractRenderpass(false) {
 
       @Override
       public void render(final Graphics2D gfx, final KanvasContext ctx) {
         renderEdges(gfx, ctx);
       }
 
-      @Override
-      public boolean isHUD() {
-        return false;
-      }
-
-    });
-    addPass(new Renderpass() {
+    };
+    edgePass = new AbstractRenderpass(false) {
 
       @Override
       public void render(final Graphics2D gfx, final KanvasContext ctx) {
         renderNodes(gfx, ctx);
       }
 
-      @Override
-      public boolean isHUD() {
-        return false;
-      }
-
-    });
-    animator = new AbstractAnimator() {
-
-      @Override
-      protected boolean step() {
-        boolean needsRedraw = false;
-        for(final T node : getNodes()) {
-          node.animate();
-          needsRedraw = needsRedraw || node.lazyInAnimation();
-        }
-        return needsRedraw;
-      }
-
     };
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The node render pass.
+   */
+  public Renderpass getNodePass() {
+    return nodePass;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The edge render pass.
+   */
+  public Renderpass getEdgePass() {
+    return edgePass;
   }
 
   /**
@@ -109,6 +104,11 @@ implements Animator {
    */
   public T getNode(final int id) {
     return nodes.get(id);
+  }
+
+  @Override
+  public Iterable<? extends AnimatedPosition> getPositions() {
+    return nodes;
   }
 
   /**
@@ -143,21 +143,6 @@ implements Animator {
   protected List<Integer> getEdges(final int node) {
     if(node >= edges.size() || edges.get(node) == null) return EMPTY_LIST;
     return edges.get(node);
-  }
-
-  @Override
-  public void addRefreshable(final Refreshable r) {
-    animator.addRefreshable(r);
-  }
-
-  @Override
-  public void forceNextFrame() {
-    animator.forceNextFrame();
-  }
-
-  @Override
-  public void quickRefresh() {
-    animator.quickRefresh();
   }
 
   /**
@@ -300,13 +285,6 @@ implements Animator {
       if(shape.contains(pos)) return node;
     }
     return null;
-  }
-
-  /** Disposes this painter and stops the animator. */
-  public void dispose() {
-    if(!animator.isDisposed()) {
-      animator.dispose();
-    }
   }
 
 }

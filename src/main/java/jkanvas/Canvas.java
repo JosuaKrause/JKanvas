@@ -208,20 +208,29 @@ public class Canvas extends JComponent implements Refreshable {
 
     /** Whether this context is in canvas space. */
     private final boolean inCanvasSpace;
+    /** The x offset of the context. */
+    private final double offX;
+    /** The y offset of the context. */
+    private final double offY;
 
     /**
      * Creates a context for this canvas.
      * 
      * @param inCanvasSpace Whether the normal
      *          {@link KanvasPainter#draw(Graphics2D, KanvasContext)} is called.
+     * @param offX The x offset in canvas coordinates.
+     * @param offY The y offset in canvas coordinates.
      */
-    public CanvasContext(final boolean inCanvasSpace) {
+    public CanvasContext(final boolean inCanvasSpace, final double offX, final double offY) {
       this.inCanvasSpace = inCanvasSpace;
+      this.offX = offX;
+      this.offY = offY;
     }
 
     @Override
     public Point2D toCanvasCoordinates(final Point2D p) {
-      return zui.getForScreen(p);
+      final Point2D pos = zui.getForScreen(p);
+      return new Point2D.Double(pos.getX() + offX, pos.getY() + offY);
     }
 
     @Override
@@ -231,8 +240,8 @@ public class Canvas extends JComponent implements Refreshable {
 
     @Override
     public Point2D toComponentCoordinates(final Point2D p) {
-      return new Point2D.Double(zui.getXFromCanvas(p.getX()),
-          zui.getYFromCanvas(p.getY()));
+      return new Point2D.Double(zui.getXFromCanvas(p.getX() + offX),
+          zui.getYFromCanvas(p.getY() + offY));
     }
 
     @Override
@@ -263,8 +272,15 @@ public class Canvas extends JComponent implements Refreshable {
     public Rectangle2D getVisibleCanvas() {
       if(visCanvas == null) {
         visCanvas = zui.toCanvas(getVisibleComponent());
+        visCanvas.setRect(offX + visCanvas.getX(), offY + visCanvas.getY(),
+            visCanvas.getWidth(), visCanvas.getHeight());
       }
       return visCanvas;
+    }
+
+    @Override
+    public KanvasContext translate(final double dx, final double dy) {
+      return new CanvasContext(inCanvasSpace, offX + dx, offY + dy);
     }
 
   } // CanvasContext
@@ -299,7 +315,7 @@ public class Canvas extends JComponent implements Refreshable {
    * @return The current canvas context.
    */
   public CanvasContext getContext() {
-    return new CanvasContext(true);
+    return new CanvasContext(true, 0, 0);
   }
 
   /**
@@ -310,7 +326,7 @@ public class Canvas extends JComponent implements Refreshable {
    * @return The current head-up display context.
    */
   public CanvasContext getHUDContext() {
-    return new CanvasContext(false);
+    return new CanvasContext(false, 0, 0);
   }
 
   /**
@@ -440,6 +456,11 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public Rectangle2D getVisibleCanvas() {
     return zui.toCanvas(getVisibleRect());
+  }
+
+  /** Disposes the painter. */
+  public void dispose() {
+    painter.dispose();
   }
 
   @Override

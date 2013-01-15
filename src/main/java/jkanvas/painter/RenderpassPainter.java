@@ -1,6 +1,7 @@
 package jkanvas.painter;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,19 +51,42 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   /**
-   * Renders a list of render passes.
+   * Renders a list of render-passes.
    * 
    * @param gfx The graphics context.
    * @param ctx The canvas context.
-   * @param list The list of renderpasses.
+   * @param list The list of render-passes.
    */
   private static void render(final Graphics2D gfx, final KanvasContext ctx,
       final List<Renderpass> list) {
     for(final Renderpass r : list) {
       final Graphics2D g = (Graphics2D) gfx.create();
-      r.render(g, ctx);
+      final double dx = r.getOffsetX();
+      final double dy = r.getOffsetY();
+      g.translate(dx, dy);
+      final KanvasContext c = ctx.translate(dx, dy);
+      r.render(g, c);
       g.dispose();
     }
+  }
+
+  @Override
+  public Rectangle2D getBoundingBox() {
+    Rectangle2D bbox = null;
+    for(final Renderpass r : back) {
+      final Rectangle2D tmp = r.getBoundingBox();
+      if(tmp == null) {
+        continue;
+      }
+      final Rectangle2D b = new Rectangle2D.Double(tmp.getX() + r.getOffsetX(),
+          tmp.getY() + r.getOffsetY(), tmp.getWidth(), tmp.getHeight());
+      if(bbox == null) {
+        bbox = b;
+      } else {
+        bbox.add(b);
+      }
+    }
+    return bbox;
   }
 
 }

@@ -78,4 +78,9 @@ public class PainterAdapter implements KanvasPainter {
     return null;
   }
 
+  @Override
+  public void dispose() {
+    // nothing to do
+  }
+
 }
