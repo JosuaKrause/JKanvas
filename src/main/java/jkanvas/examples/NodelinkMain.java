@@ -124,7 +124,8 @@ public final class NodelinkMain extends AnimatedPainter {
   private AnimatedPosition secSel;
 
   @Override
-  public boolean click(final Point2D p, final MouseEvent e) {
+  public boolean click(final Point2D pos, final MouseEvent e) {
+    final Point2D p = nodelink.getRealPosition(pos);
     final AnimatedPosition n = nodelink.pick(p);
     if(!SwingUtilities.isRightMouseButton(e)) return false;
     if(n == null) {
@@ -143,7 +144,7 @@ public final class NodelinkMain extends AnimatedPainter {
 
   @Override
   public boolean acceptDrag(final Point2D p) {
-    final AnimatedPosition n = nodelink.pick(p);
+    final AnimatedPosition n = nodelink.pick(nodelink.getRealPosition(p));
     if(n == null) return false;
     primSel = n;
     primSel.clearAnimation();
@@ -166,6 +167,22 @@ public final class NodelinkMain extends AnimatedPainter {
     primSel = null;
   }
 
+  @Override
+  public Rectangle2D getBoundingBox() {
+    final NodeRealizer<AnimatedPosition> n = nodelink.getNodeRealizer();
+    Rectangle2D bbox = null;
+    for(final AnimatedPosition p : nodelink.getPositions()) {
+      final Shape shape = n.createNodeShape(p);
+      final Rectangle2D b = shape.getBounds2D();
+      if(bbox == null) {
+        bbox = b;
+      } else {
+        bbox.add(b);
+      }
+    }
+    return bbox;
+  }
+
   /**
    * Starts the example application.
    * 
@@ -177,6 +194,7 @@ public final class NodelinkMain extends AnimatedPainter {
     final int nodes = 20;
     final int edges = 100;
     final NodelinkLayouter<AnimatedPosition> nodelink = new NodelinkLayouter<>();
+    nodelink.setOffset(100, 100);
     final NodelinkMain p = new NodelinkMain(nodelink);
     final Random r = new Random();
     for(int i = 0; i < nodes; ++i) {
@@ -186,6 +204,7 @@ public final class NodelinkMain extends AnimatedPainter {
     for(int i = 0; i < edges; ++i) {
       nodelink.addEdge(r.nextInt(nodes), r.nextInt(nodes));
     }
+    nodelink.setBoundingBox(p.getBoundingBox());
     p.addLayouter(nodelink);
     p.addPass(nodelink.getNodePass());
     p.addPass(nodelink.getEdgePass());

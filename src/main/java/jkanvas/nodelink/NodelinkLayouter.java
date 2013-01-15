@@ -58,12 +58,42 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
         renderEdges(gfx, ctx);
       }
 
+      @Override
+      public double getOffsetX() {
+        return NodelinkLayouter.this.getOffsetX();
+      }
+
+      @Override
+      public double getOffsetY() {
+        return NodelinkLayouter.this.getOffsetY();
+      }
+
+      @Override
+      public Rectangle2D getBoundingBox() {
+        return NodelinkLayouter.this.getBoundingBox();
+      }
+
     };
     edgePass = new AbstractRenderpass(false) {
 
       @Override
       public void render(final Graphics2D gfx, final KanvasContext ctx) {
         renderNodes(gfx, ctx);
+      }
+
+      @Override
+      public Rectangle2D getBoundingBox() {
+        return NodelinkLayouter.this.getBoundingBox();
+      }
+
+      @Override
+      public double getOffsetX() {
+        return NodelinkLayouter.this.getOffsetX();
+      }
+
+      @Override
+      public double getOffsetY() {
+        return NodelinkLayouter.this.getOffsetY();
       }
 
     };
@@ -285,6 +315,72 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
       if(shape.contains(pos)) return node;
     }
     return null;
+  }
+
+  /**
+   * Converts a position to the real position in this layouter.
+   * 
+   * @param pos The position.
+   * @return The real position.
+   */
+  public Point2D getRealPosition(final Point2D pos) {
+    return new Point2D.Double(pos.getX() - offX, pos.getY() - offY);
+  }
+
+  /** The bounding box. */
+  protected Rectangle2D bbox;
+
+  /**
+   * Getter.
+   * 
+   * @return The bounding box of this node-link diagram or <code>null</code>.
+   */
+  public Rectangle2D getBoundingBox() {
+    return bbox;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param bbox Sets the optional bounding box.
+   */
+  public void setBoundingBox(final Rectangle2D bbox) {
+    this.bbox = bbox;
+  }
+
+  /** The x offset. */
+  private double offX;
+
+  /** The y offset. */
+  private double offY;
+
+  /**
+   * Setter.
+   * 
+   * @param x The x offset.
+   * @param y The y offset.
+   */
+  public void setOffset(final double x, final double y) {
+    offX = x;
+    offY = y;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The x offset.
+   */
+  public double getOffsetX() {
+    return offX;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The y offset.
+   */
+  public double getOffsetY() {
+    return offY;
   }
 
 }

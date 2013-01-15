@@ -1,6 +1,7 @@
 package jkanvas.painter;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,16 @@ public class RenderpassPainter extends PainterAdapter {
    */
   private static void render(final Graphics2D gfx, final KanvasContext ctx,
       final List<Renderpass> list) {
+    final Rectangle2D view = ctx.getVisibleCanvas();
     for(final Renderpass r : list) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = getBoundingBox(r);
+      if(bbox != null && !view.intersects(bbox)) {
+        System.out.println("not visible");
+        continue;
+      }
       final Graphics2D g = (Graphics2D) gfx.create();
       final double dx = r.getOffsetX();
       final double dy = r.getOffsetY();
@@ -70,16 +80,38 @@ public class RenderpassPainter extends PainterAdapter {
     }
   }
 
+  /**
+   * Converts a position to the real position of the given render-pass.
+   * 
+   * @param r The render-pass.
+   * @param pos The position.
+   * @return The real position.
+   */
+  public Point2D getRealPosition(final Renderpass r, final Point2D pos) {
+    return new Point2D.Double(pos.getX() - r.getOffsetX(), pos.getY() - r.getOffsetY());
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param r The render-pass.
+   * @return The bounding box of the render-pass in canvas coordinates.
+   */
+  private static Rectangle2D getBoundingBox(final Renderpass r) {
+    final Rectangle2D rect = r.getBoundingBox();
+    if(rect == null) return null;
+    return new Rectangle2D.Double(rect.getX() + r.getOffsetX(),
+        rect.getY() + r.getOffsetY(), rect.getWidth(), rect.getHeight());
+  }
+
   @Override
   public Rectangle2D getBoundingBox() {
     Rectangle2D bbox = null;
     for(final Renderpass r : back) {
-      final Rectangle2D tmp = r.getBoundingBox();
-      if(tmp == null) {
+      final Rectangle2D b = getBoundingBox(r);
+      if(b == null) {
         continue;
       }
-      final Rectangle2D b = new Rectangle2D.Double(tmp.getX() + r.getOffsetX(),
-          tmp.getY() + r.getOffsetY(), tmp.getWidth(), tmp.getHeight());
       if(bbox == null) {
         bbox = b;
       } else {
