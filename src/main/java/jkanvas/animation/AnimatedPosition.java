@@ -9,13 +9,7 @@ import jkanvas.util.Interpolator;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class AnimatedPosition {
-
-  /** The current x position. */
-  private double x;
-
-  /** The current y position. */
-  private double y;
+public class AnimatedPosition extends Position2D {
 
   /** The animation start point. */
   private Point2D start;
@@ -39,8 +33,7 @@ public class AnimatedPosition {
    * @param y The initial y position.
    */
   public AnimatedPosition(final double x, final double y) {
-    this.x = x;
-    this.y = y;
+    super(x, y);
   }
 
   /**
@@ -49,25 +42,7 @@ public class AnimatedPosition {
    * @param pos The initial position.
    */
   public AnimatedPosition(final Point2D pos) {
-    this(pos.getX(), pos.getY());
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The current x position.
-   */
-  public double getX() {
-    return x;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The current y position.
-   */
-  public double getY() {
-    return y;
+    super(pos);
   }
 
   /**
@@ -86,35 +61,6 @@ public class AnimatedPosition {
    */
   public double getPredictY() {
     return end != null ? end.getY() : getY();
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The current position.
-   */
-  public Point2D getPos() {
-    return new Point2D.Double(getX(), getY());
-  }
-
-  /**
-   * Setter.
-   * 
-   * @param x The new x position.
-   * @param y The new y position.
-   */
-  public void setPosition(final double x, final double y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  /**
-   * Setter.
-   * 
-   * @param pos The new position.
-   */
-  public void setPosition(final Point2D pos) {
-    setPosition(pos.getX(), pos.getY());
   }
 
   /** The long animation duration. */

@@ -23,6 +23,7 @@ import jkanvas.animation.AnimatedPosition;
 import jkanvas.nodelink.EdgeRealizer;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.NodelinkLayouter;
+import jkanvas.nodelink.SimpleNodeLinkView;
 import jkanvas.util.Interpolator;
 import jkanvas.util.PaintUtil;
 
@@ -48,12 +49,18 @@ public final class NodelinkMain extends AnimatedPainter {
   /** The node link layouter. */
   private final NodelinkLayouter<AnimatedPosition> nodelink;
 
+  /** A view on the graph. */
+  private final SimpleNodeLinkView<AnimatedPosition> view;
+
   /**
    * Creates a node link diagram.
    * 
    * @param nodelink The layouter.
+   * @param view The view on the graph.
    */
-  public NodelinkMain(final NodelinkLayouter<AnimatedPosition> nodelink) {
+  public NodelinkMain(final NodelinkLayouter<AnimatedPosition> nodelink,
+      final SimpleNodeLinkView<AnimatedPosition> view) {
+    this.view = view;
     this.nodelink = Objects.requireNonNull(nodelink);
     nodelink.setEdgeRealizer(new EdgeRealizer<AnimatedPosition>() {
 
@@ -124,10 +131,10 @@ public final class NodelinkMain extends AnimatedPainter {
     final AnimatedPosition n = nodelink.pick(p);
     if(!SwingUtilities.isRightMouseButton(e)) return false;
     if(n == null) {
-      nodelink.addNode(new AnimatedPosition(p));
+      view.addNode(new AnimatedPosition(p));
     } else {
       if(secSel != null) {
-        nodelink.addEdge(secSel, n);
+        view.addEdge(secSel, n);
         secSel = null;
       } else {
         secSel = n;
@@ -188,16 +195,17 @@ public final class NodelinkMain extends AnimatedPainter {
     final int h = 600;
     final int nodes = 20;
     final int edges = 100;
-    final NodelinkLayouter<AnimatedPosition> nodelink = new NodelinkLayouter<>();
-    final NodelinkMain p = new NodelinkMain(nodelink);
+    final SimpleNodeLinkView<AnimatedPosition> view = new SimpleNodeLinkView<>();
     final Random r = new Random();
     for(int i = 0; i < nodes; ++i) {
-      nodelink.addNode(new AnimatedPosition(RADIUS + r.nextDouble() * (w - 2 * RADIUS),
+      view.addNode(new AnimatedPosition(RADIUS + r.nextDouble() * (w - 2 * RADIUS),
           RADIUS + r.nextDouble() * (h - 2 * RADIUS)));
     }
     for(int i = 0; i < edges; ++i) {
-      nodelink.addEdge(r.nextInt(nodes), r.nextInt(nodes));
+      view.addEdge(r.nextInt(nodes), r.nextInt(nodes));
     }
+    final NodelinkLayouter<AnimatedPosition> nodelink = new NodelinkLayouter<>(view);
+    final NodelinkMain p = new NodelinkMain(nodelink, view);
     nodelink.setBoundingBox(p.getBoundingBox());
     p.addLayouter(nodelink);
     p.addPass(nodelink.getNodePass());
@@ -230,13 +238,13 @@ public final class NodelinkMain extends AnimatedPainter {
         final double w = rect.getWidth();
         final double h = rect.getHeight();
         final double r = Math.min(w, h) / 2 - RADIUS;
-        final int count = nodelink.nodeCount();
+        final int count = view.nodeCount();
         final double step = 2 * Math.PI / count;
         double angle = 0;
         for(int i = 0; i < count; ++i) {
           final double x = rect.getCenterX() + Math.sin(angle) * r;
           final double y = rect.getCenterY() + Math.cos(angle) * r;
-          nodelink.getNode(i).startAnimationTo(new Point2D.Double(x, y),
+          view.getNode(i).startAnimationTo(new Point2D.Double(x, y),
               Interpolator.SMOOTH, AnimatedPosition.NORMAL);
           angle += step;
         }
