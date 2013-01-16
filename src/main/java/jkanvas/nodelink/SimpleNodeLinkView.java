@@ -9,7 +9,7 @@ import java.util.Map;
 import jkanvas.animation.Position2D;
 
 /**
- * Creates a simple view on a graph. Nodes and edges only can be added.
+ * Creates a simple view on a graph. Nodes and edges can only be added.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The position type.
@@ -122,6 +122,11 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
   @Override
   public String getName(final int index) {
     return "Node " + index;
+  }
+
+  /** Clears all edges. */
+  public void clearEdges() {
+    edges.clear();
   }
 
 }
