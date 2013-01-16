@@ -165,4 +165,13 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
     return new Rectangle2D.Double(0, 0, w, h);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The refresh manager.
+   */
+  public RefreshManager getRefreshManager() {
+    return manager;
+  }
+
 }
