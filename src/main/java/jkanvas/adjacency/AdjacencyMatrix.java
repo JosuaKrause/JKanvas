@@ -1,6 +1,6 @@
 package jkanvas.adjacency;
 
-import jkanvas.Refreshable;
+import jkanvas.RefreshManager;
 
 /**
  * An adjacency matrix.
@@ -27,36 +27,12 @@ public interface AdjacencyMatrix<T> {
   double getWidth(final int col);
 
   /**
-   * Setter.
-   * 
-   * @param row The row.
-   * @param value Sets the visual height of the row.
-   */
-  void setHeight(final int row, final double value);
-
-  /**
-   * Setter.
-   * 
-   * @param col The column.
-   * @param value Sets the visual width of the column.
-   */
-  void setWidth(final int col, final double value);
-
-  /**
    * Getter.
    * 
    * @param row The row / column.
    * @return The name of the row / column.
    */
   String getName(final int row);
-
-  /**
-   * Setter.
-   * 
-   * @param row The row / column.
-   * @param name Sets the name of the row / column.
-   */
-  void setName(final int row, final String name);
 
   /**
    * Getter.
@@ -68,15 +44,6 @@ public interface AdjacencyMatrix<T> {
   T get(final int row, final int col);
 
   /**
-   * Setter.
-   * 
-   * @param row The row.
-   * @param col The column.
-   * @param value Sets the content of the cell.
-   */
-  void set(final int row, final int col, final T value);
-
-  /**
    * Getter.
    * 
    * @return The number of rows / columns.
@@ -84,54 +51,28 @@ public interface AdjacencyMatrix<T> {
   int size();
 
   /**
-   * Adds a {@link Refreshable} that is refreshed each time a value gets
-   * updated. If the {@link Refreshable} is already in the list this is a no-op.
+   * Sets the refresh manager of this adjacency matrix if the matrix supports
+   * automatic refreshing. Otherwise this method is a no-op.
    * 
-   * @param r The {@link Refreshable}.
+   * @param manager The refresh manager or <code>null</code> if automatic
+   *          refreshing is deactivated.
+   * @see #supportsAutoRefreshing()
+   * @see #isAutoRefreshing()
    */
-  void addRefreshable(Refreshable r);
-
-  /**
-   * Removes a {@link Refreshable}. If the {@link Refreshable} is not in the
-   * list this is a no-op.
-   * 
-   * @param r The {@link Refreshable}.
-   */
-  void removeRefreshable(Refreshable r);
+  void setRefreshManager(RefreshManager manager);
 
   /**
    * Getter.
    * 
-   * @return An array of the installed {@link Refreshable Refreshables}.
-   *         Modifications to the array are not reflected in the actual
-   *         {@link Refreshable Refreshables}.
+   * @return Whether this adjacency matrix supports automatic refreshing.
    */
-  Refreshable[] getRefreshables();
+  boolean supportsAutoRefreshing();
 
   /**
-   * Adds all {@link Refreshable Refreshables} from the other matrix.
+   * Getter.
    * 
-   * @param matrix The other matrix.
+   * @return Whether this adjacency matrix currently uses automatic refreshing.
    */
-  void inheritRefreshables(AdjacencyMatrix<T> matrix);
-
-  /**
-   * Refreshes all {@link Refreshable Refreshables}. This method gets called
-   * from all setters. If the matrix is currently in a bulk operation this
-   * method is a no-op.
-   */
-  void refreshAll();
-
-  /**
-   * Starts a bulk operation. During a bulk operation every call to
-   * {@link #refreshAll()} is a no-op. Bulk operations can stack.
-   */
-  void startBulkOperation();
-
-  /**
-   * Ends a bulk operation. After the last bulk operation has been terminated
-   * all {@link Refreshable Refreshables} get updated.
-   */
-  void endBulkOperation();
+  boolean isAutoRefreshing();
 
 }

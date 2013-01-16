@@ -119,4 +119,9 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     nodes.add(node);
   }
 
+  @Override
+  public String getName(final int index) {
+    return "Node " + index;
+  }
+
 }

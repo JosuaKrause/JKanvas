@@ -19,11 +19,14 @@ import javax.swing.WindowConstants;
 
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
+import jkanvas.RefreshManager;
+import jkanvas.SimpleRefreshManager;
 import jkanvas.adjacency.AbstractAdjacencyMatrix;
 import jkanvas.adjacency.AdjacencyMatrix;
 import jkanvas.adjacency.CellRealizer;
 import jkanvas.adjacency.MatrixPainter;
 import jkanvas.adjacency.MatrixPosition;
+import jkanvas.adjacency.MutableAdjacencyMatrix;
 import jkanvas.painter.StringDrawer;
 import jkanvas.painter.StringDrawer.Orientation;
 import jkanvas.util.Screenshot;
@@ -42,7 +45,8 @@ public class AdjacencyMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final AdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(9) {
+    final MutableAdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(
+        9) {
 
       @Override
       protected Double[][] createMatrix(final int size) {
@@ -104,7 +108,8 @@ public class AdjacencyMain {
       }
 
     };
-    final MatrixPainter<Double> p = new MatrixPainter<Double>(matrix, cellColor) {
+    final RefreshManager manager = new SimpleRefreshManager();
+    final MatrixPainter<Double> p = new MatrixPainter<Double>(matrix, cellColor, manager) {
 
       private final Set<MatrixPosition> selected = new HashSet<>();
 
@@ -141,7 +146,7 @@ public class AdjacencyMain {
 
     };
     final Canvas c = new Canvas(p, 500, 500);
-    matrix.addRefreshable(c);
+    manager.addRefreshable(c);
     c.setMargin(40);
     c.setBackground(Color.WHITE);
     final JFrame frame = new JFrame("Nodelink");

@@ -73,6 +73,11 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   }
 
   @Override
+  public void removeRefreshable(final Refreshable r) {
+    animator.removeRefreshable(r);
+  }
+
+  @Override
   public void forceNextFrame() {
     animator.forceNextFrame();
   }
@@ -80,6 +85,26 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   @Override
   public void quickRefresh() {
     animator.quickRefresh();
+  }
+
+  @Override
+  public void startBulkOperation() {
+    animator.startBulkOperation();
+  }
+
+  @Override
+  public void endBulkOperation() {
+    animator.endBulkOperation();
+  }
+
+  @Override
+  public Refreshable[] getRefreshables() {
+    return animator.getRefreshables();
+  }
+
+  @Override
+  public void refreshAll() {
+    animator.refreshAll();
   }
 
   /** Disposes this painter and stops the animator. */

@@ -1,9 +1,8 @@
 package jkanvas.adjacency;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jkanvas.RefreshManager;
 import jkanvas.Refreshable;
+
 
 /**
  * A straight forward implementation of a dense {@link AdjacencyMatrix}.
@@ -11,7 +10,7 @@ import jkanvas.Refreshable;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The content type.
  */
-public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
+public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatrix<T> {
 
   /** The row / column names. */
   private final String[] names;
@@ -25,8 +24,8 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
   /** The heights of the rows. */
   private final double[] heights;
 
-  /** The number of active bulk operations. */
-  private int bulkOps = 0;
+  /** The refresh manager. */
+  private RefreshManager manager;
 
   /**
    * Creates an adjacency matrix with the given size.
@@ -48,40 +47,6 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
    */
   protected abstract T[][] createMatrix(int size);
 
-  /** The list containing all refreshables. */
-  private final List<Refreshable> refreshables = new ArrayList<>();
-
-  @Override
-  public void addRefreshable(final Refreshable r) {
-    if(refreshables.contains(r)) return;
-    refreshables.add(r);
-  }
-
-  @Override
-  public void removeRefreshable(final Refreshable r) {
-    refreshables.remove(r);
-  }
-
-  @Override
-  public Refreshable[] getRefreshables() {
-    return refreshables.toArray(new Refreshable[refreshables.size()]);
-  }
-
-  @Override
-  public void inheritRefreshables(final AdjacencyMatrix<T> matrix) {
-    for(final Refreshable r : matrix.getRefreshables()) {
-      addRefreshable(r);
-    }
-  }
-
-  @Override
-  public void refreshAll() {
-    if(bulkOps > 0) return;
-    for(final Refreshable r : refreshables) {
-      r.refresh();
-    }
-  }
-
   @Override
   public double getHeight(final int row) {
     return heights[row];
@@ -90,6 +55,15 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
   @Override
   public double getWidth(final int col) {
     return widths[col];
+  }
+
+  /**
+   * Refreshes all {@link Refreshable Refreshables} if a refresh manager is
+   * installed.
+   */
+  private void refreshAll() {
+    if(manager == null) return;
+    manager.refreshAll();
   }
 
   @Override
@@ -132,14 +106,18 @@ public abstract class AbstractAdjacencyMatrix<T> implements AdjacencyMatrix<T> {
   }
 
   @Override
-  public void startBulkOperation() {
-    ++bulkOps;
+  public void setRefreshManager(final RefreshManager manager) {
+    this.manager = manager;
   }
 
   @Override
-  public void endBulkOperation() {
-    --bulkOps;
-    refreshAll();
+  public boolean supportsAutoRefreshing() {
+    return true;
+  }
+
+  @Override
+  public boolean isAutoRefreshing() {
+    return manager != null;
   }
 
 }

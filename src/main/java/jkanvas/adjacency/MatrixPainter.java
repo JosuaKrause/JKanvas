@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.RefreshManager;
 import jkanvas.painter.PainterAdapter;
 
 /**
@@ -16,6 +17,8 @@ import jkanvas.painter.PainterAdapter;
  */
 public abstract class MatrixPainter<T> extends PainterAdapter {
 
+  /** The refresh manager. */
+  private final RefreshManager manager;
   /** The matrix. */
   private AdjacencyMatrix<T> matrix;
   /** The cell drawer. */
@@ -26,10 +29,14 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @param matrix The matrix.
    * @param cellDrawer The cell realizer.
+   * @param manager The refresh manager that is notified each time something
+   *          changes.
    */
-  public MatrixPainter(final AdjacencyMatrix<T> matrix, final CellRealizer<T> cellDrawer) {
-    this.matrix = Objects.requireNonNull(matrix);
+  public MatrixPainter(final AdjacencyMatrix<T> matrix, final CellRealizer<T> cellDrawer,
+      final RefreshManager manager) {
+    this.manager = Objects.requireNonNull(manager);
     this.cellDrawer = Objects.requireNonNull(cellDrawer);
+    setMatrix(matrix);
   }
 
   /**
@@ -39,9 +46,14 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    */
   public void setMatrix(final AdjacencyMatrix<T> m) {
     Objects.requireNonNull(m);
-    m.inheritRefreshables(matrix);
+    if(matrix != null && matrix.supportsAutoRefreshing()) {
+      matrix.setRefreshManager(null);
+    }
+    if(m.supportsAutoRefreshing()) {
+      m.setRefreshManager(manager);
+    }
     matrix = m;
-    matrix.refreshAll();
+    manager.refreshAll();
   }
 
   /**
@@ -60,7 +72,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    */
   public void setCellRealizer(final CellRealizer<T> cellDrawer) {
     this.cellDrawer = cellDrawer;
-    matrix.refreshAll();
+    manager.refreshAll();
   }
 
   /**

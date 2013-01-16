@@ -15,6 +15,14 @@ public interface GraphView {
   int nodeCount();
 
   /**
+   * Getter.
+   * 
+   * @param index The index of the node.
+   * @return The name of the node.
+   */
+  String getName(int index);
+
+  /**
    * Whether two nodes are connected. The order of the nodes is unimportant.
    * 
    * @param a One node.

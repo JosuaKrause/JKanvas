@@ -21,7 +21,7 @@ public interface NodeLinkView<T extends Position2D> extends GraphView {
   /**
    * Getter.
    * 
-   * @return The nodes.
+   * @return The nodes in proper order.
    */
   Iterable<T> nodes();
 

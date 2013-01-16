@@ -1,25 +1,20 @@
 package jkanvas.animation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jkanvas.Refreshable;
+import jkanvas.SimpleRefreshManager;
 
 /**
  * An abstract animator.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class AbstractAnimator implements Animator {
+public abstract class AbstractAnimator extends SimpleRefreshManager implements Animator {
 
   /** The frame rate of the animator. */
   private long framerate;
 
   /** The waiting time resulting from the {@link #framerate}. */
   private long framewait;
-
-  /** A list of refreshables that are refreshed, when a frame can be drawn. */
-  private final List<Refreshable> receivers;
 
   /** The animator thread. */
   private final Thread animator;
@@ -30,7 +25,6 @@ public abstract class AbstractAnimator implements Animator {
   /** Creates an animator. */
   public AbstractAnimator() {
     setFramerate(60);
-    final List<Refreshable> receivers = new ArrayList<>();
     animator = new Thread() {
 
       @Override
@@ -61,7 +55,6 @@ public abstract class AbstractAnimator implements Animator {
     };
     animator.setDaemon(true);
     animator.start();
-    this.receivers = receivers;
   }
 
   /**
@@ -99,17 +92,10 @@ public abstract class AbstractAnimator implements Animator {
    */
   protected abstract boolean step();
 
-  /** Refreshes all refreshables. */
-  protected void refreshAll() {
-    for(final Refreshable r : receivers) {
-      r.refresh();
-    }
-  }
-
   @Override
   public void addRefreshable(final Refreshable r) {
     if(disposed) throw new IllegalStateException("object already disposed");
-    receivers.add(r);
+    super.addRefreshable(r);
   }
 
   /**
@@ -119,7 +105,7 @@ public abstract class AbstractAnimator implements Animator {
    */
   public void dispose() {
     disposed = true;
-    receivers.clear();
+    clearRefreshables();
     animator.interrupt();
   }
 

@@ -1,5 +1,6 @@
 package jkanvas.animation;
 
+import jkanvas.RefreshManager;
 import jkanvas.Refreshable;
 
 /**
@@ -7,7 +8,7 @@ import jkanvas.Refreshable;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public interface Animator {
+public interface Animator extends RefreshManager {
 
   /** Forces the next frame to be calculated. */
   void forceNextFrame();
@@ -16,10 +17,11 @@ public interface Animator {
   void quickRefresh();
 
   /**
-   * Adds a refreshable that is refreshed each step.
+   * Adds a refreshable that is refreshed each step. {@inheritDoc}
    * 
    * @param r The refreshable.
    */
+  @Override
   void addRefreshable(final Refreshable r);
 
 }
