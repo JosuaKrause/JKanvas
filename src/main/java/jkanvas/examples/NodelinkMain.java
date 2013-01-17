@@ -127,7 +127,7 @@ public final class NodelinkMain extends AnimatedPainter {
 
   @Override
   public boolean click(final Point2D pos, final MouseEvent e) {
-    final Point2D p = nodelink.getRealPosition(pos);
+    final Point2D p = nodelink.getPositionInLayouter(pos);
     final AnimatedPosition n = nodelink.pick(p);
     if(!SwingUtilities.isRightMouseButton(e)) return false;
     if(n == null) {
@@ -146,7 +146,7 @@ public final class NodelinkMain extends AnimatedPainter {
 
   @Override
   public boolean acceptDrag(final Point2D p) {
-    final AnimatedPosition n = nodelink.pick(nodelink.getRealPosition(p));
+    final AnimatedPosition n = nodelink.pick(nodelink.getPositionInLayouter(p));
     if(n == null) return false;
     primSel = n;
     primSel.clearAnimation();
@@ -207,9 +207,7 @@ public final class NodelinkMain extends AnimatedPainter {
     final NodelinkLayouter<AnimatedPosition> nodelink = new NodelinkLayouter<>(view);
     final NodelinkMain p = new NodelinkMain(nodelink, view);
     nodelink.setBoundingBox(p.getBoundingBox());
-    p.addLayouter(nodelink);
-    p.addPass(nodelink.getNodePass());
-    p.addPass(nodelink.getEdgePass());
+    nodelink.addToPainter(p);
     final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
     p.addRefreshable(c);

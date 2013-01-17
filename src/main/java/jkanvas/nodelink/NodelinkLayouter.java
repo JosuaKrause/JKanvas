@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedLayouter;
+import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
@@ -210,7 +211,7 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
    * @param pos The position.
    * @return The real position.
    */
-  public Point2D getRealPosition(final Point2D pos) {
+  public Point2D getPositionInLayouter(final Point2D pos) {
     return new Point2D.Double(pos.getX() - offX, pos.getY() - offY);
   }
 
@@ -273,6 +274,17 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
    */
   public double getOffsetY() {
     return offY;
+  }
+
+  /**
+   * Adds this layouter to the given painter.
+   * 
+   * @param p The painter.
+   */
+  public void addToPainter(final AnimatedPainter p) {
+    p.addPass(getNodePass());
+    p.addPass(getEdgePass());
+    p.addLayouter(this);
   }
 
 }
