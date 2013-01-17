@@ -45,8 +45,8 @@ public class AdjacencyMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final MutableAdjacencyMatrix<Double> matrix = new AbstractAdjacencyMatrix<Double>(
-        9) {
+    final MutableAdjacencyMatrix<Double> matrix =
+        new AbstractAdjacencyMatrix<Double>(9) {
 
       @Override
       protected Double[][] createMatrix(final int size) {
