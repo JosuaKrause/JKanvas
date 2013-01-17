@@ -280,6 +280,7 @@ public class Canvas extends JComponent implements Refreshable {
 
     @Override
     public KanvasContext translate(final double dx, final double dy) {
+      if(dx == 0 && dy == 0) return this;
       return new CanvasContext(inCanvasSpace, offX - dx, offY - dy);
     }
 
