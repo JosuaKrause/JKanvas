@@ -1,5 +1,7 @@
 package jkanvas.adjacency;
 
+import java.awt.geom.Rectangle2D;
+
 import jkanvas.RefreshManager;
 import jkanvas.nodelink.GraphView;
 
@@ -65,6 +67,11 @@ public class GraphMatrix implements AdjacencyMatrix<Boolean> {
   @Override
   public boolean supportsAutoRefreshing() {
     return false;
+  }
+
+  @Override
+  public Rectangle2D getBoundingBox(final int row, final int col) {
+    return new Rectangle2D.Double(row * size, col * size, size, size);
   }
 
 }

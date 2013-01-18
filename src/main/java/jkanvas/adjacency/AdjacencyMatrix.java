@@ -1,5 +1,7 @@
 package jkanvas.adjacency;
 
+import java.awt.geom.Rectangle2D;
+
 import jkanvas.RefreshManager;
 
 /**
@@ -74,5 +76,14 @@ public interface AdjacencyMatrix<T> {
    * @return Whether this adjacency matrix currently uses automatic refreshing.
    */
   boolean isAutoRefreshing();
+
+  /**
+   * Getter.
+   * 
+   * @param row The row.
+   * @param col The column.
+   * @return The bounding box of the given cell.
+   */
+  Rectangle2D getBoundingBox(int row, int col);
 
 }

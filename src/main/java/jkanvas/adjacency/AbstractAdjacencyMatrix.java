@@ -1,5 +1,7 @@
 package jkanvas.adjacency;
 
+import java.awt.geom.Rectangle2D;
+
 import jkanvas.RefreshManager;
 import jkanvas.Refreshable;
 
@@ -24,6 +26,9 @@ public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatr
   /** The heights of the rows. */
   private final double[] heights;
 
+  /** Cache of all bounding boxes. */
+  private Rectangle2D[][] bboxes;
+
   /** The refresh manager. */
   private RefreshManager manager;
 
@@ -36,6 +41,7 @@ public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatr
     names = new String[size];
     widths = new double[size];
     heights = new double[size];
+    bboxes = new Rectangle2D[size][size];
     matrix = createMatrix(size);
   }
 
@@ -57,6 +63,11 @@ public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatr
     return widths[col];
   }
 
+  /** Invalidates the cache. */
+  private void invalidateCache() {
+    bboxes = new Rectangle2D[heights.length][widths.length];
+  }
+
   /**
    * Refreshes all {@link Refreshable Refreshables} if a refresh manager is
    * installed.
@@ -69,12 +80,14 @@ public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatr
   @Override
   public void setHeight(final int row, final double value) {
     heights[row] = value;
+    invalidateCache();
     refreshAll();
   }
 
   @Override
   public void setWidth(final int col, final double value) {
     widths[col] = value;
+    invalidateCache();
     refreshAll();
   }
 
@@ -118,6 +131,22 @@ public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatr
   @Override
   public boolean isAutoRefreshing() {
     return manager != null;
+  }
+
+  @Override
+  public Rectangle2D getBoundingBox(final int row, final int col) {
+    if(bboxes[row][col] == null) {
+      double x = 0;
+      double y = 0;
+      for(int i = 0; i < col; ++i) {
+        x += getWidth(i);
+      }
+      for(int i = 0; i < row; ++i) {
+        y += getHeight(i);
+      }
+      bboxes[row][col] = new Rectangle2D.Double(x, y, getWidth(col), getHeight(row));
+    }
+    return bboxes[row][col];
   }
 
 }

@@ -140,7 +140,6 @@ public final class NodelinkMain extends AnimatedPainter {
         secSel = n;
       }
     }
-    quickRefresh();
     return true;
   }
 

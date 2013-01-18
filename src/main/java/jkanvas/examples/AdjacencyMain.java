@@ -1,5 +1,6 @@
 package jkanvas.examples;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -123,7 +124,7 @@ public class AdjacencyMain {
 
       @Override
       public boolean click(final Point2D p, final MouseEvent e) {
-        if(!SwingUtilities.isRightMouseButton(e)) return false;
+        if(!SwingUtilities.isRightMouseButton(e) || e.isShiftDown()) return false;
         final MatrixPosition pos = pick(p);
         if(pos == null) return false;
         if(selected.contains(pos)) {
@@ -142,6 +143,66 @@ public class AdjacencyMain {
         return "row: " + matrix.getName(pos.row)
             + " col: " + matrix.getName(pos.col)
             + " value: " + matrix.get(pos.row, pos.col);
+      }
+
+      private Rectangle2D selection;
+
+      @Override
+      public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+        super.draw(gfx, ctx);
+        if(selection != null) {
+          final Graphics2D g = (Graphics2D) gfx.create();
+          final Graphics2D g2 = (Graphics2D) g.create();
+          g2.setColor(Color.PINK);
+          g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f));
+          g2.fill(selection);
+          g2.dispose();
+          g.setColor(Color.BLACK);
+          g.draw(selection);
+          g.dispose();
+        }
+      }
+
+      @Override
+      public boolean acceptDrag(final Point2D p, final MouseEvent e) {
+        if(!SwingUtilities.isRightMouseButton(e) && !e.isShiftDown()) return false;
+        selection = new Rectangle2D.Double(p.getX(), p.getY(), 0, 0);
+        return true;
+      }
+
+      @Override
+      public void drag(final Point2D start, final Point2D cur, final double dx,
+          final double dy) {
+        final double minX = Math.min(start.getX(), cur.getX());
+        final double minY = Math.min(start.getY(), cur.getY());
+        final double maxX = Math.max(start.getX(), cur.getX());
+        final double maxY = Math.max(start.getY(), cur.getY());
+        selection = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+        select();
+        manager.refreshAll();
+      }
+
+
+      private void select() {
+        for(int row = 0; row < matrix.size(); ++row) {
+          for(int col = 0; col < matrix.size(); ++col) {
+            final Rectangle2D bbox = matrix.getBoundingBox(row, col);
+            final MatrixPosition m = new MatrixPosition(row, col);
+            if(selection.intersects(bbox)/* selection.contains(bbox) */) {
+              selected.add(m);
+            } else {
+              selected.remove(m);
+            }
+          }
+        }
+      }
+
+      @Override
+      public void endDrag(final Point2D start, final Point2D cur,
+          final double dx, final double dy) {
+        select();
+        selection = null;
+        manager.refreshAll();
       }
 
     };
