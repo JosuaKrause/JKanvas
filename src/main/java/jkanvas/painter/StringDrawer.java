@@ -7,6 +7,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import jkanvas.util.PaintUtil;
+
 /**
  * Draws and measures a string.
  * 
@@ -132,6 +134,24 @@ public class StringDrawer {
     return new Rectangle2D.Double(pos.getX() + getHorizontalOffset(hpos) + bbox.getX(),
         pos.getY() + getVerticalOffset(vpos, true) + bbox.getY(),
         bbox.getWidth(), bbox.getHeight());
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The width of the text without applying rotation.
+   */
+  public double getWidth() {
+    return bbox.getWidth();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The height of the text without applying rotation.
+   */
+  public double getHeight() {
+    return bbox.getHeight();
   }
 
   /**
@@ -281,6 +301,30 @@ public class StringDrawer {
     return dy - bbox.getY() - (isBBox ? bbox.getHeight() : 0);
   }
 
+  /** The origin. */
+  private static final Point2D ORIGIN = new Point2D.Double();
+
+  /**
+   * Draws text into the given rectangle. The text is scaled that it fits the
+   * rectangle.
+   * 
+   * @param g The graphics context.
+   * @param text The text.
+   * @param rect The rectangle.
+   */
+  public static final void drawInto(final Graphics2D g,
+      final String text, final Rectangle2D rect) {
+    final Graphics2D gfx = (Graphics2D) g.create();
+    final StringDrawer sd = new StringDrawer(gfx, text);
+    final double width = sd.getWidth();
+    final Rectangle2D fit = PaintUtil.fitInto(rect, width, sd.getHeight());
+    final double scale = fit.getWidth() / width;
+    gfx.translate(fit.getCenterX(), fit.getCenterY());
+    gfx.scale(scale, scale);
+    sd.draw(ORIGIN, CENTER_H, CENTER_V);
+    gfx.dispose();
+  }
+
   /**
    * Draws text horizontal into the center of the given rectangle.
    * 
@@ -288,8 +332,8 @@ public class StringDrawer {
    * @param text The text to draw.
    * @param rect The rectangle.
    */
-  public static final void drawInto(final Graphics2D g, final String text,
-      final Rectangle2D rect) {
+  public static final void drawAtCenter(final Graphics2D g,
+      final String text, final Rectangle2D rect) {
     drawCentered(g, text, new Point2D.Double(rect.getCenterX(), rect.getCenterY()));
   }
 

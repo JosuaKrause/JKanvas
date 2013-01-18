@@ -70,6 +70,9 @@ public class RenderpassPainter extends PainterAdapter {
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
+      if(bbox != null) {
+        g.setClip(bbox);
+      }
       final double dx = r.getOffsetX();
       final double dy = r.getOffsetY();
       g.translate(dx, dy);
