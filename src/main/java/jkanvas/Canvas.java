@@ -18,7 +18,6 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 /**
  * A simple class adding panning and zooming functionality to a
@@ -63,13 +62,12 @@ public class Canvas extends JComponent implements Refreshable {
           refresh();
           return;
         }
-        final boolean leftButton = SwingUtilities.isLeftMouseButton(e);
-        if(leftButton && painter.acceptDrag(c)) {
+        if(painter.acceptDrag(c, e)) {
           startDragging(c);
           refresh();
           return;
         }
-        if(leftButton && isMoveable()) {
+        if(isMoveable() && painter.isAllowingPan(c, e)) {
           startDragging(e, zui.getOffsetX(), zui.getOffsetY());
         }
       }

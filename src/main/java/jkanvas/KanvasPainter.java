@@ -83,14 +83,15 @@ public interface KanvasPainter {
    * therefore suitable for dragging of objects on the canvas.
    * 
    * @param p The position where the drag starts in canvas coordinates.
-   * @return Whether the drag is accepted and the dragging is started.
+   * @param e The mouse event.
+   * @return Whether the drag is accepted and the dragging should start.
    */
-  boolean acceptDrag(Point2D p);
+  boolean acceptDrag(Point2D p, MouseEvent e);
 
   /**
-   * Is called subsequently after {@link #acceptDrag(Point2D)} returned
-   * <code>true</code> on every mouse movement until the user releases the mouse
-   * button.
+   * Is called subsequently after {@link #acceptDrag(Point2D, MouseEvent)}
+   * returned <code>true</code> on every mouse movement until the user releases
+   * the mouse button.
    * 
    * @param start The position where the drag started in canvas coordinates.
    * @param cur The current drag position in canvas coordinates.
@@ -108,6 +109,15 @@ public interface KanvasPainter {
    * @param dy The y distance of the drag in canvas coordinates.
    */
   void endDrag(Point2D start, Point2D end, double dx, double dy);
+
+  /**
+   * Whether the mouse event should start panning of the canvas.
+   * 
+   * @param p The position of the mouse event in canvas coordinates.
+   * @param e The mouse event.
+   * @return Whether to start panning due to the mouse event.
+   */
+  boolean isAllowingPan(Point2D p, MouseEvent e);
 
   /**
    * Is called when the mouse was moved.

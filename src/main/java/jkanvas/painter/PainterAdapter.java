@@ -5,6 +5,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.SwingUtilities;
+
 import jkanvas.KanvasContext;
 import jkanvas.KanvasPainter;
 
@@ -51,9 +53,14 @@ public class PainterAdapter implements KanvasPainter {
   }
 
   @Override
-  public boolean acceptDrag(final Point2D p) {
+  public boolean acceptDrag(final Point2D p, final MouseEvent e) {
     // the event is not consumed
     return false;
+  }
+
+  @Override
+  public boolean isAllowingPan(final Point2D p, final MouseEvent e) {
+    return SwingUtilities.isLeftMouseButton(e);
   }
 
   @Override

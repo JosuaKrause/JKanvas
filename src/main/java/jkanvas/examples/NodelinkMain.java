@@ -145,7 +145,8 @@ public final class NodelinkMain extends AnimatedPainter {
   }
 
   @Override
-  public boolean acceptDrag(final Point2D p) {
+  public boolean acceptDrag(final Point2D p, final MouseEvent e) {
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
     final AnimatedPosition n = nodelink.pick(nodelink.getPositionInLayouter(p));
     if(n == null) return false;
     primSel = n;
