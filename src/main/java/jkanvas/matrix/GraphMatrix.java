@@ -1,4 +1,4 @@
-package jkanvas.adjacency;
+package jkanvas.matrix;
 
 import java.awt.geom.Rectangle2D;
 

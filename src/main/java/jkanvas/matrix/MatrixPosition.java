@@ -1,4 +1,4 @@
-package jkanvas.adjacency;
+package jkanvas.matrix;
 
 /**
  * A position within an {@link QuadraticMatrix}.

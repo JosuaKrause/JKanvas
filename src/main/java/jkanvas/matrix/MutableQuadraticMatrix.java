@@ -1,4 +1,4 @@
-package jkanvas.adjacency;
+package jkanvas.matrix;
 
 
 /**

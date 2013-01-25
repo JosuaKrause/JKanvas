@@ -1,4 +1,4 @@
-package jkanvas.adjacency;
+package jkanvas.matrix;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -7,18 +7,15 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
-import jkanvas.painter.PainterAdapter;
-import jkanvas.painter.RenderpassPainter;
+import jkanvas.painter.RenderpassAdapter;
 
 /**
- * Paints an quadratic matrix. This class is deprecated use
- * {@link MatrixRenderpass} and {@link RenderpassPainter} instead.
+ * Paints a matrix.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The content type.
  */
-@Deprecated
-public abstract class MatrixPainter<T> extends PainterAdapter {
+public class MatrixRenderpass<T> extends RenderpassAdapter {
 
   /** The refresh manager. */
   private final RefreshManager manager;
@@ -35,9 +32,8 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * @param manager The refresh manager that is notified each time something
    *          changes.
    */
-  @SuppressWarnings("deprecation")
-  public MatrixPainter(final QuadraticMatrix<T> matrix, final CellRealizer<T> cellDrawer,
-      final RefreshManager manager) {
+  public MatrixRenderpass(final QuadraticMatrix<T> matrix,
+      final CellRealizer<T> cellDrawer, final RefreshManager manager) {
     this.manager = Objects.requireNonNull(manager);
     this.cellDrawer = Objects.requireNonNull(cellDrawer);
     setMatrix(matrix);
@@ -48,7 +44,6 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @param m The new matrix.
    */
-  @SuppressWarnings("deprecation")
   public void setMatrix(final QuadraticMatrix<T> m) {
     Objects.requireNonNull(m);
     if(matrix != null && matrix.supportsAutoRefreshing()) {
@@ -66,7 +61,6 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @return The matrix.
    */
-  @SuppressWarnings("deprecation")
   public QuadraticMatrix<T> getMatrix() {
     return matrix;
   }
@@ -76,7 +70,6 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @param cellDrawer The cell realizer.
    */
-  @SuppressWarnings("deprecation")
   public void setCellRealizer(final CellRealizer<T> cellDrawer) {
     this.cellDrawer = cellDrawer;
     manager.refreshAll();
@@ -87,13 +80,11 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @return The cell realizer.
    */
-  @SuppressWarnings("deprecation")
   public CellRealizer<T> getCellDrawer() {
     return cellDrawer;
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     final boolean hasSelection = hasSelection();
     double y = 0;
@@ -120,7 +111,10 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * @param col The column.
    * @return If the cell is selected.
    */
-  protected abstract boolean isSelected(int row, int col);
+  protected boolean isSelected(@SuppressWarnings("unused") final int row,
+      @SuppressWarnings("unused") final int col) {
+    return false;
+  }
 
   /**
    * Indicates whether any cell in the matrix is selected. This can be used to
@@ -139,7 +133,6 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * @param pos The position.
    * @return The cell at the position or <code>null</code> if there is no cell.
    */
-  @SuppressWarnings("deprecation")
   protected MatrixPosition pick(final Point2D pos) {
     int col = -1;
     double w = 0;
@@ -164,7 +157,11 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
   }
 
   @Override
-  @SuppressWarnings("deprecation")
+  public void setBoundingBox(final Rectangle2D bbox) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public Rectangle2D getBoundingBox() {
     double w = 0;
     double h = 0;
@@ -181,7 +178,6 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @return The refresh manager.
    */
-  @SuppressWarnings("deprecation")
   public RefreshManager getRefreshManager() {
     return manager;
   }
