@@ -159,7 +159,6 @@ public final class NodelinkMain extends AnimatedPainter {
   public void drag(final Point2D start, final Point2D cur,
       final double dx, final double dy) {
     primSel.setPosition(startX + dx, startY + dy);
-    quickRefresh();
   }
 
   @Override

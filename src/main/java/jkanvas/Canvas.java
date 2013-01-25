@@ -81,6 +81,7 @@ public class Canvas extends JComponent implements Refreshable {
             final Point2D cur = zui.getForScreen(e.getPoint());
             final Point2D start = getPoint();
             painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
+            refresh();
           }
         }
       }
@@ -96,6 +97,7 @@ public class Canvas extends JComponent implements Refreshable {
             final Point2D start = stopPointDrag();
             painter.endDrag(start, cur, cur.getX() - start.getX(),
                 cur.getY() - start.getY());
+            refresh();
           }
         }
       }

@@ -179,7 +179,6 @@ public class AdjacencyMain {
         final double maxY = Math.max(start.getY(), cur.getY());
         selection = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
         select();
-        manager.refreshAll();
       }
 
 
@@ -202,7 +201,6 @@ public class AdjacencyMain {
           final double dx, final double dy) {
         select();
         selection = null;
-        manager.refreshAll();
       }
 
     };
