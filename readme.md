@@ -5,7 +5,7 @@ A compact ZUI implementation for Java.
 In order to create a ZUI component you can use the following snippet:
 
 ```
-KanvasPainter painter = new PainterAdapter() {
+Renderpass renderpass = new RenderpassAdapter() {
 
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
@@ -24,6 +24,8 @@ KanvasPainter painter = new PainterAdapter() {
   }
 
 };
+RenderpassPainter painter = new RenderpassPainter();
+painter.addPass(renderpass);
 Canvas canvas = new Canvas(painter, width, height);
 // ...
 parent.add(canvas); // adds the canvas to the parent component
