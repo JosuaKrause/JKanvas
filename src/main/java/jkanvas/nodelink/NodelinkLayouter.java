@@ -10,8 +10,7 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedLayouter;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
-import jkanvas.painter.AbstractRenderpass;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderpassAdapter;
 
 /**
  * Paints a layouted node link diagram.
@@ -19,7 +18,8 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of nodes.
  */
-public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLayouter {
+public class NodeLinkLayouter<T extends AnimatedPosition>
+extends RenderpassAdapter implements AnimatedLayouter {
 
   /** The node realizer. */
   private NodeRealizer<T> nodeRealizer;
@@ -27,86 +27,16 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
   /** The edge realizer. */
   private EdgeRealizer<T> edgeRealizer;
 
-  /** The node render pass. */
-  private final AbstractRenderpass nodePass;
-
-  /** The edge render pass. */
-  private final AbstractRenderpass edgePass;
-
   /** The view on the graph. */
-  private final NodeLinkView<T> view;
+  protected final NodeLinkView<T> view;
 
   /**
    * Creates a node link painter.
    * 
    * @param view The view on the graph.
    */
-  public NodelinkLayouter(final NodeLinkView<T> view) {
+  public NodeLinkLayouter(final NodeLinkView<T> view) {
     this.view = view;
-    nodePass = new AbstractRenderpass(false) {
-
-      @Override
-      public void render(final Graphics2D gfx, final KanvasContext ctx) {
-        renderEdges(gfx, ctx);
-      }
-
-      @Override
-      public double getOffsetX() {
-        return NodelinkLayouter.this.getOffsetX();
-      }
-
-      @Override
-      public double getOffsetY() {
-        return NodelinkLayouter.this.getOffsetY();
-      }
-
-      @Override
-      public Rectangle2D getBoundingBox() {
-        return NodelinkLayouter.this.getBoundingBox();
-      }
-
-    };
-    edgePass = new AbstractRenderpass(false) {
-
-      @Override
-      public void render(final Graphics2D gfx, final KanvasContext ctx) {
-        renderNodes(gfx, ctx);
-      }
-
-      @Override
-      public Rectangle2D getBoundingBox() {
-        return NodelinkLayouter.this.getBoundingBox();
-      }
-
-      @Override
-      public double getOffsetX() {
-        return NodelinkLayouter.this.getOffsetX();
-      }
-
-      @Override
-      public double getOffsetY() {
-        return NodelinkLayouter.this.getOffsetY();
-      }
-
-    };
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The node render pass.
-   */
-  public Renderpass getNodePass() {
-    return nodePass;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The edge render pass.
-   */
-  public Renderpass getEdgePass() {
-    return edgePass;
   }
 
   /**
@@ -145,13 +75,39 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
     return nodeRealizer;
   }
 
+  @Override
+  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+    renderEdges(gfx, ctx);
+    renderNodes(gfx, ctx);
+  }
+
+  /**
+   * Renders all nodes.
+   * 
+   * @param gfx The graphics context.
+   * @param ctx The canvas context.
+   */
+  private void renderNodes(final Graphics2D gfx, final KanvasContext ctx) {
+    final Rectangle2D visible = ctx.getVisibleCanvas();
+    final NodeRealizer<T> nodeRealizer = getNodeRealizer();
+    for(final T node : view.nodes()) {
+      final Shape nodeShape = nodeRealizer.createNodeShape(node);
+      if(!nodeShape.intersects(visible)) {
+        continue;
+      }
+      final Graphics2D g = (Graphics2D) gfx.create();
+      nodeRealizer.drawNode(g, node);
+      g.dispose();
+    }
+  }
+
   /**
    * Renders all edges.
    * 
    * @param gfx The graphics context.
    * @param ctx The canvas context.
    */
-  protected void renderEdges(final Graphics2D gfx, final KanvasContext ctx) {
+  private void renderEdges(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D visible = ctx.getVisibleCanvas();
     final EdgeRealizer<T> edgeRealizer = getEdgeRealizer();
     for(int i = 0; i < view.nodeCount(); ++i) {
@@ -166,26 +122,6 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
         edgeRealizer.drawLines(g, from, to);
         g.dispose();
       }
-    }
-  }
-
-  /**
-   * Renders all nodes.
-   * 
-   * @param gfx The graphics context.
-   * @param ctx The canvas context.
-   */
-  protected void renderNodes(final Graphics2D gfx, final KanvasContext ctx) {
-    final Rectangle2D visible = ctx.getVisibleCanvas();
-    final NodeRealizer<T> nodeRealizer = getNodeRealizer();
-    for(final T node : view.nodes()) {
-      final Shape nodeShape = nodeRealizer.createNodeShape(node);
-      if(!nodeShape.intersects(visible)) {
-        continue;
-      }
-      final Graphics2D g = (Graphics2D) gfx.create();
-      nodeRealizer.drawNode(g, node);
-      g.dispose();
     }
   }
 
@@ -205,75 +141,9 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
     return null;
   }
 
-  /**
-   * Converts a position to the real position in this layouter.
-   * 
-   * @param pos The position.
-   * @return The real position.
-   */
-  public Point2D getPositionInLayouter(final Point2D pos) {
-    return new Point2D.Double(pos.getX() - offX, pos.getY() - offY);
-  }
-
   @Override
   public Iterable<? extends AnimatedPosition> getPositions() {
     return view.nodes();
-  }
-
-  /** The bounding box. */
-  protected Rectangle2D bbox;
-
-  /**
-   * Getter.
-   * 
-   * @return The bounding box of this node-link diagram or <code>null</code>.
-   */
-  public Rectangle2D getBoundingBox() {
-    return bbox;
-  }
-
-  /**
-   * Setter.
-   * 
-   * @param bbox Sets the optional bounding box.
-   */
-  public void setBoundingBox(final Rectangle2D bbox) {
-    this.bbox = bbox;
-  }
-
-  /** The x offset. */
-  private double offX;
-
-  /** The y offset. */
-  private double offY;
-
-  /**
-   * Setter.
-   * 
-   * @param x The x offset.
-   * @param y The y offset.
-   */
-  public void setOffset(final double x, final double y) {
-    offX = x;
-    offY = y;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The x offset.
-   */
-  public double getOffsetX() {
-    return offX;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The y offset.
-   */
-  public double getOffsetY() {
-    return offY;
   }
 
   /**
@@ -282,8 +152,7 @@ public class NodelinkLayouter<T extends AnimatedPosition> implements AnimatedLay
    * @param p The painter.
    */
   public void addToPainter(final AnimatedPainter p) {
-    p.addPass(getNodePass());
-    p.addPass(getEdgePass());
+    p.addPass(this);
     p.addLayouter(this);
   }
 

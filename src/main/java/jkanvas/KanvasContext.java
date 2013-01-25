@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * The paint context provides information of the state of drawing. Methods for
  * converting lengths and points from canvas coordinates to component
- * coordinates are provided.
+ * coordinates are provided. Kanvas contexts are immutable.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */

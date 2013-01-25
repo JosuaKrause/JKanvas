@@ -121,7 +121,9 @@ public class Canvas extends JComponent implements Refreshable {
 
       @Override
       public void mouseMoved(final MouseEvent e) {
-        painter.moveMouse(zui.getForScreen(e.getPoint()));
+        if(painter.moveMouse(zui.getForScreen(e.getPoint()))) {
+          refresh();
+        }
       }
 
     };

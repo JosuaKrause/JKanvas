@@ -1,9 +1,8 @@
 package jkanvas.painter;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import jkanvas.KanvasContext;
+import jkanvas.KanvasInteraction;
 
 
 /**
@@ -12,25 +11,7 @@ import jkanvas.KanvasContext;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public interface Renderpass {
-
-  /**
-   * Renders the current pass.
-   * 
-   * @param gfx The graphics context.
-   * @param ctx The canvas context.
-   */
-  void render(Graphics2D gfx, KanvasContext ctx);
-
-  /**
-   * Getter.
-   * 
-   * @return When <code>true</code>, the context during rendering is set such
-   *         that {@link KanvasContext#inCanvasCoordinates()} returns
-   *         <code>false</code>. The value should be fixed since this method is
-   *         only called once to determine whether it is a HUD.
-   */
-  boolean isHUD();
+public interface Renderpass extends KanvasInteraction {
 
   /**
    * Getter.
@@ -57,9 +38,9 @@ public interface Renderpass {
    * Getter.
    * 
    * @return An optional bounding box in canvas coordinates. This method does
-   *         <em>not</em> have to account for the offset. If the pass is a HUD
-   *         the bounding box is ignored.
+   *         <em>not</em> have to account for the offset.
    */
+  @Override
   Rectangle2D getBoundingBox();
 
 }

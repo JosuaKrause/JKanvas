@@ -64,20 +64,21 @@ public class PainterAdapter implements KanvasPainter {
   }
 
   @Override
-  public void drag(final Point2D start, final Point2D cur, final double dx,
-      final double dy) {
+  public void drag(final Point2D start, final Point2D cur,
+      final double dx, final double dy) {
     // do nothing
   }
 
   @Override
-  public void endDrag(final Point2D start, final Point2D cur, final double dx,
-      final double dy) {
+  public void endDrag(final Point2D start, final Point2D cur,
+      final double dx, final double dy) {
     drag(start, cur, dx, dy);
   }
 
   @Override
-  public void moveMouse(final Point2D cur) {
+  public boolean moveMouse(final Point2D cur) {
     // nothing to do
+    return false;
   }
 
   @Override

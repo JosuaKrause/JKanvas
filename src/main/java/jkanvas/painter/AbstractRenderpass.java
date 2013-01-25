@@ -9,23 +9,6 @@ import java.awt.geom.Rectangle2D;
  */
 public abstract class AbstractRenderpass implements Renderpass {
 
-  /** Whether this pass is a HUD. */
-  private final boolean isHUD;
-
-  /**
-   * Creates a render-pass.
-   * 
-   * @param isHUD Whether the render-pass is a head-up-display.
-   */
-  public AbstractRenderpass(final boolean isHUD) {
-    this.isHUD = isHUD;
-  }
-
-  @Override
-  public boolean isHUD() {
-    return isHUD;
-  }
-
   /** Whether the pass is visible. */
   private boolean isVisible = true;
 
@@ -78,10 +61,8 @@ public abstract class AbstractRenderpass implements Renderpass {
    * 
    * @param bbox Sets the optional bounding box. This method does <em>not</em>
    *          have to account for the offset.
-   * @throws IllegalStateException If this pass is a HUD.
    */
   public void setBoundingBox(final Rectangle2D bbox) {
-    if(isHUD) throw new IllegalStateException("HUDs do not have a bounding box");
     this.bbox = bbox;
   }
 
