@@ -65,7 +65,7 @@ public class RenderpassPainter extends PainterAdapter {
       final double dx = r.getOffsetX();
       final double dy = r.getOffsetY();
       g.translate(dx, dy);
-      final KanvasContext c = ctx.translate(dx, dy);
+      final KanvasContext c = getContextFor(r, ctx);
       r.draw(g, c);
       g.dispose();
     }
@@ -224,6 +224,19 @@ public class RenderpassPainter extends PainterAdapter {
   public final static Point2D getPositionFromComponent(final Renderpass r,
       final KanvasContext ctx, final Point2D pos) {
     return getPositionFromCanvas(r, ctx.toCanvasCoordinates(pos));
+  }
+
+  /**
+   * Converts the given context to represent the context of the given
+   * render-pass.
+   * 
+   * @param r The render-pass.
+   * @param ctx The context.
+   * @return The transformed context.
+   */
+  public final static KanvasContext getContextFor(
+      final Renderpass r, final KanvasContext ctx) {
+    return ctx.translate(r.getOffsetX(), r.getOffsetY());
   }
 
   /**

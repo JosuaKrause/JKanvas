@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Objects;
@@ -284,6 +285,14 @@ public class Canvas extends JComponent implements Refreshable {
     public KanvasContext translate(final double dx, final double dy) {
       if(dx == 0 && dy == 0) return this;
       return new CanvasContext(inCanvasSpace, offX - dx, offY - dy);
+    }
+
+    @Override
+    public AffineTransform toCanvasTransformation() {
+      final AffineTransform at = new AffineTransform();
+      zui.transform(at);
+      at.translate(offX, offY);
+      return at;
     }
 
   } // CanvasContext
