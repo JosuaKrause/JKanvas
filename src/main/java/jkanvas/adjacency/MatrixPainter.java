@@ -15,6 +15,7 @@ import jkanvas.painter.PainterAdapter;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The content type.
  */
+@Deprecated
 public abstract class MatrixPainter<T> extends PainterAdapter {
 
   /** The refresh manager. */
@@ -32,6 +33,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * @param manager The refresh manager that is notified each time something
    *          changes.
    */
+  @SuppressWarnings("deprecation")
   public MatrixPainter(final AdjacencyMatrix<T> matrix, final CellRealizer<T> cellDrawer,
       final RefreshManager manager) {
     this.manager = Objects.requireNonNull(manager);
@@ -44,6 +46,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @param m The new matrix.
    */
+  @SuppressWarnings("deprecation")
   public void setMatrix(final AdjacencyMatrix<T> m) {
     Objects.requireNonNull(m);
     if(matrix != null && matrix.supportsAutoRefreshing()) {
@@ -61,6 +64,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @return The matrix.
    */
+  @SuppressWarnings("deprecation")
   public AdjacencyMatrix<T> getMatrix() {
     return matrix;
   }
@@ -70,6 +74,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @param cellDrawer The cell realizer.
    */
+  @SuppressWarnings("deprecation")
   public void setCellRealizer(final CellRealizer<T> cellDrawer) {
     this.cellDrawer = cellDrawer;
     manager.refreshAll();
@@ -80,11 +85,13 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @return The cell realizer.
    */
+  @SuppressWarnings("deprecation")
   public CellRealizer<T> getCellDrawer() {
     return cellDrawer;
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     final boolean hasSelection = hasSelection();
     double y = 0;
@@ -130,6 +137,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * @param pos The position.
    * @return The cell at the position or <code>null</code> if there is no cell.
    */
+  @SuppressWarnings("deprecation")
   protected MatrixPosition pick(final Point2D pos) {
     int col = -1;
     double w = 0;
@@ -154,6 +162,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public Rectangle2D getBoundingBox() {
     double w = 0;
     double h = 0;
@@ -170,6 +179,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @return The refresh manager.
    */
+  @SuppressWarnings("deprecation")
   public RefreshManager getRefreshManager() {
     return manager;
   }
