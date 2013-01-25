@@ -200,6 +200,38 @@ public class RenderpassPainter extends PainterAdapter {
     return null;
   }
 
+  /** The HUD-render-pass currently responsible for dragging. */
+  private HUDRenderpass draggingHUD = null;
+
+  @Override
+  public final boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
+    for(final HUDRenderpass r : front) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      if(r.acceptDragHUD(p, e)) {
+        draggingHUD = r;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public final void dragHUD(final Point2D start, final Point2D cur,
+      final double dx, final double dy) {
+    if(draggingHUD == null) return;
+    draggingHUD.dragHUD(start, cur, dx, dy);
+  }
+
+  @Override
+  public final void endDragHUD(final Point2D start, final Point2D end,
+      final double dx, final double dy) {
+    if(draggingHUD == null) return;
+    draggingHUD.endDragHUD(start, end, dx, dy);
+    draggingHUD = null;
+  }
+
   /**
    * Converts a position in canvas coordinates to the position of the given
    * render-pass.

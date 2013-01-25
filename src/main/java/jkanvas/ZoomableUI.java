@@ -220,6 +220,16 @@ public final class ZoomableUI {
   }
 
   /**
+   * Transforms the given affine transformation back.
+   * 
+   * @param at The affine transformation.
+   */
+  public void transformBack(final AffineTransform at) {
+    at.scale(1 / zoom, 1 / zoom);
+    at.translate(-offX, -offY);
+  }
+
+  /**
    * Calculates the real coordinate of the given input in component coordinates.
    * 
    * @param s The coordinate in component coordinates. Due to uniform zooming

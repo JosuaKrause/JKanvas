@@ -76,6 +76,24 @@ public class PainterAdapter implements KanvasPainter {
   }
 
   @Override
+  public boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
+    // do nothing
+    return false;
+  }
+
+  @Override
+  public void dragHUD(final Point2D start, final Point2D cur,
+      final double dx, final double dy) {
+    // do nothing
+  }
+
+  @Override
+  public void endDragHUD(final Point2D start, final Point2D end,
+      final double dx, final double dy) {
+    dragHUD(start, end, dx, dy);
+  }
+
+  @Override
   public boolean moveMouse(final Point2D cur) {
     // nothing to do
     return false;

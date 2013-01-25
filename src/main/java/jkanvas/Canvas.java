@@ -50,11 +50,20 @@ public class Canvas extends JComponent implements Refreshable {
     zui = new ZoomableUI(this, null);
     final MouseAdapter mouse = new MouseInteraction() {
 
+      /** Whether the drag is on the HUD. */
+      private boolean hudDrag;
+
       @Override
       public void mousePressed(final MouseEvent e) {
         getFocusComponent().grabFocus();
         final Point2D p = e.getPoint();
         if(painter.clickHUD(p)) {
+          refresh();
+          return;
+        }
+        if(painter.acceptDragHUD(p, e)) {
+          hudDrag = true;
+          startDragging(p);
           refresh();
           return;
         }
@@ -64,6 +73,7 @@ public class Canvas extends JComponent implements Refreshable {
           return;
         }
         if(painter.acceptDrag(c, e)) {
+          hudDrag = false;
           startDragging(c);
           refresh();
           return;
@@ -75,31 +85,39 @@ public class Canvas extends JComponent implements Refreshable {
 
       @Override
       public void mouseDragged(final MouseEvent e) {
-        if(isDragging()) {
-          if(!isPointDrag()) {
-            move(e.getX(), e.getY());
+        if(!isDragging()) return;
+        if(!isPointDrag()) {
+          move(e.getX(), e.getY());
+        } else {
+          final Point2D start = getPoint();
+          final Point2D p = e.getPoint();
+          if(hudDrag) {
+            painter.dragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
           } else {
-            final Point2D cur = zui.getForScreen(e.getPoint());
-            final Point2D start = getPoint();
+            final Point2D cur = zui.getForScreen(p);
             painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
-            refresh();
           }
+          refresh();
         }
       }
 
       @Override
       public void mouseReleased(final MouseEvent e) {
-        if(isDragging()) {
-          if(!isPointDrag()) {
-            move(e.getX(), e.getY());
-            stopDragging();
+        if(!isDragging()) return;
+        if(!isPointDrag()) {
+          move(e.getX(), e.getY());
+          stopDragging();
+        } else {
+          final Point2D p = e.getPoint();
+          final Point2D start = stopPointDrag();
+          if(hudDrag) {
+            painter.endDragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
           } else {
-            final Point2D cur = zui.getForScreen(e.getPoint());
-            final Point2D start = stopPointDrag();
-            painter.endDrag(start, cur, cur.getX() - start.getX(),
-                cur.getY() - start.getY());
-            refresh();
+            final Point2D cur = zui.getForScreen(p);
+            painter.endDrag(start, cur,
+                cur.getX() - start.getX(), cur.getY() - start.getY());
           }
+          refresh();
         }
       }
 
@@ -288,10 +306,18 @@ public class Canvas extends JComponent implements Refreshable {
     }
 
     @Override
-    public AffineTransform toCanvasTransformation() {
+    public AffineTransform toComponentTransformation() {
       final AffineTransform at = new AffineTransform();
       zui.transform(at);
       at.translate(offX, offY);
+      return at;
+    }
+
+    @Override
+    public AffineTransform toCanvasTransformation() {
+      final AffineTransform at = new AffineTransform();
+      at.translate(-offX, -offY);
+      zui.transformBack(at);
       return at;
     }
 

@@ -35,7 +35,7 @@ public abstract class AbstractSelector implements HUDRenderpass {
   }
 
   /** Whether this selector is active. */
-  private boolean active;
+  private boolean active = true;
 
   /**
    * Setter.

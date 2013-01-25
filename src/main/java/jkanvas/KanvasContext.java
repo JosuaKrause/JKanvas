@@ -89,4 +89,12 @@ public interface KanvasContext {
    */
   AffineTransform toCanvasTransformation();
 
+  /**
+   * Getter.
+   * 
+   * @return The transformation that has to be applied to convert to component
+   *         coordinates.
+   */
+  AffineTransform toComponentTransformation();
+
 }

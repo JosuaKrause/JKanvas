@@ -1,8 +1,8 @@
 package jkanvas.examples;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -31,6 +31,9 @@ import jkanvas.adjacency.QuadraticMatrix;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.StringDrawer;
 import jkanvas.painter.StringDrawer.Orientation;
+import jkanvas.selection.AbstractSelector;
+import jkanvas.selection.RectangleSelection;
+import jkanvas.selection.SelectableRenderpass;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.Screenshot;
 
@@ -40,7 +43,7 @@ import jkanvas.util.Screenshot;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class MatrixMain extends MatrixRenderpass<Double> {
+public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRenderpass {
 
   /**
    * Creates a matrix painter.
@@ -88,45 +91,8 @@ public class MatrixMain extends MatrixRenderpass<Double> {
         + " value: " + matrix.get(pos.row, pos.col);
   }
 
-  /** The selection rectangle. */
-  private Rectangle2D selection;
-
   @Override
-  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
-    super.draw(gfx, ctx);
-    if(selection != null) {
-      final Graphics2D g = (Graphics2D) gfx.create();
-      final Graphics2D g2 = (Graphics2D) g.create();
-      g2.setColor(Color.PINK);
-      g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f));
-      g2.fill(selection);
-      g2.dispose();
-      g.setColor(Color.BLACK);
-      g.draw(selection);
-      g.dispose();
-    }
-  }
-
-  @Override
-  public boolean acceptDrag(final Point2D p, final MouseEvent e) {
-    if(!SwingUtilities.isRightMouseButton(e) && !e.isShiftDown()) return false;
-    selection = new Rectangle2D.Double(p.getX(), p.getY(), 0, 0);
-    return true;
-  }
-
-  @Override
-  public void drag(final Point2D start, final Point2D cur, final double dx,
-      final double dy) {
-    final double minX = Math.min(start.getX(), cur.getX());
-    final double minY = Math.min(start.getY(), cur.getY());
-    final double maxX = Math.max(start.getX(), cur.getX());
-    final double maxY = Math.max(start.getY(), cur.getY());
-    selection = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-    select();
-  }
-
-  /** Selects all cells touched by the selection rectangle. */
-  private void select() {
+  public void select(final Shape selection, final boolean preview) {
     final QuadraticMatrix<Double> matrix = getMatrix();
     for(int row = 0; row < matrix.size(); ++row) {
       for(int col = 0; col < matrix.size(); ++col) {
@@ -139,13 +105,6 @@ public class MatrixMain extends MatrixRenderpass<Double> {
         }
       }
     }
-  }
-
-  @Override
-  public void endDrag(final Point2D start, final Point2D cur,
-      final double dx, final double dy) {
-    select();
-    selection = null;
   }
 
   @Override
@@ -224,8 +183,20 @@ public class MatrixMain extends MatrixRenderpass<Double> {
     };
     final RefreshManager manager = new SimpleRefreshManager();
     final RenderpassPainter p = new RenderpassPainter();
-    p.addPass(new MatrixMain(matrix, cellColor, manager));
+    final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
+    p.addPass(matrixMain);
     final Canvas c = new Canvas(p, 500, 500);
+    final AbstractSelector sel = new RectangleSelection(c,
+        Color.BLUE, 0.75, Color.BLUE, 0.9) {
+
+      @Override
+      public boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
+        return SwingUtilities.isRightMouseButton(e) && e.isShiftDown();
+      }
+
+    };
+    sel.addSelectable(matrixMain);
+    p.addHUDPass(sel);
     manager.addRefreshable(c);
     c.setMargin(40);
     c.setBackground(Color.WHITE);

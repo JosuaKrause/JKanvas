@@ -1,6 +1,7 @@
 package jkanvas;
 
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 /**
@@ -41,5 +42,37 @@ public interface HUDInteraction {
    *         displayed.
    */
   String getTooltipHUD(Point2D p);
+
+  /**
+   * Is called when the user starts a dragging operation on the canvas. The
+   * coordinates are in the component coordinate space.
+   * 
+   * @param p The position where the drag starts in component coordinates.
+   * @param e The mouse event.
+   * @return Whether the drag is accepted and the dragging should start.
+   */
+  boolean acceptDragHUD(Point2D p, MouseEvent e);
+
+  /**
+   * Is called subsequently after {@link #acceptDragHUD(Point2D, MouseEvent)}
+   * returned <code>true</code> on every mouse movement until the user releases
+   * the mouse button.
+   * 
+   * @param start The position where the drag started in component coordinates.
+   * @param cur The current drag position in component coordinates.
+   * @param dx The x distance of the drag in component coordinates.
+   * @param dy The y distance of the drag in component coordinates.
+   */
+  void dragHUD(Point2D start, Point2D cur, double dx, double dy);
+
+  /**
+   * Is called when the user releases the mouse in drag operation.
+   * 
+   * @param start The position where the drag started in component coordinates.
+   * @param end The end position of the drag in component coordinates.
+   * @param dx The x distance of the drag in component coordinates.
+   * @param dy The y distance of the drag in component coordinates.
+   */
+  void endDragHUD(Point2D start, Point2D end, double dx, double dy);
 
 }
