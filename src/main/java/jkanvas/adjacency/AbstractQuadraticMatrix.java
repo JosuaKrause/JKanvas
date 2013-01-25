@@ -7,12 +7,13 @@ import jkanvas.Refreshable;
 
 
 /**
- * A straight forward implementation of a dense {@link AdjacencyMatrix}.
+ * A straight forward implementation of a {@link QuadraticMatrix}. Only the
+ * creation of the typed arrays must be handled by a sub-class.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The content type.
  */
-public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatrix<T> {
+public abstract class AbstractQuadraticMatrix<T> implements MutableQuadraticMatrix<T> {
 
   /** The row / column names. */
   private final String[] names;
@@ -33,11 +34,11 @@ public abstract class AbstractAdjacencyMatrix<T> implements MutableAdjacencyMatr
   private RefreshManager manager;
 
   /**
-   * Creates an adjacency matrix with the given size.
+   * Creates a quadratic matrix with the given size.
    * 
    * @param size The size.
    */
-  public AbstractAdjacencyMatrix(final int size) {
+  public AbstractQuadraticMatrix(final int size) {
     names = new String[size];
     widths = new double[size];
     heights = new double[size];

@@ -2,12 +2,12 @@ package jkanvas.adjacency;
 
 
 /**
- * A mutable adjacency matrix.
+ * A mutable quadratic matrix.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The content type.
  */
-public interface MutableAdjacencyMatrix<T> extends AdjacencyMatrix<T> {
+public interface MutableQuadraticMatrix<T> extends QuadraticMatrix<T> {
 
   /**
    * Setter.

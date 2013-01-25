@@ -123,6 +123,11 @@ public final class NodeLinkMain extends NodeLinkLayouter<AnimatedPosition> {
   }
 
   @Override
+  public void setBoundingBox(final Rectangle2D bbox) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public Rectangle2D getBoundingBox() {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
     Rectangle2D bbox = null;

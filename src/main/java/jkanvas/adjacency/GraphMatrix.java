@@ -10,7 +10,7 @@ import jkanvas.nodelink.GraphView;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class GraphMatrix implements AdjacencyMatrix<Boolean> {
+public class GraphMatrix implements QuadraticMatrix<Boolean> {
 
   /** The underlying view. */
   private final GraphView view;

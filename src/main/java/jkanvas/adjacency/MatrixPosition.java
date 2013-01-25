@@ -1,7 +1,7 @@
 package jkanvas.adjacency;
 
 /**
- * A position within an {@link AdjacencyMatrix}.
+ * A position within an {@link QuadraticMatrix}.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
@@ -14,7 +14,7 @@ public class MatrixPosition {
   public final int col;
 
   /**
-   * Creates a position within an {@link AdjacencyMatrix}.
+   * Creates a position within an {@link QuadraticMatrix}.
    * 
    * @param row The row.
    * @param col The column.

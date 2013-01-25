@@ -22,23 +22,136 @@ import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
 import jkanvas.SimpleRefreshManager;
-import jkanvas.adjacency.AbstractAdjacencyMatrix;
-import jkanvas.adjacency.AdjacencyMatrix;
+import jkanvas.adjacency.AbstractQuadraticMatrix;
 import jkanvas.adjacency.CellRealizer;
-import jkanvas.adjacency.MatrixPainter;
 import jkanvas.adjacency.MatrixPosition;
-import jkanvas.adjacency.MutableAdjacencyMatrix;
+import jkanvas.adjacency.MatrixRenderpass;
+import jkanvas.adjacency.MutableQuadraticMatrix;
+import jkanvas.adjacency.QuadraticMatrix;
+import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.StringDrawer;
 import jkanvas.painter.StringDrawer.Orientation;
+import jkanvas.util.PaintUtil;
 import jkanvas.util.Screenshot;
 
 /**
- * An example showcasing the painting of {@link AdjacencyMatrix adjacency
+ * An example show-casing the painting of {@link QuadraticMatrix quadratic
  * matrices}.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class AdjacencyMain {
+public class MatrixMain extends MatrixRenderpass<Double> {
+
+  /**
+   * Creates a matrix painter.
+   * 
+   * @param matrix The matrix.
+   * @param cellDrawer The cell realizer.
+   * @param manager The update manager.
+   */
+  public MatrixMain(final QuadraticMatrix<Double> matrix,
+      final CellRealizer<Double> cellDrawer, final RefreshManager manager) {
+    super(matrix, cellDrawer, manager);
+  }
+
+  /** The selected cells. */
+  private final Set<MatrixPosition> selected = new HashSet<>();
+
+  @Override
+  protected boolean isSelected(final int row, final int col) {
+    for(final MatrixPosition pos : selected) {
+      if(row == pos.row || col == pos.col) return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean click(final Point2D p, final MouseEvent e) {
+    if(!SwingUtilities.isRightMouseButton(e) || e.isShiftDown()) return false;
+    final MatrixPosition pos = pick(p);
+    if(pos == null) return false;
+    if(selected.contains(pos)) {
+      selected.remove(pos);
+    } else {
+      selected.add(pos);
+    }
+    return true;
+  }
+
+  @Override
+  public String getTooltip(final Point2D p) {
+    final QuadraticMatrix<Double> matrix = getMatrix();
+    final MatrixPosition pos = pick(p);
+    if(pos == null) return "";
+    return "row: " + matrix.getName(pos.row)
+        + " col: " + matrix.getName(pos.col)
+        + " value: " + matrix.get(pos.row, pos.col);
+  }
+
+  /** The selection rectangle. */
+  private Rectangle2D selection;
+
+  @Override
+  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+    super.draw(gfx, ctx);
+    if(selection != null) {
+      final Graphics2D g = (Graphics2D) gfx.create();
+      final Graphics2D g2 = (Graphics2D) g.create();
+      g2.setColor(Color.PINK);
+      g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f));
+      g2.fill(selection);
+      g2.dispose();
+      g.setColor(Color.BLACK);
+      g.draw(selection);
+      g.dispose();
+    }
+  }
+
+  @Override
+  public boolean acceptDrag(final Point2D p, final MouseEvent e) {
+    if(!SwingUtilities.isRightMouseButton(e) && !e.isShiftDown()) return false;
+    selection = new Rectangle2D.Double(p.getX(), p.getY(), 0, 0);
+    return true;
+  }
+
+  @Override
+  public void drag(final Point2D start, final Point2D cur, final double dx,
+      final double dy) {
+    final double minX = Math.min(start.getX(), cur.getX());
+    final double minY = Math.min(start.getY(), cur.getY());
+    final double maxX = Math.max(start.getX(), cur.getX());
+    final double maxY = Math.max(start.getY(), cur.getY());
+    selection = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+    select();
+  }
+
+  /** Selects all cells touched by the selection rectangle. */
+  private void select() {
+    final QuadraticMatrix<Double> matrix = getMatrix();
+    for(int row = 0; row < matrix.size(); ++row) {
+      for(int col = 0; col < matrix.size(); ++col) {
+        final Rectangle2D bbox = matrix.getBoundingBox(row, col);
+        final MatrixPosition m = new MatrixPosition(row, col);
+        if(selection.intersects(bbox)/* selection.contains(bbox) */) {
+          selected.add(m);
+        } else {
+          selected.remove(m);
+        }
+      }
+    }
+  }
+
+  @Override
+  public void endDrag(final Point2D start, final Point2D cur,
+      final double dx, final double dy) {
+    select();
+    selection = null;
+  }
+
+  @Override
+  public Rectangle2D getBoundingBox() {
+    return PaintUtil.addPadding(super.getBoundingBox(), 60);
+  }
 
   /**
    * Starts the example application.
@@ -46,8 +159,8 @@ public class AdjacencyMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final MutableAdjacencyMatrix<Double> matrix =
-        new AbstractAdjacencyMatrix<Double>(9) {
+    final MutableQuadraticMatrix<Double> matrix =
+        new AbstractQuadraticMatrix<Double>(9) {
 
       @Override
       protected Double[][] createMatrix(final int size) {
@@ -70,7 +183,7 @@ public class AdjacencyMain {
       @Override
       public void drawCell(final Graphics2D g, final KanvasContext ctx,
           final Rectangle2D rect,
-          final AdjacencyMatrix<Double> matrix, final int row, final int col,
+          final QuadraticMatrix<Double> matrix, final int row, final int col,
           final boolean isSelected, final boolean hasSelection) {
         final Double val = matrix.get(row, col);
         g.setColor(getColor(val, hasSelection && isSelected));
@@ -110,100 +223,8 @@ public class AdjacencyMain {
 
     };
     final RefreshManager manager = new SimpleRefreshManager();
-    final MatrixPainter<Double> p = new MatrixPainter<Double>(matrix, cellColor, manager) {
-
-      private final Set<MatrixPosition> selected = new HashSet<>();
-
-      @Override
-      protected boolean isSelected(final int row, final int col) {
-        for(final MatrixPosition pos : selected) {
-          if(row == pos.row || col == pos.col) return true;
-        }
-        return false;
-      }
-
-      @Override
-      public boolean click(final Point2D p, final MouseEvent e) {
-        if(!SwingUtilities.isRightMouseButton(e) || e.isShiftDown()) return false;
-        final MatrixPosition pos = pick(p);
-        if(pos == null) return false;
-        if(selected.contains(pos)) {
-          selected.remove(pos);
-        } else {
-          selected.add(pos);
-        }
-        return true;
-      }
-
-      @Override
-      public String getTooltip(final Point2D p) {
-        final AdjacencyMatrix<Double> matrix = getMatrix();
-        final MatrixPosition pos = pick(p);
-        if(pos == null) return "";
-        return "row: " + matrix.getName(pos.row)
-            + " col: " + matrix.getName(pos.col)
-            + " value: " + matrix.get(pos.row, pos.col);
-      }
-
-      private Rectangle2D selection;
-
-      @Override
-      public void draw(final Graphics2D gfx, final KanvasContext ctx) {
-        super.draw(gfx, ctx);
-        if(selection != null) {
-          final Graphics2D g = (Graphics2D) gfx.create();
-          final Graphics2D g2 = (Graphics2D) g.create();
-          g2.setColor(Color.PINK);
-          g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .75f));
-          g2.fill(selection);
-          g2.dispose();
-          g.setColor(Color.BLACK);
-          g.draw(selection);
-          g.dispose();
-        }
-      }
-
-      @Override
-      public boolean acceptDrag(final Point2D p, final MouseEvent e) {
-        if(!SwingUtilities.isRightMouseButton(e) && !e.isShiftDown()) return false;
-        selection = new Rectangle2D.Double(p.getX(), p.getY(), 0, 0);
-        return true;
-      }
-
-      @Override
-      public void drag(final Point2D start, final Point2D cur, final double dx,
-          final double dy) {
-        final double minX = Math.min(start.getX(), cur.getX());
-        final double minY = Math.min(start.getY(), cur.getY());
-        final double maxX = Math.max(start.getX(), cur.getX());
-        final double maxY = Math.max(start.getY(), cur.getY());
-        selection = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-        select();
-      }
-
-
-      private void select() {
-        for(int row = 0; row < matrix.size(); ++row) {
-          for(int col = 0; col < matrix.size(); ++col) {
-            final Rectangle2D bbox = matrix.getBoundingBox(row, col);
-            final MatrixPosition m = new MatrixPosition(row, col);
-            if(selection.intersects(bbox)/* selection.contains(bbox) */) {
-              selected.add(m);
-            } else {
-              selected.remove(m);
-            }
-          }
-        }
-      }
-
-      @Override
-      public void endDrag(final Point2D start, final Point2D cur,
-          final double dx, final double dy) {
-        select();
-        selection = null;
-      }
-
-    };
+    final RenderpassPainter p = new RenderpassPainter();
+    p.addPass(new MatrixMain(matrix, cellColor, manager));
     final Canvas c = new Canvas(p, 500, 500);
     manager.addRefreshable(c);
     c.setMargin(40);
