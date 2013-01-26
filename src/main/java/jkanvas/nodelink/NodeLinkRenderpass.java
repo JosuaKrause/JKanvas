@@ -91,7 +91,9 @@ extends RenderpassAdapter implements AnimatedLayouter {
     final Rectangle2D visible = ctx.getVisibleCanvas();
     final NodeRealizer<T> nodeRealizer = getNodeRealizer();
     for(final T node : view.nodes()) {
-      final Shape nodeShape = nodeRealizer.createNodeShape(node);
+      final double x = node.getX();
+      final double y = node.getY();
+      final Shape nodeShape = nodeRealizer.createNodeShape(node, x, y);
       if(!nodeShape.intersects(visible)) {
         continue;
       }
@@ -135,7 +137,9 @@ extends RenderpassAdapter implements AnimatedLayouter {
   public T pick(final Point2D pos) {
     final NodeRealizer<T> nodeRealizer = getNodeRealizer();
     for(final T node : view.nodes()) {
-      final Shape shape = nodeRealizer.createNodeShape(node);
+      final double x = node.getX();
+      final double y = node.getY();
+      final Shape shape = nodeRealizer.createNodeShape(node, x, y);
       if(shape.contains(pos)) return node;
     }
     return null;

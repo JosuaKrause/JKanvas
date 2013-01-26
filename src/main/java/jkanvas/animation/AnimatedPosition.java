@@ -63,16 +63,6 @@ public class AnimatedPosition extends Position2D {
     return end != null ? end.getY() : getY();
   }
 
-  /**
-   * Computes the end position of the animation.
-   * 
-   * @return The end position of the animation.
-   */
-  public AnimatedPosition getPredictedPosition() {
-    // TODO is there a better solution? -- is this method really needed?
-    return new AnimatedPosition(getPredictX(), getPredictY());
-  }
-
   /** The long animation duration. */
   public static final int LONG = 2000;
 

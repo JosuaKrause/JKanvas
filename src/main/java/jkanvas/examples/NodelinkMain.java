@@ -139,7 +139,9 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
     Rectangle2D bbox = null;
     for(final AnimatedPosition p : getPositions()) {
-      final Shape shape = n.createNodeShape(p);
+      final double x = p.getX();
+      final double y = p.getY();
+      final Shape shape = n.createNodeShape(p, x, y);
       final Rectangle2D b = shape.getBounds2D();
       if(bbox == null) {
         bbox = b;
@@ -148,7 +150,9 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
       // include the end of the animation in the bounding box
       if(p.inAnimation()) {
-        final Shape endShape = n.createNodeShape(p.getPredictedPosition());
+        final double px = p.getPredictX();
+        final double py = p.getPredictY();
+        final Shape endShape = n.createNodeShape(p, px, py);
         bbox.add(endShape.getBounds2D());
       }
     }
@@ -214,9 +218,9 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       private final double radius = RADIUS;
 
       @Override
-      public Shape createNodeShape(final AnimatedPosition node) {
-        return PaintUtil.createEllipse(node.getX(), node.getY(),
-            radius + stroke.getLineWidth() * 0.5);
+      public Shape createNodeShape(final AnimatedPosition node,
+          final double x, final double y) {
+        return PaintUtil.createEllipse(x, y, radius + stroke.getLineWidth() * 0.5);
       }
 
       @Override
