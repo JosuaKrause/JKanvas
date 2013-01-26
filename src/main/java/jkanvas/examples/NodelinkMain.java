@@ -23,6 +23,7 @@ import jkanvas.nodelink.EdgeRealizer;
 import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
+import jkanvas.painter.FrameRateHUD;
 import jkanvas.util.Interpolator;
 import jkanvas.util.PaintUtil;
 
@@ -232,6 +233,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     // configure Canvas
     final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
+    p.addHUDPass(new FrameRateHUD(c));
     p.addRefreshable(c);
     final JFrame frame = new JFrame("Node-Link") {
 

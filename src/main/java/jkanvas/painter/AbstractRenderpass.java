@@ -22,7 +22,7 @@ public abstract class AbstractRenderpass implements Renderpass {
    * 
    * @param isVisible Sets the visibility of this pass.
    */
-  public void setVisibility(final boolean isVisible) {
+  public void setVisibe(final boolean isVisible) {
     this.isVisible = isVisible;
   }
 

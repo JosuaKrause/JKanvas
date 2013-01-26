@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
-import jkanvas.painter.HUDRenderpass;
+import jkanvas.painter.HUDRenderpassAdapter;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.util.PaintUtil;
 
@@ -22,7 +22,7 @@ import jkanvas.util.PaintUtil;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class AbstractSelector implements HUDRenderpass {
+public abstract class AbstractSelector extends HUDRenderpassAdapter {
 
   /** The inner alpha value. */
   private final float alphaInner;
@@ -118,16 +118,13 @@ public abstract class AbstractSelector implements HUDRenderpass {
     g.dispose();
   }
 
-  /** Whether this selector is active. */
-  private boolean active = true;
-
   /**
    * Setter.
    * 
    * @param isActive Whether this selector is active.
    */
   public void setActive(final boolean isActive) {
-    active = isActive;
+    setVisible(isActive);
   }
 
   /**
@@ -136,12 +133,7 @@ public abstract class AbstractSelector implements HUDRenderpass {
    * @return Whether this selector is active.
    */
   public boolean isActive() {
-    return active;
-  }
-
-  @Override
-  public boolean isVisible() {
-    return active;
+    return isVisible();
   }
 
   /**
@@ -222,18 +214,6 @@ public abstract class AbstractSelector implements HUDRenderpass {
       final double dy) {
     doSelection(growShape(start, end), false);
     selection = null;
-  }
-
-  @Override
-  public boolean clickHUD(final Point2D p) {
-    // no clicking
-    return false;
-  }
-
-  @Override
-  public String getTooltipHUD(final Point2D p) {
-    // no tool-tip -- showing what, exactly?
-    return null;
   }
 
 }
