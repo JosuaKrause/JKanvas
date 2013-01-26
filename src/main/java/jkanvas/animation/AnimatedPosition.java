@@ -69,6 +69,7 @@ public class AnimatedPosition extends Position2D {
    * @return The end position of the animation.
    */
   public AnimatedPosition getPredictedPosition() {
+    // TODO is there a better solution? -- is this method really needed?
     return new AnimatedPosition(getPredictX(), getPredictY());
   }
 
