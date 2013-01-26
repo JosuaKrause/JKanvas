@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 /**
- * A zoomable user interface can be translated and zooming can be performed.
+ * A zoom-able user interface can be translated and zooming can be performed.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
@@ -35,7 +35,7 @@ public final class ZoomableUI {
   private double maxZoom = -1;
 
   /**
-   * Creates a zoomable user interface.
+   * Creates a zoom-able user interface.
    * 
    * @param refreshee Will be notified when the transformation changes.
    * @param restriction An optional restriction for the canvas.

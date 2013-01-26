@@ -39,7 +39,7 @@ public abstract class AbstractSelector implements HUDRenderpass {
   /** The canvas to select on. */
   private final Canvas canvas;
 
-  /** The list of selectabel render-passes. */
+  /** The list of selectable render-passes. */
   private final List<SelectableRenderpass> selects = new ArrayList<>();
 
   /**
@@ -102,8 +102,8 @@ public abstract class AbstractSelector implements HUDRenderpass {
    * @param alpha The alpha value.
    * @param fill Whether to fill the shape or draw the outlines.
    */
-  private void draw(final Graphics2D gfx, final Color color, final float alpha,
-      final boolean fill) {
+  private void draw(final Graphics2D gfx, final Color color,
+      final float alpha, final boolean fill) {
     if(alpha <= 0.0) return;
     final Graphics2D g = (Graphics2D) gfx.create();
     g.setColor(color);

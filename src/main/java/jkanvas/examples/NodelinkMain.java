@@ -82,18 +82,21 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 
   @Override
   public boolean click(final Point2D pos, final MouseEvent e) {
-    final AnimatedPosition n = pick(pos);
     if(!SwingUtilities.isRightMouseButton(e)) return false;
+    final AnimatedPosition n = pick(pos);
     if(n == null) {
+      // no node selected -- add new node
       simpleView.addNode(new AnimatedPosition(pos));
-    } else {
-      if(secSel != null) {
-        simpleView.addEdge(secSel, n);
-        secSel = null;
-      } else {
-        secSel = n;
-      }
+      return true;
     }
+    if(secSel != null) {
+      // when selecting a second node create edge
+      simpleView.addEdge(secSel, n);
+      secSel = null;
+      return true;
+    }
+    // select node
+    secSel = n;
     return true;
   }
 
@@ -102,6 +105,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     if(!SwingUtilities.isLeftMouseButton(e)) return false;
     final AnimatedPosition n = pick(p);
     if(n == null) return false;
+    // initialize node dragging
     primSel = n;
     primSel.clearAnimation();
     startX = primSel.getX();
@@ -124,6 +128,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 
   @Override
   public void setBoundingBox(final Rectangle2D bbox) {
+    // super class supports setting bounding box -- since we compute the
+    // bounding box by ourselves this method is ignored
     throw new UnsupportedOperationException();
   }
 
@@ -139,8 +145,34 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       } else {
         bbox.add(b);
       }
+      // include the end of the animation in the bounding box
+      if(p.inAnimation()) {
+        final Shape endShape = n.createNodeShape(p.getPredictedPosition());
+        bbox.add(endShape.getBounds2D());
+      }
     }
     return bbox;
+  }
+
+  /**
+   * Fills the given graph.
+   * 
+   * @param view The view on the graph.
+   * @param width The allowed width.
+   * @param height The allowed height.
+   * @param nodes The number of nodes.
+   * @param edges The number of edges.
+   */
+  private static void fillGraph(final SimpleNodeLinkView<AnimatedPosition> view,
+      final int width, final int height, final int nodes, final int edges) {
+    final Random rnd = new Random();
+    for(int i = 0; i < nodes; ++i) {
+      view.addNode(new AnimatedPosition(RADIUS + rnd.nextDouble() * (width - 2 * RADIUS),
+          RADIUS + rnd.nextDouble() * (height - 2 * RADIUS)));
+    }
+    for(int i = 0; i < edges; ++i) {
+      view.addEdge(rnd.nextInt(nodes), rnd.nextInt(nodes));
+    }
   }
 
   /**
@@ -154,14 +186,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     final int nodes = 20;
     final int edges = 100;
     final SimpleNodeLinkView<AnimatedPosition> view = new SimpleNodeLinkView<>();
-    final Random rnd = new Random();
-    for(int i = 0; i < nodes; ++i) {
-      view.addNode(new AnimatedPosition(RADIUS + rnd.nextDouble() * (w - 2 * RADIUS),
-          RADIUS + rnd.nextDouble() * (h - 2 * RADIUS)));
-    }
-    for(int i = 0; i < edges; ++i) {
-      view.addEdge(rnd.nextInt(nodes), rnd.nextInt(nodes));
-    }
+    fillGraph(view, w, h, nodes, edges);
     final AnimatedPainter p = new AnimatedPainter();
     final NodeLinkMain r = new NodeLinkMain(view);
     r.setEdgeRealizer(new EdgeRealizer<AnimatedPosition>() {
@@ -172,8 +197,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
       @Override
-      public void drawLines(final Graphics2D g, final AnimatedPosition from,
-          final AnimatedPosition to) {
+      public void drawLines(final Graphics2D g,
+          final AnimatedPosition from, final AnimatedPosition to) {
         g.setColor(Color.BLACK);
         g.fill(createLineShape(from, to));
       }
@@ -204,18 +229,22 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 
     });
     r.addToPainter(p);
+    // configure Canvas
     final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
     p.addRefreshable(c);
-    final JFrame frame = new JFrame("Nodelink") {
+    final JFrame frame = new JFrame("Node-Link") {
 
       @Override
       public void dispose() {
+        // The Canvas also disposes the animator, which terminates the animation
+        // daemon
         c.dispose();
         super.dispose();
       }
 
     };
+    // add actions
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {
 
       @Override
@@ -245,6 +274,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
+    // pack and show window
     frame.add(c);
     frame.pack();
     frame.setLocationRelativeTo(null);

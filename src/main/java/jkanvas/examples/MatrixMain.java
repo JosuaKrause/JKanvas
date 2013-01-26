@@ -127,13 +127,15 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
       }
 
     };
+    // fill the matrix with random values
     for(int col = 0; col < matrix.size(); ++col) {
-      matrix.setName(col, "Attr" + col);
       for(int row = 0; row < matrix.size(); ++row) {
         matrix.set(row, col, Math.random());
       }
     }
+    // set names, widths, and heights of rows / columns
     for(int i = 0; i < matrix.size(); ++i) {
+      matrix.setName(i, "Attr" + i);
       matrix.setWidth(i, 60); // 20 + Math.random() * 80);
       matrix.setHeight(i, 60); // 20 + Math.random() * 80);
     }
@@ -141,14 +143,14 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
 
       @Override
       public void drawCell(final Graphics2D g, final KanvasContext ctx,
-          final Rectangle2D rect,
-          final QuadraticMatrix<Double> matrix, final int row, final int col,
-          final boolean isSelected, final boolean hasSelection) {
+          final Rectangle2D rect, final QuadraticMatrix<Double> matrix, final int row,
+          final int col, final boolean isSelected, final boolean hasSelection) {
         final Double val = matrix.get(row, col);
         g.setColor(getColor(val, hasSelection && isSelected));
         g.fill(rect);
         g.setColor(Color.BLACK);
         g.draw(rect);
+        // when leftmost column draw column title
         if(col == 0) {
           final StringDrawer s = new StringDrawer(g, matrix.getName(row));
           final Point2D pos = new Point2D.Double(rect.getMinX() - 10, rect.getCenterY());
@@ -160,6 +162,7 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
           // g.setColor(Color.RED);
           // g.fill(pixel(pos));
         }
+        // when topmost row draw row title
         if(row == 0) {
           final StringDrawer s = new StringDrawer(g, matrix.getName(col));
           final Point2D pos = new Point2D.Double(rect.getCenterX(), rect.getMinY() - 10);
@@ -173,6 +176,13 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
         }
       }
 
+      /**
+       * Determines the color for the given value.
+       * 
+       * @param value The value.
+       * @param isSelected Whether the cell is selected.
+       * @return The color of the cell.
+       */
       private Color getColor(final double value, final boolean isSelected) {
         final double v = value - 0.5;
         final double hue = v > 0 ? 0 : 180.0 / 360.0;
@@ -186,6 +196,7 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
     final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
     p.addPass(matrixMain);
     final Canvas c = new Canvas(p, 500, 500);
+    // add arbitrary shape selection
     final AbstractSelector sel = new RectangleSelection(c,
         // final AbstractSelector sel = new LassoSelection(c,
         new Color(5, 113, 176, 200)) {
@@ -198,10 +209,13 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
     };
     sel.addSelectable(matrixMain);
     p.addHUDPass(sel);
+    // let RefreshManager refresh the Canvas
     manager.addRefreshable(c);
-    c.setMargin(40);
+    // configure the Canvas
+    // c.setMargin(40);
     c.setBackground(Color.WHITE);
-    final JFrame frame = new JFrame("Nodelink");
+    final JFrame frame = new JFrame("Matrix");
+    // add actions to the Canvas
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {
 
       @Override
@@ -223,7 +237,7 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
       @Override
       public void actionPerformed(final ActionEvent ae) {
         try {
-          Screenshot.savePNG(new File("pics"), "adjacency", c);
+          Screenshot.savePNG(new File("pics"), "matrix", c);
           System.out.println("Photo taken!");
         } catch(final IOException e) {
           e.printStackTrace();
@@ -231,6 +245,7 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
       }
 
     });
+    // pack and show window
     frame.add(c);
     frame.pack();
     frame.setLocationRelativeTo(null);

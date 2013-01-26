@@ -99,9 +99,9 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   }
 
   /**
-   * Disposes the object by cleaning all refreshables and stopping the
-   * simulation thread. The object cannot be used anymore after a call to this
-   * method.
+   * Disposes the object by cleaning all {@link Refreshable Refreshables} and
+   * stopping the simulation thread. The object cannot be used anymore after a
+   * call to this method.
    */
   public void dispose() {
     disposed = true;
