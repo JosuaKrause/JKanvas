@@ -320,187 +320,240 @@ public class Canvas extends JComponent implements Refreshable {
 
   } // CanvasContext
 
-  @Override
-  protected void paintComponent(final Graphics g) {
-    final Graphics2D g2 = (Graphics2D) g.create();
-    final Rectangle2D rect = getVisibleRect();
-    g2.clip(rect);
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
-    final Color c = back;
-    if(c != null) {
-      g2.setColor(c);
-      g2.fill(rect);
-    }
-    if(paintLock == null) {
-      doPaint(g2);
-    } else {
-      synchronized(paintLock) {
-        doPaint(g2);
-      }
-    }
-    g2.dispose();
-  }
+  /** Whether frame time is measured. */
+  private boolean measureTime;
 
   /**
-   * Returns the current canvas context. Note that it is not guaranteed that the
-   * context returns correct values if the viewport changes after a call to this
-   * method.
-   * 
-   * @return The current canvas context.
+   * The time it took to draw the most recent frame or <code>0</code> if the
+   * value is not known.
    */
-  public CanvasContext getContext() {
-    return new CanvasContext(true, 0, 0);
-  }
-
-  /**
-   * Returns the current head-up display context. Note that it is not guaranteed
-   * that the context returns correct values if the viewport changes after a
-   * call to this method.
-   * 
-   * @return The current head-up display context.
-   */
-  public CanvasContext getHUDContext() {
-    return new CanvasContext(false, 0, 0);
-  }
-
-  /**
-   * Does the actual painting.
-   * 
-   * @param g The graphics context.
-   */
-  private void doPaint(final Graphics2D g) {
-    final Graphics2D gfx = (Graphics2D) g.create();
-    zui.transform(gfx);
-    painter.draw(gfx, getContext());
-    gfx.dispose();
-    painter.drawHUD(g, getHUDContext());
-  }
-
-  /** The paint lock. */
-  private Object paintLock;
+  private volatile long lastTime;
 
   /**
    * Setter.
    * 
-   * @param paintLock The paint lock or <code>null</code> if nothing should be
-   *          locked during painting.
+   * @param measureTime Whether to measure frame time.
+   * @see #getLastFrameTime()
    */
-  public void setPaintLock(final Object paintLock) {
-    this.paintLock = paintLock;
-  }
+   public void setMeasureFrameTime(final boolean measureTime) {
+     this.measureTime = measureTime;
+     lastTime = 0L;
+   }
 
-  /**
-   * Getter.
-   * 
-   * @return The paint lock or <code>null</code> if nothing is locked during
-   *         painting.
-   */
-  public Object getPaintLock() {
-    return paintLock;
-  }
+   /**
+    * Getter.
+    * 
+    * @return Whether frame time is measured.
+    * @see #getLastFrameTime()
+    * @see #setMeasureFrameTime(boolean)
+    */
+   public boolean isMeasuringFrameTime() {
+     return measureTime;
+   }
+
+   /**
+    * Getter.
+    * 
+    * @return The time needed to draw the most recent frame. When this method
+    *         returns <code>0</code> the value is not known. This may be when
+    *         {@link #isMeasuringFrameTime()} returns <code>false</code> or no
+    *         frame has been drawn since the activation of frame time measuring.
+    * @see #isMeasuringFrameTime()
+    */
+   public long getLastFrameTime() {
+     return lastTime;
+   }
+
+   @Override
+   protected void paintComponent(final Graphics g) {
+     long startTime;
+     if(measureTime) {
+       startTime = System.nanoTime();
+     } else {
+       startTime = 0L;
+     }
+     final Graphics2D g2 = (Graphics2D) g.create();
+     final Rectangle2D rect = getVisibleRect();
+     g2.clip(rect);
+     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+         RenderingHints.VALUE_ANTIALIAS_ON);
+     final Color c = back;
+     if(c != null) {
+       g2.setColor(c);
+       g2.fill(rect);
+     }
+     if(paintLock == null) {
+       doPaint(g2);
+     } else {
+       synchronized(paintLock) {
+         doPaint(g2);
+       }
+     }
+     g2.dispose();
+     if(measureTime) {
+       lastTime = System.nanoTime() - startTime;
+     }
+   }
+
+   /**
+    * Returns the current canvas context. Note that it is not guaranteed that the
+    * context returns correct values if the viewport changes after a call to this
+    * method.
+    * 
+    * @return The current canvas context.
+    */
+   public CanvasContext getContext() {
+     return new CanvasContext(true, 0, 0);
+   }
+
+   /**
+    * Returns the current head-up display context. Note that it is not guaranteed
+    * that the context returns correct values if the viewport changes after a
+    * call to this method.
+    * 
+    * @return The current head-up display context.
+    */
+   public CanvasContext getHUDContext() {
+     return new CanvasContext(false, 0, 0);
+   }
+
+   /**
+    * Does the actual painting.
+    * 
+    * @param g The graphics context.
+    */
+   private void doPaint(final Graphics2D g) {
+     final Graphics2D gfx = (Graphics2D) g.create();
+     zui.transform(gfx);
+     painter.draw(gfx, getContext());
+     gfx.dispose();
+     painter.drawHUD(g, getHUDContext());
+   }
+
+   /** The paint lock. */
+   private Object paintLock;
+
+   /**
+    * Setter.
+    * 
+    * @param paintLock The paint lock or <code>null</code> if nothing should be
+    *          locked during painting.
+    */
+   public void setPaintLock(final Object paintLock) {
+     this.paintLock = paintLock;
+   }
+
+   /**
+    * Getter.
+    * 
+    * @return The paint lock or <code>null</code> if nothing is locked during
+    *         painting.
+    */
+   public Object getPaintLock() {
+     return paintLock;
+   }
 
 
-  /**
-   * Sets the painter.
-   * 
-   * @param p The new painter.
-   */
-  public void setPainter(final KanvasPainter p) {
-    painter = Objects.requireNonNull(p);
-  }
+   /**
+    * Sets the painter.
+    * 
+    * @param p The new painter.
+    */
+   public void setPainter(final KanvasPainter p) {
+     painter = Objects.requireNonNull(p);
+   }
 
-  /**
-   * Resets the viewport to a scaling of <code>1.0</code> and
-   * <code>(0, 0)</code> being in the center of the component when
-   * {@link KanvasPainter#getBoundingBox()} returns <code>null</code> and zooms to fit
-   * the bounding box if {@link KanvasPainter#getBoundingBox()} returns a proper
-   * bounding box.
-   */
-  public void reset() {
-    final Rectangle2D bbox = painter.getBoundingBox();
-    if(bbox == null) {
-      zui.resetView(getVisibleRect());
-    } else {
-      reset(bbox);
-    }
-  }
+   /**
+    * Resets the viewport to a scaling of <code>1.0</code> and
+    * <code>(0, 0)</code> being in the center of the component when
+    * {@link KanvasPainter#getBoundingBox()} returns <code>null</code> and zooms to fit
+    * the bounding box if {@link KanvasPainter#getBoundingBox()} returns a proper
+    * bounding box.
+    */
+   public void reset() {
+     final Rectangle2D bbox = painter.getBoundingBox();
+     if(bbox == null) {
+       zui.resetView(getVisibleRect());
+     } else {
+       reset(bbox);
+     }
+   }
 
-  /** The margin for the viewport reset. The default is <code>10.0</code>. */
-  private double margin = 10.0;
+   /** The margin for the viewport reset. The default is <code>10.0</code>. */
+   private double margin = 10.0;
 
-  /**
-   * Getter.
-   * 
-   * @return The margin for viewport resets.
-   */
-  public double getMargin() {
-    return margin;
-  }
+   /**
+    * Getter.
+    * 
+    * @return The margin for viewport resets.
+    */
+   public double getMargin() {
+     return margin;
+   }
 
-  /**
-   * Setter.
-   * 
-   * @param margin Sets the margin for viewport resets.
-   */
-  public void setMargin(final double margin) {
-    this.margin = margin;
-  }
+   /**
+    * Setter.
+    * 
+    * @param margin Sets the margin for viewport resets.
+    */
+   public void setMargin(final double margin) {
+     this.margin = margin;
+   }
 
-  /**
-   * Resets the viewport to show exactly the given rectangle expanded by the
-   * margin given by {@link #getMargin()}.
-   * 
-   * @param bbox The rectangle that is visible.
-   */
-  public void reset(final Rectangle2D bbox) {
-    if(bbox == null) {
-      reset();
-    } else {
-      final double margin = getMargin();
-      final Rectangle2D rect = getVisibleRect();
-      zui.showRectangle(bbox, rect, margin, false);
-    }
-  }
+   /**
+    * Resets the viewport to show exactly the given rectangle expanded by the
+    * margin given by {@link #getMargin()}.
+    * 
+    * @param bbox The rectangle that is visible.
+    */
+   public void reset(final Rectangle2D bbox) {
+     if(bbox == null) {
+       reset();
+     } else {
+       final double margin = getMargin();
+       final Rectangle2D rect = getVisibleRect();
+       zui.showRectangle(bbox, rect, margin, false);
+     }
+   }
 
-  /** Whether the canvas is moveable, ie it can be panned and zoomed. */
-  private boolean isMoveable = true;
+   /** Whether the canvas is moveable, ie it can be panned and zoomed. */
+   private boolean isMoveable = true;
 
-  /**
-   * Sets whether the canvas is moveable, ie whether it can be panned or zoomed.
-   * 
-   * @param isMoveable If it is moveable.
-   */
-  public void setMoveable(final boolean isMoveable) {
-    this.isMoveable = isMoveable;
-  }
+   /**
+    * Sets whether the canvas is moveable, ie whether it can be panned or zoomed.
+    * 
+    * @param isMoveable If it is moveable.
+    */
+   public void setMoveable(final boolean isMoveable) {
+     this.isMoveable = isMoveable;
+   }
 
-  /**
-   * Getter.
-   * 
-   * @return Is <code>true</code>, when the canvas can be panned and zoomed.
-   */
-  public boolean isMoveable() {
-    return isMoveable;
-  }
+   /**
+    * Getter.
+    * 
+    * @return Is <code>true</code>, when the canvas can be panned and zoomed.
+    */
+   public boolean isMoveable() {
+     return isMoveable;
+   }
 
-  /**
-   * Getter.
-   * 
-   * @return The currently visible portion of the canvas.
-   */
-  public Rectangle2D getVisibleCanvas() {
-    return zui.toCanvas(getVisibleRect());
-  }
+   /**
+    * Getter.
+    * 
+    * @return The currently visible portion of the canvas.
+    */
+   public Rectangle2D getVisibleCanvas() {
+     return zui.toCanvas(getVisibleRect());
+   }
 
-  /** Disposes the painter. */
-  public void dispose() {
-    painter.dispose();
-  }
+   /** Disposes the painter. */
+   public void dispose() {
+     painter.dispose();
+   }
 
-  @Override
-  public void refresh() {
-    repaint();
-  }
+   @Override
+   public void refresh() {
+     repaint();
+   }
 
 }
