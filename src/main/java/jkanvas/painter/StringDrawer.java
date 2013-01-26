@@ -171,8 +171,8 @@ public class StringDrawer {
    */
   public Shape getRotatedBounds(final Point2D pos,
       final int hpos, final int vpos, final double theta) {
-    final AffineTransform at = AffineTransform.getTranslateInstance(pos.getX(),
-        pos.getY());
+    final AffineTransform at = AffineTransform.getTranslateInstance(
+        pos.getX(), pos.getY());
     at.rotate(theta);
     at.translate(getHorizontalOffset(hpos), getVerticalOffset(vpos, true));
     return at.createTransformedShape(bbox);

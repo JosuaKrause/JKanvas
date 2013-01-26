@@ -18,9 +18,11 @@ public interface NodeRealizer<T extends AnimatedPosition> {
    * clicked on. However the shape should not be smaller than the visual node.
    * 
    * @param node The node to draw.
+   * @param x The x position to draw the node to.
+   * @param y The y position to draw the node to.
    * @return The shape of the node.
    */
-  Shape createNodeShape(T node);
+  Shape createNodeShape(T node, double x, double y);
 
   /**
    * Draws the node.

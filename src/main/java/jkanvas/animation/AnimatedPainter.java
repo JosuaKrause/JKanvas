@@ -110,9 +110,8 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   /** Disposes this painter and stops the animator. */
   @Override
   public void dispose() {
-    if(!animator.isDisposed()) {
-      animator.dispose();
-    }
+    if(animator.isDisposed()) return;
+    animator.dispose();
   }
 
 }

@@ -17,9 +17,9 @@ public interface Animator extends RefreshManager {
   void quickRefresh();
 
   /**
-   * Adds a refreshable that is refreshed each step. {@inheritDoc}
+   * Adds a {@link Refreshable} that is refreshed each step. {@inheritDoc}
    * 
-   * @param r The refreshable.
+   * @param r The {@link Refreshable}.
    */
   @Override
   void addRefreshable(final Refreshable r);

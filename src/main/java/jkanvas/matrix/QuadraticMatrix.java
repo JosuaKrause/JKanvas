@@ -1,16 +1,16 @@
-package jkanvas.adjacency;
+package jkanvas.matrix;
 
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.RefreshManager;
 
 /**
- * An adjacency matrix.
+ * A quadratic matrix.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The content type.
  */
-public interface AdjacencyMatrix<T> {
+public interface QuadraticMatrix<T> {
 
   /**
    * Getter.
@@ -53,7 +53,7 @@ public interface AdjacencyMatrix<T> {
   int size();
 
   /**
-   * Sets the refresh manager of this adjacency matrix if the matrix supports
+   * Sets the refresh manager of this quadratic matrix if the matrix supports
    * automatic refreshing. Otherwise this method is a no-op.
    * 
    * @param manager The refresh manager or <code>null</code> if automatic
@@ -66,14 +66,14 @@ public interface AdjacencyMatrix<T> {
   /**
    * Getter.
    * 
-   * @return Whether this adjacency matrix supports automatic refreshing.
+   * @return Whether this quadratic matrix supports automatic refreshing.
    */
   boolean supportsAutoRefreshing();
 
   /**
    * Getter.
    * 
-   * @return Whether this adjacency matrix currently uses automatic refreshing.
+   * @return Whether this quadratic matrix currently uses automatic refreshing.
    */
   boolean isAutoRefreshing();
 
