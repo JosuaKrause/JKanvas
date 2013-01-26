@@ -20,7 +20,7 @@ import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.nodelink.EdgeRealizer;
-import jkanvas.nodelink.NodeLinkLayouter;
+import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
 import jkanvas.util.Interpolator;
@@ -31,7 +31,7 @@ import jkanvas.util.PaintUtil;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public final class NodeLinkMain extends NodeLinkLayouter<AnimatedPosition> {
+public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 
   /** The default node radius. */
   public static final double RADIUS = 20.0;

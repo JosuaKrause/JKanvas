@@ -18,7 +18,7 @@ import jkanvas.painter.RenderpassAdapter;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of nodes.
  */
-public class NodeLinkLayouter<T extends AnimatedPosition>
+public class NodeLinkRenderpass<T extends AnimatedPosition>
 extends RenderpassAdapter implements AnimatedLayouter {
 
   /** The node realizer. */
@@ -35,7 +35,7 @@ extends RenderpassAdapter implements AnimatedLayouter {
    * 
    * @param view The view on the graph.
    */
-  public NodeLinkLayouter(final NodeLinkView<T> view) {
+  public NodeLinkRenderpass(final NodeLinkView<T> view) {
     this.view = view;
   }
 
