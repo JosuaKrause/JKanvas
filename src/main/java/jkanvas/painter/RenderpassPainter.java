@@ -240,7 +240,7 @@ public class RenderpassPainter extends PainterAdapter {
    * @param pos The position in canvas coordinates.
    * @return The position in render-pass coordinates.
    */
-  public final static Point2D getPositionFromCanvas(final Renderpass r, final Point2D pos) {
+  public static final Point2D getPositionFromCanvas(final Renderpass r, final Point2D pos) {
     return new Point2D.Double(pos.getX() - r.getOffsetX(), pos.getY() - r.getOffsetY());
   }
 
@@ -253,7 +253,7 @@ public class RenderpassPainter extends PainterAdapter {
    * @param pos The position in components coordinates.
    * @return The position in render-pass coordinates.
    */
-  public final static Point2D getPositionFromComponent(final Renderpass r,
+  public static final Point2D getPositionFromComponent(final Renderpass r,
       final KanvasContext ctx, final Point2D pos) {
     return getPositionFromCanvas(r, ctx.toCanvasCoordinates(pos));
   }
@@ -266,7 +266,7 @@ public class RenderpassPainter extends PainterAdapter {
    * @param ctx The context.
    * @return The transformed context.
    */
-  public final static KanvasContext getContextFor(
+  public static final KanvasContext getContextFor(
       final Renderpass r, final KanvasContext ctx) {
     return ctx.translate(r.getOffsetX(), r.getOffsetY());
   }
