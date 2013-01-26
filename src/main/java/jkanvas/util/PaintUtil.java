@@ -182,4 +182,31 @@ public final class PaintUtil {
     return setAlpha(Color.getHSBColor((float) h, (float) s, (float) b), alpha);
   }
 
+  /**
+   * Removes the transparency of the given color.
+   * 
+   * @param col The color.
+   * @return The same color without transparency.
+   */
+  public static Color noAlpha(final Color col) {
+    return noAlpha(col, null);
+  }
+
+  /**
+   * Removes the transparency of the given color.
+   * 
+   * @param col The color.
+   * @param alpha An optional array with a length of at least one that is used
+   *          to store the previous alpha value of the color in slot 0.
+   * @return The same color without transparency.
+   */
+  public static Color noAlpha(final Color col, final float[] alpha) {
+    final float[] comp = col.getRGBComponents(null);
+    if(alpha != null) {
+      alpha[0] = comp[3];
+    }
+    if(comp[3] == 1) return col;
+    return new Color(comp[0], comp[1], comp[2]);
+  }
+
 }

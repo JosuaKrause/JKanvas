@@ -15,6 +15,7 @@ import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 import jkanvas.painter.HUDRenderpass;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.util.PaintUtil;
 
 /**
  * Allows for arbitrary shaped selections.
@@ -45,6 +46,27 @@ public abstract class AbstractSelector implements HUDRenderpass {
    * Creates an abstract selector.
    * 
    * @param canvas The canvas the selector operates on.
+   * @param color The color.
+   */
+  public AbstractSelector(final Canvas canvas, final Color color) {
+    this(canvas, color, 1, color, 0.6);
+  }
+
+  /**
+   * Creates an abstract selector.
+   * 
+   * @param canvas The canvas the selector operates on.
+   * @param inner The inner color.
+   * @param outer The outer color.
+   */
+  public AbstractSelector(final Canvas canvas, final Color inner, final Color outer) {
+    this(canvas, inner, 1, outer, 1);
+  }
+
+  /**
+   * Creates an abstract selector.
+   * 
+   * @param canvas The canvas the selector operates on.
    * @param inner The inner color.
    * @param alphaInner The alpha value of the inner color.
    * @param outer The outer color.
@@ -53,29 +75,46 @@ public abstract class AbstractSelector implements HUDRenderpass {
   public AbstractSelector(final Canvas canvas, final Color inner,
       final double alphaInner, final Color outer, final double alphaOuter) {
     this.canvas = Objects.requireNonNull(canvas);
-    this.inner = Objects.requireNonNull(inner);
-    this.alphaInner = (float) alphaInner;
-    this.outer = Objects.requireNonNull(outer);
-    this.alphaOuter = (float) alphaOuter;
+    Objects.requireNonNull(inner);
+    Objects.requireNonNull(outer);
+    final float[] alpha = new float[1];
+    this.inner = PaintUtil.noAlpha(inner, alpha);
+    this.alphaInner = (float) (alphaInner * alpha[0]);
+    this.outer = PaintUtil.noAlpha(outer, alpha);
+    this.alphaOuter = (float) (alphaOuter * alpha[0]);
   }
 
   /** The displayed selection. */
   private Shape selection;
 
   @Override
-  public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
+  public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
     if(selection == null) return;
+    draw(g, inner, alphaInner, true);
+    draw(g, outer, alphaOuter, false);
+  }
+
+  /**
+   * Draws the selection.
+   * 
+   * @param gfx The graphics context.
+   * @param color The color.
+   * @param alpha The alpha value.
+   * @param fill Whether to fill the shape or draw the outlines.
+   */
+  private void draw(final Graphics2D gfx, final Color color, final float alpha,
+      final boolean fill) {
+    if(alpha <= 0.0) return;
     final Graphics2D g = (Graphics2D) gfx.create();
-    final Graphics2D gInner = (Graphics2D) g.create();
-    gInner.setColor(inner);
-    gInner.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaInner));
-    gInner.fill(selection);
-    gInner.dispose();
-    final Graphics2D gOuter = (Graphics2D) g.create();
-    gOuter.setColor(outer);
-    gOuter.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaOuter));
-    gOuter.draw(selection);
-    gOuter.dispose();
+    g.setColor(color);
+    if(alpha < 1.0) {
+      g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+    }
+    if(fill) {
+      g.fill(selection);
+    } else {
+      g.draw(selection);
+    }
     g.dispose();
   }
 

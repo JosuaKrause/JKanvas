@@ -188,7 +188,7 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
     final Canvas c = new Canvas(p, 500, 500);
     final AbstractSelector sel = new RectangleSelection(c,
         // final AbstractSelector sel = new LassoSelection(c,
-        Color.BLUE, 0.75, Color.BLUE, 0.9) {
+        new Color(5, 113, 176, 200)) {
 
       @Override
       public boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
