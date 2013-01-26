@@ -1,35 +1,30 @@
 package jkanvas.painter;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import jkanvas.Canvas;
-import jkanvas.KanvasContext;
-import jkanvas.util.PaintUtil;
 
 /**
  * A HUD showing the current frame-rate.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class FrameRateHUD extends HUDRenderpassAdapter {
+public class FrameRateHUD extends TextHUD {
+
+  /** The padding of the text box. */
+  public static final double PADDING = 5.0;
+
+  /** The alpha value of the text box. */
+  public static final double ALPHA = 0.5;
+
+  /** The text color. */
+  public static final Color TEXT = Color.WHITE;
+
+  /** The text box color. */
+  public static final Color BACK = Color.BLACK;
 
   /** The canvas to measure the frame-rate. */
   private final Canvas canvas;
-
-  /** The padding of the text box. */
-  private final double padding = 5.0;
-
-  /** The alpha value of the text box. */
-  private final double alpha = 0.5;
-
-  /** The text color. */
-  private final Color TEXT = Color.WHITE;
-
-  /** The text box color. */
-  private final Color BACK = Color.BLACK;
 
   /**
    * Creates a frame-rate HUD for the given canvas.
@@ -37,6 +32,7 @@ public class FrameRateHUD extends HUDRenderpassAdapter {
    * @param canvas The canvas.
    */
   public FrameRateHUD(final Canvas canvas) {
+    super(TEXT, BACK, ALPHA, PADDING, RIGHT, TOP);
     this.canvas = canvas;
     canvas.setMeasureFrameTime(true);
   }
@@ -48,22 +44,16 @@ public class FrameRateHUD extends HUDRenderpassAdapter {
   }
 
   @Override
-  public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
+  public int lineCount() {
+    return 1;
+  }
+
+  @Override
+  public String getLine(final int i) {
     final long time = canvas.getLastFrameTime();
-    if(time == 0) return;
+    if(time == 0) return null;
     final double fps = 1e9 / time;
-    final Rectangle2D comp = ctx.getVisibleComponent();
-    final Point2D pos = new Point2D.Double(
-        comp.getMaxX() - padding, comp.getMinY() + padding);
-    final StringDrawer sd = new StringDrawer(gfx, "fps: " + format(fps));
-    final Graphics2D g = (Graphics2D) gfx.create();
-    g.setColor(BACK);
-    PaintUtil.setAlpha(g, alpha);
-    g.fill(PaintUtil.toRoundRectangle(
-        sd.getBounds(pos, StringDrawer.RIGHT, StringDrawer.TOP), padding));
-    g.dispose();
-    gfx.setColor(TEXT);
-    sd.draw(pos, StringDrawer.RIGHT, StringDrawer.TOP);
+    return "fps: " + format(fps);
   }
 
   /**
