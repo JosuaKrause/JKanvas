@@ -1,6 +1,5 @@
 package jkanvas.selection;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -107,9 +106,7 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
     if(alpha <= 0.0) return;
     final Graphics2D g = (Graphics2D) gfx.create();
     g.setColor(color);
-    if(alpha < 1.0) {
-      g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-    }
+    PaintUtil.setAlpha(g, alpha);
     if(fill) {
       g.fill(selection);
     } else {

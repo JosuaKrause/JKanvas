@@ -1,5 +1,6 @@
 package jkanvas.util;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -7,6 +8,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  * Utility methods for painting.
@@ -53,6 +55,20 @@ public final class PaintUtil {
     final double p2 = padding * 2;
     return new Rectangle2D.Double(rect.getX() - padding, rect.getY() - padding,
         rect.getWidth() + p2, rect.getHeight() + p2);
+  }
+
+  /**
+   * Converts a rectangle to a round rectangle.
+   * 
+   * @param rect The rectangle.
+   * @param radius The radius of the round rectangle.
+   * @return The round rectangle.
+   */
+  public static RoundRectangle2D toRoundRectangle(
+      final Rectangle2D rect, final double radius) {
+    final double r2 = radius * 2;
+    return new RoundRectangle2D.Double(rect.getX() - radius, rect.getY() - radius,
+        rect.getWidth() + r2, rect.getHeight() + r2, radius, radius);
   }
 
   /**
@@ -140,8 +156,7 @@ public final class PaintUtil {
 
   /**
    * Sets the alpha value of a color. Hint: Consider using
-   * <code>AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)</code> and
-   * passing it via {@link Graphics2D#setComposite(java.awt.Composite)}.
+   * {@link #setAlpha(Graphics2D, double)}.
    * 
    * @param col The color.
    * @param alpha The new alpha value.
@@ -154,8 +169,7 @@ public final class PaintUtil {
 
   /**
    * Multiplies the alpha value of a color. Hint: Consider using
-   * <code>AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)</code> and
-   * passing it via {@link Graphics2D#setComposite(java.awt.Composite)}.
+   * {@link #setAlpha(Graphics2D, double)}.
    * 
    * @param col The color.
    * @param alpha The alpha value to multiply to the previous value.
@@ -168,8 +182,7 @@ public final class PaintUtil {
 
   /**
    * Creates a color with transparency. Hint: Consider using
-   * <code>AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)</code> and
-   * passing it via {@link Graphics2D#setComposite(java.awt.Composite)}.
+   * {@link #setAlpha(Graphics2D, double)}.
    * 
    * @param h The hue value. <code>1</code> represents <code>360</code> degrees.
    * @param s The saturation value.
@@ -207,6 +220,17 @@ public final class PaintUtil {
     }
     if(comp[3] == 1) return col;
     return new Color(comp[0], comp[1], comp[2]);
+  }
+
+  /**
+   * Sets the alpha value of the given graphics context via composite.
+   * 
+   * @param g The graphics context.
+   * @param alpha The alpha value.
+   */
+  public static void setAlpha(final Graphics2D g, final double alpha) {
+    if(alpha >= 1) return;
+    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alpha));
   }
 
 }
