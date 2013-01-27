@@ -61,7 +61,7 @@ public class MouseInteraction extends MouseAdapter {
    * 
    * @return The initial position of the dragged object.
    */
-  protected final Point2D getPoint() {
+  protected final Point2D getStartPoint() {
     return start;
   }
 

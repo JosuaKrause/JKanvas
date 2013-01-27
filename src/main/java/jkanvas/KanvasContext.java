@@ -1,6 +1,7 @@
 package jkanvas;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -79,5 +80,21 @@ public interface KanvasContext {
    * @return The translated context.
    */
   KanvasContext translate(double dx, double dy);
+
+  /**
+   * Getter.
+   * 
+   * @return The transformation that has to be applied to convert to canvas
+   *         coordinates.
+   */
+  AffineTransform toCanvasTransformation();
+
+  /**
+   * Getter.
+   * 
+   * @return The transformation that has to be applied to convert to component
+   *         coordinates.
+   */
+  AffineTransform toComponentTransformation();
 
 }

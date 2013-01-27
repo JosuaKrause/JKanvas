@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 /**
- * A zoomable user interface can be translated and zooming can be performed.
+ * A zoom-able user interface can be translated and zooming can be performed.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
@@ -35,7 +35,7 @@ public final class ZoomableUI {
   private double maxZoom = -1;
 
   /**
-   * Creates a zoomable user interface.
+   * Creates a zoom-able user interface.
    * 
    * @param refreshee Will be notified when the transformation changes.
    * @param restriction An optional restriction for the canvas.
@@ -217,6 +217,16 @@ public final class ZoomableUI {
   public void transform(final AffineTransform at) {
     at.translate(offX, offY);
     at.scale(zoom, zoom);
+  }
+
+  /**
+   * Transforms the given affine transformation back.
+   * 
+   * @param at The affine transformation.
+   */
+  public void transformBack(final AffineTransform at) {
+    at.scale(1 / zoom, 1 / zoom);
+    at.translate(-offX, -offY);
   }
 
   /**

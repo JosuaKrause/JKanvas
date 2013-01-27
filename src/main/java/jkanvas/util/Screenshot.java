@@ -12,13 +12,13 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 /**
- * Saves screenshots.
+ * Saves screen-shots.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
 public final class Screenshot {
 
-  /** The scaling factor for raster screenshots. */
+  /** The scaling factor for raster screen-shots. */
   private static final int SCALE = 3;
 
   /** No constructor. */
@@ -64,7 +64,7 @@ public final class Screenshot {
   }
 
   /**
-   * Saves a screenshot as PNG.
+   * Saves a screen-shot as PNG.
    * 
    * @param dir The directory.
    * @param prefix The name prefix.
@@ -77,7 +77,7 @@ public final class Screenshot {
   }
 
   /**
-   * Saves a screenshot as PNG.
+   * Saves a screen-shot as PNG.
    * 
    * @param out The output.
    * @param comp The component.

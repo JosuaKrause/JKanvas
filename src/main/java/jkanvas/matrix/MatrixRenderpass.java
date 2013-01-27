@@ -1,4 +1,4 @@
-package jkanvas.adjacency;
+package jkanvas.matrix;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -7,20 +7,20 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
-import jkanvas.painter.PainterAdapter;
+import jkanvas.painter.RenderpassAdapter;
 
 /**
- * Paints an adjacency matrix.
+ * Paints a matrix.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The content type.
  */
-public abstract class MatrixPainter<T> extends PainterAdapter {
+public class MatrixRenderpass<T> extends RenderpassAdapter {
 
   /** The refresh manager. */
   private final RefreshManager manager;
   /** The matrix. */
-  private AdjacencyMatrix<T> matrix;
+  private QuadraticMatrix<T> matrix;
   /** The cell drawer. */
   private CellRealizer<T> cellDrawer;
 
@@ -32,8 +32,8 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * @param manager The refresh manager that is notified each time something
    *          changes.
    */
-  public MatrixPainter(final AdjacencyMatrix<T> matrix, final CellRealizer<T> cellDrawer,
-      final RefreshManager manager) {
+  public MatrixRenderpass(final QuadraticMatrix<T> matrix,
+      final CellRealizer<T> cellDrawer, final RefreshManager manager) {
     this.manager = Objects.requireNonNull(manager);
     this.cellDrawer = Objects.requireNonNull(cellDrawer);
     setMatrix(matrix);
@@ -44,7 +44,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @param m The new matrix.
    */
-  public void setMatrix(final AdjacencyMatrix<T> m) {
+  public void setMatrix(final QuadraticMatrix<T> m) {
     Objects.requireNonNull(m);
     if(matrix != null && matrix.supportsAutoRefreshing()) {
       matrix.setRefreshManager(null);
@@ -61,7 +61,7 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * 
    * @return The matrix.
    */
-  public AdjacencyMatrix<T> getMatrix() {
+  public QuadraticMatrix<T> getMatrix() {
     return matrix;
   }
 
@@ -111,7 +111,10 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
    * @param col The column.
    * @return If the cell is selected.
    */
-  protected abstract boolean isSelected(int row, int col);
+  protected boolean isSelected(@SuppressWarnings("unused") final int row,
+      @SuppressWarnings("unused") final int col) {
+    return false;
+  }
 
   /**
    * Indicates whether any cell in the matrix is selected. This can be used to
@@ -151,6 +154,11 @@ public abstract class MatrixPainter<T> extends PainterAdapter {
     }
     final boolean missed = col < 0 || row < 0 || w <= pos.getX() || h <= pos.getY();
     return missed ? null : new MatrixPosition(row, col);
+  }
+
+  @Override
+  public void setBoundingBox(final Rectangle2D bbox) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

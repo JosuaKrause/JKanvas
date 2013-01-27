@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class SimpleRefreshManager implements RefreshManager {
 
-  /** The list containing all refreshables. */
+  /** The list containing all {@link Refreshable Refreshables}. */
   private final List<Refreshable> refreshables = new ArrayList<>();
   /** The number of active bulk operations. */
   private int bulkOps = 0;
@@ -50,7 +50,7 @@ public class SimpleRefreshManager implements RefreshManager {
     refreshAll();
   }
 
-  /** Clears all refreshables. */
+  /** Clears all {@link Refreshable Refreshables}. */
   protected void clearRefreshables() {
     refreshables.clear();
   }

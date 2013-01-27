@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Objects;
@@ -27,7 +28,7 @@ import javax.swing.KeyStroke;
  */
 public class Canvas extends JComponent implements Refreshable {
 
-  /** The underlying zoomable user interface. */
+  /** The underlying zoom-able user interface. */
   protected final ZoomableUI zui;
 
   /** The painter. */
@@ -49,11 +50,20 @@ public class Canvas extends JComponent implements Refreshable {
     zui = new ZoomableUI(this, null);
     final MouseAdapter mouse = new MouseInteraction() {
 
+      /** Whether the drag is on the HUD. */
+      private boolean hudDrag;
+
       @Override
       public void mousePressed(final MouseEvent e) {
         getFocusComponent().grabFocus();
         final Point2D p = e.getPoint();
         if(painter.clickHUD(p)) {
+          refresh();
+          return;
+        }
+        if(painter.acceptDragHUD(p, e)) {
+          hudDrag = true;
+          startDragging(p);
           refresh();
           return;
         }
@@ -63,6 +73,7 @@ public class Canvas extends JComponent implements Refreshable {
           return;
         }
         if(painter.acceptDrag(c, e)) {
+          hudDrag = false;
           startDragging(c);
           refresh();
           return;
@@ -74,32 +85,39 @@ public class Canvas extends JComponent implements Refreshable {
 
       @Override
       public void mouseDragged(final MouseEvent e) {
-        if(isDragging()) {
-          if(!isPointDrag()) {
-            move(e.getX(), e.getY());
-          } else {
-            final Point2D cur = zui.getForScreen(e.getPoint());
-            final Point2D start = getPoint();
-            painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
-            refresh();
-          }
+        if(!isDragging()) return;
+        if(!isPointDrag()) {
+          move(e.getX(), e.getY());
+          return;
         }
+        final Point2D start = getStartPoint();
+        final Point2D p = e.getPoint();
+        if(hudDrag) {
+          painter.dragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
+        } else {
+          final Point2D cur = zui.getForScreen(p);
+          painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
+        }
+        refresh();
       }
 
       @Override
       public void mouseReleased(final MouseEvent e) {
-        if(isDragging()) {
-          if(!isPointDrag()) {
-            move(e.getX(), e.getY());
-            stopDragging();
-          } else {
-            final Point2D cur = zui.getForScreen(e.getPoint());
-            final Point2D start = stopPointDrag();
-            painter.endDrag(start, cur, cur.getX() - start.getX(),
-                cur.getY() - start.getY());
-            refresh();
-          }
+        if(!isDragging()) return;
+        if(!isPointDrag()) {
+          move(e.getX(), e.getY());
+          stopDragging();
+          return;
         }
+        final Point2D p = e.getPoint();
+        final Point2D start = stopPointDrag();
+        if(hudDrag) {
+          painter.endDragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
+        } else {
+          final Point2D c = zui.getForScreen(p);
+          painter.endDrag(start, c, c.getX() - start.getX(), c.getY() - start.getY());
+        }
+        refresh();
       }
 
       /**
@@ -114,14 +132,14 @@ public class Canvas extends JComponent implements Refreshable {
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
-        if(!isDragging() && isMoveable()) {
-          zui.zoomTo(e.getX(), e.getY(), e.getWheelRotation());
-        }
+        if(isDragging() || !isMoveable()) return;
+        zui.zoomTo(e.getX(), e.getY(), e.getWheelRotation());
       }
 
       @Override
       public void mouseMoved(final MouseEvent e) {
-        painter.moveMouse(zui.getForScreen(e.getPoint()));
+        if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
+        refresh();
       }
 
     };
@@ -284,10 +302,77 @@ public class Canvas extends JComponent implements Refreshable {
       return new CanvasContext(inCanvasSpace, offX - dx, offY - dy);
     }
 
+    @Override
+    public AffineTransform toComponentTransformation() {
+      final AffineTransform at = new AffineTransform();
+      zui.transform(at);
+      at.translate(offX, offY);
+      return at;
+    }
+
+    @Override
+    public AffineTransform toCanvasTransformation() {
+      final AffineTransform at = new AffineTransform();
+      at.translate(-offX, -offY);
+      zui.transformBack(at);
+      return at;
+    }
+
   } // CanvasContext
+
+  /** Whether frame time is measured. */
+  private boolean measureTime;
+
+  /**
+   * The time it took to draw the most recent frame or <code>0</code> if the
+   * value is not known.
+   */
+  private volatile long lastTime;
+
+  /**
+   * Setter.
+   * 
+   * @param measureTime Whether to measure frame time.
+   * @see #getLastFrameTime()
+   */
+  public void setMeasureFrameTime(final boolean measureTime) {
+    this.measureTime = measureTime;
+    lastTime = 0L;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether frame time is measured.
+   * @see #getLastFrameTime()
+   * @see #setMeasureFrameTime(boolean)
+   */
+  public boolean isMeasuringFrameTime() {
+    return measureTime;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The time needed to draw the most recent frame in nano-seconds. When
+   *         this method returns <code>0</code> the value is not known. This may
+   *         be when {@link #isMeasuringFrameTime()} returns <code>false</code>
+   *         or no frame has been drawn since the activation of frame time
+   *         measuring.
+   * @see #isMeasuringFrameTime()
+   */
+  public long getLastFrameTime() {
+    return lastTime;
+  }
 
   @Override
   protected void paintComponent(final Graphics g) {
+    long startTime;
+    if(measureTime) {
+      startTime = System.nanoTime();
+    } else {
+      startTime = 0L;
+    }
     final Graphics2D g2 = (Graphics2D) g.create();
     final Rectangle2D rect = getVisibleRect();
     g2.clip(rect);
@@ -306,6 +391,9 @@ public class Canvas extends JComponent implements Refreshable {
       }
     }
     g2.dispose();
+    if(measureTime) {
+      lastTime = System.nanoTime() - startTime;
+    }
   }
 
   /**
