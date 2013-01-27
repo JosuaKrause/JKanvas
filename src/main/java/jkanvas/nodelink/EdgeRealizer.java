@@ -27,9 +27,11 @@ public interface EdgeRealizer<T extends AnimatedPosition> {
    * Draws edges. The order of the nodes is not defined.
    * 
    * @param g The graphics context.
+   * @param edgeShape The computed edge shape. As returned by
+   *          {@link #createLineShape(AnimatedPosition, AnimatedPosition)}.
    * @param from The source node.
    * @param to The sink node.
    */
-  void drawLines(Graphics2D g, T from, T to);
+  void drawLines(Graphics2D g, Shape edgeShape, T from, T to);
 
 }

@@ -202,10 +202,10 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
       @Override
-      public void drawLines(final Graphics2D g,
+      public void drawLines(final Graphics2D g, final Shape edgeShape,
           final AnimatedPosition from, final AnimatedPosition to) {
         g.setColor(Color.BLACK);
-        g.fill(createLineShape(from, to));
+        g.fill(edgeShape);
       }
 
     });

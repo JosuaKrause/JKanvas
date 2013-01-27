@@ -121,7 +121,7 @@ extends RenderpassAdapter implements AnimatedLayouter {
           continue;
         }
         final Graphics2D g = (Graphics2D) gfx.create();
-        edgeRealizer.drawLines(g, from, to);
+        edgeRealizer.drawLines(g, edgeShape, from, to);
         g.dispose();
       }
     }
