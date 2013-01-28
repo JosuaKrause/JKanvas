@@ -69,6 +69,15 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     return needsRedraw;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The animation lock.
+   */
+  public Object getAnimationLock() {
+    return animator.getAnimationLock();
+  }
+
   @Override
   public void addRefreshable(final Refreshable r) {
     animator.addRefreshable(r);

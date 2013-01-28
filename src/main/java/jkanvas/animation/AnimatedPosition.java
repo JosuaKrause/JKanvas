@@ -66,6 +66,16 @@ public class AnimatedPosition extends Position2D {
     return end != null ? end.getY() : getY();
   }
 
+  /**
+   * Guarantees to set the position immediately.
+   * 
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   */
+  private void doSetPosition(final double x, final double y) {
+    super.setPosition(x, y);
+  }
+
   /** The long animation duration. */
   public static final int LONG = 2000;
 
@@ -87,7 +97,7 @@ public class AnimatedPosition extends Position2D {
       final Interpolator pol, final int duration) {
     clearAnimation(currentTime);
     if(duration <= 0) {
-      setPosition(pos);
+      doSetPosition(pos.getX(), pos.getY());
       return;
     }
     startTime = currentTime;
@@ -206,7 +216,7 @@ public class AnimatedPosition extends Position2D {
   private void doAnimate(final long currentTime) {
     if(!inAnimation()) return;
     if(currentTime >= endTime) {
-      setPosition(end);
+      doSetPosition(end.getX(), end.getY());
       start = null;
       end = null;
       pol = null;
@@ -214,7 +224,7 @@ public class AnimatedPosition extends Position2D {
     }
     final double t = ((double) currentTime - startTime) / ((double) endTime - startTime);
     final double f = pol.interpolate(t);
-    setPosition(start.getX() * (1 - f) + end.getX() * f,
+    doSetPosition(start.getX() * (1 - f) + end.getX() * f,
         start.getY() * (1 - f) + end.getY() * f);
   }
 
