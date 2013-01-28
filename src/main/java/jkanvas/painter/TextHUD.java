@@ -102,18 +102,17 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
   /**
    * Calculates the start position.
    * 
-   * @param ctx The context.
+   * @param visibleRect The visible rectangle in component coordinates.
    * @return The start position.
    */
-  private Point2D getStartPosition(final KanvasContext ctx) {
-    final Rectangle2D comp = ctx.getVisibleComponent();
+  private Point2D getStartPosition(final Rectangle2D visibleRect) {
     double x;
     switch(hpos) {
       case LEFT:
-        x = comp.getMinX() + padding;
+        x = visibleRect.getMinX() + padding;
         break;
       case RIGHT:
-        x = comp.getMaxX() - padding;
+        x = visibleRect.getMaxX() - padding;
         break;
       default:
         throw new AssertionError();
@@ -121,10 +120,10 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
     double y;
     switch(vpos) {
       case TOP:
-        y = comp.getMinY() + padding;
+        y = visibleRect.getMinY() + padding;
         break;
       case BOTTOM:
-        y = comp.getMaxY() - padding;
+        y = visibleRect.getMaxY() - padding;
         break;
       default:
         throw new AssertionError();
@@ -134,6 +133,16 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
 
   @Override
   public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
+    draw(gfx, ctx.getVisibleComponent());
+  }
+
+  /**
+   * Draws the text box.
+   * 
+   * @param gfx The graphics context.
+   * @param visibleRect The visible rectangle in component coordinates.
+   */
+  protected void draw(final Graphics2D gfx, final Rectangle2D visibleRect) {
     final int count = lineCount();
     if(count <= 0) return;
     final StringDrawer[] sds = new StringDrawer[count];
@@ -156,7 +165,7 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
     final double dirV = vpos == TOP ? 1 : -1;
     final double mulV = vpos == TOP ? 0 : 1;
     final double mulH = hpos == LEFT ? 0 : 1;
-    final Point2D cur = getStartPosition(ctx);
+    final Point2D cur = getStartPosition(visibleRect);
     final Rectangle2D box = new Rectangle2D.Double(cur.getX() - mulH * width,
         cur.getY() - mulV * height, width, height);
     if(alpha > 0) {

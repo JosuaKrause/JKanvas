@@ -1,15 +1,15 @@
 package jkanvas.painter;
 
 import java.awt.Color;
-
-import jkanvas.Canvas;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * A HUD showing the current frame-rate.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class FrameRateHUD extends TextHUD {
+public class FrameRateHUD extends TextHUD implements FrameRateDisplayer {
 
   /** The padding of the text box. */
   public static final double PADDING = 5.0;
@@ -23,24 +23,11 @@ public class FrameRateHUD extends TextHUD {
   /** The text box color. */
   public static final Color BACK = Color.BLACK;
 
-  /** The canvas to measure the frame-rate. */
-  private final Canvas canvas;
-
   /**
-   * Creates a frame-rate HUD for the given canvas.
-   * 
-   * @param canvas The canvas.
+   * Creates a frame-rate HUD.
    */
-  public FrameRateHUD(final Canvas canvas) {
+  public FrameRateHUD() {
     super(TEXT, BACK, ALPHA, PADDING, RIGHT, TOP);
-    this.canvas = canvas;
-    canvas.setMeasureFrameTime(true);
-  }
-
-  @Override
-  public void setVisible(final boolean isVisible) {
-    super.setVisible(isVisible);
-    canvas.setMeasureFrameTime(isVisible);
   }
 
   @Override
@@ -48,11 +35,18 @@ public class FrameRateHUD extends TextHUD {
     return 1;
   }
 
+  /** The time it took to draw the most recent frame in nano-seconds. */
+  private long lastFrameTime;
+
+  @Override
+  public void setLastFrameTime(final long time) {
+    lastFrameTime = time;
+  }
+
   @Override
   public String getLine(final int i) {
-    final long time = canvas.getLastFrameTime();
-    if(time == 0) return null;
-    final double fps = 1e9 / time;
+    if(lastFrameTime == 0) return null;
+    final double fps = 1e9 / lastFrameTime;
     return "fps: " + format(fps);
   }
 
@@ -68,6 +62,16 @@ public class FrameRateHUD extends TextHUD {
     final String str = tmp + "00000";
     final int dot = str.indexOf('.');
     return str.substring(0, Math.min(dot + 6, str.length()));
+  }
+
+  @Override
+  public void drawFrameRate(final Graphics2D gfx, final Rectangle2D visibleRect) {
+    draw(gfx, visibleRect);
+  }
+
+  @Override
+  public boolean isActive() {
+    return isVisible();
   }
 
 }

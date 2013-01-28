@@ -237,7 +237,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     // configure Canvas
     final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
-    p.addHUDPass(new FrameRateHUD(c));
+    c.setFrameRateDisplayer(new FrameRateHUD());
     p.addRefreshable(c);
     final JFrame frame = new JFrame("Node-Link") {
 

@@ -20,6 +20,8 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+import jkanvas.painter.FrameRateDisplayer;
+
 /**
  * A simple class adding panning and zooming functionality to a
  * {@link JComponent}.
@@ -320,59 +322,41 @@ public class Canvas extends JComponent implements Refreshable {
 
   } // CanvasContext
 
-  /** Whether frame time is measured. */
-  private boolean measureTime;
-
-  /**
-   * The time it took to draw the most recent frame or <code>0</code> if the
-   * value is not known.
-   */
-  private volatile long lastTime;
+  /** The frame rate displayer. */
+  private FrameRateDisplayer frameRateDisplayer;
 
   /**
    * Setter.
    * 
-   * @param measureTime Whether to measure frame time.
-   * @see #getLastFrameTime()
+   * @param frameRateDisplayer Sets the frame rate displayer. <code>null</code>
+   *          stops time measuring.
    */
-  public void setMeasureFrameTime(final boolean measureTime) {
-    this.measureTime = measureTime;
-    lastTime = 0L;
+  public void setFrameRateDisplayer(final FrameRateDisplayer frameRateDisplayer) {
+    this.frameRateDisplayer = frameRateDisplayer;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The current frame rate displayer or <code>null</code>.
+   */
+  public FrameRateDisplayer getFrameRateDisplayer() {
+    return frameRateDisplayer;
   }
 
   /**
    * Getter.
    * 
    * @return Whether frame time is measured.
-   * @see #getLastFrameTime()
-   * @see #setMeasureFrameTime(boolean)
    */
   public boolean isMeasuringFrameTime() {
-    return measureTime;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The time needed to draw the most recent frame in nano-seconds. When
-   *         this method returns <code>0</code> the value is not known. This may
-   *         be when {@link #isMeasuringFrameTime()} returns <code>false</code>
-   *         or no frame has been drawn since the activation of frame time
-   *         measuring.
-   * @see #isMeasuringFrameTime()
-   */
-  public long getLastFrameTime() {
-    return lastTime;
+    return frameRateDisplayer != null && frameRateDisplayer.isActive();
   }
 
   @Override
   protected void paintComponent(final Graphics g) {
-    long startTime;
-    if(measureTime) {
-      startTime = System.nanoTime();
-    } else {
-      startTime = 0L;
-    }
+    final boolean measureTime = isMeasuringFrameTime();
+    final long startTime = measureTime ? System.nanoTime() : 0L;
     final Graphics2D g2 = (Graphics2D) g.create();
     final Rectangle2D rect = getVisibleRect();
     g2.clip(rect);
@@ -390,10 +374,11 @@ public class Canvas extends JComponent implements Refreshable {
         doPaint(g2);
       }
     }
-    g2.dispose();
     if(measureTime) {
-      lastTime = System.nanoTime() - startTime;
+      frameRateDisplayer.setLastFrameTime(System.nanoTime() - startTime);
+      frameRateDisplayer.drawFrameRate(g2, getVisibleRect());
     }
+    g2.dispose();
   }
 
   /**
