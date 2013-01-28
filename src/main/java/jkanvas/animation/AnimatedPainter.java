@@ -63,7 +63,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     for(final AnimatedLayouter l : layouters) {
       for(final AnimatedPosition node : l.getPositions()) {
         node.animate(currentTime);
-        needsRedraw = needsRedraw || node.lazyInAnimation();
+        needsRedraw = node.hasChanged() || needsRedraw;
       }
     }
     return needsRedraw;

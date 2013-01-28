@@ -66,6 +66,19 @@ public class AnimatedPosition extends Position2D {
     return end != null ? end.getY() : getY();
   }
 
+  @Override
+  public void setPosition(final double x, final double y) {
+    setPosition(new Point2D.Double(x, y));
+  }
+
+  @Override
+  public void setPosition(final Point2D pos) {
+    // ensures that every previous animation is cleared
+    pendingOperations.add(new PendingOp(pos));
+    // set position directly for immediate feed-back
+    doSetPosition(pos.getX(), pos.getY());
+  }
+
   /**
    * Guarantees to set the position immediately.
    * 
@@ -73,6 +86,7 @@ public class AnimatedPosition extends Position2D {
    * @param y The y coordinate.
    */
   private void doSetPosition(final double x, final double y) {
+    change();
     super.setPosition(x, y);
   }
 
@@ -201,6 +215,12 @@ public class AnimatedPosition extends Position2D {
         case OP_CHANGE:
           changeAnimationTo(currentTime, op.destination, op.interpolator, op.duration);
           break;
+        case OP_SET: {
+          clearAnimation(currentTime);
+          final Point2D pos = op.destination;
+          doSetPosition(pos.getX(), pos.getY());
+          break;
+        }
         default:
           throw new InternalError();
       }
@@ -240,6 +260,9 @@ public class AnimatedPosition extends Position2D {
   /** Animation change operation. */
   private static final int OP_CHANGE = 2;
 
+  /** Position setting operation. */
+  private static final int OP_SET = 3;
+
   /**
    * A pending animation operation.
    * 
@@ -263,6 +286,18 @@ public class AnimatedPosition extends Position2D {
     public PendingOp() {
       operation = OP_CLEAR;
       destination = null;
+      interpolator = null;
+      duration = 0;
+    }
+
+    /**
+     * Creates a position setting operation. This clears animations.
+     * 
+     * @param pos The position.
+     */
+    public PendingOp(final Point2D pos) {
+      operation = OP_SET;
+      destination = pos;
       interpolator = null;
       duration = 0;
     }
@@ -295,21 +330,23 @@ public class AnimatedPosition extends Position2D {
     return pol != null;
   }
 
-  /** Lazy in animation memory. */
-  private boolean lazyIa;
+  /** Whether this position has been changed. */
+  private boolean changed;
+
+  /** Signals a change. */
+  private void change() {
+    changed = true;
+  }
 
   /**
    * Getter.
    * 
-   * @return Whether this node is in animation. This method returns
-   *         <code>true</code> one more time after {@link #inAnimation()}
-   *         returns <code>false</code>.
+   * @return Whether this position has been changed. The change flag is cleared
+   *         by this method.
    */
-  public boolean lazyInAnimation() {
-    final boolean ia = inAnimation();
-    lazyIa |= ia;
-    final boolean res = lazyIa;
-    lazyIa &= ia;
+  public boolean hasChanged() {
+    final boolean res = changed;
+    changed = false;
     return res;
   }
 
