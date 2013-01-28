@@ -22,7 +22,8 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
 
       @Override
       protected boolean step() {
-        return doStep();
+        final long currentTime = System.currentTimeMillis();
+        return doStep(currentTime);
       }
 
     };
@@ -54,13 +55,14 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   /**
    * Computes one step for all layouters.
    * 
+   * @param currentTime The current time in milliseconds.
    * @return Whether a redraw is needed.
    */
-  protected boolean doStep() {
+  protected boolean doStep(final long currentTime) {
     boolean needsRedraw = false;
     for(final AnimatedLayouter l : layouters) {
       for(final AnimatedPosition node : l.getPositions()) {
-        node.animate();
+        node.animate(currentTime);
         needsRedraw = needsRedraw || node.lazyInAnimation();
       }
     }
