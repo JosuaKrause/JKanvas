@@ -18,10 +18,10 @@ public interface RestrictedCanvas {
   Rectangle2D getBoundingRect();
 
   /**
-   * Returns the visible rectangle in canvas coordinates.
+   * Returns the visible rectangle in component coordinates.
    * 
-   * @return The visible rectangle in canvas coordinates.
+   * @return The visible rectangle in component coordinates.
    */
-  Rectangle2D getCurrentView();
+  Rectangle2D getComponentView();
 
 }

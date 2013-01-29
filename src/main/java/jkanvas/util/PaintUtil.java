@@ -96,26 +96,29 @@ public final class PaintUtil {
    *         rectangle.
    */
   public static Rectangle2D fitInto(final Rectangle2D rect, final double w, final double h) {
+    final double s = fitIntoScale(rect, w, h);
+    final double nw = w * s;
+    final double nh = h * s;
+    final double px = (rect.getWidth() - nw) * 0.5;
+    final double py = (rect.getHeight() - nh) * 0.5;
+    return new Rectangle2D.Double(rect.getX() + px, rect.getY() + py, nw, nh);
+  }
+
+  /**
+   * Scales the given width and height so that they are maximally not larger
+   * than the size of the given rectangle.
+   * 
+   * @param rect The rectangle.
+   * @param w The width.
+   * @param h The height.
+   * @return The scale for the width and height.
+   */
+  public static double fitIntoScale(final Rectangle2D rect, final double w, final double h) {
     final double rw = rect.getWidth();
     final double rh = rect.getHeight();
-    final double verWidth = w * rh / h;
-    final boolean vertical = verWidth <= rw;
-    final double px;
-    final double py;
-    final double nw;
-    final double nh;
-    if(vertical) {
-      nw = verWidth;
-      nh = rh;
-      px = (rw - nw) * 0.5;
-      py = 0;
-    } else {
-      nw = rw;
-      nh = h * rw / w;
-      px = 0;
-      py = (rh - nh) * 0.5;
-    }
-    return new Rectangle2D.Double(rect.getX() + px, rect.getY() + py, nw, nh);
+    final double hRatio = rh / h;
+    final double verWidth = w * hRatio;
+    return verWidth <= rw ? hRatio : rw / w;
   }
 
   /**

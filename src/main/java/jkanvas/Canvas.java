@@ -28,7 +28,7 @@ import jkanvas.painter.FrameRateDisplayer;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class Canvas extends JComponent implements Refreshable {
+public class Canvas extends JComponent implements Refreshable, RestrictedCanvas {
 
   /** The underlying zoom-able user interface. */
   protected final ZoomableUI zui;
@@ -40,16 +40,29 @@ public class Canvas extends JComponent implements Refreshable {
   private JComponent focus;
 
   /**
-   * Creates a canvas for the given painter.
+   * Creates an unrestricted canvas for the given painter.
    * 
    * @param p The painter.
    * @param width The initial width of the component.
    * @param height The initial height of the component.
    */
   public Canvas(final KanvasPainter p, final int width, final int height) {
+    this(p, false, width, height);
+  }
+
+  /**
+   * Creates a canvas for the given painter.
+   * 
+   * @param p The painter.
+   * @param restricted Whether the canvas should be restricted.
+   * @param width The initial width of the component.
+   * @param height The initial height of the component.
+   */
+  public Canvas(final KanvasPainter p, final boolean restricted,
+      final int width, final int height) {
     setPreferredSize(new Dimension(width, height));
     painter = Objects.requireNonNull(p);
-    zui = new ZoomableUI(this, null);
+    zui = new ZoomableUI(this, restricted ? this : null);
     final MouseAdapter mouse = new MouseInteraction() {
 
       /** Whether the drag is on the HUD. */
@@ -530,6 +543,98 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public Rectangle2D getVisibleCanvas() {
     return zui.toCanvas(getVisibleRect());
+  }
+
+  /** The restriction rectangle. */
+  private Rectangle2D restriction;
+
+  /**
+   * Setter.
+   * 
+   * @param restriction Sets the restriction rectangle.
+   * @throws IllegalStateException When the canvas is not restricted.
+   * @see #isRestricted()
+   */
+  public void setRestriction(final Rectangle2D restriction) {
+    if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
+    this.restriction = restriction;
+  }
+
+  @Override
+  public Rectangle2D getBoundingRect() {
+    return restriction;
+  }
+
+  @Override
+  public Rectangle2D getComponentView() {
+    return getVisibleRect();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the canvas is restricted.
+   */
+  public boolean isRestricted() {
+    return zui.isRestricted();
+  }
+
+  /**
+   * Returns the minimal zoom value.
+   * 
+   * @return The minimal zoom value. If the value is non-positive then no
+   *         restrictions are made.
+   */
+  public double getMinZoom() {
+    return zui.getMinZoom();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether zoom has a minimum.
+   */
+  public boolean hasMinZoom() {
+    return zui.hasMinZoom();
+  }
+
+  /**
+   * Sets the current minimal zoom value.
+   * 
+   * @param zoom The new minimal zoom value. Non-positive values indicate no
+   *          restriction.
+   */
+  public void setMinZoom(final double zoom) {
+    zui.setMinZoom(zoom);
+  }
+
+  /**
+   * Returns the maximal zoom value.
+   * 
+   * @return The maximal zoom value. If the value is non-positive then no
+   *         restrictions are made.
+   */
+  public double getMaxZoom() {
+    return zui.getMaxZoom();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether zoom has a maximum.
+   */
+  public boolean hasMaxZoom() {
+    return zui.hasMaxZoom();
+  }
+
+  /**
+   * Sets the current maximal zoom value.
+   * 
+   * @param zoom The new maximal zoom value. Non-positive values indicate no
+   *          restriction.
+   */
+  public void setMaxZoom(final double zoom) {
+    zui.setMaxZoom(zoom);
   }
 
   /** Disposes the painter. */

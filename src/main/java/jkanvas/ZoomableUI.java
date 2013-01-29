@@ -6,6 +6,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
+import jkanvas.util.PaintUtil;
+
 /**
  * A zoom-able user interface can be translated and zooming can be performed.
  * 
@@ -52,12 +54,12 @@ public final class ZoomableUI {
    * @param y The y offset.
    */
   public void setOffset(final double x, final double y) {
-    if(restriction != null) {
+    if(isRestricted()) {
       final Rectangle2D bbox = restriction.getBoundingRect();
       if(bbox == null) return;
       offX = x;
       offY = y;
-      final Rectangle2D visBB = restriction.getCurrentView();
+      final Rectangle2D visBB = toCanvas(restriction.getComponentView());
       // snap back
       if(!bbox.contains(visBB)) {
         double transX = 0;
@@ -110,12 +112,21 @@ public final class ZoomableUI {
   public void zoomTo(final double x, final double y, final double factor) {
     double f = factor;
     double newZoom = zoom * factor;
-    if(hasMinZoom()) {
-      if(newZoom < minZoom) {
-        newZoom = minZoom;
-        f = newZoom / zoom;
-      } else if(newZoom > maxZoom) {
-        newZoom = maxZoom;
+    if(hasMinZoom() && newZoom < minZoom) {
+      newZoom = minZoom;
+      f = newZoom / zoom;
+    }
+    if(hasMaxZoom() && newZoom > maxZoom) {
+      newZoom = maxZoom;
+      f = newZoom / zoom;
+    }
+    if(isRestricted()) {
+      final Rectangle2D bbox = restriction.getBoundingRect();
+      if(bbox == null) return; // change nothing
+      final Rectangle2D visBB = restriction.getComponentView();
+      final double min = PaintUtil.fitIntoScale(visBB, bbox.getWidth(), bbox.getHeight());
+      if(newZoom < min) {
+        newZoom = min;
         f = newZoom / zoom;
       }
     }
@@ -312,6 +323,15 @@ public final class ZoomableUI {
         getForScreen(new Point2D.Double(rect.getMinX(), rect.getMinY()));
     return new Rectangle2D.Double(topLeft.getX(), topLeft.getY(),
         inReal(rect.getWidth()), inReal(rect.getHeight()));
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether a restriction is set.
+   */
+  public boolean isRestricted() {
+    return restriction != null;
   }
 
   /**
