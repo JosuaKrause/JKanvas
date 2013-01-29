@@ -1,7 +1,7 @@
 JKanvas
 =======
 
-An easy to use ZUI (Zoomable-User-Interface) implementation for Java.
+An easy-to-use ZUI (Zoomable User Interface) implementation for Java.
 In order to create a ZUI component you can use the following snippet:
 
 ```
