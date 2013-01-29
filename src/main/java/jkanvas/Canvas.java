@@ -558,6 +558,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public void setRestriction(final Rectangle2D restriction) {
     if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
     this.restriction = restriction;
+    zui.zoom(1, getVisibleCanvas());
   }
 
   @Override
@@ -606,6 +607,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public void setMinZoom(final double zoom) {
     zui.setMinZoom(zoom);
+    zui.zoom(1, getVisibleCanvas());
   }
 
   /**
@@ -635,6 +637,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public void setMaxZoom(final double zoom) {
     zui.setMaxZoom(zoom);
+    zui.zoom(1, getVisibleCanvas());
   }
 
   /** Disposes the painter. */
