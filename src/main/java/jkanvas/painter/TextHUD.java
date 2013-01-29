@@ -17,6 +17,18 @@ import jkanvas.util.PaintUtil;
  */
 public abstract class TextHUD extends HUDRenderpassAdapter {
 
+  /** The padding of the text box. */
+  public static final double PADDING = 5.0;
+
+  /** The alpha value of the text box. */
+  public static final double ALPHA = 0.5;
+
+  /** The text color. */
+  public static final Color TEXT = Color.WHITE;
+
+  /** The text box color. */
+  public static final Color BACK = Color.BLACK;
+
   /** Alignment on the left side of the component. */
   public static final int LEFT = -1;
 
@@ -56,6 +68,20 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
   private final int hpos;
   /** The vertical alignment. */
   private final int vpos;
+
+  /**
+   * Creates a text HUD.
+   * 
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @see #LEFT
+   * @see #RIGHT
+   * @see #TOP
+   * @see #BOTTOM
+   */
+  public TextHUD(final int hpos, final int vpos) {
+    this(TEXT, BACK, ALPHA, PADDING, hpos, vpos);
+  }
 
   /**
    * Creates a text HUD.
@@ -162,8 +188,9 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
       sds[i] = sd;
     }
     if(height <= 0 || width <= 0) return;
-    final double dirV = vpos == TOP ? 1 : -1;
-    final double mulV = vpos == TOP ? 0 : 1;
+    final boolean isTop = vpos == TOP;
+    final double dirV = isTop ? 1 : -1;
+    final double mulV = isTop ? 0 : 1;
     final double mulH = hpos == LEFT ? 0 : 1;
     final Point2D cur = getStartPosition(visibleRect);
     final Rectangle2D box = new Rectangle2D.Double(cur.getX() - mulH * width,
@@ -177,7 +204,7 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
     }
     gfx.setColor(text);
     for(int i = 0; i < sds.length; ++i) {
-      final StringDrawer sd = sds[i];
+      final StringDrawer sd = sds[isTop ? i : sds.length - 1 - i];
       if(sd == null) {
         continue;
       }

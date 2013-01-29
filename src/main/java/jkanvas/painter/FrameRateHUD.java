@@ -11,23 +11,42 @@ import java.awt.geom.Rectangle2D;
  */
 public class FrameRateHUD extends TextHUD implements FrameRateDisplayer {
 
-  /** The padding of the text box. */
-  public static final double PADDING = 5.0;
-
-  /** The alpha value of the text box. */
-  public static final double ALPHA = 0.5;
-
-  /** The text color. */
-  public static final Color TEXT = Color.WHITE;
-
-  /** The text box color. */
-  public static final Color BACK = Color.BLACK;
+  /** Creates a frame-rate HUD. */
+  public FrameRateHUD() {
+    this(RIGHT, TOP);
+  }
 
   /**
    * Creates a frame-rate HUD.
+   * 
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @see #LEFT
+   * @see #RIGHT
+   * @see #TOP
+   * @see #BOTTOM
    */
-  public FrameRateHUD() {
-    super(TEXT, BACK, ALPHA, PADDING, RIGHT, TOP);
+  public FrameRateHUD(final int hpos, final int vpos) {
+    super(hpos, vpos);
+  }
+
+  /**
+   * Creates a frame-rate HUD.
+   * 
+   * @param text The text color.
+   * @param back The background color.
+   * @param alpha The alpha value of the background color.
+   * @param padding The padding of the background.
+   * @param hpos The horizontal alignment.
+   * @param vpos The vertical alignment.
+   * @see #LEFT
+   * @see #RIGHT
+   * @see #TOP
+   * @see #BOTTOM
+   */
+  public FrameRateHUD(final Color text, final Color back, final double alpha,
+      final double padding, final int hpos, final int vpos) {
+    super(text, back, alpha, padding, hpos, vpos);
   }
 
   @Override
