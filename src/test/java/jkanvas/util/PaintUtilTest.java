@@ -14,7 +14,7 @@ import org.junit.Test;
 public class PaintUtilTest {
 
   /**
-   * Whether the two rectangles are the same.
+   * Whether two rectangles are the same.
    * 
    * @param a The expected rectangle.
    * @param b The actual rectangle.
