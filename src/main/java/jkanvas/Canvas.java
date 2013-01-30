@@ -515,6 +515,17 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     }
   }
 
+  /**
+   * Shows only the given rectangle. This may lead to parts of the rectangle
+   * that are not shown.
+   * 
+   * @param bbox The rectangle.
+   */
+  public void showOnly(final Rectangle2D bbox) {
+    Objects.requireNonNull(bbox);
+    zui.showRectangle(bbox, getVisibleRect(), getMargin(), false);
+  }
+
   /** Whether the canvas is moveable, ie it can be panned and zoomed. */
   private boolean isMoveable = true;
 

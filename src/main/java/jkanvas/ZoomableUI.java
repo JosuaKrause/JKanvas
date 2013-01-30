@@ -54,51 +54,60 @@ public final class ZoomableUI {
    * @param y The y offset.
    */
   public void setOffset(final double x, final double y) {
-    if(isRestricted()) {
-      final Rectangle2D bbox = restriction.getBoundingRect();
-      if(bbox == null) return;
+    if(!isRestricted()) {
       offX = x;
       offY = y;
-      final Rectangle2D comp = restriction.getComponentView();
-      final Rectangle2D visBB = toCanvas(comp);
-      // snap back
-      if(!bbox.contains(visBB)) {
-        if(visBB.getWidth() <= bbox.getWidth()) {
-          double transX;
-          if(visBB.getMaxX() > bbox.getMaxX()) {
-            // too far right
-            transX = bbox.getMaxX() - visBB.getMaxX();
-          } else if(visBB.getMinX() < bbox.getMinX()) {
-            // too far left
-            transX = bbox.getMinX() - visBB.getMinX();
-          } else {
-            transX = 0;
-          }
-          offX -= fromReal(transX);
-        } else {
-          offX = comp.getCenterX() - fromReal(bbox.getCenterX());
-        }
-        if(visBB.getHeight() <= bbox.getHeight()) {
-          double transY;
-          if(visBB.getMaxY() > bbox.getMaxY()) {
-            // too far down
-            transY = bbox.getMaxY() - visBB.getMaxY();
-          } else if(visBB.getMinY() < bbox.getMinY()) {
-            // too far up
-            transY = bbox.getMinY() - visBB.getMinY();
-          } else {
-            transY = 0;
-          }
-          offY -= fromReal(transY);
-        } else {
-          offY = comp.getCenterY() - fromReal(bbox.getCenterY());
-        }
-      }
-    } else {
-      offX = x;
-      offY = y;
-    }
+    } else if(!setRestrictedOffset(x, y)) return;
     refreshee.refresh();
+  }
+
+  /**
+   * Sets the offset while keeping restrictions.
+   * 
+   * @param x The x offset.
+   * @param y The y offset.
+   * @return Whether repainting is needed.
+   */
+  private boolean setRestrictedOffset(final double x, final double y) {
+    final Rectangle2D bbox = restriction.getBoundingRect();
+    if(bbox == null) return false;
+    offX = x;
+    offY = y;
+    final Rectangle2D comp = restriction.getComponentView();
+    final Rectangle2D visBB = toCanvas(comp);
+    // snap back
+    if(bbox.contains(visBB)) return true;
+    if(visBB.getWidth() > bbox.getWidth()) {
+      offX = comp.getCenterX() - fromReal(bbox.getCenterX());
+    } else {
+      final double transX;
+      if(visBB.getMaxX() > bbox.getMaxX()) {
+        // too far right
+        transX = bbox.getMaxX() - visBB.getMaxX();
+      } else if(visBB.getMinX() < bbox.getMinX()) {
+        // too far left
+        transX = bbox.getMinX() - visBB.getMinX();
+      } else {
+        transX = 0;
+      }
+      offX -= fromReal(transX);
+    }
+    if(visBB.getHeight() > bbox.getHeight()) {
+      offY = comp.getCenterY() - fromReal(bbox.getCenterY());
+    } else {
+      final double transY;
+      if(visBB.getMaxY() > bbox.getMaxY()) {
+        // too far down
+        transY = bbox.getMaxY() - visBB.getMaxY();
+      } else if(visBB.getMinY() < bbox.getMinY()) {
+        // too far up
+        transY = bbox.getMinY() - visBB.getMinY();
+      } else {
+        transY = 0;
+      }
+      offY -= fromReal(transY);
+    }
+    return true;
   }
 
   /**
@@ -126,7 +135,8 @@ public final class ZoomableUI {
     double newZoom = zoom * factor;
     if(newZoom <= 0) throw new IllegalArgumentException(
         "factor: " + factor + " zoom: " + newZoom);
-    if(hasMinZoom() && newZoom < minZoom) {
+    if(newZoom < minZoom) {
+      // minZoom > 0 since newZoom > 0
       newZoom = minZoom;
       f = newZoom / zoom;
     }
@@ -328,9 +338,8 @@ public final class ZoomableUI {
    * @return The rectangle in canvas coordinates.
    */
   public Rectangle2D toCanvas(final Rectangle2D rect) {
-    final Point2D topLeft =
-        getForScreen(new Point2D.Double(rect.getMinX(), rect.getMinY()));
-    return new Rectangle2D.Double(topLeft.getX(), topLeft.getY(),
+    return new Rectangle2D.Double(
+        getXForScreen(rect.getMinX()), getYForScreen(rect.getMinY()),
         inReal(rect.getWidth()), inReal(rect.getHeight()));
   }
 
