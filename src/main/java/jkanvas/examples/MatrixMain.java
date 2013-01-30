@@ -196,7 +196,6 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
     final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
     p.addPass(matrixMain);
     final Canvas c = new Canvas(p, true, 500, 500);
-    c.setRestriction(p.getBoundingBox());
     // add arbitrary shape selection
     final AbstractSelector sel = new RectangleSelection(c,
         // final AbstractSelector sel = new LassoSelection(c,
@@ -251,7 +250,7 @@ public class MatrixMain extends MatrixRenderpass<Double> implements SelectableRe
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    c.reset();
+    c.setRestriction(p.getBoundingBox());
     frame.setVisible(true);
   }
 

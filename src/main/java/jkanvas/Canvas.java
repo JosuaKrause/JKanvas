@@ -148,7 +148,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
         if(isDragging() || !isMoveable()) return;
-        zui.zoomTo(e.getX(), e.getY(), e.getWheelRotation());
+        zui.zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
       }
 
       @Override
@@ -511,7 +511,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     } else {
       final double margin = getMargin();
       final Rectangle2D rect = getVisibleRect();
-      zui.showRectangle(bbox, rect, margin, false);
+      zui.showRectangle(bbox, rect, margin, true);
     }
   }
 
@@ -558,7 +558,10 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public void setRestriction(final Rectangle2D restriction) {
     if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
     this.restriction = restriction;
-    zui.zoom(1, getVisibleCanvas());
+    final Rectangle2D canvas = getVisibleCanvas();
+    zui.zoom(
+        Math.min(canvas.getWidth() / restriction.getWidth(),
+            canvas.getHeight() / restriction.getHeight()), canvas);
   }
 
   @Override

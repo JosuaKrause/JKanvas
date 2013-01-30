@@ -31,10 +31,10 @@ public final class ZoomableUI {
   private double zoom = 1;
 
   /** The minimal zoom value. */
-  private double minZoom = -1;
+  private double minZoom;
 
   /** The maximal zoom value. */
-  private double maxZoom = -1;
+  private double maxZoom;
 
   /**
    * Creates a zoom-able user interface.
@@ -59,29 +59,40 @@ public final class ZoomableUI {
       if(bbox == null) return;
       offX = x;
       offY = y;
-      final Rectangle2D visBB = toCanvas(restriction.getComponentView());
+      final Rectangle2D comp = restriction.getComponentView();
+      final Rectangle2D visBB = toCanvas(comp);
       // snap back
       if(!bbox.contains(visBB)) {
-        double transX = 0;
-        double transY = 0;
-
-        if(visBB.getMaxX() > bbox.getMaxX()) {
-          // too far right
-          transX -= visBB.getMaxX() - bbox.getMaxX();
-        } else if(visBB.getMinX() < bbox.getMinX()) {
-          // too far left
-          transX += bbox.getMinX() - visBB.getMinX();
+        if(visBB.getWidth() <= bbox.getWidth()) {
+          double transX;
+          if(visBB.getMaxX() > bbox.getMaxX()) {
+            // too far right
+            transX = bbox.getMaxX() - visBB.getMaxX();
+          } else if(visBB.getMinX() < bbox.getMinX()) {
+            // too far left
+            transX = bbox.getMinX() - visBB.getMinX();
+          } else {
+            transX = 0;
+          }
+          offX -= fromReal(transX);
+        } else {
+          offX = comp.getCenterX() - fromReal(bbox.getCenterX());
         }
-        if(visBB.getMaxY() > bbox.getMaxY()) {
-          // too far down
-          transY -= visBB.getMaxY() - bbox.getMaxY();
-        } else if(visBB.getMinY() < bbox.getMinY()) {
-          // too far up
-          transY += bbox.getMinY() - visBB.getMinY();
+        if(visBB.getHeight() <= bbox.getHeight()) {
+          double transY;
+          if(visBB.getMaxY() > bbox.getMaxY()) {
+            // too far down
+            transY = bbox.getMaxY() - visBB.getMaxY();
+          } else if(visBB.getMinY() < bbox.getMinY()) {
+            // too far up
+            transY = bbox.getMinY() - visBB.getMinY();
+          } else {
+            transY = 0;
+          }
+          offY -= fromReal(transY);
+        } else {
+          offY = comp.getCenterY() - fromReal(bbox.getCenterY());
         }
-
-        offX -= fromReal(transX);
-        offY -= fromReal(transY);
       }
     } else {
       offX = x;
@@ -97,7 +108,7 @@ public final class ZoomableUI {
    * @param y The y coordinate.
    * @param zooming The amount of zooming.
    */
-  public void zoomTo(final double x, final double y, final int zooming) {
+  public void zoomTicks(final double x, final double y, final int zooming) {
     final double factor = Math.pow(1.1, -zooming);
     zoomTo(x, y, factor);
   }
@@ -107,11 +118,14 @@ public final class ZoomableUI {
    * 
    * @param x The x coordinate.
    * @param y The y coordinate.
-   * @param factor The factor to alter the zoom level.
+   * @param factor The factor to alter the zoom level. Must be
+   *          <code>&gt;0</code>.
    */
   public void zoomTo(final double x, final double y, final double factor) {
     double f = factor;
     double newZoom = zoom * factor;
+    if(newZoom <= 0) throw new IllegalArgumentException(
+        "factor: " + factor + " zoom: " + newZoom);
     if(hasMinZoom() && newZoom < minZoom) {
       newZoom = minZoom;
       f = newZoom / zoom;
@@ -130,9 +144,6 @@ public final class ZoomableUI {
         f = newZoom / zoom;
       }
     }
-
-    if(newZoom <= 0) throw new IllegalStateException("attemp to set zoom to: "+newZoom);
-
     // P = (off - mouse) / zoom
     // P = (newOff - mouse) / newZoom
     // newOff = (off - mouse) / zoom * newZoom + mouse
@@ -172,23 +183,21 @@ public final class ZoomableUI {
    * @param view The rectangle in canvas coordinates.
    * @param screen The rectangle in component coordinates.
    * @param margin The margin.
-   * @param setAsMinZoom Sets the resulting zoom level as min zoom when no min
-   *          zoom is assigned yet. Also no more than the rectangle to show will
-   *          be visible.
+   * @param fit If set to <code>true</code> the <code>view</code> will be
+   *          completely visible. When set to <code>false</code> as much as
+   *          possible from <code>view</code> will be visible without showing
+   *          anything else.
    */
   public void showRectangle(final Rectangle2D view, final Rectangle2D screen,
-      final double margin, final boolean setAsMinZoom) {
+      final double margin, final boolean fit) {
     final int nw = (int) (screen.getWidth() - 2 * margin);
     final int nh = (int) (screen.getHeight() - 2 * margin);
     final double rw = nw / view.getWidth();
     final double rh = nh / view.getHeight();
-    final double factor = setAsMinZoom ? (rw > rh ? rw : rh) : (rw < rh ? rw : rh);
+    final double factor = fit ? Math.min(rw, rh) : Math.max(rw, rh);
     zoom = 1;
     setOffset(margin + (nw - view.getWidth()) / 2 - view.getMinX(), margin
         + (nh - view.getHeight()) / 2 - view.getMinY());
-    if(setAsMinZoom && !hasMinZoom()) {
-      setMinZoom(factor);
-    }
     zoom(factor, screen);
   }
 
