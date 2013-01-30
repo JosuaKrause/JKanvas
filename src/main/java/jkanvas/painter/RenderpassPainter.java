@@ -79,7 +79,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, p);
-      if(!bbox.contains(pos)) {
+      if(bbox != null && !bbox.contains(pos)) {
         continue;
       }
       if(r.click(pos, e)) return true;
@@ -95,7 +95,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, p);
-      if(!bbox.contains(pos)) {
+      if(bbox != null && !bbox.contains(pos)) {
         continue;
       }
       final String tooltip = r.getTooltip(pos);
@@ -112,7 +112,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, cur);
-      if(!bbox.contains(pos)) {
+      if(bbox != null && !bbox.contains(pos)) {
         continue;
       }
       if(r.moveMouse(pos)) return true;
@@ -134,7 +134,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, p);
-      if(!bbox.contains(pos)) {
+      if(bbox != null && !bbox.contains(pos)) {
         continue;
       }
       if(r.acceptDrag(pos, e)) {
@@ -277,7 +277,7 @@ public class RenderpassPainter extends PainterAdapter {
    * @param r The render-pass.
    * @return The bounding box of the render-pass in canvas coordinates.
    */
-  private static Rectangle2D getPassBoundingBox(final Renderpass r) {
+  public static final Rectangle2D getPassBoundingBox(final Renderpass r) {
     final Rectangle2D rect = r.getBoundingBox();
     if(rect == null) return null;
     return new Rectangle2D.Double(rect.getX() + r.getOffsetX(),

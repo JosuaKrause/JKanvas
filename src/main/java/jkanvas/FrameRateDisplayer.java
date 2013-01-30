@@ -1,9 +1,8 @@
-package jkanvas.painter;
+package jkanvas;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import jkanvas.Canvas;
 
 /**
  * Displays the frame rate.

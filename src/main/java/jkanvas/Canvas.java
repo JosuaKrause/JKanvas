@@ -20,7 +20,6 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import jkanvas.painter.FrameRateDisplayer;
 
 /**
  * A simple class adding panning and zooming functionality to a

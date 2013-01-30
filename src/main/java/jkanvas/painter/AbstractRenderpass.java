@@ -18,7 +18,9 @@ public abstract class AbstractRenderpass implements Renderpass {
   }
 
   /**
-   * Setter.
+   * Setter. Implementations may override this method with an
+   * {@link UnsupportedOperationException} when they provide the value by
+   * themselves.
    * 
    * @param isVisible Sets the visibility of this pass.
    */
@@ -33,7 +35,9 @@ public abstract class AbstractRenderpass implements Renderpass {
   private double y;
 
   /**
-   * Setter.
+   * Setter. Implementations may override this method with an
+   * {@link UnsupportedOperationException} when they provide the value by
+   * themselves.
    * 
    * @param x Sets the x offset in canvas coordinates.
    * @param y Sets the y offset in canvas coordinates.
@@ -57,7 +61,9 @@ public abstract class AbstractRenderpass implements Renderpass {
   private Rectangle2D bbox;
 
   /**
-   * Setter.
+   * Setter. Implementations may override this method with an
+   * {@link UnsupportedOperationException} when they provide the value by
+   * themselves.
    * 
    * @param bbox Sets the optional bounding box. This method does <em>not</em>
    *          have to account for the offset.
