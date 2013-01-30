@@ -148,7 +148,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
         if(isDragging() || !isMoveable()) return;
-        zui.zoomTo(e.getX(), e.getY(), e.getWheelRotation());
+        zui.zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
       }
 
       @Override
@@ -511,8 +511,19 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     } else {
       final double margin = getMargin();
       final Rectangle2D rect = getVisibleRect();
-      zui.showRectangle(bbox, rect, margin, false);
+      zui.showRectangle(bbox, rect, margin, true);
     }
+  }
+
+  /**
+   * Shows only the given rectangle. This may lead to parts of the rectangle
+   * that are not shown.
+   * 
+   * @param bbox The rectangle.
+   */
+  public void showOnly(final Rectangle2D bbox) {
+    Objects.requireNonNull(bbox);
+    zui.showRectangle(bbox, getVisibleRect(), getMargin(), false);
   }
 
   /** Whether the canvas is moveable, ie it can be panned and zoomed. */
@@ -558,7 +569,10 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public void setRestriction(final Rectangle2D restriction) {
     if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
     this.restriction = restriction;
-    zui.zoom(1, getVisibleCanvas());
+    final Rectangle2D canvas = getVisibleCanvas();
+    zui.zoom(
+        Math.min(canvas.getWidth() / restriction.getWidth(),
+            canvas.getHeight() / restriction.getHeight()), canvas);
   }
 
   @Override
