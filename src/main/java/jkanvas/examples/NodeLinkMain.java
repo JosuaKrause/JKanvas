@@ -190,7 +190,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     final int h = 600;
     final int nodes = 20;
     final int edges = 100;
-    final SimpleNodeLinkView<AnimatedPosition> view = new SimpleNodeLinkView<>();
+    final SimpleNodeLinkView<AnimatedPosition> view = new SimpleNodeLinkView<>(false);
     fillGraph(view, w, h, nodes, edges);
     final AnimatedPainter p = new AnimatedPainter();
     final NodeLinkMain r = new NodeLinkMain(view);

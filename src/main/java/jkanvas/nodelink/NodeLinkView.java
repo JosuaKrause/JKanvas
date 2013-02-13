@@ -27,11 +27,18 @@ public interface NodeLinkView<T extends Position2D> extends GraphView {
 
   /**
    * Returns all edges from the given node. Note that this contains only nodes
-   * with a higher id.
+   * with a higher id when the graph is undirected.
    * 
    * @param from The starting id.
-   * @return All connected edges with a higher id.
+   * @return All connected edges (with a higher id when undirected).
    */
   Iterable<Integer> edgesTo(int from);
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the graph is directed.
+   */
+  boolean isDirected();
 
 }
