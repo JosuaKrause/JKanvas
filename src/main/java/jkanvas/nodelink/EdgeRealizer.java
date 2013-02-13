@@ -14,8 +14,9 @@ import jkanvas.animation.AnimatedPosition;
 public interface EdgeRealizer<T extends AnimatedPosition> {
 
   /**
-   * The shape of the edge between nodes. The order of the nodes is not defined.
-   * The shape should not be smaller than the visible edge.
+   * The shape of the edge between nodes. The order of the nodes is not defined
+   * when the underlying graph is not directed. The shape should not be smaller
+   * than the visible edge.
    * 
    * @param from The source node.
    * @param to The sink node.
@@ -24,7 +25,8 @@ public interface EdgeRealizer<T extends AnimatedPosition> {
   Shape createLineShape(T from, T to);
 
   /**
-   * Draws edges. The order of the nodes is not defined.
+   * Draws edges. The order of the nodes is not defined when the underlying
+   * graph is not directed.
    * 
    * @param g The graphics context.
    * @param edgeShape The computed edge shape. As returned by
