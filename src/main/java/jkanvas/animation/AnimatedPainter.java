@@ -38,9 +38,11 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
    * @param layouter The layouter.
    */
   public void addLayouter(final AnimatedLayouter layouter) {
-    if(layouters.contains(layouter)) throw new IllegalArgumentException(
-        "layouter already added: " + layouter);
-    layouters.add(layouter);
+    synchronized(animator.getAnimationLock()) {
+      if(layouters.contains(layouter)) throw new IllegalArgumentException(
+          "layouter already added: " + layouter);
+      layouters.add(layouter);
+    }
   }
 
   /**
@@ -49,7 +51,9 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
    * @param layouter The layouter.
    */
   public void removeLayouter(final AnimatedLayouter layouter) {
-    layouters.remove(layouter);
+    synchronized(animator.getAnimationLock()) {
+      layouters.remove(layouter);
+    }
   }
 
   /**
@@ -60,6 +64,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
    */
   protected boolean doStep(final long currentTime) {
     boolean needsRedraw = false;
+    // animation lock is already acquired
     for(final AnimatedLayouter l : layouters) {
       for(final AnimatedPosition node : l.getPositions()) {
         node.animate(currentTime);
