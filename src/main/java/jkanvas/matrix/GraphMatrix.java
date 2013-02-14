@@ -9,11 +9,12 @@ import jkanvas.nodelink.GraphView;
  * An adjacency matrix using a {@link GraphView} as data storage.
  * 
  * @author Joschi <josua.krause@googlemail.com>
+ * @param <T> The graph view type.
  */
-public class GraphMatrix implements QuadraticMatrix<Boolean> {
+public class GraphMatrix<T extends GraphView> implements QuadraticMatrix<Boolean> {
 
   /** The underlying view. */
-  private final GraphView view;
+  private final T view;
 
   /** The size of cells. */
   private final double size;
@@ -24,7 +25,7 @@ public class GraphMatrix implements QuadraticMatrix<Boolean> {
    * @param view The view.
    * @param size The size of cells.
    */
-  public GraphMatrix(final GraphView view, final double size) {
+  public GraphMatrix(final T view, final double size) {
     this.view = view;
     this.size = size;
   }
@@ -51,7 +52,36 @@ public class GraphMatrix implements QuadraticMatrix<Boolean> {
 
   @Override
   public Boolean get(final int row, final int col) {
-    return view.areConnected(row, col);
+    return areConnected(row, col);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the underlying graph is directed.
+   */
+  public boolean isDirected() {
+    return view.isDirected();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param a The edge start id ie the row.
+   * @param b The edge end id ie the column.
+   * @return Whether there is an edge.
+   */
+  public boolean areConnected(final int a, final int b) {
+    return view.areConnected(a, b);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The view.
+   */
+  protected final T getView() {
+    return view;
   }
 
   @Override
