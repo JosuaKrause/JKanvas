@@ -40,7 +40,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
               }
             }
             boolean needsRedraw;
-            synchronized(this) {
+            synchronized(getAnimationLock()) {
               needsRedraw = step();
             }
             if(needsRedraw) {
