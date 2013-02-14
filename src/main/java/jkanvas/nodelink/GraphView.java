@@ -1,7 +1,7 @@
 package jkanvas.nodelink;
 
 /**
- * A view on an undirected graph.
+ * A view on a graph.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
@@ -23,12 +23,20 @@ public interface GraphView {
   String getName(int index);
 
   /**
-   * Whether two nodes are connected. The order of the nodes is unimportant.
+   * Whether two nodes are connected. The order of the nodes is only important
+   * when the graph is directed.
    * 
    * @param a One node.
    * @param b Another node.
    * @return Whether both nodes are connected via an edge.
    */
   boolean areConnected(int a, int b);
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the graph is directed.
+   */
+  boolean isDirected();
 
 }

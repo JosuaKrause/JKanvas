@@ -3,7 +3,7 @@ package jkanvas.nodelink;
 import jkanvas.animation.Position2D;
 
 /**
- * Provides a view on a graph.
+ * Provides a view on a graph with enumerable edges and nodes.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The position type.
@@ -33,12 +33,5 @@ public interface NodeLinkView<T extends Position2D> extends GraphView {
    * @return All connected edges (with a higher id when undirected).
    */
   Iterable<Integer> edgesTo(int from);
-
-  /**
-   * Getter.
-   * 
-   * @return Whether the graph is directed.
-   */
-  boolean isDirected();
 
 }
