@@ -13,14 +13,14 @@ import jkanvas.painter.RenderpassAdapter;
  * Paints a matrix.
  * 
  * @author Joschi <josua.krause@googlemail.com>
- * @param <T> The content type.
+ * @param <T> The matrix type.
  */
-public class MatrixRenderpass<T> extends RenderpassAdapter {
+public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends RenderpassAdapter {
 
   /** The refresh manager. */
   private final RefreshManager manager;
   /** The matrix. */
-  private QuadraticMatrix<T> matrix;
+  private T matrix;
   /** The cell drawer. */
   private CellRealizer<T> cellDrawer;
 
@@ -32,7 +32,7 @@ public class MatrixRenderpass<T> extends RenderpassAdapter {
    * @param manager The refresh manager that is notified each time something
    *          changes.
    */
-  public MatrixRenderpass(final QuadraticMatrix<T> matrix,
+  public MatrixRenderpass(final T matrix,
       final CellRealizer<T> cellDrawer, final RefreshManager manager) {
     this.manager = Objects.requireNonNull(manager);
     this.cellDrawer = Objects.requireNonNull(cellDrawer);
@@ -44,7 +44,7 @@ public class MatrixRenderpass<T> extends RenderpassAdapter {
    * 
    * @param m The new matrix.
    */
-  public void setMatrix(final QuadraticMatrix<T> m) {
+  public void setMatrix(final T m) {
     Objects.requireNonNull(m);
     if(matrix != null && matrix.supportsAutoRefreshing()) {
       matrix.setRefreshManager(null);
@@ -61,7 +61,7 @@ public class MatrixRenderpass<T> extends RenderpassAdapter {
    * 
    * @return The matrix.
    */
-  public QuadraticMatrix<T> getMatrix() {
+  public T getMatrix() {
     return matrix;
   }
 
