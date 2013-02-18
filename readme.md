@@ -34,3 +34,21 @@ canvas.reset(); // scrolls the bounding-box of the painter into view
 
 In the package `jkanvas.examples` are examples that further show
 how to use the canvas for various tasks.
+
+### Maven Integration
+
+In order to use JKanvas within a Maven project you can use the following dependency
+(in the `<dependencies>` section):
+
+    <dependency>
+      <groupId>joschi-mvn</groupId>
+      <artifactId>JKanvas</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+
+However, this requires an additional repository in the repositories section (`<repositories>`) of the pom.xml file:
+
+    <repository>
+      <id>joschi</id>
+      <url>http://http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
+    </repository>
