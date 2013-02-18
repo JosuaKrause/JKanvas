@@ -50,5 +50,5 @@ However, this requires an additional repository in the repositories section (`<r
 
     <repository>
       <id>joschi</id>
-      <url>http://http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
+      <url>http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
     </repository>
