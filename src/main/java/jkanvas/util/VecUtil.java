@@ -28,7 +28,7 @@ public final class VecUtil {
   }
 
   /**
-   * Subtracts two points.
+   * Subtracts two points. <code>a - b</code>
    * 
    * @param a Point.
    * @param b Point.
@@ -47,6 +47,38 @@ public final class VecUtil {
    */
   public static Point2D mulVec(final Point2D v, final double s) {
     return new Point2D.Double(v.getX() * s, v.getY() * s);
+  }
+
+  /**
+   * Generates a vector that forms an angle of {@code 90} degrees with the given
+   * vector.
+   * 
+   * @param a The given vector.
+   * @return The orthogonal vector of the left side.
+   */
+  public static Point2D getOrthoLeft(final Point2D a) {
+    return new Point2D.Double(-a.getY(), a.getX());
+  }
+
+  /**
+   * Generates a vector that forms an angle of {@code -90} degrees with the
+   * given vector.
+   * 
+   * @param a The given vector.
+   * @return The orthogonal vector of the right side.
+   */
+  public static Point2D getOrthoRight(final Point2D a) {
+    return new Point2D.Double(a.getY(), -a.getX());
+  }
+
+  /**
+   * Generates a vector pointing in the opposite direction.
+   * 
+   * @param v The vector.
+   * @return The inverse vector.
+   */
+  public static Point2D invVec(final Point2D v) {
+    return mulVec(v, -1.0);
   }
 
   /**
