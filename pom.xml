@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>joschi-mvn</groupId>
 	<artifactId>JKanvas</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>JKanvas</name>
 	<description>A ZUI framework</description>
 	<properties>
@@ -43,4 +43,10 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>repo</id>
+			<url>http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
+		</repository>
+	</distributionManagement>
 </project>
