@@ -29,13 +29,13 @@ import jkanvas.matrix.MatrixRenderpass;
 import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
 import jkanvas.painter.RenderpassPainter;
-import jkanvas.painter.StringDrawer;
-import jkanvas.painter.StringDrawer.Orientation;
 import jkanvas.selection.AbstractSelector;
 import jkanvas.selection.RectangleSelection;
 import jkanvas.selection.SelectableRenderpass;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.Screenshot;
+import jkanvas.util.StringDrawer;
+import jkanvas.util.StringDrawer.Orientation;
 
 /**
  * An example show-casing the painting of {@link QuadraticMatrix quadratic

@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.util.StringDrawer;
 
 /**
  * Shows borders of render-passes. Optional titles can be assigned.

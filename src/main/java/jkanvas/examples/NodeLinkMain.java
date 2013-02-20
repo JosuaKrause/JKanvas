@@ -233,7 +233,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
-    r.addToPainter(p);
+    p.addPass(r);
+    p.addLayouter(r);
     // configure Canvas
     final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);

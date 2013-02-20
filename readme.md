@@ -43,12 +43,13 @@ how to use the canvas for various tasks.
 ### Maven Integration
 
 In order to use JKanvas within a Maven project you can use the following dependency
-(in the `<dependencies>` section):
+(in the `<dependencies>` section -- note that the *X.X.X* in the version tag
+must be replaced with the current version):
 
     <dependency>
       <groupId>joschi-mvn</groupId>
       <artifactId>JKanvas</artifactId>
-      <version>0.0.1</version>
+      <version>X.X.X</version>
     </dependency>
 
 However, this requires an additional repository in the repositories section (`<repositories>`) of the pom.xml file:
@@ -57,3 +58,7 @@ However, this requires an additional repository in the repositories section (`<r
       <id>joschi</id>
       <url>http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
     </repository>
+
+When using [Eclipse] (http://www.eclipse.org/) the current snapshot can be used
+by having the JKanvas project open and altering the version of the dependency
+to *X.X.X-SNAPSHOT* where *X.X.X* is the upcoming version.

@@ -1,4 +1,4 @@
-package jkanvas.painter;
+package jkanvas.util;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -7,7 +7,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import jkanvas.util.PaintUtil;
 
 /**
  * Draws and measures a string.

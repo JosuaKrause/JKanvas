@@ -80,12 +80,13 @@ public class AnimatedPosition extends Position2D {
   }
 
   /**
-   * Guarantees to set the position immediately.
+   * Worm-hole for setting the actual position. Be sure to call
+   * <code>super.doSetPosition(x, y);</code> when overwriting this method.
    * 
    * @param x The x coordinate.
    * @param y The y coordinate.
    */
-  private void doSetPosition(final double x, final double y) {
+  protected void doSetPosition(final double x, final double y) {
     change();
     super.setPosition(x, y);
   }
@@ -246,6 +247,12 @@ public class AnimatedPosition extends Position2D {
     final double f = pol.interpolate(t);
     doSetPosition(start.getX() * (1 - f) + end.getX() * f,
         start.getY() * (1 - f) + end.getY() * f);
+    // no need to animate when end position is reached
+    if(getX() == end.getX() && getY() == end.getY()) {
+      pol = null;
+      start = null;
+      end = null;
+    }
   }
 
   /** The queue of pending operations. */

@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedLayouter;
-import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.painter.RenderpassAdapter;
 
@@ -19,7 +18,7 @@ import jkanvas.painter.RenderpassAdapter;
  * @param <T> The type of nodes.
  */
 public class NodeLinkRenderpass<T extends AnimatedPosition>
-extends RenderpassAdapter implements AnimatedLayouter {
+    extends RenderpassAdapter implements AnimatedLayouter {
 
   /** The node realizer. */
   private NodeRealizer<T> nodeRealizer;
@@ -148,16 +147,6 @@ extends RenderpassAdapter implements AnimatedLayouter {
   @Override
   public Iterable<? extends AnimatedPosition> getPositions() {
     return view.nodes();
-  }
-
-  /**
-   * Adds this layouter to the given painter.
-   * 
-   * @param p The painter.
-   */
-  public void addToPainter(final AnimatedPainter p) {
-    p.addPass(this);
-    p.addLayouter(this);
   }
 
 }

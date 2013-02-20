@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.util.PaintUtil;
+import jkanvas.util.StringDrawer;
 
 /**
  * A HUD that displays multiple lines of text. All lines are displayed in the
