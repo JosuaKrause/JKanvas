@@ -19,12 +19,12 @@ import javax.swing.WindowConstants;
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
+import jkanvas.animation.AnimationTiming;
 import jkanvas.nodelink.EdgeRealizer;
 import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
 import jkanvas.painter.FrameRateHUD;
-import jkanvas.util.Interpolator;
 import jkanvas.util.PaintUtil;
 
 /**
@@ -276,7 +276,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
           final double x = rect.getCenterX() + Math.sin(angle) * r;
           final double y = rect.getCenterY() + Math.cos(angle) * r;
           view.getNode(i).startAnimationTo(new Point2D.Double(x, y),
-              Interpolator.SMOOTH, AnimatedPosition.NORMAL);
+              AnimationTiming.SMOOTH);
           angle += step;
         }
       }

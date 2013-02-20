@@ -5,8 +5,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Objects;
 
+import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
-import jkanvas.util.Interpolator;
 
 /**
  * A group linearly ordering the members. Render-passes without bounding boxes
@@ -16,11 +16,8 @@ import jkanvas.util.Interpolator;
  */
 public class LinearGroup extends RenderGroup {
 
-  /** The interpolation. */
-  private final Interpolator pol;
-
-  /** The duration. */
-  private final int duration;
+  /** The animation timing. */
+  private final AnimationTiming timing;
 
   /** The space between render-passes. */
   private final double space;
@@ -35,16 +32,14 @@ public class LinearGroup extends RenderGroup {
    * @param isHorizontal Whether render-passes are laid out in horizontal
    *          direction.
    * @param space The space between two render-passes.
-   * @param pol The interpolation.
-   * @param duration The duration.
+   * @param timing The animation timing.
    */
   public LinearGroup(final Animator animator, final boolean isHorizontal,
-      final double space, final Interpolator pol, final int duration) {
+      final double space, final AnimationTiming timing) {
     super(animator);
     horizontal = isHorizontal;
     this.space = space;
-    this.pol = Objects.requireNonNull(pol);
-    this.duration = duration;
+    this.timing = Objects.requireNonNull(timing);
   }
 
   @Override
@@ -52,7 +47,7 @@ public class LinearGroup extends RenderGroup {
     double pos = 0;
     for(final RenderpassPosition p : members) {
       final Point2D dest = new Point2D.Double(horizontal ? pos : 0, horizontal ? 0 : pos);
-      p.changeAnimationTo(dest, pol, duration);
+      p.changeAnimationTo(dest, timing);
       final Rectangle2D bbox = p.pass.getBoundingBox();
       if(bbox == null) throw new IllegalStateException("bbox must not be null");
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;

@@ -1,6 +1,7 @@
 package jkanvas.animation;
 
 import java.awt.geom.Point2D;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -73,6 +74,7 @@ public class AnimatedPosition extends Position2D {
 
   @Override
   public void setPosition(final Point2D pos) {
+    Objects.requireNonNull(pos);
     // ensures that every previous animation is cleared
     pendingOperations.add(new PendingOp(pos));
     // set position directly for immediate feed-back
@@ -105,19 +107,18 @@ public class AnimatedPosition extends Position2D {
    * 
    * @param currentTime The current time in milliseconds.
    * @param pos The end point.
-   * @param pol The interpolation method.
-   * @param duration The duration in milliseconds.
+   * @param timing The timing.
    */
-  private void startAnimationTo(final long currentTime, final Point2D pos,
-      final Interpolator pol, final int duration) {
+  private void startAnimationTo(final long currentTime,
+      final Point2D pos, final AnimationTiming timing) {
     clearAnimation(currentTime);
-    if(duration <= 0) {
+    if(timing.duration <= 0) {
       doSetPosition(pos.getX(), pos.getY());
       return;
     }
     startTime = currentTime;
-    endTime = currentTime + duration;
-    this.pol = pol;
+    endTime = currentTime + timing.duration;
+    pol = timing.pol;
     start = getPos();
     end = pos;
   }
@@ -126,12 +127,12 @@ public class AnimatedPosition extends Position2D {
    * Starts an animation to the given point.
    * 
    * @param pos The end point.
-   * @param pol The interpolation method.
-   * @param duration The duration in milliseconds.
+   * @param timing The animation timing.
    */
-  public void startAnimationTo(final Point2D pos,
-      final Interpolator pol, final int duration) {
-    pendingOperations.add(new PendingOp(pos, pol, duration, true));
+  public void startAnimationTo(final Point2D pos, final AnimationTiming timing) {
+    Objects.requireNonNull(pos);
+    Objects.requireNonNull(timing);
+    pendingOperations.add(new PendingOp(pos, timing, true));
   }
 
   /**
@@ -140,18 +141,16 @@ public class AnimatedPosition extends Position2D {
    * 
    * @param currentTime The current time in milliseconds.
    * @param pos The new destination position.
-   * @param defaultPol The default interpolation that is used when no animation
-   *          is active.
-   * @param defaultDuration The default duration that is used when no animation
-   *          is active in milliseconds.
+   * @param defaultTiming The default timing that is used when no animation is
+   *          active.
    */
-  private void changeAnimationTo(final long currentTime, final Point2D pos,
-      final Interpolator defaultPol, final int defaultDuration) {
+  private void changeAnimationTo(final long currentTime,
+      final Point2D pos, final AnimationTiming defaultTiming) {
     final Interpolator p = pol;
     final long et = endTime;
     doAnimate(currentTime);
     if(!inAnimation()) {
-      startAnimationTo(currentTime, pos, defaultPol, defaultDuration);
+      startAnimationTo(currentTime, pos, defaultTiming);
       return;
     }
     start = getPos();
@@ -166,14 +165,14 @@ public class AnimatedPosition extends Position2D {
    * active a new one is created with the given default values.
    * 
    * @param pos The new destination position.
-   * @param defaultPol The default interpolation that is used when no animation
-   *          is active.
-   * @param defaultDuration The default duration that is used when no animation
-   *          is active in milliseconds.
+   * @param defaultTiming The default timing that is used when no animation is
+   *          active.
    */
   public void changeAnimationTo(final Point2D pos,
-      final Interpolator defaultPol, final int defaultDuration) {
-    pendingOperations.add(new PendingOp(pos, defaultPol, defaultDuration, false));
+      final AnimationTiming defaultTiming) {
+    Objects.requireNonNull(pos);
+    Objects.requireNonNull(defaultTiming);
+    pendingOperations.add(new PendingOp(pos, defaultTiming, false));
   }
 
   /**
@@ -211,10 +210,10 @@ public class AnimatedPosition extends Position2D {
           clearAnimation(currentTime);
           break;
         case OP_START:
-          startAnimationTo(currentTime, op.destination, op.interpolator, op.duration);
+          startAnimationTo(currentTime, op.destination, op.timing);
           break;
         case OP_CHANGE:
-          changeAnimationTo(currentTime, op.destination, op.interpolator, op.duration);
+          changeAnimationTo(currentTime, op.destination, op.timing);
           break;
         case OP_SET: {
           clearAnimation(currentTime);
@@ -283,18 +282,14 @@ public class AnimatedPosition extends Position2D {
     /** The destination of the animation. */
     public final Point2D destination;
 
-    /** The interpolator for the animation. */
-    public final Interpolator interpolator;
-
-    /** The duration of the animation. */
-    public final int duration;
+    /** The timing for the animation. */
+    public final AnimationTiming timing;
 
     /** Creates an animation clearing operation. */
     public PendingOp() {
       operation = OP_CLEAR;
       destination = null;
-      interpolator = null;
-      duration = 0;
+      timing = null;
     }
 
     /**
@@ -305,25 +300,22 @@ public class AnimatedPosition extends Position2D {
     public PendingOp(final Point2D pos) {
       operation = OP_SET;
       destination = pos;
-      interpolator = null;
-      duration = 0;
+      timing = null;
     }
 
     /**
      * Creates an animation initiating operation.
      * 
      * @param destination The destination of the animation.
-     * @param interpolator The interpolation.
-     * @param duration The duration in milliseconds.
+     * @param timing The timing.
      * @param start Whether this operation starts the animation or changes the
      *          current animation.
      */
     public PendingOp(final Point2D destination,
-        final Interpolator interpolator, final int duration, final boolean start) {
+        final AnimationTiming timing, final boolean start) {
       operation = start ? OP_START : OP_CHANGE;
       this.destination = destination;
-      this.interpolator = interpolator;
-      this.duration = duration;
+      this.timing = timing;
     }
 
   }
