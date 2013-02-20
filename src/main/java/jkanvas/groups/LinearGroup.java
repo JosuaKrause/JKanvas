@@ -17,13 +17,13 @@ import jkanvas.animation.Animator;
 public class LinearGroup extends RenderGroup {
 
   /** The animation timing. */
-  private final AnimationTiming timing;
+  private AnimationTiming timing;
 
   /** The space between render-passes. */
-  private final double space;
+  private double space;
 
   /** Whether the render-passes are laid out in horizontal direction. */
-  private final boolean horizontal;
+  private boolean horizontal;
 
   /**
    * Creates a linear group.
@@ -52,6 +52,63 @@ public class LinearGroup extends RenderGroup {
       if(bbox == null) throw new IllegalStateException("bbox must not be null");
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
     }
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param timing The timing of the animations.
+   */
+  public void setTiming(final AnimationTiming timing) {
+    this.timing = Objects.requireNonNull(timing);
+    invalidate();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The timing of the animations.
+   */
+  public AnimationTiming getTiming() {
+    return timing;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param space The space between render-passes.
+   */
+  public void setSpace(final double space) {
+    this.space = space;
+    invalidate();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The space between render-passes.
+   */
+  public double getSpace() {
+    return space;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param horizontal Whether the orientation of the groups is horizontal.
+   */
+  public void setOrientation(final boolean horizontal) {
+    this.horizontal = horizontal;
+    invalidate();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the orientation of the groups is horizontal.
+   */
+  public boolean isHorizontal() {
+    return horizontal;
   }
 
 }
