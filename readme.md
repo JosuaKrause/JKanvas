@@ -2,6 +2,11 @@ JKanvas
 =======
 
 An easy-to-use ZUI (Zoomable User Interface) implementation for Java.
+
+This project is build with Maven. Use `mvn install` to generate it as a jar
+in the *target/* directory. Alternatively the project can be used as dependency
+in other Maven projects (see [below] (#maven-integration)).
+
 In order to create a ZUI component you can use the following snippet:
 
 ```
