@@ -127,7 +127,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   }
 
   /**
-   * This method is called whenever a render-pass is added.
+   * This method is called after a render-pass is added.
    * 
    * @param _ The render-pass position.
    */
@@ -136,7 +136,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   }
 
   /**
-   * This method is called whenever a render-pass is removed.
+   * This method is called after a render-pass is removed.
    * 
    * @param _ The render-pass position.
    */
