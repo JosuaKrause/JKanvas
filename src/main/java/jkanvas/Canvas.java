@@ -1,6 +1,5 @@
 package jkanvas;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,7 +18,6 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
-
 
 /**
  * A simple class adding panning and zooming functionality to a
@@ -50,7 +48,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   }
 
   /**
-   * Creates a canvas for the given painter.
+   * Creates a canvas for the given painter. The component is opaque by default.
    * 
    * @param p The painter.
    * @param restricted Whether the canvas should be restricted.
@@ -163,6 +161,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     setToolTipText("");
     setFocusable(true);
     grabFocus();
+    setOpaque(true);
     focus = this;
   }
 
@@ -217,18 +216,6 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     input.put(KeyStroke.getKeyStroke(key, 0), token);
     final ActionMap action = getActionMap();
     action.put(token, a);
-  }
-
-  /**
-   * The back ground color of the component or <code>null</code> if it is
-   * transparent.
-   */
-  private Color back;
-
-  @Override
-  public void setBackground(final Color bg) {
-    back = bg;
-    super.setBackground(bg);
   }
 
   /**
@@ -370,15 +357,15 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     final boolean measureTime = isMeasuringFrameTime();
     final long startTime = measureTime ? System.nanoTime() : 0L;
     final Graphics2D g2 = (Graphics2D) g.create();
-    final Rectangle2D rect = getVisibleRect();
-    g2.clip(rect);
+    // honor opaqueness -- as in ComponentUI#update(Graphics, JComponent)
+    if(isOpaque()) {
+      g.setColor(getBackground());
+      g.fillRect(0, 0, getWidth(), getHeight());
+    }
+    // clip the visible area
+    g2.clip(getVisibleRect());
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
-    final Color c = back;
-    if(c != null) {
-      g2.setColor(c);
-      g2.fill(rect);
-    }
     if(paintLock == null) {
       doPaint(g2);
     } else {
@@ -451,7 +438,6 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     return paintLock;
   }
 
-
   /**
    * Sets the painter.
    * 
@@ -464,9 +450,9 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /**
    * Resets the viewport to a scaling of <code>1.0</code> and
    * <code>(0, 0)</code> being in the center of the component when
-   * {@link KanvasPainter#getBoundingBox()} returns <code>null</code> and zooms to fit
-   * the bounding box if {@link KanvasPainter#getBoundingBox()} returns a proper
-   * bounding box.
+   * {@link KanvasPainter#getBoundingBox()} returns <code>null</code> and zooms
+   * to fit the bounding box if {@link KanvasPainter#getBoundingBox()} returns a
+   * proper bounding box.
    */
   public void reset() {
     final Rectangle2D bbox = painter.getBoundingBox();
