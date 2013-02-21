@@ -5,7 +5,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -116,25 +115,111 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   }
 
   /**
+   * Converts a render-pass to a render-pass position.
+   * 
+   * @param pass The render-pass.
+   * @return The position.
+   */
+  private RenderpassPosition convert(final AbstractRenderpass pass) {
+    if(this == pass) throw new IllegalArgumentException("cannot add itself");
+    Objects.requireNonNull(pass);
+    return new RenderpassPosition(pass);
+  }
+
+  /**
+   * This method is called whenever a render-pass is added.
+   * 
+   * @param _ The render-pass position.
+   */
+  protected void addedRenderpass(@SuppressWarnings("unused") final RenderpassPosition _) {
+    // nothing to do
+  }
+
+  /**
+   * This method is called whenever a render-pass is removed.
+   * 
+   * @param _ The render-pass position.
+   */
+  protected void removedRenderpass(@SuppressWarnings("unused") final RenderpassPosition _) {
+    // nothing to do
+  }
+
+  /**
    * Adds a render-pass.
    * 
    * @param pass The render-pass.
    */
   public void addRenderpass(final AbstractRenderpass pass) {
-    if(this == pass) throw new IllegalArgumentException("cannot add itself");
-    Objects.requireNonNull(pass);
-    members.add(new RenderpassPosition(pass));
+    final RenderpassPosition p = convert(pass);
+    members.add(p);
+    addedRenderpass(p);
     invalidate();
   }
 
   /**
-   * Removes a render-pass.
+   * Inserts a render-pass.
    * 
+   * @param index The index where the render-pass will be inserted.
    * @param pass The render-pass.
    */
-  public void removeRenderpass(final AbstractRenderpass pass) {
-    Objects.requireNonNull(pass);
-    members.remove(pass);
+  public void addRenderpass(final int index, final AbstractRenderpass pass) {
+    final RenderpassPosition p = convert(pass);
+    members.add(index, p);
+    addedRenderpass(p);
+    invalidate();
+  }
+
+  /**
+   * Removes the render-pass at the given index.
+   * 
+   * @param index The index.
+   */
+  public void removeRenderpass(final int index) {
+    final RenderpassPosition p = members.remove(index);
+    removedRenderpass(p);
+    invalidate();
+  }
+
+  /** Clears all render-passes. */
+  public void clearRenderpasses() {
+    final RenderpassPosition[] rps = members();
+    members.clear();
+    for(final RenderpassPosition p : rps) {
+      removedRenderpass(p);
+    }
+    invalidate();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The number of render-passes.
+   */
+  public int renderpassCount() {
+    return members.size();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param index The index.
+   * @return The render-pass at the given position.
+   */
+  public AbstractRenderpass getRenderpass(final int index) {
+    return members.get(index).pass;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param index The index.
+   * @param pass The render-pass.
+   */
+  public void setRenderpass(final int index, final AbstractRenderpass pass) {
+    final RenderpassPosition p = convert(pass);
+    final RenderpassPosition o = members.set(index, p);
+    removedRenderpass(o);
+    addedRenderpass(p);
     invalidate();
   }
 
@@ -160,8 +245,13 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   /** Immediately computes the current layout. */
   public void forceLayout() {
     redoLayout = false;
-    // doLayout(...) is allowed to call invalidate()
-    doLayout(Collections.unmodifiableList(members));
+    final int oldHash = members.hashCode();
+    // doLayout(...) is allowed to call invalidate() and alter members
+    doLayout(members);
+    // heuristic for modification check
+    if(members.hashCode() != oldHash) {
+      redoLayout = true;
+    }
     animator.forceNextFrame();
   }
 
@@ -200,9 +290,18 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
     }
   }
 
+  /**
+   * Copies the member list for iterations that allow modifications to the list.
+   * 
+   * @return The member list as array.
+   */
+  private RenderpassPosition[] members() {
+    return members.toArray(new RenderpassPosition[members.size()]);
+  }
+
   @Override
   public final boolean click(final Point2D position, final MouseEvent e) {
-    for(final RenderpassPosition p : members) {
+    for(final RenderpassPosition p : members()) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -219,7 +318,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   @Override
   public final String getTooltip(final Point2D position) {
-    for(final RenderpassPosition p : members) {
+    for(final RenderpassPosition p : members()) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -237,7 +336,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   @Override
   public final boolean moveMouse(final Point2D cur) {
-    for(final RenderpassPosition p : members) {
+    for(final RenderpassPosition p : members()) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -260,7 +359,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
-    for(final RenderpassPosition p : members) {
+    for(final RenderpassPosition p : members()) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -309,6 +408,9 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
     boolean change = false;
     Rectangle2D res = null;
     for(final RenderpassPosition p : members) {
+      if(!p.pass.isVisible()) {
+        continue;
+      }
       if(p.checkBBoxChange()) {
         change = true;
       }

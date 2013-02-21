@@ -46,6 +46,9 @@ public class LinearGroup extends RenderGroup {
   protected void doLayout(final List<RenderpassPosition> members) {
     double pos = 0;
     for(final RenderpassPosition p : members) {
+      if(!p.pass.isVisible()) {
+        continue;
+      }
       final Point2D dest = new Point2D.Double(horizontal ? pos : 0, horizontal ? 0 : pos);
       p.changeAnimationTo(dest, timing);
       final Rectangle2D bbox = p.pass.getBoundingBox();
