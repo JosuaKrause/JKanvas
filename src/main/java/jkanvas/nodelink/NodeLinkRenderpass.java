@@ -135,13 +135,17 @@ public class NodeLinkRenderpass<T extends AnimatedPosition>
    */
   public T pick(final Point2D pos) {
     final NodeRealizer<T> nodeRealizer = getNodeRealizer();
+    T cur = null;
     for(final T node : view.nodes()) {
       final double x = node.getX();
       final double y = node.getY();
       final Shape shape = nodeRealizer.createNodeShape(node, x, y);
-      if(shape.contains(pos)) return node;
+      if(shape.contains(pos)) {
+        // return the last match -- ie topmost node
+        cur = node;
+      }
     }
-    return null;
+    return cur;
   }
 
   @Override
