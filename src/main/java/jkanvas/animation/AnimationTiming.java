@@ -30,6 +30,10 @@ public class AnimationTiming {
     this.duration = duration;
   }
 
+  /** No animation. */
+  public static final AnimationTiming NO_ANIMATION = new AnimationTiming(
+      Interpolator.LINEAR, 0);
+
   /** Slow and smooth animation. */
   public static final AnimationTiming SLOW = new AnimationTiming(
       Interpolator.SMOOTH, AnimatedPosition.LONG);
