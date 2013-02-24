@@ -220,6 +220,21 @@ public class ArrowFactory {
    * 
    * @param start The start point.
    * @param end The end point.
+   * @param bend The control point for bending.
+   * @return The arrow shape.
+   */
+  public Shape createArrow(final Point2D start, final Point2D end, final Point2D bend) {
+    Objects.requireNonNull(start);
+    Objects.requireNonNull(end);
+    Objects.requireNonNull(bend);
+    return createArrow(start, end, bend, null);
+  }
+
+  /**
+   * Creates a curved arrow.
+   * 
+   * @param start The start point.
+   * @param end The end point.
    * @param bendFirst The first control point.
    * @param bendSecond The second control point.
    * @return The arrow shape.

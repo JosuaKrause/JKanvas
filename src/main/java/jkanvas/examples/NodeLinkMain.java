@@ -94,10 +94,10 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       // when selecting a second node create edge
       simpleView.addEdge(secSel, n);
       secSel = null;
-      return true;
+    } else {
+      // select node
+      secSel = n;
     }
-    // select node
-    secSel = n;
     return true;
   }
 
