@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -245,13 +246,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   /** Immediately computes the current layout. */
   public void forceLayout() {
     redoLayout = false;
-    final int oldHash = members.hashCode();
-    // doLayout(...) is allowed to call invalidate() and alter members
-    doLayout(members);
-    // heuristic for modification check
-    if(members.hashCode() != oldHash) {
-      redoLayout = true;
-    }
+    doLayout(Collections.unmodifiableList(members));
     animator.forceNextFrame();
   }
 
