@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.animation.Animated;
 import jkanvas.animation.AnimatedLayouter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.Animator;
@@ -253,7 +254,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   protected abstract void doLayout(List<RenderpassPosition> members);
 
   @Override
-  public Iterable<? extends AnimatedPosition> getPositions() {
+  public Iterable<? extends Animated> getPositions() {
     return members;
   }
 

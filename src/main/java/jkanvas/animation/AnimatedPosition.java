@@ -13,7 +13,7 @@ import jkanvas.util.Interpolator;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class AnimatedPosition extends Position2D {
+public class AnimatedPosition extends Position2D implements Animated {
 
   /** The animation start point. */
   private Point2D start;
@@ -196,11 +196,7 @@ public class AnimatedPosition extends Position2D {
     pendingOperations.add(new PendingOp());
   }
 
-  /**
-   * Animates the position.
-   * 
-   * @param currentTime The current time in milliseconds.
-   */
+  @Override
   public void animate(final long currentTime) {
     PendingOp op = pendingOperations.poll();
     if(op == null) {
@@ -342,12 +338,7 @@ public class AnimatedPosition extends Position2D {
     changed = true;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return Whether this position has been changed. The change flag is cleared
-   *         by this method.
-   */
+  @Override
   public boolean hasChanged() {
     final boolean res = changed;
     changed = false;

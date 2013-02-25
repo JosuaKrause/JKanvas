@@ -12,9 +12,8 @@ public interface AnimatedLayouter {
   /**
    * Getter.
    * 
-   * @return Animatable positions. Do <em>not</em> call
-   *         {@link Iterator#remove()}.
+   * @return Animatable objects. Do <em>not</em> call {@link Iterator#remove()}.
    */
-  Iterable<? extends AnimatedPosition> getPositions();
+  Iterable<? extends Animated> getPositions();
 
 }
