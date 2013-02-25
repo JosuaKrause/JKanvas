@@ -66,7 +66,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     boolean needsRedraw = false;
     // animation lock is already acquired
     for(final AnimatedLayouter l : layouters) {
-      for(final AnimatedPosition node : l.getPositions()) {
+      for(final Animated node : l.getPositions()) {
         node.animate(currentTime);
         needsRedraw = node.hasChanged() || needsRedraw;
       }

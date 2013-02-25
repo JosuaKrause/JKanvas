@@ -104,6 +104,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
    * call to this method.
    */
   public void dispose() {
+    if(disposed) return;
     disposed = true;
     clearRefreshables();
     animator.interrupt();

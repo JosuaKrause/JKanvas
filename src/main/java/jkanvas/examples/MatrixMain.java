@@ -122,12 +122,12 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
     final MutableQuadraticMatrix<Double> matrix =
         new AbstractQuadraticMatrix<Double>(9) {
 
-      @Override
-      protected Double[][] createMatrix(final int size) {
-        return new Double[size][size];
-      }
+          @Override
+          protected Double[][] createMatrix(final int size) {
+            return new Double[size][size];
+          }
 
-    };
+        };
     // fill the matrix with random values
     for(int col = 0; col < matrix.size(); ++col) {
       for(int row = 0; row < matrix.size(); ++row) {
@@ -151,6 +151,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
         g.fill(rect);
         g.setColor(Color.BLACK);
         g.draw(rect);
+        // FIXME find better / more stable way
         // when leftmost column draw column title
         if(col == 0) {
           final StringDrawer s = new StringDrawer(g, matrix.getName(row));

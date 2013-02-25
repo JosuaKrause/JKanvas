@@ -1,6 +1,9 @@
 package jkanvas.util;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Utility functions for arrays.
@@ -82,6 +85,79 @@ public final class ArrayUtil {
     for(int i = 0; i < mid; ++i) {
       swap(arr, i, arr.length - i - 1);
     }
+  }
+
+  /**
+   * Reverses the given list for iteration. The actual list is not modified.
+   * 
+   * @param <T> The content type.
+   * @param list The list to reverse.
+   * @return The reversed list.
+   */
+  public static <T> Iterable<T> reverseList(final List<T> list) {
+    return new Iterable<T>() {
+
+      @Override
+      public Iterator<T> iterator() {
+        final ListIterator<T> li = list.listIterator(list.size());
+        return new Iterator<T>() {
+
+          @Override
+          public boolean hasNext() {
+            return li.hasPrevious();
+          }
+
+          @Override
+          public T next() {
+            return li.previous();
+          }
+
+          @Override
+          public void remove() {
+            li.remove();
+          }
+
+        };
+      }
+
+    };
+  }
+
+  /**
+   * Reverses the given array for iteration. The actual array is not modified.
+   * 
+   * @param <T> The content type.
+   * @param arr The array to reverse.
+   * @return The reversed array.
+   */
+  public static <T> Iterable<T> reverseArray(final T[] arr) {
+    return new Iterable<T>() {
+
+      @Override
+      public Iterator<T> iterator() {
+        return new Iterator<T>() {
+
+          private int pos = arr.length;
+
+          @Override
+          public boolean hasNext() {
+            return pos > 0;
+          }
+
+          @Override
+          public T next() {
+            return arr[--pos];
+          }
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+
+        };
+      }
+
+    };
   }
 
 }

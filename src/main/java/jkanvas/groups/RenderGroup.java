@@ -1,5 +1,7 @@
 package jkanvas.groups;
 
+import static jkanvas.util.ArrayUtil.*;
+
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.animation.Animated;
 import jkanvas.animation.AnimatedLayouter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.Animator;
@@ -31,7 +34,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
    * 
    * @author Joschi <josua.krause@googlemail.com>
    */
-  protected static class RenderpassPosition extends AnimatedPosition {
+  protected static final class RenderpassPosition extends AnimatedPosition {
 
     /** The render-pass. */
     public final AbstractRenderpass pass;
@@ -101,6 +104,9 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   /** The list of group members. */
   private final List<RenderpassPosition> members = new ArrayList<>();
+
+  /** The list of non layouted members. */
+  private final List<Renderpass> nonLayouted = new ArrayList<>();
 
   /** The underlying animator. */
   private final Animator animator;
@@ -191,6 +197,16 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   }
 
   /**
+   * Adds a render-pass that is not used in the layout.
+   * 
+   * @param pass The render-pass.
+   */
+  public void addNonLayouted(final Renderpass pass) {
+    nonLayouted.add(pass);
+    animator.quickRefresh();
+  }
+
+  /**
    * Getter.
    * 
    * @return The number of render-passes.
@@ -238,7 +254,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   protected abstract void doLayout(List<RenderpassPosition> members);
 
   @Override
-  public Iterable<? extends AnimatedPosition> getPositions() {
+  public Iterable<? extends Animated> getPositions() {
     return members;
   }
 
@@ -246,10 +262,11 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   public void forceLayout() {
     redoLayout = false;
     final int oldHash = members.hashCode();
+    final int oldSize = members.size();
     // doLayout(...) is allowed to call invalidate() and alter members
     doLayout(members);
     // heuristic for modification check
-    if(members.hashCode() != oldHash) {
+    if(members.size() != oldSize || members.hashCode() != oldHash) {
       redoLayout = true;
     }
     animator.forceNextFrame();
@@ -285,6 +302,25 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
       r.draw(g, c);
       g.dispose();
     }
+    for(final Renderpass r : nonLayouted) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = RenderpassPainter.getPassBoundingBox(r);
+      if(bbox != null && !view.intersects(bbox)) {
+        continue;
+      }
+      final Graphics2D g = (Graphics2D) gfx.create();
+      if(bbox != null) {
+        g.setClip(bbox);
+      }
+      final double dx = r.getOffsetX();
+      final double dy = r.getOffsetY();
+      g.translate(dx, dy);
+      final KanvasContext c = RenderpassPainter.getContextFor(r, ctx);
+      r.draw(g, c);
+      g.dispose();
+    }
     if(changed) {
       invalidate();
     }
@@ -301,7 +337,18 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   @Override
   public final boolean click(final Point2D position, final MouseEvent e) {
-    for(final RenderpassPosition p : members()) {
+    for(final Renderpass r : reverseList(nonLayouted)) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = r.getBoundingBox();
+      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
+      if(bbox != null && !bbox.contains(pos)) {
+        continue;
+      }
+      if(r.click(pos, e)) return true;
+    }
+    for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -318,7 +365,19 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   @Override
   public final String getTooltip(final Point2D position) {
-    for(final RenderpassPosition p : members()) {
+    for(final Renderpass r : reverseList(nonLayouted)) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = r.getBoundingBox();
+      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
+      if(bbox != null && !bbox.contains(pos)) {
+        continue;
+      }
+      final String tooltip = r.getTooltip(pos);
+      if(tooltip != null) return tooltip;
+    }
+    for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -336,7 +395,18 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   @Override
   public final boolean moveMouse(final Point2D cur) {
-    for(final RenderpassPosition p : members()) {
+    for(final Renderpass r : reverseList(nonLayouted)) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = r.getBoundingBox();
+      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, cur);
+      if(bbox != null && !bbox.contains(pos)) {
+        continue;
+      }
+      if(r.moveMouse(pos)) return true;
+    }
+    for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -359,7 +429,22 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
-    for(final RenderpassPosition p : members()) {
+    for(final Renderpass r : reverseList(nonLayouted)) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = r.getBoundingBox();
+      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
+      if(bbox != null && !bbox.contains(pos)) {
+        continue;
+      }
+      if(r.acceptDrag(pos, e)) {
+        start = pos;
+        dragging = r;
+        return true;
+      }
+    }
+    for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
@@ -419,13 +504,28 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
         continue;
       }
       if(res == null) {
-        res = new Rectangle2D.Double(bbox.getX(), bbox.getY(), bbox.getWidth(),
-            bbox.getHeight());
+        res = new Rectangle2D.Double(bbox.getX(), bbox.getY(),
+            bbox.getWidth(), bbox.getHeight());
       } else {
         res.add(bbox);
       }
       if(p.inAnimation()) {
         res.add(p.getPredictBBox());
+      }
+    }
+    for(final Renderpass r : nonLayouted) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = RenderpassPainter.getPassBoundingBox(r);
+      if(bbox == null) {
+        continue;
+      }
+      if(res == null) {
+        res = new Rectangle2D.Double(bbox.getX(), bbox.getY(),
+            bbox.getWidth(), bbox.getHeight());
+      } else {
+        res.add(bbox);
       }
     }
     if(change) {
