@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 import jkanvas.RefreshManager;
 import jkanvas.Refreshable;
 
-
 /**
  * A straight forward implementation of a {@link QuadraticMatrix}. Only the
  * creation of the typed arrays must be handled by a sub-class.
@@ -122,16 +121,6 @@ public abstract class AbstractQuadraticMatrix<T> implements MutableQuadraticMatr
   @Override
   public void setRefreshManager(final RefreshManager manager) {
     this.manager = manager;
-  }
-
-  @Override
-  public boolean supportsAutoRefreshing() {
-    return true;
-  }
-
-  @Override
-  public boolean isAutoRefreshing() {
-    return manager != null;
   }
 
   @Override

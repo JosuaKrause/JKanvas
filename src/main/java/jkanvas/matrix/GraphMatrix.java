@@ -2,7 +2,6 @@ package jkanvas.matrix;
 
 import java.awt.geom.Rectangle2D;
 
-import jkanvas.RefreshManager;
 import jkanvas.nodelink.GraphView;
 
 /**
@@ -82,21 +81,6 @@ public class GraphMatrix<T extends GraphView> implements QuadraticMatrix<Boolean
    */
   protected final T getView() {
     return view;
-  }
-
-  @Override
-  public boolean isAutoRefreshing() {
-    return false;
-  }
-
-  @Override
-  public void setRefreshManager(final RefreshManager manager) {
-    // no-op
-  }
-
-  @Override
-  public boolean supportsAutoRefreshing() {
-    return false;
   }
 
   @Override

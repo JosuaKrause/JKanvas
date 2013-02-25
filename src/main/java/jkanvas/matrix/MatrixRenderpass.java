@@ -46,11 +46,11 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends RenderpassAd
    */
   public void setMatrix(final T m) {
     Objects.requireNonNull(m);
-    if(matrix != null && matrix.supportsAutoRefreshing()) {
-      matrix.setRefreshManager(null);
+    if(matrix != null && matrix instanceof MutableQuadraticMatrix) {
+      ((MutableQuadraticMatrix<?>) matrix).setRefreshManager(null);
     }
-    if(m.supportsAutoRefreshing()) {
-      m.setRefreshManager(manager);
+    if(m instanceof MutableQuadraticMatrix) {
+      ((MutableQuadraticMatrix<?>) m).setRefreshManager(manager);
     }
     matrix = m;
     manager.refreshAll();
