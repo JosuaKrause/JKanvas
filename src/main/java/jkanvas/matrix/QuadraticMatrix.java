@@ -54,7 +54,8 @@ public interface QuadraticMatrix<T> {
 
   /**
    * Sets the refresh manager of this quadratic matrix if the matrix supports
-   * automatic refreshing. Otherwise this method is a no-op.
+   * automatic refreshing. If the matrix does not support automatic refreshing
+   * this method is a no-op.
    * 
    * @param manager The refresh manager or <code>null</code> if automatic
    *          refreshing is deactivated.
@@ -67,6 +68,17 @@ public interface QuadraticMatrix<T> {
    * Getter.
    * 
    * @return Whether this quadratic matrix supports automatic refreshing.
+   *         Automatic refreshing means that whenever a value is set the refresh
+   *         manager installed with {@link #setRefreshManager(RefreshManager)}
+   *         is refreshed. For example a {@link MutableQuadraticMatrix} should
+   *         support automatic refreshing with every setter refreshing the
+   *         {@link RefreshManager}. A {@link QuadraticMatrix} whose data cannot
+   *         be altered via the matrix itself needs not to support automatic
+   *         refreshing. Consequently {@link #setRefreshManager(RefreshManager)}
+   *         should be a no-op and {@link #isAutoRefreshing()} should also
+   *         always return <code>false</code>.
+   * @see #setRefreshManager(RefreshManager)
+   * @see #isAutoRefreshing()
    */
   boolean supportsAutoRefreshing();
 
@@ -74,6 +86,8 @@ public interface QuadraticMatrix<T> {
    * Getter.
    * 
    * @return Whether this quadratic matrix currently uses automatic refreshing.
+   * @see #setRefreshManager(RefreshManager)
+   * @see #supportsAutoRefreshing()
    */
   boolean isAutoRefreshing();
 
