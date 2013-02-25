@@ -2,11 +2,13 @@ package jkanvas.groups;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
+import jkanvas.painter.Renderpass;
 
 /**
  * A group linearly ordering the members. Render-passes without bounding boxes
@@ -44,15 +46,33 @@ public class LinearGroup extends RenderGroup {
 
   @Override
   protected void doLayout(final List<RenderpassPosition> members) {
-    double pos = 0;
+    final List<Rectangle2D> bboxes = new ArrayList<>(members.size());
+    double max = 0;
     for(final RenderpassPosition p : members) {
+      final Renderpass pass = p.pass;
+      final Rectangle2D bbox = pass.getBoundingBox();
+      if(bbox == null) throw new IllegalStateException("bbox must not be null");
+      bboxes.add(bbox);
+      if(!pass.isVisible()) {
+        continue;
+      }
+      final double v = horizontal ? bbox.getHeight() : bbox.getWidth();
+      if(v > max) {
+        max = v;
+      }
+    }
+    double pos = 0;
+    for(int i = 0; i < members.size(); ++i) {
+      final RenderpassPosition p = members.get(i);
+      final Rectangle2D bbox = bboxes.get(i);
       if(!p.pass.isVisible()) {
         continue;
       }
-      final Point2D dest = new Point2D.Double(horizontal ? pos : 0, horizontal ? 0 : pos);
+      final double v = horizontal ? bbox.getHeight() : bbox.getWidth();
+      final double opos = (max - v) * 0.5;
+      final Point2D dest = new Point2D.Double(
+          horizontal ? pos : opos, horizontal ? opos : pos);
       p.changeAnimationTo(dest, timing);
-      final Rectangle2D bbox = p.pass.getBoundingBox();
-      if(bbox == null) throw new IllegalStateException("bbox must not be null");
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
     }
   }
