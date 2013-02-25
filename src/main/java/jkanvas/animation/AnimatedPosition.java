@@ -112,10 +112,6 @@ public class AnimatedPosition extends Position2D {
   private void startAnimationTo(final long currentTime,
       final Point2D pos, final AnimationTiming timing) {
     clearAnimation(currentTime);
-    if(timing.duration <= 0) {
-      doSetPosition(pos.getX(), pos.getY());
-      return;
-    }
     startTime = currentTime;
     endTime = currentTime + timing.duration;
     pol = timing.pol;
@@ -130,8 +126,12 @@ public class AnimatedPosition extends Position2D {
    * @param timing The animation timing.
    */
   public void startAnimationTo(final Point2D pos, final AnimationTiming timing) {
-    Objects.requireNonNull(pos);
     Objects.requireNonNull(timing);
+    if(timing.duration <= 0) {
+      setPosition(pos);
+      return;
+    }
+    Objects.requireNonNull(pos);
     pendingOperations.add(new PendingOp(pos, timing, true));
   }
 
@@ -170,8 +170,12 @@ public class AnimatedPosition extends Position2D {
    */
   public void changeAnimationTo(final Point2D pos,
       final AnimationTiming defaultTiming) {
-    Objects.requireNonNull(pos);
     Objects.requireNonNull(defaultTiming);
+    if(defaultTiming.duration <= 0) {
+      setPosition(pos);
+      return;
+    }
+    Objects.requireNonNull(pos);
     pendingOperations.add(new PendingOp(pos, defaultTiming, false));
   }
 
@@ -313,6 +317,7 @@ public class AnimatedPosition extends Position2D {
      */
     public PendingOp(final Point2D destination,
         final AnimationTiming timing, final boolean start) {
+      assert timing.duration > 0;
       operation = start ? OP_START : OP_CHANGE;
       this.destination = destination;
       this.timing = timing;
