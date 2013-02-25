@@ -2,6 +2,7 @@ package jkanvas.util;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -233,6 +234,15 @@ public final class PaintUtil {
    */
   public static void setAlpha(final Graphics2D g, final double alpha) {
     if(alpha >= 1) return;
+    final Composite comp = g.getComposite();
+    if(comp instanceof AlphaComposite) {
+      final AlphaComposite ac = (AlphaComposite) comp;
+      if(ac.getRule() == AlphaComposite.SRC_OVER) {
+        g.setComposite(ac.derive((float) (ac.getAlpha() * alpha)));
+        return;
+      }
+    }
+    System.err.println("Warning: cannot derive composite: " + comp);
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alpha));
   }
 
