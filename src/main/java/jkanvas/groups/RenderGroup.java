@@ -197,16 +197,6 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   }
 
   /**
-   * Adds a render-pass that is not used in the layout.
-   * 
-   * @param pass The render-pass.
-   */
-  public void addNonLayouted(final Renderpass pass) {
-    nonLayouted.add(pass);
-    animator.quickRefresh();
-  }
-
-  /**
    * Getter.
    * 
    * @return The number of render-passes.
@@ -237,6 +227,73 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
     removedRenderpass(o);
     addedRenderpass(p);
     invalidate();
+  }
+
+  /**
+   * Adds a render-pass that is not used for the layout.
+   * 
+   * @param pass The render-pass.
+   */
+  public void addNonLayouted(final Renderpass pass) {
+    nonLayouted.add(pass);
+    animator.quickRefresh();
+  }
+
+  /**
+   * Inserts a render-pass that is not used for the layout.
+   * 
+   * @param index The index where the render-pass will be inserted.
+   * @param pass The render-pass.
+   */
+  public void addNonLayouted(final int index, final Renderpass pass) {
+    nonLayouted.add(index, pass);
+    animator.quickRefresh();
+  }
+
+  /**
+   * Removes a render-pass that is not used for the layout.
+   * 
+   * @param index The index of the render-pass.
+   */
+  public void removeNonLayouted(final int index) {
+    nonLayouted.remove(index);
+    animator.quickRefresh();
+  }
+
+  /**
+   * Sets the render-pass that is not used for the layout at the given position.
+   * 
+   * @param index The index.
+   * @param pass The render-pass.
+   */
+  public void setNonLayouted(final int index, final Renderpass pass) {
+    nonLayouted.set(index, pass);
+    animator.quickRefresh();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param index The index.
+   * @return The render-pass at the given index that is not used for the layout.
+   */
+  public Renderpass getNonLayouted(final int index) {
+    return nonLayouted.get(index);
+  }
+
+  /** Clears all render-passes that are not used for the layout. */
+  public void clearNonLayouted() {
+    nonLayouted.clear();
+    animator.quickRefresh();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The number of render-passes that are not used for the layout.
+   */
+  public int nonLayoutedSize() {
+    return nonLayouted.size();
   }
 
   /** Invalidates the current layout, recomputes the layout, and repaints. */
