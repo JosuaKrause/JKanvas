@@ -7,9 +7,10 @@ import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
-import jkanvas.animation.AnimatedLayouter;
+import jkanvas.animation.Animated;
 import jkanvas.animation.AnimatedPosition;
-import jkanvas.painter.RenderpassAdapter;
+import jkanvas.animation.GroupAnimator;
+import jkanvas.painter.AbstractRenderpass;
 
 /**
  * Paints a layouted node link diagram.
@@ -17,8 +18,7 @@ import jkanvas.painter.RenderpassAdapter;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of nodes.
  */
-public class NodeLinkRenderpass<T extends AnimatedPosition>
-    extends RenderpassAdapter implements AnimatedLayouter {
+public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRenderpass {
 
   /** The node realizer. */
   private NodeRealizer<T> nodeRealizer;
@@ -148,9 +148,24 @@ public class NodeLinkRenderpass<T extends AnimatedPosition>
     return cur;
   }
 
+  /** The group animator for the nodes. */
+  private final GroupAnimator<T> animator = new GroupAnimator<T>() {
+
+    @Override
+    protected Iterable<T> members() {
+      return view.nodes();
+    }
+
+    @Override
+    protected Animated animated(final T member) {
+      return member;
+    }
+
+  };
+
   @Override
-  public Iterable<T> getPositions() {
-    return view.nodes();
+  public Animated getAnimated() {
+    return animator;
   }
 
 }

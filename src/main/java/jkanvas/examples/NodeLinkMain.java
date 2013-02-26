@@ -138,7 +138,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   public Rectangle2D getBoundingBox() {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
     Rectangle2D bbox = null;
-    for(final AnimatedPosition p : getPositions()) {
+    for(final AnimatedPosition p : view.nodes()) {
       final double x = p.getX();
       final double y = p.getY();
       final Shape shape = n.createNodeShape(p, x, y);
@@ -234,7 +234,6 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 
     });
     p.addPass(r);
-    p.addLayouter(r);
     // configure Canvas
     final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);

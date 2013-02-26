@@ -215,7 +215,15 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
     // configure the Canvas
     // c.setMargin(40);
     c.setBackground(Color.WHITE);
-    final JFrame frame = new JFrame("Matrix");
+    final JFrame frame = new JFrame("Matrix") {
+
+      @Override
+      public void dispose() {
+        c.dispose();
+        super.dispose();
+      }
+
+    };
     // add actions to the Canvas
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {
 

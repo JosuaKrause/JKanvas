@@ -104,29 +104,4 @@ public class BorderRenderpass extends RenderpassAdapter {
     borders.remove(renderpass);
   }
 
-  @Override
-  public double getOffsetX() {
-    return 0;
-  }
-
-  @Override
-  public double getOffsetY() {
-    return 0;
-  }
-
-  @Override
-  public Rectangle2D getBoundingBox() {
-    return null;
-  }
-
-  @Override
-  public void setBoundingBox(final Rectangle2D bbox) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void setOffset(final double x, final double y) {
-    throw new UnsupportedOperationException();
-  }
-
 }

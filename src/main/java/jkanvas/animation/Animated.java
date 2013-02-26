@@ -8,18 +8,11 @@ package jkanvas.animation;
 public interface Animated {
 
   /**
-   * Animates the position.
+   * Animates the object.
    * 
    * @param currentTime The current time in milliseconds.
+   * @return Whether this object has been changed.
    */
-  void animate(long currentTime);
-
-  /**
-   * Getter.
-   * 
-   * @return Whether this position has been changed. The change flag is cleared
-   *         by this method.
-   */
-  boolean hasChanged();
+  boolean animate(long currentTime);
 
 }

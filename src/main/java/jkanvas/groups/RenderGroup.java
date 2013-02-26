@@ -13,9 +13,10 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.Animated;
-import jkanvas.animation.AnimatedLayouter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.Animator;
+import jkanvas.animation.GroupAnimator;
+import jkanvas.animation.PairAnimator;
 import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
@@ -28,7 +29,7 @@ import jkanvas.painter.RenderpassPainter;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class RenderGroup extends AbstractRenderpass implements AnimatedLayouter {
+public abstract class RenderGroup extends AbstractRenderpass {
 
   /**
    * The offset of a render-pass as {@link AnimatedPosition}.
@@ -39,6 +40,9 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
 
     /** The render-pass. */
     public final AbstractRenderpass pass;
+
+    /** The animator. */
+    public final Animated animated;
 
     /** The current render-pass bounding box. */
     private Rectangle2D bbox;
@@ -52,6 +56,8 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
       super(pass.getOffsetX(), pass.getOffsetY());
       bbox = pass.getBoundingBox();
       this.pass = pass;
+      final Animated p = pass.getAnimated();
+      animated = p == null ? this : new PairAnimator(this, p);
     }
 
     @Override
@@ -104,7 +110,7 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   private boolean redoLayout;
 
   /** The list of group members. */
-  private final List<RenderpassPosition> members = new ArrayList<>();
+  private final List<RenderpassPosition> members;
 
   /** The list of non layouted members. */
   private final List<Renderpass> nonLayouted = new ArrayList<>();
@@ -112,13 +118,36 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
   /** The underlying animator. */
   private final Animator animator;
 
+  /** The group animator holding render-passes and their positions. */
+  private final GroupAnimator<RenderpassPosition> groupAnimator;
+
   /**
    * Creates a new render-pass group.
    * 
    * @param animator The underlying animator.
    */
   public RenderGroup(final Animator animator) {
+    final List<RenderpassPosition> m = new ArrayList<>();
     this.animator = Objects.requireNonNull(animator);
+    members = m;
+    groupAnimator = new GroupAnimator<RenderpassPosition>() {
+
+      @Override
+      protected Iterable<RenderpassPosition> members() {
+        return m;
+      }
+
+      @Override
+      protected Animated animated(final RenderpassPosition member) {
+        return member.animated;
+      }
+
+    };
+  }
+
+  @Override
+  public Animated getAnimated() {
+    return groupAnimator;
   }
 
   /**
@@ -310,11 +339,6 @@ public abstract class RenderGroup extends AbstractRenderpass implements Animated
    * @param members The positions of the render-passes.
    */
   protected abstract void doLayout(List<RenderpassPosition> members);
-
-  @Override
-  public Iterable<? extends Animated> getPositions() {
-    return members;
-  }
 
   /** Immediately computes the current layout. */
   public void forceLayout() {

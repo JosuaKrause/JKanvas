@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkanvas.Refreshable;
+import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 
 /**
@@ -29,35 +30,53 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     };
   }
 
-  /** All registered layouters. */
-  private final List<AnimatedLayouter> layouters = new ArrayList<>();
+  @Override
+  public void addPass(final Renderpass r) {
+    super.addPass(r);
+    final Animated a = r.getAnimated();
+    if(a != null) {
+      addAnimated(a);
+    }
+  }
+
+  @Override
+  public void removePass(final Renderpass r) {
+    super.removePass(r);
+    final Animated a = r.getAnimated();
+    if(a != null) {
+      removeAnimated(a);
+    }
+  }
+
+  /** All registered animated objects. */
+  private final List<Animated> animated = new ArrayList<>();
 
   /**
-   * Adds an animatable layouter.
+   * Adds an animatable object.
    * 
-   * @param layouter The layouter.
+   * @param animate The object.
    */
-  public void addLayouter(final AnimatedLayouter layouter) {
+  public void addAnimated(final Animated animate) {
     synchronized(animator.getAnimationLock()) {
-      if(layouters.contains(layouter)) throw new IllegalArgumentException(
-          "layouter already added: " + layouter);
-      layouters.add(layouter);
+      if(animated.contains(animate)) throw new IllegalArgumentException(
+          "animated object already added: " + animate);
+      animated.add(animate);
     }
   }
 
   /**
-   * Removes an animatable layouter.
+   * Removes an animatable object.
    * 
-   * @param layouter The layouter.
+   * @param animate The object.
    */
-  public void removeLayouter(final AnimatedLayouter layouter) {
+  public void removeAnimated(final Animated animate) {
     synchronized(animator.getAnimationLock()) {
-      layouters.remove(layouter);
+      animated.remove(animate);
     }
   }
 
   /**
-   * Computes one step for all layouters.
+   * Computes one step for all animated.
    * 
    * @param currentTime The current time in milliseconds.
    * @return Whether a redraw is needed.
@@ -65,11 +84,8 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   protected boolean doStep(final long currentTime) {
     boolean needsRedraw = false;
     // animation lock is already acquired
-    for(final AnimatedLayouter l : layouters) {
-      for(final Animated node : l.getPositions()) {
-        node.animate(currentTime);
-        needsRedraw = node.hasChanged() || needsRedraw;
-      }
+    for(final Animated a : animated) {
+      needsRedraw = a.animate(currentTime) || needsRedraw;
     }
     return needsRedraw;
   }
