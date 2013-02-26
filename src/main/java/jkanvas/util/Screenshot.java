@@ -40,16 +40,14 @@ public final class Screenshot {
   }
 
   /**
-   * Creates an output stream for an image.
+   * Finds an unused file in the given directory.
    * 
    * @param dir The directory.
    * @param prefix The name prefix.
    * @param postfix The name postfix.
-   * @return The output.
-   * @throws IOException I/O Exception.
+   * @return The file that does not yet exist.
    */
-  private static OutputStream createOutput(final File dir, final String prefix,
-      final String postfix) throws IOException {
+  private static File nextFile(final File dir, final String prefix, final String postfix) {
     ensureDir(dir);
     final File out;
     int i = 0;
@@ -60,7 +58,7 @@ public final class Screenshot {
         break;
       }
     }
-    return new FileOutputStream(out);
+    return out;
   }
 
   /**
@@ -69,11 +67,14 @@ public final class Screenshot {
    * @param dir The directory.
    * @param prefix The name prefix.
    * @param comp The component to draw.
+   * @return The file that was used to store the image.
    * @throws IOException I/O Exception.
    */
-  public static void savePNG(final File dir, final String prefix, final JComponent comp)
+  public static File savePNG(final File dir, final String prefix, final JComponent comp)
       throws IOException {
-    savePNG(createOutput(dir, prefix, ".png"), comp);
+    final File out = nextFile(dir, prefix, ".png");
+    savePNG(new FileOutputStream(out), comp);
+    return out;
   }
 
   /**
