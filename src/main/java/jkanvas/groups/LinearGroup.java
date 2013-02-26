@@ -27,6 +27,14 @@ public class LinearGroup extends RenderGroup {
   /** Whether the render-passes are laid out in horizontal direction. */
   private boolean horizontal;
 
+  private Alignment alignment;
+
+  public static enum Alignment {
+    LEFT,
+    MIDDLE,
+    RIGHT
+  }
+
   /**
    * Creates a linear group.
    * 
@@ -40,12 +48,17 @@ public class LinearGroup extends RenderGroup {
       final double space, final AnimationTiming timing) {
     super(animator);
     horizontal = isHorizontal;
+    alignment = Alignment.MIDDLE;
     this.space = space;
     this.timing = Objects.requireNonNull(timing);
   }
 
   @Override
   protected void doLayout(final List<RenderpassPosition> members) {
+
+    final double alignmentFactor = alignment == Alignment.MIDDLE ? 0.5
+        : alignment == Alignment.RIGHT ? 1 : 0;
+
     final List<Rectangle2D> bboxes = new ArrayList<>(members.size());
     double max = 0;
     for(final RenderpassPosition p : members) {
@@ -69,7 +82,7 @@ public class LinearGroup extends RenderGroup {
         continue;
       }
       final double v = horizontal ? bbox.getHeight() : bbox.getWidth();
-      final double opos = (max - v) * 0.5;
+      final double opos = (max - v) * alignmentFactor;
       final Point2D dest = new Point2D.Double(
           horizontal ? pos : opos, horizontal ? opos : pos);
       p.changeAnimationTo(dest, timing);
@@ -132,6 +145,25 @@ public class LinearGroup extends RenderGroup {
    */
   public boolean isHorizontal() {
     return horizontal;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param alignment The alignment of the groups.
+   */
+  public void setAlignment(final Alignment alignment) {
+    this.alignment = alignment;
+    invalidate();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The current alignment.
+   */
+  public Alignment getAlignment() {
+    return alignment;
   }
 
 }
