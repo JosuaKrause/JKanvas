@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class AbstractRenderpass implements Renderpass {
+public abstract class AbstractRenderpass extends RenderpassAdapter {
 
   /** Whether the pass is visible. */
   private boolean isVisible = true;
