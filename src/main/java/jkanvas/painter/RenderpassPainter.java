@@ -1,5 +1,7 @@
 package jkanvas.painter;
 
+import static jkanvas.util.ArrayUtil.*;
+
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -8,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkanvas.KanvasContext;
-
 
 /**
  * A render pass painter renders render passes.
@@ -73,7 +74,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean click(final Point2D p, final MouseEvent e) {
-    for(final Renderpass r : back) {
+    for(final Renderpass r : reverseList(back)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -89,7 +90,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final String getTooltip(final Point2D p) {
-    for(final Renderpass r : back) {
+    for(final Renderpass r : reverseList(back)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -106,7 +107,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean moveMouse(final Point2D cur) {
-    for(final Renderpass r : back) {
+    for(final Renderpass r : reverseList(back)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -128,7 +129,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean acceptDrag(final Point2D p, final MouseEvent e) {
-    for(final Renderpass r : back) {
+    for(final Renderpass r : reverseList(back)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -179,7 +180,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean clickHUD(final Point2D p) {
-    for(final HUDRenderpass r : front) {
+    for(final HUDRenderpass r : reverseList(front)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -190,7 +191,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final String getTooltipHUD(final Point2D p) {
-    for(final HUDRenderpass r : front) {
+    for(final HUDRenderpass r : reverseList(front)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -205,7 +206,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
-    for(final HUDRenderpass r : front) {
+    for(final HUDRenderpass r : reverseList(front)) {
       if(!r.isVisible()) {
         continue;
       }

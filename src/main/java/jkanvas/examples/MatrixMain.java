@@ -119,8 +119,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final MutableQuadraticMatrix<Double> matrix =
-        new AbstractQuadraticMatrix<Double>(9) {
+    final MutableQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(9) {
 
       @Override
       protected Double[][] createMatrix(final int size) {
@@ -151,6 +150,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
         g.fill(rect);
         g.setColor(Color.BLACK);
         g.draw(rect);
+        // FIXME find better / more stable way
         // when leftmost column draw column title
         if(col == 0) {
           final StringDrawer s = new StringDrawer(g, matrix.getName(row));

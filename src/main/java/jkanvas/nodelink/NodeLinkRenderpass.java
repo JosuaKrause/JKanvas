@@ -149,7 +149,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition>
   }
 
   @Override
-  public Iterable<? extends AnimatedPosition> getPositions() {
+  public Iterable<T> getPositions() {
     return view.nodes();
   }
 
