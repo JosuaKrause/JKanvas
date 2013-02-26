@@ -3,15 +3,17 @@ package jkanvas.painter;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
+import jkanvas.animation.Animated;
 
 /**
  * An adapter for render-passes.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class RenderpassAdapter extends AbstractRenderpass {
+public abstract class RenderpassAdapter implements Renderpass {
 
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
@@ -37,12 +39,14 @@ public class RenderpassAdapter extends AbstractRenderpass {
   }
 
   @Override
-  public void drag(final Point2D start, final Point2D cur, final double dx, final double dy) {
+  public void drag(final Point2D start, final Point2D cur,
+      final double dx, final double dy) {
     // do nothing
   }
 
   @Override
-  public void endDrag(final Point2D start, final Point2D end, final double dx, final double dy) {
+  public void endDrag(final Point2D start, final Point2D end,
+      final double dx, final double dy) {
     // do nothing
   }
 
@@ -50,6 +54,34 @@ public class RenderpassAdapter extends AbstractRenderpass {
   public boolean moveMouse(final Point2D cur) {
     // do nothing
     return false;
+  }
+
+  @Override
+  public double getOffsetX() {
+    return 0;
+  }
+
+  @Override
+  public double getOffsetY() {
+    return 0;
+  }
+
+  @Override
+  public Rectangle2D getBoundingBox() {
+    // no bbox by default
+    return null;
+  }
+
+  @Override
+  public Animated getAnimated() {
+    // no associated animated object
+    return null;
+  }
+
+  @Override
+  public boolean isVisible() {
+    // visible by default
+    return true;
   }
 
 }

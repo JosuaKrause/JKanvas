@@ -40,12 +40,30 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   /**
+   * Removes a render pass.
+   * 
+   * @param r The render pass.
+   */
+  public void removePass(final Renderpass r) {
+    back.remove(r);
+  }
+
+  /**
    * Adds a new HUD render pass on top.
    * 
    * @param r The HUD render pass.
    */
   public void addHUDPass(final HUDRenderpass r) {
     front.add(r);
+  }
+
+  /**
+   * Removes a HUD render pass.
+   * 
+   * @param r The HUD render pass.
+   */
+  public void removeHUDPass(final HUDRenderpass r) {
+    front.remove(r);
   }
 
   @Override

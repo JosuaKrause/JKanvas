@@ -196,8 +196,12 @@ public class AnimatedPosition extends Position2D implements Animated {
     pendingOperations.add(new PendingOp());
   }
 
-  @Override
-  public void animate(final long currentTime) {
+  /**
+   * Dispatches all pending operations.
+   * 
+   * @param currentTime The current time in milliseconds.
+   */
+  private void dispatchAll(final long currentTime) {
     PendingOp op = pendingOperations.poll();
     if(op == null) {
       doAnimate(currentTime);
@@ -226,6 +230,12 @@ public class AnimatedPosition extends Position2D implements Animated {
       }
       op = pendingOperations.poll();
     } while(op != null);
+  }
+
+  @Override
+  public boolean animate(final long currentTime) {
+    dispatchAll(currentTime);
+    return clearChangeFlag();
   }
 
   /**
@@ -338,8 +348,12 @@ public class AnimatedPosition extends Position2D implements Animated {
     changed = true;
   }
 
-  @Override
-  public boolean hasChanged() {
+  /**
+   * Clears the change flag.
+   * 
+   * @return Whether the change flag was set before.
+   */
+  private boolean clearChangeFlag() {
     final boolean res = changed;
     changed = false;
     return res;

@@ -1,8 +1,6 @@
 package jkanvas.examples;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -20,12 +18,12 @@ import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationTiming;
-import jkanvas.nodelink.EdgeRealizer;
+import jkanvas.nodelink.DefaultEdgeRealizer;
+import jkanvas.nodelink.DefaultNodeRealizer;
 import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
 import jkanvas.painter.FrameRateHUD;
-import jkanvas.util.PaintUtil;
 
 /**
  * A small node-link example application.
@@ -33,9 +31,6 @@ import jkanvas.util.PaintUtil;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
-
-  /** The default node radius. */
-  public static final double RADIUS = 20.0;
 
   /** The color for no selection. */
   private static final Color NO_SEL = new Color(247, 247, 247);
@@ -138,7 +133,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   public Rectangle2D getBoundingBox() {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
     Rectangle2D bbox = null;
-    for(final AnimatedPosition p : getPositions()) {
+    for(final AnimatedPosition p : view.nodes()) {
       final double x = p.getX();
       final double y = p.getY();
       final Shape shape = n.createNodeShape(p, x, y);
@@ -170,10 +165,11 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
    */
   private static void fillGraph(final SimpleNodeLinkView<AnimatedPosition> view,
       final int width, final int height, final int nodes, final int edges) {
+    final double rad = DefaultNodeRealizer.RADIUS;
     final Random rnd = new Random();
     for(int i = 0; i < nodes; ++i) {
-      view.addNode(new AnimatedPosition(RADIUS + rnd.nextDouble() * (width - 2 * RADIUS),
-          RADIUS + rnd.nextDouble() * (height - 2 * RADIUS)));
+      view.addNode(new AnimatedPosition(rad + rnd.nextDouble() * (width - 2 * rad),
+          rad + rnd.nextDouble() * (height - 2 * rad)));
     }
     for(int i = 0; i < edges; ++i) {
       view.addEdge(rnd.nextInt(nodes), rnd.nextInt(nodes));
@@ -194,47 +190,16 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     fillGraph(view, w, h, nodes, edges);
     final AnimatedPainter p = new AnimatedPainter();
     final NodeLinkMain r = new NodeLinkMain(view);
-    r.setEdgeRealizer(new EdgeRealizer<AnimatedPosition>() {
+    r.setEdgeRealizer(new DefaultEdgeRealizer<>());
+    r.setNodeRealizer(new DefaultNodeRealizer<AnimatedPosition>() {
 
       @Override
-      public Shape createLineShape(final AnimatedPosition from, final AnimatedPosition to) {
-        return PaintUtil.createLine(from.getX(), from.getY(), to.getX(), to.getY(), 1.0);
-      }
-
-      @Override
-      public void drawLines(final Graphics2D g, final Shape edgeShape,
-          final AnimatedPosition from, final AnimatedPosition to) {
-        g.setColor(Color.BLACK);
-        g.fill(edgeShape);
-      }
-
-    });
-    r.setNodeRealizer(new NodeRealizer<AnimatedPosition>() {
-
-      /** A stroke with width one. */
-      private final BasicStroke stroke = new BasicStroke(1f);
-
-      /** The node radius. */
-      private final double radius = RADIUS;
-
-      @Override
-      public Shape createNodeShape(final AnimatedPosition node,
-          final double x, final double y) {
-        return PaintUtil.createEllipse(x, y, radius + stroke.getLineWidth() * 0.5);
-      }
-
-      @Override
-      public void drawNode(final Graphics2D g, final AnimatedPosition node) {
-        g.setColor(r.getNodeColor(node));
-        final Shape s = PaintUtil.createEllipse(node.getX(), node.getY(), radius);
-        g.fill(s);
-        g.setColor(Color.BLACK);
-        g.fill(stroke.createStrokedShape(s));
+      public Color getColor(final AnimatedPosition node) {
+        return r.getNodeColor(node);
       }
 
     });
     p.addPass(r);
-    p.addLayouter(r);
     // configure Canvas
     final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
@@ -268,7 +233,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
         final Rectangle2D rect = c.getVisibleCanvas();
         final double w = rect.getWidth();
         final double h = rect.getHeight();
-        final double r = Math.min(w, h) / 2 - RADIUS;
+        final double r = Math.min(w, h) / 2 - DefaultNodeRealizer.RADIUS;
         final int count = view.nodeCount();
         final double step = 2 * Math.PI / count;
         double angle = 0;
