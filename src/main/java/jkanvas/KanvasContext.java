@@ -8,7 +8,8 @@ import java.awt.geom.Rectangle2D;
 /**
  * The paint context provides information of the state of drawing. Methods for
  * converting lengths and points from canvas coordinates to component
- * coordinates are provided.
+ * coordinates are provided. In order to retrieve the current zoom factor the
+ * method {@link #toComponentLength(double)} can be used.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
@@ -23,7 +24,9 @@ public interface KanvasContext {
   Point2D toComponentCoordinates(Point2D p);
 
   /**
-   * Converts a length from canvas to component coordinates.
+   * Converts a length from canvas to component coordinates. A call of
+   * <code>toComponentLength(1)</code> returns the current zoom factor by means
+   * of a unit length on the canvas represented in component coordinates.
    * 
    * @param length The length in canvas coordinates.
    * @return The length in component coordinates.
