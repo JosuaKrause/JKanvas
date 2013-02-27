@@ -15,7 +15,6 @@ import javax.swing.WindowConstants;
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
-import jkanvas.SimpleRefreshManager;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.groups.LinearGroup;
@@ -78,7 +77,6 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       }
 
     };
-    final RefreshManager manager = new SimpleRefreshManager();
     final AnimatedPainter p = new AnimatedPainter();
 
     final LinearGroup group = new LinearGroup(p, true, 50.0, AnimationTiming.SMOOTH) {
@@ -117,16 +115,16 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       }
 
       final RenderGroupAlignmentMain matrixMain = new RenderGroupAlignmentMain(matrix,
-          cellColor, manager);
+          cellColor, p);
       group.addRenderpass(matrixMain);
     }
 
     p.addPass(group);
 
-    final Canvas c = new Canvas(p, false, 500, 500);
+    final Canvas c = new Canvas(p, true, 500, 500);
 
     // let RefreshManager refresh the Canvas
-    manager.addRefreshable(c);
+    p.addRefreshable(c);
     // configure the Canvas
     // c.setMargin(40);
     c.setBackground(Color.WHITE);
@@ -188,7 +186,8 @@ public class RenderGroupAlignmentMain extends MatrixMain {
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    // c.setRestriction(p.getBoundingBox());
+    c.setRestriction(p.getBoundingBox());
+    c.reset();
     frame.setVisible(true);
   }
 
