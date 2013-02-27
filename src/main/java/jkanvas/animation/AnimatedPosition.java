@@ -244,7 +244,8 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @param currentTime The current time.
    */
   private void doAnimate(final long currentTime) {
-    if(!inAnimation()) return;
+    // not using inAnimation() because of possible pred racing conditions
+    if(pol == null) return;
     if(currentTime >= endTime) {
       doSetPosition(end.getX(), end.getY());
       start = null;
@@ -341,7 +342,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @return Whether this node is in animation.
    */
   public boolean inAnimation() {
-    return pol != null;
+    return pred != null || pol != null;
   }
 
   /** Whether this position has been changed. */
