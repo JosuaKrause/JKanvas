@@ -96,15 +96,6 @@ public class AnimatedPosition extends Position2D implements Animated {
     super.setPosition(x, y);
   }
 
-  /** The long animation duration. */
-  public static final int LONG = 2000;
-
-  /** The standard animation duration. */
-  public static final int NORMAL = 1000;
-
-  /** Fast animation duration. */
-  public static final int FAST = 100;
-
   /**
    * Starts an animation to the given point.
    * 

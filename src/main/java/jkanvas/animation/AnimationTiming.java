@@ -18,6 +18,15 @@ public class AnimationTiming {
   /** The duration of the animation in milliseconds. */
   public final int duration;
 
+  /** The long animation duration. */
+  public static final int TIME_LONG = 2000;
+
+  /** The standard animation duration. */
+  public static final int TIME_NORMAL = 1000;
+
+  /** Fast animation duration. */
+  public static final int TIME_FAST = 100;
+
   /**
    * Creates an animation timing.
    * 
@@ -36,14 +45,14 @@ public class AnimationTiming {
 
   /** Slow and smooth animation. */
   public static final AnimationTiming SLOW = new AnimationTiming(
-      Interpolator.SMOOTH, AnimatedPosition.LONG);
+      Interpolator.SMOOTH, TIME_LONG);
 
   /** Fast and linear animation. */
   public static final AnimationTiming FAST = new AnimationTiming(
-      Interpolator.LINEAR, AnimatedPosition.FAST);
+      Interpolator.LINEAR, TIME_FAST);
 
   /** Smooth animation with normal duration. */
   public static final AnimationTiming SMOOTH = new AnimationTiming(
-      Interpolator.SMOOTH, AnimatedPosition.NORMAL);
+      Interpolator.SMOOTH, TIME_NORMAL);
 
 }
