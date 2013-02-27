@@ -85,7 +85,7 @@ public class LinearGroup extends RenderGroup {
       final double opos = (max - v) * alignmentFactor;
       final Point2D dest = new Point2D.Double(
           horizontal ? pos : opos, horizontal ? opos : pos);
-      p.changeAnimationTo(dest, timing);
+      p.startAnimationTo(dest, timing);
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
     }
   }

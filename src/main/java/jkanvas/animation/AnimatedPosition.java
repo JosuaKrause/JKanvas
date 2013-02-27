@@ -21,6 +21,9 @@ public class AnimatedPosition extends Position2D implements Animated {
   /** The animation end point. */
   private Point2D end;
 
+  /** The predicted end point. */
+  private Point2D pred;
+
   /** The interpolation method or <code>null</code> if no animation is active. */
   private Interpolator pol;
 
@@ -55,7 +58,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @return The x final position after the animation has finished.
    */
   public double getPredictX() {
-    return end != null ? end.getX() : getX();
+    return pred != null ? pred.getX() : getX();
   }
 
   /**
@@ -64,7 +67,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @return The final y position after the animation has finished.
    */
   public double getPredictY() {
-    return end != null ? end.getY() : getY();
+    return pred != null ? pred.getY() : getY();
   }
 
   @Override
@@ -117,6 +120,7 @@ public class AnimatedPosition extends Position2D implements Animated {
     pol = timing.pol;
     start = getPos();
     end = pos;
+    pred = pos;
   }
 
   /**
@@ -133,6 +137,7 @@ public class AnimatedPosition extends Position2D implements Animated {
     }
     Objects.requireNonNull(pos);
     pendingOperations.add(new PendingOp(pos, timing, true));
+    pred = pos;
   }
 
   /**
@@ -155,6 +160,7 @@ public class AnimatedPosition extends Position2D implements Animated {
     }
     start = getPos();
     end = pos;
+    pred = pos;
     pol = p;
     startTime = currentTime;
     endTime = et;
@@ -177,6 +183,7 @@ public class AnimatedPosition extends Position2D implements Animated {
     }
     Objects.requireNonNull(pos);
     pendingOperations.add(new PendingOp(pos, defaultTiming, false));
+    pred = pos;
   }
 
   /**
@@ -189,11 +196,13 @@ public class AnimatedPosition extends Position2D implements Animated {
     pol = null;
     start = null;
     end = null;
+    pred = null;
   }
 
   /** Aborts the current animation and keeps the current position. */
   public void clearAnimation() {
     pendingOperations.add(new PendingOp());
+    pred = null;
   }
 
   /**
@@ -249,6 +258,7 @@ public class AnimatedPosition extends Position2D implements Animated {
       doSetPosition(end.getX(), end.getY());
       start = null;
       end = null;
+      pred = null;
       pol = null;
       return;
     }
@@ -257,10 +267,13 @@ public class AnimatedPosition extends Position2D implements Animated {
     doSetPosition(start.getX() * (1 - f) + end.getX() * f,
         start.getY() * (1 - f) + end.getY() * f);
     // no need to animate when end position is reached
+    // TODO might be problematic when using an interpolator
+    // that goes through the end and back before it has finished
     if(getX() == end.getX() && getY() == end.getY()) {
       pol = null;
       start = null;
       end = null;
+      pred = null;
     }
   }
 
