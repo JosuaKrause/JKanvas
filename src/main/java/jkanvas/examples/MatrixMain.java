@@ -43,8 +43,8 @@ import jkanvas.util.StringDrawer.Orientation;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implements
-    SelectableRenderpass {
+public class MatrixMain extends MatrixRenderpass<Double, QuadraticMatrix<Double>>
+    implements SelectableRenderpass {
 
   /**
    * Creates a matrix painter.
@@ -54,7 +54,8 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
    * @param manager The update manager.
    */
   public MatrixMain(final QuadraticMatrix<Double> matrix,
-      final CellRealizer<QuadraticMatrix<Double>> cellDrawer, final RefreshManager manager) {
+      final CellRealizer<Double, QuadraticMatrix<Double>> cellDrawer,
+      final RefreshManager manager) {
     super(matrix, cellDrawer, manager);
   }
 
@@ -139,7 +140,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
       matrix.setWidth(i, 60); // 20 + Math.random() * 80);
       matrix.setHeight(i, 60); // 20 + Math.random() * 80);
     }
-    final CellRealizer<QuadraticMatrix<Double>> cellColor = new CellRealizer<QuadraticMatrix<Double>>() {
+    final CellRealizer<Double, QuadraticMatrix<Double>> cellColor = new CellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
       public void drawCell(final Graphics2D g, final KanvasContext ctx,

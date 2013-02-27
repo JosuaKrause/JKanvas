@@ -13,16 +13,17 @@ import jkanvas.painter.AbstractRenderpass;
  * Paints a matrix.
  * 
  * @author Joschi <josua.krause@googlemail.com>
+ * @param <U> The content type.
  * @param <T> The matrix type.
  */
-public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRenderpass {
+public class MatrixRenderpass<U, T extends QuadraticMatrix<U>> extends AbstractRenderpass {
 
   /** The refresh manager. */
   private final RefreshManager manager;
   /** The matrix. */
   private T matrix;
   /** The cell drawer. */
-  private CellRealizer<T> cellDrawer;
+  private CellRealizer<U, T> cellDrawer;
 
   /**
    * Creates a matrix painter.
@@ -33,7 +34,7 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRend
    *          changes.
    */
   public MatrixRenderpass(final T matrix,
-      final CellRealizer<T> cellDrawer, final RefreshManager manager) {
+      final CellRealizer<U, T> cellDrawer, final RefreshManager manager) {
     this.manager = Objects.requireNonNull(manager);
     this.cellDrawer = Objects.requireNonNull(cellDrawer);
     setMatrix(matrix);
@@ -70,7 +71,7 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRend
    * 
    * @param cellDrawer The cell realizer.
    */
-  public void setCellRealizer(final CellRealizer<T> cellDrawer) {
+  public void setCellRealizer(final CellRealizer<U, T> cellDrawer) {
     this.cellDrawer = cellDrawer;
     manager.refreshAll();
   }
@@ -80,7 +81,7 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRend
    * 
    * @return The cell realizer.
    */
-  public CellRealizer<T> getCellDrawer() {
+  public CellRealizer<U, T> getCellDrawer() {
     return cellDrawer;
   }
 

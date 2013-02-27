@@ -9,9 +9,10 @@ import jkanvas.KanvasContext;
  * Realizes a cell of a matrix.
  * 
  * @author Joschi <josua.krause@googlemail.com>
+ * @param <U> The content type.
  * @param <T> The matrix type.
  */
-public interface CellRealizer<T extends QuadraticMatrix<?>> {
+public interface CellRealizer<U, T extends QuadraticMatrix<U>> {
 
   /**
    * Draws a cell.
