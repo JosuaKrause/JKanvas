@@ -143,6 +143,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
       }
 
     };
+    redoLayout = true;
   }
 
   @Override
@@ -347,11 +348,15 @@ public abstract class RenderGroup extends AbstractRenderpass {
     animator.forceNextFrame();
   }
 
+  /** Ensures that the layout is computed. */
+  private void ensureLayout() {
+    if(!redoLayout) return;
+    forceLayout();
+  }
+
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
-    if(redoLayout) {
-      forceLayout();
-    }
+    ensureLayout();
     final Rectangle2D view = ctx.getVisibleCanvas();
     boolean changed = false;
     for(final RenderpassPosition p : members) {
@@ -565,6 +570,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public Rectangle2D getBoundingBox() {
+    ensureLayout();
     boolean change = false;
     Rectangle2D res = null;
     for(final RenderpassPosition p : members) {

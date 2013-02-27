@@ -27,6 +27,42 @@ public class LinearGroup extends RenderGroup {
   /** Whether the render-passes are laid out in horizontal direction. */
   private boolean horizontal;
 
+  /** The alignment of the group. */
+  private double alignmentFactor;
+
+  /**
+   * The alignment of a linear group. The alignment is meant relative to the
+   * direction of the layout creation.
+   * 
+   * @author Manuel Hotz <manuel.hotz@uni-konstanz.de>
+   */
+  public static enum Alignment {
+
+    /** Aligns on the left side. */
+    LEFT(0),
+
+    /** Aligns in the middle. */
+    MIDDLE(0.5),
+
+    /** Aligns on the right side. */
+    RIGHT(1),
+
+    ;
+
+    /** The alignment factor of the alignment. */
+    public final double alignmentFactor;
+
+    /**
+     * Creates an alignment.
+     * 
+     * @param alignmentFactor The alignment factor.
+     */
+    private Alignment(final double alignmentFactor) {
+      this.alignmentFactor = alignmentFactor;
+    }
+
+  }
+
   /**
    * Creates a linear group.
    * 
@@ -40,6 +76,7 @@ public class LinearGroup extends RenderGroup {
       final double space, final AnimationTiming timing) {
     super(animator);
     horizontal = isHorizontal;
+    alignmentFactor = Alignment.MIDDLE.alignmentFactor;
     this.space = space;
     this.timing = Objects.requireNonNull(timing);
   }
@@ -69,10 +106,10 @@ public class LinearGroup extends RenderGroup {
         continue;
       }
       final double v = horizontal ? bbox.getHeight() : bbox.getWidth();
-      final double opos = (max - v) * 0.5;
+      final double opos = (max - v) * alignmentFactor;
       final Point2D dest = new Point2D.Double(
           horizontal ? pos : opos, horizontal ? opos : pos);
-      p.changeAnimationTo(dest, timing);
+      p.startAnimationTo(dest, timing);
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
     }
   }
@@ -132,6 +169,38 @@ public class LinearGroup extends RenderGroup {
    */
   public boolean isHorizontal() {
     return horizontal;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param alignment The alignment of the groups. <code>0</code> aligns to the
+   *          left relative to the direction of the layout and <code>1</code>
+   *          aligns to the right.
+   */
+  public void setAlignment(final double alignment) {
+    alignmentFactor = alignment;
+    invalidate();
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param alignment The alignment of the groups.
+   */
+  public void setAlignment(final Alignment alignment) {
+    setAlignment(alignment.alignmentFactor);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The current alignment. <code>0</code> aligns to the left relative
+   *         to the direction of the layout and <code>1</code> aligns to the
+   *         right.
+   */
+  public double getAlignment() {
+    return alignmentFactor;
   }
 
 }

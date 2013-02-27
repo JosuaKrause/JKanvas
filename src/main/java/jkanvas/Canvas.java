@@ -548,7 +548,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * Setter.
    * 
    * @param restriction Sets the restriction rectangle.
-   * @throws IllegalStateException When the canvas is not restricted.
+   * @throws IllegalStateException When the canvas is not restricted. The canvas
+   *           can be restricted only with the constructor.
    * @see #isRestricted()
    */
   public void setRestriction(final Rectangle2D restriction) {
