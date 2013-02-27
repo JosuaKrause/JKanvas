@@ -42,7 +42,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
    * @param manager The update manager.
    */
   public RenderGroupAlignmentMain(final QuadraticMatrix<Double> matrix,
-      final CellRealizer<Double, QuadraticMatrix<Double>> cellDrawer,
+      final CellRealizer<QuadraticMatrix<Double>> cellDrawer,
       final RefreshManager manager) {
     super(matrix, cellDrawer, manager);
   }
@@ -53,7 +53,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final CellRealizer<Double, QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
+    final CellRealizer<QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
       protected Color getColor(final Double value, final boolean isSelected) {

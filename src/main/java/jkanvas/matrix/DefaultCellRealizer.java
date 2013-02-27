@@ -15,7 +15,7 @@ import jkanvas.KanvasContext;
  * @param <T> The matrix type.
  */
 public abstract class DefaultCellRealizer<U, T extends QuadraticMatrix<U>>
-    implements CellRealizer<U, T> {
+    implements CellRealizer<T> {
 
   @Override
   public void drawCell(final Graphics2D g, final KanvasContext ctx,
