@@ -24,11 +24,14 @@ import jkanvas.RefreshManager;
 import jkanvas.SimpleRefreshManager;
 import jkanvas.matrix.AbstractQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
+import jkanvas.matrix.DefaultCellRealizer;
 import jkanvas.matrix.MatrixPosition;
 import jkanvas.matrix.MatrixRenderpass;
 import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.painter.SimpleTextHUD;
+import jkanvas.painter.TextHUD;
 import jkanvas.selection.AbstractSelector;
 import jkanvas.selection.RectangleSelection;
 import jkanvas.selection.SelectableRenderpass;
@@ -140,17 +143,13 @@ public class MatrixMain extends MatrixRenderpass<Double, QuadraticMatrix<Double>
       matrix.setWidth(i, 60); // 20 + Math.random() * 80);
       matrix.setHeight(i, 60); // 20 + Math.random() * 80);
     }
-    final CellRealizer<Double, QuadraticMatrix<Double>> cellColor = new CellRealizer<Double, QuadraticMatrix<Double>>() {
+    final CellRealizer<Double, QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
       public void drawCell(final Graphics2D g, final KanvasContext ctx,
           final Rectangle2D rect, final QuadraticMatrix<Double> matrix, final int row,
           final int col, final boolean isSelected, final boolean hasSelection) {
-        final Double val = matrix.get(row, col);
-        g.setColor(getColor(val, hasSelection && isSelected));
-        g.fill(rect);
-        g.setColor(Color.BLACK);
-        g.draw(rect);
+        super.drawCell(g, ctx, rect, matrix, row, col, isSelected, hasSelection);
         // FIXME find better / more stable way
         // when leftmost column draw column title
         if(col == 0) {
@@ -178,14 +177,8 @@ public class MatrixMain extends MatrixRenderpass<Double, QuadraticMatrix<Double>
         }
       }
 
-      /**
-       * Determines the color for the given value.
-       * 
-       * @param value The value.
-       * @param isSelected Whether the cell is selected.
-       * @return The color of the cell.
-       */
-      private Color getColor(final double value, final boolean isSelected) {
+      @Override
+      protected Color getColor(final Double value, final boolean isSelected) {
         final double v = value - 0.5;
         final double hue = v > 0 ? 0 : 180.0 / 360.0;
         final double rv = Math.abs(v) * 2;
@@ -247,14 +240,29 @@ public class MatrixMain extends MatrixRenderpass<Double, QuadraticMatrix<Double>
       @Override
       public void actionPerformed(final ActionEvent ae) {
         try {
-          Screenshot.savePNG(new File("pics"), "matrix", c);
-          System.out.println("Photo taken!");
+          final File png = Screenshot.savePNG(new File("pics"), "matrix", c);
+          System.out.println("Saved screenshot in " + png);
         } catch(final IOException e) {
           e.printStackTrace();
         }
       }
 
     });
+    final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
+    c.addAction(KeyEvent.VK_H, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        info.setVisible(!info.isVisible());
+        c.refresh();
+      }
+
+    });
+    info.addLine("P: Take Photo");
+    info.addLine("H: Toggle Help");
+    info.addLine("R: Reset View");
+    info.addLine("Q/ESC: Quit");
+    p.addHUDPass(info);
     // pack and show window
     frame.add(c);
     frame.pack();

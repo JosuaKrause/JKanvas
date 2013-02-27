@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 import javax.swing.AbstractAction;
@@ -15,6 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import jkanvas.Canvas;
+import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationTiming;
@@ -24,6 +27,9 @@ import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
 import jkanvas.painter.FrameRateHUD;
+import jkanvas.painter.SimpleTextHUD;
+import jkanvas.painter.TextHUD;
+import jkanvas.util.Screenshot;
 
 /**
  * A small node-link example application.
@@ -226,6 +232,18 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
+    c.addAction(KeyEvent.VK_F, new AbstractAction() {
+
+      private FrameRateDisplayer frd;
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        final FrameRateDisplayer tmp = frd;
+        frd = c.getFrameRateDisplayer();
+        c.setFrameRateDisplayer(tmp);
+      }
+
+    });
     c.addAction(KeyEvent.VK_R, new AbstractAction() {
 
       @Override
@@ -247,6 +265,35 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
+    c.addAction(KeyEvent.VK_P, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent ae) {
+        try {
+          final File png = Screenshot.savePNG(new File("pics"), "nodelink", c);
+          System.out.println("Saved screenshot in " + png);
+        } catch(final IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+    });
+    final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
+    c.addAction(KeyEvent.VK_H, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        info.setVisible(!info.isVisible());
+        c.refresh();
+      }
+
+    });
+    info.addLine("F: Toggle Framerate Display");
+    info.addLine("P: Take Photo");
+    info.addLine("H: Toggle Help");
+    info.addLine("R: Lay out nodes in a circle");
+    info.addLine("Q/ESC: Quit");
+    p.addHUDPass(info);
     // pack and show window
     frame.add(c);
     frame.pack();

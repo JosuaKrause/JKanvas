@@ -332,6 +332,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public void setFrameRateDisplayer(final FrameRateDisplayer frameRateDisplayer) {
     this.frameRateDisplayer = frameRateDisplayer;
+    refresh();
   }
 
   /**

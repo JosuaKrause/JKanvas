@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 
@@ -21,8 +20,11 @@ import jkanvas.groups.LinearGroup;
 import jkanvas.groups.LinearGroup.Alignment;
 import jkanvas.matrix.AbstractQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
+import jkanvas.matrix.DefaultCellRealizer;
 import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
+import jkanvas.painter.SimpleTextHUD;
+import jkanvas.painter.TextHUD;
 import jkanvas.util.Screenshot;
 
 /**
@@ -51,27 +53,10 @@ public class RenderGroupAlignmentMain extends MatrixMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final CellRealizer<Double, QuadraticMatrix<Double>> cellColor = new CellRealizer<Double, QuadraticMatrix<Double>>() {
+    final CellRealizer<Double, QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
-      public void drawCell(final Graphics2D g, final KanvasContext ctx,
-          final Rectangle2D rect, final QuadraticMatrix<Double> matrix, final int row,
-          final int col, final boolean isSelected, final boolean hasSelection) {
-        final Double val = matrix.get(row, col);
-        g.setColor(getColor(val, hasSelection && isSelected));
-        g.fill(rect);
-        g.setColor(Color.BLACK);
-        g.draw(rect);
-      }
-
-      /**
-       * Determines the color for the given value.
-       * 
-       * @param value The value.
-       * @param isSelected Whether the cell is selected.
-       * @return The color of the cell.
-       */
-      private Color getColor(final double value, final boolean isSelected) {
+      protected Color getColor(final Double value, final boolean isSelected) {
         final double v = value - 0.5;
         final double hue = v > 0 ? 0 : 180.0 / 360.0;
         final double rv = Math.abs(v) * 2;
@@ -80,18 +65,17 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
     };
     final AnimatedPainter p = new AnimatedPainter();
-
     final LinearGroup group = new LinearGroup(p, true, 50.0, AnimationTiming.SMOOTH) {
+
       @Override
       public void draw(final Graphics2D gfx, final KanvasContext ctx) {
         super.draw(gfx, ctx);
         gfx.setColor(Color.GRAY);
         gfx.draw(getBoundingBox());
       }
+
     };
-
     for(int num = 0; num < 3; ++num) {
-
       final MutableQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(
           9 + num * num) {
 
@@ -101,31 +85,27 @@ public class RenderGroupAlignmentMain extends MatrixMain {
         }
 
       };
-
       // set names, widths, and heights of rows / columns
       for(int i = 0; i < matrix.size(); ++i) {
         matrix.setName(i, "Attr" + i);
         matrix.setWidth(i, 20);
         matrix.setHeight(i, 20);
       }
-
       // fill the matrix with random values
       for(int col = 0; col < matrix.size(); ++col) {
         for(int row = 0; row < matrix.size(); ++row) {
           matrix.set(row, col, Math.random());
         }
       }
-
-      final RenderGroupAlignmentMain matrixMain = new RenderGroupAlignmentMain(matrix,
-          cellColor, p);
+      // add to group
+      final RenderGroupAlignmentMain matrixMain = new RenderGroupAlignmentMain(
+          matrix, cellColor, p);
       group.addRenderpass(matrixMain);
     }
-
+    // add group
     p.addPass(group);
-
     final Canvas c = new Canvas(p, true, 500, 500);
-
-    // let RefreshManager refresh the Canvas
+    // let p refresh the Canvas
     p.addRefreshable(c);
     // configure the Canvas
     // c.setMargin(40);
@@ -161,8 +141,8 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       @Override
       public void actionPerformed(final ActionEvent ae) {
         try {
-          Screenshot.savePNG(new File("pics"), "matrix", c);
-          System.out.println("Photo taken!");
+          final File png = Screenshot.savePNG(new File("pics"), "group", c);
+          System.out.println("Saved screenshot in " + png);
         } catch(final IOException e) {
           e.printStackTrace();
         }
@@ -185,6 +165,22 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       }
 
     });
+    final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
+    c.addAction(KeyEvent.VK_H, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        info.setVisible(!info.isVisible());
+        c.refresh();
+      }
+
+    });
+    info.addLine("P: Take Photo");
+    info.addLine("H: Toggle Help");
+    info.addLine("R: Reset View");
+    info.addLine("C: Change alignment");
+    info.addLine("Q/ESC: Quit");
+    p.addHUDPass(info);
     // pack and show window
     frame.add(c);
     frame.pack();
