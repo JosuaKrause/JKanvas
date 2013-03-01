@@ -6,7 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
+import java.awt.geom.RectangularShape;
 
 /**
  * Draws and measures a string.
@@ -227,6 +227,25 @@ public class StringDrawer {
   }
 
   /**
+   * Draws the text into the given rectangle. The text is scaled that it fits
+   * the rectangle.
+   * 
+   * @param rect The rectangle.
+   */
+  public void drawInto(final RectangularShape rect) {
+    final double width = getWidth();
+    final Rectangle2D fit = PaintUtil.fitInto(rect, width, getHeight());
+    final double scale = fit.getWidth() / width;
+    final Graphics2D g2 = (Graphics2D) g.create();
+    g2.translate(fit.getCenterX(), fit.getCenterY());
+    g2.scale(scale, scale);
+    g2.translate(getHorizontalOffset(CENTER_H),
+        -bbox.getHeight() + getVerticalOffset(CENTER_V, false));
+    g2.drawString(str, 0, 0);
+    g2.dispose();
+  }
+
+  /**
    * Draws rotated text.
    * 
    * @param pos The position of the text.
@@ -312,7 +331,7 @@ public class StringDrawer {
    * @param rect The rectangle.
    */
   public static final void drawInto(final Graphics2D g,
-      final String text, final Rectangle2D rect) {
+      final String text, final RectangularShape rect) {
     final Graphics2D gfx = (Graphics2D) g.create();
     final StringDrawer sd = new StringDrawer(gfx, text);
     final double width = sd.getWidth();
@@ -332,7 +351,7 @@ public class StringDrawer {
    * @param rect The rectangle.
    */
   public static final void drawAtCenter(final Graphics2D g,
-      final String text, final Rectangle2D rect) {
+      final String text, final RectangularShape rect) {
     drawCentered(g, text, new Point2D.Double(rect.getCenterX(), rect.getCenterY()));
   }
 
@@ -343,8 +362,8 @@ public class StringDrawer {
    * @param text The text.
    * @param pos The position.
    */
-  public static final void drawCentered(final Graphics2D g, final String text,
-      final Point2D pos) {
+  public static final void drawCentered(final Graphics2D g,
+      final String text, final Point2D pos) {
     final StringDrawer sd = new StringDrawer(g, text);
     sd.draw(pos, CENTER_H, CENTER_V);
   }
