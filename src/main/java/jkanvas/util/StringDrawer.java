@@ -6,7 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
+import java.awt.geom.RectangularShape;
 
 /**
  * Draws and measures a string.
@@ -312,7 +312,7 @@ public class StringDrawer {
    * @param rect The rectangle.
    */
   public static final void drawInto(final Graphics2D g,
-      final String text, final Rectangle2D rect) {
+      final String text, final RectangularShape rect) {
     final Graphics2D gfx = (Graphics2D) g.create();
     final StringDrawer sd = new StringDrawer(gfx, text);
     final double width = sd.getWidth();
@@ -332,7 +332,7 @@ public class StringDrawer {
    * @param rect The rectangle.
    */
   public static final void drawAtCenter(final Graphics2D g,
-      final String text, final Rectangle2D rect) {
+      final String text, final RectangularShape rect) {
     drawCentered(g, text, new Point2D.Double(rect.getCenterX(), rect.getCenterY()));
   }
 
@@ -343,8 +343,8 @@ public class StringDrawer {
    * @param text The text.
    * @param pos The position.
    */
-  public static final void drawCentered(final Graphics2D g, final String text,
-      final Point2D pos) {
+  public static final void drawCentered(final Graphics2D g,
+      final String text, final Point2D pos) {
     final StringDrawer sd = new StringDrawer(g, text);
     sd.draw(pos, CENTER_H, CENTER_V);
   }

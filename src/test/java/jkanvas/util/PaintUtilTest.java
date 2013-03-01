@@ -26,7 +26,10 @@ public class PaintUtilTest {
     assertEquals(a.getHeight(), b.getHeight(), Math.ulp(a.getHeight()));
   }
 
-  /** Tests the method {@link PaintUtil#scaleCenter(Rectangle2D, double)}. */
+  /**
+   * Tests the method
+   * {@link PaintUtil#scaleCenter(java.awt.geom.RectangularShape, double)}.
+   */
   @Test
   public void zoomRectTest() {
     final Rectangle2D r = new Rectangle2D.Double(1, 2, 4, 6);
@@ -36,7 +39,10 @@ public class PaintUtilTest {
     sameRect(r2p0, PaintUtil.scaleCenter(r, 2.0));
   }
 
-  /** Tests the method {@link PaintUtil#fitInto(Rectangle2D, double, double)}. */
+  /**
+   * Tests the method
+   * {@link PaintUtil#fitInto(java.awt.geom.RectangularShape, double, double)}.
+   */
   @Test
   public void fitIntoTest() {
     // h > w
