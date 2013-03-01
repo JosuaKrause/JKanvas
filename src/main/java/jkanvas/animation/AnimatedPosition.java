@@ -105,7 +105,8 @@ public class AnimatedPosition extends Position2D implements Animated {
    */
   private void startAnimationTo(final long currentTime,
       final Point2D pos, final AnimationTiming timing) {
-    clearAnimation(currentTime);
+    doAnimate(currentTime);
+    doClearAnimation();
     startTime = currentTime;
     endTime = currentTime + timing.duration;
     pol = timing.pol;
@@ -142,13 +143,14 @@ public class AnimatedPosition extends Position2D implements Animated {
    */
   private void changeAnimationTo(final long currentTime,
       final Point2D pos, final AnimationTiming defaultTiming) {
-    final Interpolator p = pol;
-    final long et = endTime;
     doAnimate(currentTime);
-    if(!inAnimation()) {
+    final Interpolator p = pol;
+    // not using inAnimation() because of possible pred racing conditions
+    if(p == null) {
       startAnimationTo(currentTime, pos, defaultTiming);
       return;
     }
+    final long et = endTime;
     start = getPos();
     end = pos;
     pred = pos;
@@ -168,7 +170,7 @@ public class AnimatedPosition extends Position2D implements Animated {
   public void changeAnimationTo(final Point2D pos,
       final AnimationTiming defaultTiming) {
     Objects.requireNonNull(defaultTiming);
-    if(defaultTiming.duration <= 0) {
+    if(!inAnimation() && defaultTiming.duration <= 0) {
       setPosition(pos);
       return;
     }
@@ -177,13 +179,8 @@ public class AnimatedPosition extends Position2D implements Animated {
     pred = pos;
   }
 
-  /**
-   * Aborts the current animation and keeps the current position.
-   * 
-   * @param currentTime The current time in milliseconds.
-   */
-  private void clearAnimation(final long currentTime) {
-    doAnimate(currentTime);
+  /** Aborts the current animation and keeps the current position. */
+  private void doClearAnimation() {
     pol = null;
     start = null;
     end = null;
@@ -193,7 +190,7 @@ public class AnimatedPosition extends Position2D implements Animated {
   /** Aborts the current animation and keeps the current position. */
   public void clearAnimation() {
     pendingOperations.add(new PendingOp());
-    pred = null;
+    doClearAnimation();
   }
 
   /**
@@ -211,7 +208,9 @@ public class AnimatedPosition extends Position2D implements Animated {
     do {
       switch(op.operation) {
         case OP_CLEAR:
-          clearAnimation(currentTime);
+          // clear was called prior to animation so we
+          // do not compute the next position
+          doClearAnimation();
           break;
         case OP_START:
           startAnimationTo(currentTime, op.destination, op.timing);
@@ -220,7 +219,7 @@ public class AnimatedPosition extends Position2D implements Animated {
           changeAnimationTo(currentTime, op.destination, op.timing);
           break;
         case OP_SET: {
-          clearAnimation(currentTime);
+          doClearAnimation();
           final Point2D pos = op.destination;
           doSetPosition(pos.getX(), pos.getY());
           break;
@@ -258,15 +257,6 @@ public class AnimatedPosition extends Position2D implements Animated {
     final double f = pol.interpolate(t);
     doSetPosition(start.getX() * (1 - f) + end.getX() * f,
         start.getY() * (1 - f) + end.getY() * f);
-    // no need to animate when end position is reached
-    // TODO might be problematic when using an interpolator
-    // that goes through the end and back before it has finished
-    if(getX() == end.getX() && getY() == end.getY()) {
-      pol = null;
-      start = null;
-      end = null;
-      pred = null;
-    }
   }
 
   /** The queue of pending operations. */
@@ -342,7 +332,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @return Whether this node is in animation.
    */
   public boolean inAnimation() {
-    return pred != null || pol != null;
+    return pol != null || pred != null;
   }
 
   /** Whether this position has been changed. */
