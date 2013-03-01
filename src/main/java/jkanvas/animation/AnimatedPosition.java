@@ -318,7 +318,6 @@ public class AnimatedPosition extends Position2D implements Animated {
      */
     public PendingOp(final Point2D destination,
         final AnimationTiming timing, final boolean start) {
-      assert timing.duration > 0;
       operation = start ? OP_START : OP_CHANGE;
       this.destination = destination;
       this.timing = timing;
