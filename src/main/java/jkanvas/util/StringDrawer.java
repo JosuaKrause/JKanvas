@@ -227,6 +227,25 @@ public class StringDrawer {
   }
 
   /**
+   * Draws the text into the given rectangle. The text is scaled that it fits
+   * the rectangle.
+   * 
+   * @param rect The rectangle.
+   */
+  public void drawInto(final RectangularShape rect) {
+    final double width = getWidth();
+    final Rectangle2D fit = PaintUtil.fitInto(rect, width, getHeight());
+    final double scale = fit.getWidth() / width;
+    final Graphics2D g2 = (Graphics2D) g.create();
+    g2.translate(fit.getCenterX(), fit.getCenterY());
+    g2.scale(scale, scale);
+    g2.translate(getHorizontalOffset(CENTER_H),
+        -bbox.getHeight() + getVerticalOffset(CENTER_V, false));
+    g2.drawString(str, 0, 0);
+    g2.dispose();
+  }
+
+  /**
    * Draws rotated text.
    * 
    * @param pos The position of the text.
