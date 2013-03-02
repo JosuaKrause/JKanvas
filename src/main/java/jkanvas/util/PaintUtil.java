@@ -9,6 +9,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.awt.geom.RoundRectangle2D;
 
 /**
@@ -52,7 +53,7 @@ public final class PaintUtil {
    * @param padding The padding.
    * @return The new rectangle.
    */
-  public static Rectangle2D addPadding(final Rectangle2D rect, final double padding) {
+  public static Rectangle2D addPadding(final RectangularShape rect, final double padding) {
     final double p2 = padding * 2;
     return new Rectangle2D.Double(rect.getX() - padding, rect.getY() - padding,
         rect.getWidth() + p2, rect.getHeight() + p2);
@@ -66,7 +67,7 @@ public final class PaintUtil {
    * @return The round rectangle.
    */
   public static RoundRectangle2D toRoundRectangle(
-      final Rectangle2D rect, final double radius) {
+      final RectangularShape rect, final double radius) {
     final double r2 = radius * 2;
     return new RoundRectangle2D.Double(rect.getX() - radius, rect.getY() - radius,
         rect.getWidth() + r2, rect.getHeight() + r2, radius, radius);
@@ -79,11 +80,11 @@ public final class PaintUtil {
    * @param scale The scaling factor.
    * @return The scaled rectangle.
    */
-  public static Rectangle2D scaleCenter(final Rectangle2D rect, final double scale) {
+  public static Rectangle2D scaleCenter(final RectangularShape rect, final double scale) {
     final double w = rect.getWidth() * scale;
     final double h = rect.getHeight() * scale;
-    return new Rectangle2D.Double(rect.getCenterX() - w * 0.5, rect.getCenterY() - h
-        * 0.5, w, h);
+    return new Rectangle2D.Double(rect.getCenterX() - w * 0.5,
+        rect.getCenterY() - h * 0.5, w, h);
   }
 
   /**
@@ -96,7 +97,8 @@ public final class PaintUtil {
    * @return A rectangle with the given aspect ratio that fits into the given
    *         rectangle.
    */
-  public static Rectangle2D fitInto(final Rectangle2D rect, final double w, final double h) {
+  public static Rectangle2D fitInto(final RectangularShape rect,
+      final double w, final double h) {
     final double s = fitIntoScale(rect, w, h);
     final double nw = w * s;
     final double nh = h * s;
@@ -114,7 +116,8 @@ public final class PaintUtil {
    * @param h The height.
    * @return The scale for the width and height.
    */
-  public static double fitIntoScale(final Rectangle2D rect, final double w, final double h) {
+  public static double fitIntoScale(final RectangularShape rect,
+      final double w, final double h) {
     final double rw = rect.getWidth();
     final double rh = rect.getHeight();
     final double hRatio = rh / h;
@@ -194,8 +197,8 @@ public final class PaintUtil {
    * @param alpha The alpha value.
    * @return The color.
    */
-  public static Color hsbaColor(final double h, final double s, final double b,
-      final double alpha) {
+  public static Color hsbaColor(
+      final double h, final double s, final double b, final double alpha) {
     return setAlpha(Color.getHSBColor((float) h, (float) s, (float) b), alpha);
   }
 

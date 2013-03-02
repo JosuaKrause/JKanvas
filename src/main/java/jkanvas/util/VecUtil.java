@@ -128,8 +128,7 @@ public final class VecUtil {
     final double dSq = dist * dist;
     final Point2D rad = subVec(pos, center);
     final double radSq = getLengthSq(rad);
-    if(dSq > 4 * radSq)
-      return subVec(center, rad);
+    if(dSq > 4 * radSq) return subVec(center, rad);
     return rotateByAngle(pos, center, f * Math.acos(1 - dSq * 0.5 / radSq));
   }
 
@@ -143,8 +142,8 @@ public final class VecUtil {
    */
   public static Point2D rotateByAngle(final Point2D pos, final Point2D center,
       final double angle) {
-    final AffineTransform at = AffineTransform.getRotateInstance(angle, center.getX(),
-        center.getY());
+    final AffineTransform at = AffineTransform.getRotateInstance(
+        angle, center.getX(), center.getY());
     return at.transform(pos, null);
   }
 
@@ -159,8 +158,8 @@ public final class VecUtil {
    */
   public static boolean isClockwiseOf(final Point2D center, final Point2D a,
       final Point2D b) {
-    return Line2D.relativeCCW(center.getX(), center.getY(), a.getX(), a.getY(), b.getX(),
-        b.getY()) < 0;
+    return Line2D.relativeCCW(center.getX(), center.getY(),
+        a.getX(), a.getY(), b.getX(), b.getY()) < 0;
   }
 
   /**

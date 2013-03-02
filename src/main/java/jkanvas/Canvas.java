@@ -11,6 +11,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import javax.swing.Action;
@@ -491,7 +492,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * 
    * @param bbox The rectangle that is visible.
    */
-  public void reset(final Rectangle2D bbox) {
+  public void reset(final RectangularShape bbox) {
     if(bbox == null) {
       reset();
     } else {
@@ -507,7 +508,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * 
    * @param bbox The rectangle.
    */
-  public void showOnly(final Rectangle2D bbox) {
+  public void showOnly(final RectangularShape bbox) {
     Objects.requireNonNull(bbox);
     zui.showRectangle(bbox, getVisibleRect(), getMargin(), false);
   }

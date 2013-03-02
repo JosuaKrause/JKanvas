@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -132,7 +133,7 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
    * @param visibleRect The visible rectangle in component coordinates.
    * @return The start position.
    */
-  private Point2D getStartPosition(final Rectangle2D visibleRect) {
+  private Point2D getStartPosition(final RectangularShape visibleRect) {
     double x;
     switch(hpos) {
       case LEFT:
@@ -169,7 +170,7 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
    * @param gfx The graphics context.
    * @param visibleRect The visible rectangle in component coordinates.
    */
-  protected void draw(final Graphics2D gfx, final Rectangle2D visibleRect) {
+  protected void draw(final Graphics2D gfx, final RectangularShape visibleRect) {
     final int count = lineCount();
     if(count <= 0) return;
     final StringDrawer[] sds = new StringDrawer[count];

@@ -2,7 +2,7 @@ package jkanvas.painter;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 import jkanvas.FrameRateDisplayer;
 
@@ -86,7 +86,7 @@ public class FrameRateHUD extends TextHUD implements FrameRateDisplayer {
   }
 
   @Override
-  public void drawFrameRate(final Graphics2D gfx, final Rectangle2D visibleRect) {
+  public void drawFrameRate(final Graphics2D gfx, final RectangularShape visibleRect) {
     draw(gfx, visibleRect);
   }
 

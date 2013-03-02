@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.util.PaintUtil;
@@ -169,7 +170,7 @@ public final class ZoomableUI {
    * @param factor The zoom factor.
    * @param box The rectangle to zoom to in component coordinates.
    */
-  public void zoom(final double factor, final Rectangle2D box) {
+  public void zoom(final double factor, final RectangularShape box) {
     zoomTo(box.getCenterX(), box.getCenterY(), factor);
   }
 
@@ -179,7 +180,7 @@ public final class ZoomableUI {
    * 
    * @param screen The screen rectangle in component coordinates.
    */
-  public void resetView(final Rectangle2D screen) {
+  public void resetView(final RectangularShape screen) {
     zoom = 1;
     // does repaint
     setOffset(screen.getCenterX(), screen.getCenterY());
@@ -198,7 +199,7 @@ public final class ZoomableUI {
    *          possible from <code>view</code> will be visible without showing
    *          anything else.
    */
-  public void showRectangle(final Rectangle2D view, final Rectangle2D screen,
+  public void showRectangle(final RectangularShape view, final RectangularShape screen,
       final double margin, final boolean fit) {
     final int nw = (int) (screen.getWidth() - 2 * margin);
     final int nh = (int) (screen.getHeight() - 2 * margin);
@@ -337,7 +338,7 @@ public final class ZoomableUI {
    * @param rect The rectangle.
    * @return The rectangle in canvas coordinates.
    */
-  public Rectangle2D toCanvas(final Rectangle2D rect) {
+  public Rectangle2D toCanvas(final RectangularShape rect) {
     return new Rectangle2D.Double(
         getXForScreen(rect.getMinX()), getYForScreen(rect.getMinY()),
         inReal(rect.getWidth()), inReal(rect.getHeight()));
