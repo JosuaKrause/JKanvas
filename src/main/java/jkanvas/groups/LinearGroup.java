@@ -83,6 +83,10 @@ public class LinearGroup extends RenderGroup {
 
   @Override
   protected void doLayout(final List<RenderpassPosition> members) {
+    final AnimationTiming timing = getTiming();
+    final boolean horizontal = isHorizontal();
+    final double alignmentFactor = getAlignment();
+    final double space = getSpace();
     final List<Rectangle2D> bboxes = new ArrayList<>(members.size());
     double max = 0;
     for(final RenderpassPosition p : members) {
