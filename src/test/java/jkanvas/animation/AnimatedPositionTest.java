@@ -365,4 +365,31 @@ public class AnimatedPositionTest {
     assertFalse(p.inAnimation());
   }
 
+  /**
+   * Tests that the prediction value is immediately set after directly setting a
+   * position.
+   */
+  @Test
+  public void predWhenSetting() {
+    final AnimationTiming at = new AnimationTiming(Interpolator.LINEAR, 2);
+    final AnimatedPosition p = new AnimatedPosition(new Point2D.Double(0, 0));
+    p.startAnimationTo(new Point2D.Double(2, 2), at);
+    p.animate(0);
+    p.animate(1);
+    assertEquals(1, p.getX(), 0);
+    assertEquals(1, p.getY(), 0);
+    assertEquals(2, p.getPredictX(), 0);
+    assertEquals(2, p.getPredictY(), 0);
+    p.setPosition(new Point2D.Double(3, 3));
+    assertEquals(3, p.getX(), 0);
+    assertEquals(3, p.getY(), 0);
+    assertEquals(3, p.getPredictX(), 0);
+    assertEquals(3, p.getPredictY(), 0);
+    p.animate(2);
+    assertEquals(3, p.getX(), 0);
+    assertEquals(3, p.getY(), 0);
+    assertEquals(3, p.getPredictX(), 0);
+    assertEquals(3, p.getPredictY(), 0);
+  }
+
 }

@@ -55,6 +55,19 @@ public class AnimatedPosition extends Position2D implements Animated {
   /**
    * Getter.
    * 
+   * @return The final position after the animation has finished.
+   */
+  public Point2D getPredict() {
+    final Point2D pred = this.pred;
+    if(pred == null) {
+      getPos();
+    }
+    return new Point2D.Double(pred.getX(), pred.getY());
+  }
+
+  /**
+   * Getter.
+   * 
    * @return The x final position after the animation has finished.
    */
   public double getPredictX() {
@@ -82,6 +95,7 @@ public class AnimatedPosition extends Position2D implements Animated {
     pendingOperations.add(new PendingOp(pos));
     // set position directly for immediate feed-back
     doSetPosition(pos.getX(), pos.getY());
+    pred = null;
   }
 
   /**

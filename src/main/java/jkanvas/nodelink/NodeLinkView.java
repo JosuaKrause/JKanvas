@@ -26,8 +26,8 @@ public interface NodeLinkView<T extends Position2D> extends GraphView {
   Iterable<T> nodes();
 
   /**
-   * Returns all edges from the given node. Note that this contains only nodes
-   * with a higher id when the graph is undirected.
+   * Returns all edges from the given node. Note that when the graph is
+   * undirected this contains only nodes with a higher id.
    * 
    * @param from The starting id.
    * @return All connected edges (with a higher id when undirected).
