@@ -59,9 +59,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    */
   public Point2D getPredict() {
     final Point2D pred = this.pred;
-    if(pred == null) {
-      getPos();
-    }
+    if(pred == null) return getPos();
     return new Point2D.Double(pred.getX(), pred.getY());
   }
 
