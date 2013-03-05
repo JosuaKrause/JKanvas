@@ -76,11 +76,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
     framewait = Math.max(1000 / this.framerate, 1);
   }
 
-  /**
-   * Getter.
-   * 
-   * @return The animation lock.
-   */
+  @Override
   public Object getAnimationLock() {
     return animator;
   }
