@@ -207,6 +207,21 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   /**
+   * Getter.
+   * 
+   * @param r The abstract render pass to find.
+   * @return The index of the given render pass or <code>-1</code> if the pass
+   *         could not be found. Equality is defined by identity.
+   */
+  public int indexOf(final AbstractRenderpass r) {
+    for(int i = 0; i < members.size(); ++i) {
+      final RenderpassPosition rp = members.get(i);
+      if(rp.pass == r) return i;
+    }
+    return -1;
+  }
+
+  /**
    * Removes the render-pass at the given index.
    * 
    * @param index The index.
