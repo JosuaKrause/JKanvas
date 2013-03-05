@@ -20,6 +20,8 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+import jkanvas.painter.Renderpass;
+
 /**
  * A simple class adding panning and zooming functionality to a
  * {@link JComponent}.
@@ -27,6 +29,12 @@ import javax.swing.KeyStroke;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public class Canvas extends JComponent implements Refreshable, RestrictedCanvas {
+
+  /**
+   * A debug flag to activate bounding box rendering. This flag is optional for
+   * a {@link KanvasPainter} or a {@link Renderpass} to interpret.
+   */
+  public static boolean DEBUG_BBOX;
 
   /** The underlying zoom-able user interface. */
   protected final ZoomableUI zui;

@@ -2,6 +2,7 @@ package jkanvas.painter;
 
 import static jkanvas.util.ArrayUtil.*;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkanvas.KanvasContext;
+import jkanvas.util.PaintUtil;
 
 /**
  * A render pass painter renders render passes.
@@ -86,6 +88,22 @@ public class RenderpassPainter extends PainterAdapter {
       g.translate(dx, dy);
       final KanvasContext c = getContextFor(r, ctx);
       r.draw(g, c);
+      g.dispose();
+    }
+    if(jkanvas.Canvas.DEBUG_BBOX) {
+      final Graphics2D g = (Graphics2D) gfx.create();
+      PaintUtil.setAlpha(g, 0.3);
+      g.setColor(Color.GRAY);
+      for(final Renderpass r : back) {
+        if(!r.isVisible()) {
+          continue;
+        }
+        final Rectangle2D bbox = getPassBoundingBox(r);
+        if(bbox == null || !view.intersects(bbox)) {
+          continue;
+        }
+        g.fill(bbox);
+      }
       g.dispose();
     }
   }

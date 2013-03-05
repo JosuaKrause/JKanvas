@@ -2,6 +2,7 @@ package jkanvas.groups;
 
 import static jkanvas.util.ArrayUtil.*;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -20,6 +21,7 @@ import jkanvas.animation.PairAnimator;
 import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.util.PaintUtil;
 
 /**
  * A group of render-passes. The layout of the render-passes is determined by
@@ -426,6 +428,37 @@ public abstract class RenderGroup extends AbstractRenderpass {
       g.translate(dx, dy);
       final KanvasContext c = RenderpassPainter.getContextFor(r, ctx);
       r.draw(g, c);
+      g.dispose();
+    }
+    if(jkanvas.Canvas.DEBUG_BBOX) {
+      final Graphics2D g = (Graphics2D) gfx.create();
+      PaintUtil.setAlpha(g, 0.3);
+      g.setColor(Color.BLUE);
+      for(final RenderpassPosition rp : members) {
+        final Renderpass r = rp.pass;
+        if(!r.isVisible()) {
+          continue;
+        }
+        if(rp.checkBBoxChange()) {
+          changed = true;
+        }
+        final Rectangle2D bbox = rp.getPassBBox();
+        if(bbox == null || !view.intersects(bbox)) {
+          continue;
+        }
+        g.fill(bbox);
+      }
+      g.setColor(Color.GREEN);
+      for(final Renderpass r : nonLayouted) {
+        if(!r.isVisible()) {
+          continue;
+        }
+        final Rectangle2D bbox = RenderpassPainter.getPassBoundingBox(r);
+        if(bbox == null || !view.intersects(bbox)) {
+          continue;
+        }
+        g.fill(bbox);
+      }
       g.dispose();
     }
     if(changed) {
