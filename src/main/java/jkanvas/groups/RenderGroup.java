@@ -24,8 +24,8 @@ import jkanvas.painter.RenderpassPainter;
 import jkanvas.util.PaintUtil;
 
 /**
- * A group of render-passes. The layout of the render-passes is determined by
- * subclasses. Render-passes without bounding boxes may or may not be allowed
+ * A group of render passes. The layout of the render passes is determined by
+ * subclasses. Render passes without bounding boxes may or may not be allowed
  * depending of the implementation of the subclass. Transitions between layouts
  * can be animated.
  * 
@@ -34,7 +34,7 @@ import jkanvas.util.PaintUtil;
 public abstract class RenderGroup extends AbstractRenderpass {
 
   /**
-   * The offset of a render-pass as {@link AnimatedPosition}.
+   * The offset of a render pass as {@link AnimatedPosition}.
    * 
    * @author Joschi <josua.krause@googlemail.com>
    */
@@ -50,9 +50,9 @@ public abstract class RenderGroup extends AbstractRenderpass {
     private Rectangle2D bbox;
 
     /**
-     * Creates a render-pass position.
+     * Creates a render pass position.
      * 
-     * @param pass The render-pass.
+     * @param pass The render pass.
      */
     public RenderpassPosition(final AbstractRenderpass pass) {
       super(pass.getOffsetX(), pass.getOffsetY());
@@ -85,7 +85,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
     /**
      * Getter.
      * 
-     * @return The render-pass bounding box. The value is refreshed by calling
+     * @return The render pass bounding box. The value is refreshed by calling
      *         {@link #checkBBoxChange()}.
      */
     public Rectangle2D getPassBBox() {
@@ -96,7 +96,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
      * Getter.
      * 
      * @return When the position is in animation the result is the destination
-     *         bounding-box of the render-pass. Otherwise the current bounding
+     *         bounding-box of the render pass. Otherwise the current bounding
      *         box is returned.
      */
     public Rectangle2D getPredictBBox() {
@@ -114,13 +114,16 @@ public abstract class RenderGroup extends AbstractRenderpass {
   /** The list of group members. */
   private final List<RenderpassPosition> members;
 
-  /** The list of non layouted members. */
-  private final List<Renderpass> nonLayouted = new ArrayList<>();
+  /** The list of non layouted members in front of the layouted members. */
+  private final List<Renderpass> nlFront = new ArrayList<>();
+
+  /** The list of non layouted members behind the layouted members. */
+  private final List<Renderpass> nlBack = new ArrayList<>();
 
   /** The underlying animator. */
   private final Animator animator;
 
-  /** The group animator holding render-passes and their positions. */
+  /** The group animator holding render passes and their positions. */
   private final GroupAnimator<RenderpassPosition> groupAnimator;
 
   /**
@@ -154,9 +157,9 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   /**
-   * Converts a render-pass to a render-pass position.
+   * Converts a render pass to a render pass position.
    * 
-   * @param pass The render-pass.
+   * @param pass The render pass.
    * @return The position.
    */
   private RenderpassPosition convert(final AbstractRenderpass pass) {
@@ -166,27 +169,27 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   /**
-   * This method is called after a render-pass is added.
+   * This method is called after a render pass is added.
    * 
-   * @param _ The render-pass position.
+   * @param _ The render pass position.
    */
   protected void addedRenderpass(@SuppressWarnings("unused") final RenderpassPosition _) {
     // nothing to do
   }
 
   /**
-   * This method is called after a render-pass is removed.
+   * This method is called after a render pass is removed.
    * 
-   * @param _ The render-pass position.
+   * @param _ The render pass position.
    */
   protected void removedRenderpass(@SuppressWarnings("unused") final RenderpassPosition _) {
     // nothing to do
   }
 
   /**
-   * Adds a render-pass.
+   * Adds a render pass.
    * 
-   * @param pass The render-pass.
+   * @param pass The render pass.
    */
   public void addRenderpass(final AbstractRenderpass pass) {
     synchronized(animator.getAnimationLock()) {
@@ -200,8 +203,8 @@ public abstract class RenderGroup extends AbstractRenderpass {
   /**
    * Inserts a render-pass.
    * 
-   * @param index The index where the render-pass will be inserted.
-   * @param pass The render-pass.
+   * @param index The index where the render pass will be inserted.
+   * @param pass The render pass.
    */
   public void addRenderpass(final int index, final AbstractRenderpass pass) {
     synchronized(animator.getAnimationLock()) {
@@ -228,7 +231,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   /**
-   * Removes the render-pass at the given index.
+   * Removes the render pass at the given index.
    * 
    * @param index The index.
    */
@@ -240,7 +243,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
     }
   }
 
-  /** Clears all render-passes. */
+  /** Clears all render passes. */
   public void clearRenderpasses() {
     synchronized(animator.getAnimationLock()) {
       final RenderpassPosition[] rps = members();
@@ -255,7 +258,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   /**
    * Getter.
    * 
-   * @return The number of render-passes.
+   * @return The number of render passes.
    */
   public int renderpassCount() {
     return members.size();
@@ -265,7 +268,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * Getter.
    * 
    * @param index The index.
-   * @return The render-pass at the given position.
+   * @return The render pass at the given position.
    */
   public AbstractRenderpass getRenderpass(final int index) {
     return members.get(index).pass;
@@ -275,7 +278,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * Setter.
    * 
    * @param index The index.
-   * @param pass The render-pass.
+   * @param pass The render pass.
    */
   public void setRenderpass(final int index, final AbstractRenderpass pass) {
     synchronized(animator.getAnimationLock()) {
@@ -288,44 +291,65 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   /**
-   * Adds a render-pass that is not used for the layout.
+   * Adds a render pass that is not used for the layout.
    * 
-   * @param pass The render-pass.
+   * @param pass The render pass.
+   * @param front Whether this pass is added in front of the layouted passes.
    */
-  public void addNonLayouted(final Renderpass pass) {
-    nonLayouted.add(pass);
+  public void addNonLayouted(final Renderpass pass, final boolean front) {
+    if(front) {
+      nlFront.add(pass);
+    } else {
+      nlBack.add(pass);
+    }
     animator.quickRefresh();
   }
 
   /**
-   * Inserts a render-pass that is not used for the layout.
+   * Inserts a render pass that is not used for the layout.
    * 
    * @param index The index where the render-pass will be inserted.
-   * @param pass The render-pass.
+   * @param pass The render pass.
+   * @param front Whether this pass is added in front of the layouted passes.
    */
-  public void addNonLayouted(final int index, final Renderpass pass) {
-    nonLayouted.add(index, pass);
+  public void addNonLayouted(final int index, final Renderpass pass, final boolean front) {
+    if(front) {
+      nlFront.add(index, pass);
+    } else {
+      nlBack.add(index, pass);
+    }
     animator.quickRefresh();
   }
 
   /**
-   * Removes a render-pass that is not used for the layout.
+   * Removes a render pass that is not used for the layout.
    * 
-   * @param index The index of the render-pass.
+   * @param index The index of the render pass.
+   * @param front Whether this pass is found in front of the layouted passes.
    */
-  public void removeNonLayouted(final int index) {
-    nonLayouted.remove(index);
+  public void removeNonLayouted(final int index, final boolean front) {
+    if(front) {
+      nlFront.remove(index);
+    } else {
+      nlBack.remove(index);
+    }
     animator.quickRefresh();
   }
 
   /**
-   * Sets the render-pass that is not used for the layout at the given position.
+   * Sets the render pass that is not used for the layout at the given position.
    * 
    * @param index The index.
-   * @param pass The render-pass.
+   * @param pass The render pass.
+   * @param front Whether this method addresses passes in front of the layouted
+   *          passes.
    */
-  public void setNonLayouted(final int index, final Renderpass pass) {
-    nonLayouted.set(index, pass);
+  public void setNonLayouted(final int index, final Renderpass pass, final boolean front) {
+    if(front) {
+      nlFront.set(index, pass);
+    } else {
+      nlBack.set(index, pass);
+    }
     animator.quickRefresh();
   }
 
@@ -333,25 +357,30 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * Getter.
    * 
    * @param index The index.
-   * @return The render-pass at the given index that is not used for the layout.
+   * @param front Whether this method addresses passes in front of the layouted
+   *          passes.
+   * @return The render pass at the given index that is not used for the layout.
    */
-  public Renderpass getNonLayouted(final int index) {
-    return nonLayouted.get(index);
+  public Renderpass getNonLayouted(final int index, final boolean front) {
+    return front ? nlFront.get(index) : nlBack.get(index);
   }
 
-  /** Clears all render-passes that are not used for the layout. */
+  /** Clears all render passes that are not used for the layout. */
   public void clearNonLayouted() {
-    nonLayouted.clear();
+    nlFront.clear();
+    nlBack.clear();
     animator.quickRefresh();
   }
 
   /**
    * Getter.
    * 
-   * @return The number of render-passes that are not used for the layout.
+   * @param front Whether this method addresses passes in front of the layouted
+   *          passes.
+   * @return The number of render passes that are not used for the layout.
    */
-  public int nonLayoutedSize() {
-    return nonLayouted.size();
+  public int nonLayoutedSize(final boolean front) {
+    return front ? nlFront.size() : nlBack.size();
   }
 
   /** Invalidates the current layout, recomputes the layout, and repaints. */
@@ -362,9 +391,9 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   /**
    * Computes the current layout. The implementation may decide whether to allow
-   * render-passes without bounding box.
+   * render passes without bounding box.
    * 
-   * @param members The positions of the render-passes.
+   * @param members The positions of the render passes.
    */
   protected abstract void doLayout(List<RenderpassPosition> members);
 
@@ -386,6 +415,8 @@ public abstract class RenderGroup extends AbstractRenderpass {
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     ensureLayout();
+    gfx.setColor(Color.GREEN);
+    RenderpassPainter.draw(nlBack, gfx, ctx);
     final Rectangle2D view = ctx.getVisibleCanvas();
     boolean changed = false;
     for(final RenderpassPosition p : members) {
@@ -431,7 +462,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
       }
     }
     gfx.setColor(Color.GREEN);
-    RenderpassPainter.draw(nonLayouted, gfx, ctx);
+    RenderpassPainter.draw(nlFront, gfx, ctx);
     if(changed) {
       invalidate();
     }
@@ -448,7 +479,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public final boolean click(final Point2D position, final MouseEvent e) {
-    if(RenderpassPainter.click(nonLayouted, position, e)) return true;
+    if(RenderpassPainter.click(nlFront, position, e)) return true;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
@@ -461,12 +492,12 @@ public abstract class RenderGroup extends AbstractRenderpass {
       }
       if(r.click(pos, e)) return true;
     }
-    return false;
+    return RenderpassPainter.click(nlBack, position, e);
   }
 
   @Override
   public final String getTooltip(final Point2D position) {
-    final String tt = RenderpassPainter.getTooltip(nonLayouted, position);
+    final String tt = RenderpassPainter.getTooltip(nlFront, position);
     if(tt != null) return tt;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
@@ -481,12 +512,12 @@ public abstract class RenderGroup extends AbstractRenderpass {
       final String tooltip = r.getTooltip(pos);
       if(tooltip != null) return tooltip;
     }
-    return null;
+    return RenderpassPainter.getTooltip(nlBack, position);
   }
 
   @Override
   public final boolean moveMouse(final Point2D cur) {
-    if(RenderpassPainter.moveMouse(nonLayouted, cur)) return true;
+    if(RenderpassPainter.moveMouse(nlFront, cur)) return true;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
@@ -499,7 +530,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
       }
       if(r.moveMouse(pos)) return true;
     }
-    return false;
+    return RenderpassPainter.moveMouse(nlBack, cur);
   }
 
   /** The render-pass currently responsible for dragging. */
@@ -532,11 +563,14 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
-    for(final Renderpass r : reverseList(nonLayouted)) {
+    for(final Renderpass r : reverseList(nlFront)) {
       if(acceptDrag(r, position, e)) return true;
     }
     for(final RenderpassPosition p : reverseArray(members())) {
       if(acceptDrag(p.pass, position, e)) return true;
+    }
+    for(final Renderpass r : reverseList(nlBack)) {
+      if(acceptDrag(r, position, e)) return true;
     }
     return false;
   }
@@ -570,7 +604,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
   public Rectangle2D getBoundingBox() {
     ensureLayout();
     boolean change = false;
-    Rectangle2D res = RenderpassPainter.getBoundingBox(nonLayouted);
+    Rectangle2D res = RenderpassPainter.getBoundingBox(nlFront);
+    final Rectangle2D other = RenderpassPainter.getBoundingBox(nlBack);
+    if(other != null) {
+      res.add(other);
+    }
     for(final RenderpassPosition p : members) {
       if(!p.pass.isVisible()) {
         continue;
