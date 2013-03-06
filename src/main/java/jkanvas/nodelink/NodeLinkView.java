@@ -32,6 +32,6 @@ public interface NodeLinkView<T extends Position2D> extends GraphView {
    * @param from The starting id.
    * @return All connected edges (with a higher id when undirected).
    */
-  Iterable<Integer> edgesTo(int from);
+  Iterable<Integer> edgesFrom(int from);
 
 }

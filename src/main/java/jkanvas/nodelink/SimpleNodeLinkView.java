@@ -127,7 +127,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
   }
 
   @Override
-  public Iterable<Integer> edgesTo(final int node) {
+  public Iterable<Integer> edgesFrom(final int node) {
     final int start = isDirected() ? -1 : node;
     final BitSet es = edges.get(node);
     return new Iterable<Integer>() {

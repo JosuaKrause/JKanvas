@@ -113,7 +113,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
     final EdgeRealizer<T> edgeRealizer = getEdgeRealizer();
     for(int i = 0; i < view.nodeCount(); ++i) {
       final T from = view.getNode(i);
-      for(final int toId : view.edgesTo(i)) {
+      for(final int toId : view.edgesFrom(i)) {
         final T to = view.getNode(toId);
         final Shape edgeShape = edgeRealizer.createLineShape(from, to);
         if(!edgeShape.intersects(visible)) {
