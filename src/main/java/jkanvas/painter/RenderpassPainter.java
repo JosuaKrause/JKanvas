@@ -70,8 +70,24 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final void draw(final Graphics2D gfx, final KanvasContext ctx) {
+    gfx.setColor(Color.GRAY);
+    draw(back, gfx, ctx);
+  }
+
+  /**
+   * Draws all render passes given by the list. This method obeys
+   * {@link jkanvas.Canvas#DEBUG_BBOX} by using the current color to draw the
+   * bounding boxes.
+   * 
+   * @param passes The render passes to draw.
+   * @param gfx The graphics context.
+   * @param ctx The canvas context.
+   * @see #draw(Graphics2D, KanvasContext)
+   */
+  public static final void draw(
+      final List<Renderpass> passes, final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D view = ctx.getVisibleCanvas();
-    for(final Renderpass r : back) {
+    for(final Renderpass r : passes) {
       if(!r.isVisible()) {
         continue;
       }
@@ -93,8 +109,7 @@ public class RenderpassPainter extends PainterAdapter {
     if(jkanvas.Canvas.DEBUG_BBOX) {
       final Graphics2D g = (Graphics2D) gfx.create();
       PaintUtil.setAlpha(g, 0.3);
-      g.setColor(Color.GRAY);
-      for(final Renderpass r : back) {
+      for(final Renderpass r : passes) {
         if(!r.isVisible()) {
           continue;
         }
@@ -110,7 +125,21 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean click(final Point2D p, final MouseEvent e) {
-    for(final Renderpass r : reverseList(back)) {
+    return click(back, p, e);
+  }
+
+  /**
+   * Clicks on render passes.
+   * 
+   * @param passes The list of render passes.
+   * @param p The clicked point in canvas coordinates.
+   * @param e The mouse event.
+   * @return Whether the click was consumed.
+   * @see #click(Point2D, MouseEvent)
+   */
+  public static final boolean click(
+      final List<Renderpass> passes, final Point2D p, final MouseEvent e) {
+    for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -126,7 +155,20 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final String getTooltip(final Point2D p) {
-    for(final Renderpass r : reverseList(back)) {
+    return getTooltip(back, p);
+  }
+
+  /**
+   * Returns the tool-tip from the first render pass returning one.
+   * 
+   * @param passes The render passes.
+   * @param p The point in canvas coordinates.
+   * @return The tool-tip text or null if no tool-tip was returned by any render
+   *         pass.
+   * @see #getTooltip(Point2D)
+   */
+  public static final String getTooltip(final List<Renderpass> passes, final Point2D p) {
+    for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -143,7 +185,19 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean moveMouse(final Point2D cur) {
-    for(final Renderpass r : reverseList(back)) {
+    return moveMouse(back, cur);
+  }
+
+  /**
+   * Moves the mouse.
+   * 
+   * @param passes The render passes.
+   * @param cur The current position.
+   * @return Whether any render pass has consumed the mouse move.
+   * @see #moveMouse(Point2D)
+   */
+  public static final boolean moveMouse(final List<Renderpass> passes, final Point2D cur) {
+    for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -321,10 +375,20 @@ public class RenderpassPainter extends PainterAdapter {
         rect.getY() + r.getOffsetY(), rect.getWidth(), rect.getHeight());
   }
 
-  @Override
-  public final Rectangle2D getBoundingBox() {
+  /**
+   * Calculates the joined bounding boxes of the given render passes.
+   * 
+   * @param passes The render passes.
+   * @return The joined bounding box or <code>null</code> if no bounding box was
+   *         present.
+   * @see #getBoundingBox()
+   */
+  public static final Rectangle2D getBoundingBox(final Iterable<Renderpass> passes) {
     Rectangle2D bbox = null;
-    for(final Renderpass r : back) {
+    for(final Renderpass r : passes) {
+      if(!r.isVisible()) {
+        continue;
+      }
       final Rectangle2D b = getPassBoundingBox(r);
       if(b == null) {
         continue;
@@ -336,6 +400,11 @@ public class RenderpassPainter extends PainterAdapter {
       }
     }
     return bbox;
+  }
+
+  @Override
+  public final Rectangle2D getBoundingBox() {
+    return getBoundingBox(back);
   }
 
 }

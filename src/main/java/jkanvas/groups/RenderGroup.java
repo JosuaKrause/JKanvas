@@ -411,25 +411,6 @@ public abstract class RenderGroup extends AbstractRenderpass {
       r.draw(g, c);
       g.dispose();
     }
-    for(final Renderpass r : nonLayouted) {
-      if(!r.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = RenderpassPainter.getPassBoundingBox(r);
-      if(bbox != null && !view.intersects(bbox)) {
-        continue;
-      }
-      final Graphics2D g = (Graphics2D) gfx.create();
-      if(bbox != null) {
-        g.setClip(bbox);
-      }
-      final double dx = r.getOffsetX();
-      final double dy = r.getOffsetY();
-      g.translate(dx, dy);
-      final KanvasContext c = RenderpassPainter.getContextFor(r, ctx);
-      r.draw(g, c);
-      g.dispose();
-    }
     if(jkanvas.Canvas.DEBUG_BBOX) {
       final Graphics2D g = (Graphics2D) gfx.create();
       PaintUtil.setAlpha(g, 0.3);
@@ -448,19 +429,9 @@ public abstract class RenderGroup extends AbstractRenderpass {
         }
         g.fill(bbox);
       }
-      g.setColor(Color.GREEN);
-      for(final Renderpass r : nonLayouted) {
-        if(!r.isVisible()) {
-          continue;
-        }
-        final Rectangle2D bbox = RenderpassPainter.getPassBoundingBox(r);
-        if(bbox == null || !view.intersects(bbox)) {
-          continue;
-        }
-        g.fill(bbox);
-      }
-      g.dispose();
     }
+    gfx.setColor(Color.GREEN);
+    RenderpassPainter.draw(nonLayouted, gfx, ctx);
     if(changed) {
       invalidate();
     }
@@ -477,17 +448,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public final boolean click(final Point2D position, final MouseEvent e) {
-    for(final Renderpass r : reverseList(nonLayouted)) {
-      if(!r.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = r.getBoundingBox();
-      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
-      }
-      if(r.click(pos, e)) return true;
-    }
+    if(RenderpassPainter.click(nonLayouted, position, e)) return true;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
@@ -505,18 +466,8 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public final String getTooltip(final Point2D position) {
-    for(final Renderpass r : reverseList(nonLayouted)) {
-      if(!r.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = r.getBoundingBox();
-      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
-      }
-      final String tooltip = r.getTooltip(pos);
-      if(tooltip != null) return tooltip;
-    }
+    final String tt = RenderpassPainter.getTooltip(nonLayouted, position);
+    if(tt != null) return tt;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
@@ -535,17 +486,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public final boolean moveMouse(final Point2D cur) {
-    for(final Renderpass r : reverseList(nonLayouted)) {
-      if(!r.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = r.getBoundingBox();
-      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, cur);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
-      }
-      if(r.moveMouse(pos)) return true;
-    }
+    if(RenderpassPainter.moveMouse(nonLayouted, cur)) return true;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
@@ -567,38 +508,35 @@ public abstract class RenderGroup extends AbstractRenderpass {
   /** The start position of the drag in the render-pass coordinates. */
   private Point2D start = null;
 
+  /**
+   * Checks whether the given render pass accepts the drag. When the render pass
+   * accepts the drag everything is set up properly.
+   * 
+   * @param r The render pass to check.
+   * @param position The position in canvas coordinates.
+   * @param e The mouse event.
+   * @return Whether the drag was accepted.
+   * @see #acceptDrag(Point2D, MouseEvent)
+   */
+  private boolean acceptDrag(
+      final Renderpass r, final Point2D position, final MouseEvent e) {
+    if(!r.isVisible()) return false;
+    final Rectangle2D bbox = r.getBoundingBox();
+    final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
+    if(bbox != null && !bbox.contains(pos)) return false;
+    if(!r.acceptDrag(pos, e)) return false;
+    start = pos;
+    dragging = r;
+    return true;
+  }
+
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
     for(final Renderpass r : reverseList(nonLayouted)) {
-      if(!r.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = r.getBoundingBox();
-      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
-      }
-      if(r.acceptDrag(pos, e)) {
-        start = pos;
-        dragging = r;
-        return true;
-      }
+      if(acceptDrag(r, position, e)) return true;
     }
     for(final RenderpassPosition p : reverseArray(members())) {
-      final Renderpass r = p.pass;
-      if(!r.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = r.getBoundingBox();
-      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
-      }
-      if(r.acceptDrag(pos, e)) {
-        start = pos;
-        dragging = r;
-        return true;
-      }
+      if(acceptDrag(p.pass, position, e)) return true;
     }
     return false;
   }
@@ -632,7 +570,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   public Rectangle2D getBoundingBox() {
     ensureLayout();
     boolean change = false;
-    Rectangle2D res = null;
+    Rectangle2D res = RenderpassPainter.getBoundingBox(nonLayouted);
     for(final RenderpassPosition p : members) {
       if(!p.pass.isVisible()) {
         continue;
@@ -652,21 +590,6 @@ public abstract class RenderGroup extends AbstractRenderpass {
       }
       if(p.inAnimation()) {
         res.add(p.getPredictBBox());
-      }
-    }
-    for(final Renderpass r : nonLayouted) {
-      if(!r.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = RenderpassPainter.getPassBoundingBox(r);
-      if(bbox == null) {
-        continue;
-      }
-      if(res == null) {
-        res = new Rectangle2D.Double(bbox.getX(), bbox.getY(),
-            bbox.getWidth(), bbox.getHeight());
-      } else {
-        res.add(bbox);
       }
     }
     if(change) {
