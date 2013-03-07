@@ -60,7 +60,7 @@ public class StringDrawer {
   private static final double ROT_D = -Math.PI / 4;
 
   /** The graphics context. */
-  private final Graphics2D g;
+  private final Graphics2D gfx;
 
   /** The string to draw. */
   private final String str;
@@ -75,8 +75,8 @@ public class StringDrawer {
    * @param str The string.
    */
   public StringDrawer(final Graphics2D g, final String str) {
-    this.g = g;
     this.str = str;
+    gfx = g;
     final FontMetrics fm = g.getFontMetrics();
     bbox = fm.getStringBounds(str, g);
   }
@@ -219,11 +219,11 @@ public class StringDrawer {
    * @see #BOTTOM
    */
   public void draw(final Point2D pos, final int hpos, final int vpos) {
-    final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(pos.getX() + getHorizontalOffset(hpos),
+    final Graphics2D g = (Graphics2D) gfx.create();
+    g.translate(pos.getX() + getHorizontalOffset(hpos),
         pos.getY() - bbox.getHeight() + getVerticalOffset(vpos, false));
-    g2.drawString(str, 0, 0);
-    g2.dispose();
+    g.drawString(str, 0, 0);
+    g.dispose();
   }
 
   /**
@@ -236,13 +236,13 @@ public class StringDrawer {
     final double width = getWidth();
     final Rectangle2D fit = PaintUtil.fitInto(rect, width, getHeight());
     final double scale = fit.getWidth() / width;
-    final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(fit.getCenterX(), fit.getCenterY());
-    g2.scale(scale, scale);
-    g2.translate(getHorizontalOffset(CENTER_H),
+    final Graphics2D g = (Graphics2D) gfx.create();
+    g.translate(fit.getCenterX(), fit.getCenterY());
+    g.scale(scale, scale);
+    g.translate(getHorizontalOffset(CENTER_H),
         -bbox.getHeight() + getVerticalOffset(CENTER_V, false));
-    g2.drawString(str, 0, 0);
-    g2.dispose();
+    g.drawString(str, 0, 0);
+    g.dispose();
   }
 
   /**
@@ -261,13 +261,13 @@ public class StringDrawer {
    */
   public void drawRotated(final Point2D pos,
       final int hpos, final int vpos, final double theta) {
-    final Graphics2D g2 = (Graphics2D) g.create();
-    g2.translate(pos.getX(), pos.getY());
-    g2.rotate(theta);
-    g2.translate(getHorizontalOffset(hpos),
+    final Graphics2D g = (Graphics2D) gfx.create();
+    g.translate(pos.getX(), pos.getY());
+    g.rotate(theta);
+    g.translate(getHorizontalOffset(hpos),
         getVerticalOffset(vpos, false) - bbox.getHeight());
-    g2.drawString(str, 0, 0);
-    g2.dispose();
+    g.drawString(str, 0, 0);
+    g.dispose();
   }
 
   /**
@@ -326,21 +326,21 @@ public class StringDrawer {
    * Draws text into the given rectangle. The text is scaled that it fits the
    * rectangle.
    * 
-   * @param g The graphics context.
+   * @param gfx The graphics context.
    * @param text The text.
    * @param rect The rectangle.
    */
-  public static final void drawInto(final Graphics2D g,
+  public static final void drawInto(final Graphics2D gfx,
       final String text, final RectangularShape rect) {
-    final Graphics2D gfx = (Graphics2D) g.create();
-    final StringDrawer sd = new StringDrawer(gfx, text);
+    final Graphics2D g = (Graphics2D) gfx.create();
+    final StringDrawer sd = new StringDrawer(g, text);
     final double width = sd.getWidth();
     final Rectangle2D fit = PaintUtil.fitInto(rect, width, sd.getHeight());
     final double scale = fit.getWidth() / width;
-    gfx.translate(fit.getCenterX(), fit.getCenterY());
-    gfx.scale(scale, scale);
+    g.translate(fit.getCenterX(), fit.getCenterY());
+    g.scale(scale, scale);
     sd.draw(ORIGIN, CENTER_H, CENTER_V);
-    gfx.dispose();
+    g.dispose();
   }
 
   /**

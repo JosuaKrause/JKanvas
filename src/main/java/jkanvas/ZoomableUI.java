@@ -7,8 +7,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
-import jkanvas.util.PaintUtil;
-
 /**
  * A zoom-able user interface can be translated and zooming can be performed.
  * 
@@ -149,7 +147,9 @@ public final class ZoomableUI {
       final Rectangle2D bbox = restriction.getBoundingRect();
       if(bbox == null) return; // change nothing
       final Rectangle2D visBB = restriction.getComponentView();
-      final double min = PaintUtil.fitIntoScale(visBB, bbox.getWidth(), bbox.getHeight());
+      // load class only when restricting the view
+      final double min = jkanvas.util.PaintUtil.fitIntoScale(
+          visBB, bbox.getWidth(), bbox.getHeight());
       if(newZoom < min) {
         newZoom = min;
         f = newZoom / zoom;
@@ -233,11 +233,11 @@ public final class ZoomableUI {
   /**
    * Transforms the given graphics object.
    * 
-   * @param gfx The graphics object.
+   * @param g The graphics object.
    */
-  public void transform(final Graphics2D gfx) {
-    gfx.translate(offX, offY);
-    gfx.scale(zoom, zoom);
+  public void transform(final Graphics2D g) {
+    g.translate(offX, offY);
+    g.scale(zoom, zoom);
   }
 
   /**

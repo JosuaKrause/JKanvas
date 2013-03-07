@@ -15,10 +15,10 @@ public interface HUDInteraction {
    * Draws a HUD (Head-Up-Display) on the canvas. This method draws over the
    * canvas and uses the components coordinate space.
    * 
-   * @param gfx The graphics context.
+   * @param g The graphics context.
    * @param ctx The canvas context.
    */
-  void drawHUD(Graphics2D gfx, KanvasContext ctx);
+  void drawHUD(Graphics2D g, KanvasContext ctx);
 
   /**
    * Is called when the user clicks at the component. The coordinates are in the

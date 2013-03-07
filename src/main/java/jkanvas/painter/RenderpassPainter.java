@@ -69,9 +69,9 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   @Override
-  public final void draw(final Graphics2D gfx, final KanvasContext ctx) {
-    gfx.setColor(Color.GRAY);
-    draw(back, gfx, ctx);
+  public final void draw(final Graphics2D g, final KanvasContext ctx) {
+    g.setColor(Color.GRAY);
+    draw(back, g, ctx);
   }
 
   /**

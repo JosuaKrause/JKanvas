@@ -43,7 +43,7 @@ public class BorderRenderpass extends RenderpassAdapter {
   }
 
   @Override
-  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+  public void draw(final Graphics2D g, final KanvasContext ctx) {
     for(final Entry<Renderpass, String> e : borders.entrySet()) {
       final Renderpass r = e.getKey();
       if(!r.isVisible()) {
@@ -53,14 +53,14 @@ public class BorderRenderpass extends RenderpassAdapter {
       if(bbox == null) {
         continue;
       }
-      gfx.setColor(border);
-      gfx.draw(bbox);
+      g.setColor(border);
+      g.draw(bbox);
       final String title = e.getValue();
       if(title == null) {
         continue;
       }
-      gfx.setColor(text);
-      StringDrawer.drawText(gfx, title,
+      g.setColor(text);
+      StringDrawer.drawText(g, title,
           new Point2D.Double(bbox.getCenterX(), bbox.getMaxY()),
           StringDrawer.CENTER_H, StringDrawer.TOP);
     }

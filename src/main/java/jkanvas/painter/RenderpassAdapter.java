@@ -16,7 +16,7 @@ import jkanvas.animation.Animated;
 public abstract class RenderpassAdapter implements Renderpass {
 
   @Override
-  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+  public void draw(final Graphics2D g, final KanvasContext ctx) {
     // do nothing
   }
 

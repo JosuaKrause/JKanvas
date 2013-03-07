@@ -68,10 +68,10 @@ public class RenderGroupAlignmentMain extends MatrixMain {
     final LinearGroup group = new LinearGroup(p, true, 50.0, AnimationTiming.SMOOTH) {
 
       @Override
-      public void draw(final Graphics2D gfx, final KanvasContext ctx) {
-        super.draw(gfx, ctx);
-        gfx.setColor(Color.GRAY);
-        gfx.draw(getBoundingBox());
+      public void draw(final Graphics2D g, final KanvasContext ctx) {
+        super.draw(g, ctx);
+        g.setColor(Color.GRAY);
+        g.draw(getBoundingBox());
       }
 
     };

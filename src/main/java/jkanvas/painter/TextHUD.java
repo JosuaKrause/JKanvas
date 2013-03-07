@@ -160,8 +160,8 @@ public abstract class TextHUD extends HUDRenderpassAdapter {
   }
 
   @Override
-  public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
-    draw(gfx, ctx.getVisibleComponent());
+  public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
+    draw(g, ctx.getVisibleComponent());
   }
 
   /**

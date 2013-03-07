@@ -31,7 +31,7 @@ public class HUDRenderpassAdapter implements HUDRenderpass {
   }
 
   @Override
-  public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
+  public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
     // nothing to do
   }
 

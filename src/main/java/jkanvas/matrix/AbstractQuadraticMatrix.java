@@ -3,7 +3,6 @@ package jkanvas.matrix;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.RefreshManager;
-import jkanvas.Refreshable;
 
 /**
  * A straight forward implementation of a {@link QuadraticMatrix}. Only the
@@ -69,8 +68,8 @@ public abstract class AbstractQuadraticMatrix<T> implements MutableQuadraticMatr
   }
 
   /**
-   * Refreshes all {@link Refreshable Refreshables} if a refresh manager is
-   * installed.
+   * Refreshes all {@link jkanvas.Refreshable Refreshables} if a refresh manager
+   * is installed.
    */
   private void refreshAll() {
     if(manager == null) return;

@@ -13,7 +13,7 @@ In order to create a ZUI component you can use the following snippet:
 Renderpass renderpass = new RenderpassAdapter() {
 
   @Override
-  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+  public void draw(final Graphics2D g, final KanvasContext ctx) {
     // draw here
     // ctx can be used to convert between canvas and component coordinates
   }

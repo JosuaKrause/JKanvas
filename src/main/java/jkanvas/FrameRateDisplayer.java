@@ -22,10 +22,10 @@ public interface FrameRateDisplayer {
   /**
    * Draws the frame rate.
    * 
-   * @param gfx The graphics context.
+   * @param g The graphics context.
    * @param visibleRect The visible rectangle in component coordinates.
    */
-  void drawFrameRate(Graphics2D gfx, RectangularShape visibleRect);
+  void drawFrameRate(Graphics2D g, RectangularShape visibleRect);
 
   /**
    * Getter.

@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -19,6 +18,8 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+
+import jkanvas.util.Stopwatch;
 
 /**
  * A simple class adding panning and zooming functionality to a
@@ -214,8 +215,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /**
    * Adds a keyboard action event.
    * 
-   * @param key The key id, given by {@link KeyEvent}. (Constants beginning with
-   *          <code>VK</code>)
+   * @param key The key id, given by {@link java.awt.event.KeyEvent}. (Constants
+   *          beginning with <code>VK</code>)
    * @param a The action that is performed.
    */
   public void addAction(final int key, final Action a) {
@@ -362,31 +363,30 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   }
 
   @Override
-  protected void paintComponent(final Graphics g) {
-    final boolean measureTime = isMeasuringFrameTime();
-    final long startTime = measureTime ? System.nanoTime() : 0L;
-    final Graphics2D g2 = (Graphics2D) g.create();
-    // honor opaqueness -- as in ComponentUI#update(Graphics, JComponent)
+  protected void paintComponent(final Graphics gfx) {
+    final Stopwatch watch = isMeasuringFrameTime() ? new Stopwatch() : null;
+    final Graphics2D g = (Graphics2D) gfx.create();
+    // honor opaqueness
     if(isOpaque()) {
-      g.setColor(getBackground());
-      g.fillRect(0, 0, getWidth(), getHeight());
+      gfx.setColor(getBackground());
+      gfx.fillRect(0, 0, getWidth(), getHeight());
     }
     // clip the visible area
-    g2.clip(getVisibleRect());
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+    g.clip(getVisibleRect());
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
     if(paintLock == null) {
-      doPaint(g2);
+      doPaint(g);
     } else {
       synchronized(paintLock) {
-        doPaint(g2);
+        doPaint(g);
       }
     }
-    if(measureTime) {
-      frameRateDisplayer.setLastFrameTime(System.nanoTime() - startTime);
-      frameRateDisplayer.drawFrameRate(g2, getVisibleRect());
+    if(watch != null) {
+      frameRateDisplayer.setLastFrameTime(watch.currentNano());
+      frameRateDisplayer.drawFrameRate(g, getVisibleRect());
     }
-    g2.dispose();
+    g.dispose();
   }
 
   /**
@@ -414,14 +414,14 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /**
    * Does the actual painting.
    * 
-   * @param g The graphics context.
+   * @param gfx The graphics context.
    */
-  private void doPaint(final Graphics2D g) {
-    final Graphics2D gfx = (Graphics2D) g.create();
-    zui.transform(gfx);
-    painter.draw(gfx, getContext());
-    gfx.dispose();
-    painter.drawHUD(g, getHUDContext());
+  private void doPaint(final Graphics2D gfx) {
+    final Graphics2D g = (Graphics2D) gfx.create();
+    zui.transform(g);
+    painter.draw(g, getContext());
+    g.dispose();
+    painter.drawHUD(gfx, getHUDContext());
   }
 
   /** The paint lock. */

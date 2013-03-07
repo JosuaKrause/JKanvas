@@ -16,10 +16,10 @@ public interface KanvasInteraction {
    * Draw on a canvas. The panning and zooming of the canvas is transparent to
    * this method and needs no further investigation.
    * 
-   * @param gfx The graphics context.
+   * @param g The graphics context.
    * @param ctx The canvas context.
    */
-  void draw(Graphics2D gfx, KanvasContext ctx);
+  void draw(Graphics2D g, KanvasContext ctx);
 
   /**
    * Is called when the user clicks at the component and the HUD action does not

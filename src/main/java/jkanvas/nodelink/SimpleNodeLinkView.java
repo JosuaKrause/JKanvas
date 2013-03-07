@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import jkanvas.animation.Position2D;
 
@@ -97,14 +98,13 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     /**
      * Creates an edge iterator.
      * 
-     * @param id The source id or exactly <code>-1</code> if the graph is
+     * @param start The source id or exactly <code>-1</code> if the graph is
      *          directed.
      * @param edges The edge bit set.
      */
-    public EdgeIterator(final int id, final BitSet edges) {
+    public EdgeIterator(final int start, final BitSet edges) {
       this.edges = edges;
-      final int start = id + 1;
-      pos = edges.nextSetBit(start);
+      pos = edges.nextSetBit(start + 1);
     }
 
     @Override
@@ -114,6 +114,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
 
     @Override
     public Integer next() {
+      if(pos < 0) throw new NoSuchElementException();
       final int ret = pos;
       pos = edges.nextSetBit(pos + 1);
       return ret;

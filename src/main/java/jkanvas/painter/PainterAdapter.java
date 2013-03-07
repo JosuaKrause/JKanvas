@@ -10,7 +10,6 @@ import javax.swing.SwingUtilities;
 import jkanvas.KanvasContext;
 import jkanvas.KanvasPainter;
 
-
 /**
  * Provides meaningful default implementations for a {@link KanvasPainter}.
  * 
@@ -19,12 +18,12 @@ import jkanvas.KanvasPainter;
 public class PainterAdapter implements KanvasPainter {
 
   @Override
-  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+  public void draw(final Graphics2D g, final KanvasContext ctx) {
     // draw nothing
   }
 
   @Override
-  public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
+  public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
     // draw nothing
   }
 
