@@ -113,6 +113,37 @@ public final class VecUtil {
   }
 
   /**
+   * Calculates the absolute orientation of a given vector.
+   * 
+   * @param vec The vector.
+   * @return The angle from this vector to the x-axis in counter clockwise
+   *         order. The range is from {@code 0.0 - 2.0 * Math.PI}. The null
+   *         vector (0, 0) results in an angle of <code>0</code>.
+   */
+  public static double getOrientation(final Point2D vec) {
+    final double x = vec.getX();
+    final double y = vec.getY();
+    if(x == 0.0) return Math.PI * (y > 0.0 ? 0.5 : 1.5);
+    return (x < 0 ? Math.PI : (y < 0 ? 2 * Math.PI : 0)) + Math.atan(y / x);
+  }
+
+  /**
+   * Rotates a vector around the origin. The angle is measured in radians and
+   * positive angles are counter-clockwise.
+   * 
+   * @param vec The vector rotate.
+   * @param theta The angle in radians.
+   * @return The rotated vector.
+   */
+  public static Point2D rotate(final Point2D vec, final double theta) {
+    final double cos = Math.cos(theta);
+    final double sin = Math.sin(theta);
+    final double x = vec.getX();
+    final double y = vec.getY();
+    return new Point2D.Double(x * cos + y * sin, -x * sin + y * cos);
+  }
+
+  /**
    * Rotates a point around the center such that the result has the given
    * distance to the original point.
    * 
@@ -140,8 +171,8 @@ public final class VecUtil {
    * @param angle The angle.
    * @return The rotated point.
    */
-  public static Point2D rotateByAngle(final Point2D pos, final Point2D center,
-      final double angle) {
+  public static Point2D rotateByAngle(
+      final Point2D pos, final Point2D center, final double angle) {
     final AffineTransform at = AffineTransform.getRotateInstance(
         angle, center.getX(), center.getY());
     return at.transform(pos, null);

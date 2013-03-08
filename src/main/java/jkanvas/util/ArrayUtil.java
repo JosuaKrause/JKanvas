@@ -8,7 +8,7 @@ import java.util.ListIterator;
 /**
  * Utility functions for arrays.
  * 
- * @author Leo Woerteler
+ * @author Leonard Woerteler <leo@woerteler.de>
  * @author Joschi <josua.krause@googlemail.com>
  */
 public final class ArrayUtil {
@@ -158,6 +158,99 @@ public final class ArrayUtil {
       }
 
     };
+  }
+
+  /**
+   * Draws <code>k</code> distinct random samples from an iterator. The
+   * algorithm used is called Reservoir Sampling and runs in <code>O(n)</code>
+   * time and <code>O(k)</code> space.
+   * 
+   * @param <T> The list content type.
+   * @param reservoir The reservoir.
+   * @param k The number of samples.
+   * @return The sample list.
+   */
+  public static <T> List<T> sample(final Iterator<T> reservoir, final int k) {
+    final java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+    final List<T> list = new java.util.ArrayList<>(k);
+    for(int i = 0; i < k && reservoir.hasNext(); i++) {
+      list.add(reservoir.next());
+    }
+
+    if(list.size() == k) {
+      for(int j = k; reservoir.hasNext(); j++) {
+        final T e = reservoir.next();
+        final int pos = rnd.nextInt(j + 1);
+        if(pos < k) {
+          list.set(pos, e);
+        }
+      }
+    }
+
+    return list;
+  }
+
+  /**
+   * Draws <code>k</code> distinct random samples from an {@link Iterable}. The
+   * algorithm used is called Reservoir Sampling and runs in <code>O(n)</code>
+   * time and <code>O(k)</code> space.
+   * 
+   * @param <T> The list content type.
+   * @param reservoir The reservoir.
+   * @param k The number of samples.
+   * @return The sample list.
+   */
+  public static <T> List<T> sample(final Iterable<T> reservoir, final int k) {
+    return sample(reservoir.iterator(), k);
+  }
+
+  /**
+   * Draws as much distinct random samples from an iterator as fitting into the
+   * given array. The array may contain less items when the iterator has fewer
+   * items. The algorithm used is called Reservoir Sampling and runs in
+   * <code>O(n)</code> time and <code>O(array.length)</code> space.
+   * 
+   * @param <T> The list content type.
+   * @param reservoir The reservoir.
+   * @param array The array to store the samples in. The number of samples is
+   *          limited by the size of the array but may be smaller. Be sure to
+   *          check the return value. If the number of samples is smaller the
+   *          rest of the array is not modified.
+   * @return The number of samples written into the array.
+   */
+  public static <T> int sample(final Iterator<T> reservoir, final T[] array) {
+    final java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+    for(int i = 0; i < array.length; i++) {
+      if(!reservoir.hasNext()) return i;
+      array[i] = reservoir.next();
+    }
+    for(int j = array.length; reservoir.hasNext(); j++) {
+      final T e = reservoir.next();
+      final int pos = rnd.nextInt(j + 1);
+      if(pos < array.length) {
+        array[pos] = e;
+      }
+    }
+    return array.length;
+  }
+
+  /**
+   * Draws as much distinct random samples from an {@link Iterable} as fitting
+   * into the given array. The array may contain less items when the
+   * {@link Iterable} has fewer items. The algorithm used is called Reservoir
+   * Sampling and runs in <code>O(n)</code> time and
+   * <code>O(array.length)</code> space.
+   * 
+   * @param <T> The list content type.
+   * @param reservoir The reservoir.
+   * @param array The array to store the samples in. The number of samples is
+   *          limited by the size of the array but may be smaller. Be sure to
+   *          check the return value. If the number of samples is smaller the
+   *          rest of the array is not modified.
+   * @return The number of samples written into the array.
+   */
+  public static <T> int sample(final Iterable<T> reservoir, final T[] array) {
+    return sample(reservoir.iterator(), array);
   }
 
 }
