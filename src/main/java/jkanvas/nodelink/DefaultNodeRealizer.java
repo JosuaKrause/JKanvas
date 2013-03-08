@@ -56,26 +56,39 @@ public class DefaultNodeRealizer<T extends AnimatedPosition> implements NodeReal
    * 
    * @param node The node.
    * @return The radius of the given node. The default implementation uses
-   *         {@link #RADIUS}.
+   *         {@link #RADIUS}. Note that this method should return same values
+   *         for same nodes.
    */
   public double getRadius(@SuppressWarnings("unused") final T node) {
     return RADIUS;
   }
 
+  /**
+   * Getter.
+   * 
+   * @param node The node.
+   * @return The stroke of the given node. The default implementation uses
+   *         {@link #STROKE}. Note that this method should return same values
+   *         for same nodes.
+   */
+  public BasicStroke getStroke(@SuppressWarnings("unused") final T node) {
+    return STROKE;
+  }
+
   @Override
   public Shape createNodeShape(final T node, final double x, final double y) {
-    final double r = getRadius(node) + STROKE.getLineWidth() * 0.5;
-    return PaintUtil.createEllipse(x, y, r);
+    final double r = getRadius(node) + getStroke(node).getLineWidth() * 0.5;
+    return PaintUtil.createCircle(x, y, r);
   }
 
   @Override
   public void drawNode(final Graphics2D g, final T node) {
     final Point2D pos = node.getPos();
     g.setColor(getColor(node));
-    final Shape s = PaintUtil.createEllipse(pos.getX(), pos.getY(), getRadius(node));
+    final Shape s = PaintUtil.createCircle(pos.getX(), pos.getY(), getRadius(node));
     g.fill(s);
     g.setColor(getBorder(node));
-    g.fill(STROKE.createStrokedShape(s));
+    g.fill(getStroke(node).createStrokedShape(s));
   }
 
 }

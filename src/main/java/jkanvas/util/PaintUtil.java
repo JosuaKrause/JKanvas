@@ -133,7 +133,7 @@ public final class PaintUtil {
    * @param r The radius.
    * @return The circle.
    */
-  public static Ellipse2D createEllipse(final double x, final double y, final double r) {
+  public static Ellipse2D createCircle(final double x, final double y, final double r) {
     final double r2 = r * 2;
     return new Ellipse2D.Double(x - r, y - r, r2, r2);
   }

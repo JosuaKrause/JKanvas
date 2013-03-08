@@ -89,6 +89,16 @@ public class ArrowFactory {
 
   };
 
+  /** A circle as head. */
+  public static final TipType CIRCLE = new TipType() {
+
+    @Override
+    public void drawTip(final GeneralPath path, final Point2D pos, final Point2D dir) {
+      path.append(PaintUtil.createCircle(pos.getX(), pos.getY(), getLength(dir)), false);
+    }
+
+  };
+
   /** The head of the arrow. */
   private TipType head;
 
