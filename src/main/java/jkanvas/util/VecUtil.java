@@ -116,9 +116,9 @@ public final class VecUtil {
    * Calculates the absolute orientation of a given vector.
    * 
    * @param vec The vector.
-   * @return The angle from this vector to the x-axis in counter clockwise
-   *         order. The range is from {@code 0.0 - 2.0 * Math.PI}. The null
-   *         vector (0, 0) results in an angle of <code>0</code>.
+   * @return The angle from this vector to the x-axis in counter-clockwise
+   *         order. The range is from {@code 0.0 - 2.0 * Math.PI}. The vector
+   *         (0, 0) results in an angle of <code>0</code>.
    */
   public static double getOrientation(final Point2D vec) {
     final double x = vec.getX();
@@ -131,7 +131,7 @@ public final class VecUtil {
    * Rotates a vector around the origin. The angle is measured in radians and
    * positive angles are counter-clockwise.
    * 
-   * @param vec The vector rotate.
+   * @param vec The vector to rotate.
    * @param theta The angle in radians.
    * @return The rotated vector.
    */

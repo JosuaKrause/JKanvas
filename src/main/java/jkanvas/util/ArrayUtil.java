@@ -208,7 +208,7 @@ public final class ArrayUtil {
    * Draws as much distinct random samples from an iterator as fitting into the
    * given array. The array may contain less items when the iterator has fewer
    * items. The algorithm used is called Reservoir Sampling and runs in
-   * <code>O(n)</code> time and <code>O(array.length)</code> space.
+   * <code>O(n)</code> time and no additional space.
    * 
    * @param <T> The list content type.
    * @param reservoir The reservoir.
@@ -238,8 +238,7 @@ public final class ArrayUtil {
    * Draws as much distinct random samples from an {@link Iterable} as fitting
    * into the given array. The array may contain less items when the
    * {@link Iterable} has fewer items. The algorithm used is called Reservoir
-   * Sampling and runs in <code>O(n)</code> time and
-   * <code>O(array.length)</code> space.
+   * Sampling and runs in <code>O(n)</code> time and no additional space.
    * 
    * @param <T> The list content type.
    * @param reservoir The reservoir.
