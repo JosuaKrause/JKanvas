@@ -21,8 +21,9 @@ public class AnimatedPositionTest {
     final AnimationTiming at = new AnimationTiming(Interpolator.LINEAR, 2);
     final AnimatedPosition p = new AnimatedPosition(3, 4);
     p.setPosition(4, 3);
-    assertEquals(4, p.getX(), 0);
-    assertEquals(3, p.getY(), 0);
+    final Point2D cur0 = p.getPos();
+    assertEquals(4, cur0.getX(), 0);
+    assertEquals(3, cur0.getY(), 0);
     final Point2D pred0 = p.getPredict();
     assertEquals(4, pred0.getX(), 0);
     assertEquals(3, pred0.getY(), 0);

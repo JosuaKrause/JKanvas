@@ -63,8 +63,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
     }
 
     @Override
-    protected void doSetPosition(final double x, final double y) {
-      super.doSetPosition(x, y);
+    protected void onPositionUpdate(final double x, final double y) {
       pass.setOffset(x, y);
     }
 
