@@ -395,4 +395,58 @@ public class AnimatedPositionTest {
     assertEquals(3, p.getPredictY(), 0);
   }
 
+  /**
+   * Ensures that modifications after passing (getting) a value to (from) a
+   * public method does not affect the {@link AnimatedPosition}.
+   */
+  @Test
+  public void immutability() {
+    final Point2D passing = new Point2D.Double(0, 0);
+    final AnimationTiming at = new AnimationTiming(Interpolator.LINEAR, 2);
+    final AnimatedPosition p = new AnimatedPosition(passing);
+    passing.setLocation(1, 2);
+    assertEquals(0, p.getX(), 0);
+    assertEquals(0, p.getY(), 0);
+    assertEquals(0, p.getPredictX(), 0);
+    assertEquals(0, p.getPredictY(), 0);
+    p.setPosition(passing);
+    passing.setLocation(0, 0);
+    assertEquals(1, p.getX(), 0);
+    assertEquals(2, p.getY(), 0);
+    assertEquals(1, p.getPredictX(), 0);
+    assertEquals(2, p.getPredictY(), 0);
+    p.startAnimationTo(passing, at);
+    passing.setLocation(3, 4);
+    p.animate(0);
+    p.animate(1);
+    p.animate(2);
+    assertEquals(0, p.getX(), 0);
+    assertEquals(0, p.getY(), 0);
+    assertEquals(0, p.getPredictX(), 0);
+    assertEquals(0, p.getPredictY(), 0);
+    p.startAnimationTo(passing, at);
+    passing.setLocation(1, 2);
+    p.changeAnimationTo(passing, at);
+    passing.setLocation(0, 0);
+    p.animate(0);
+    p.animate(1);
+    p.animate(2);
+    assertEquals(1, p.getX(), 0);
+    assertEquals(2, p.getY(), 0);
+    assertEquals(1, p.getPredictX(), 0);
+    assertEquals(2, p.getPredictY(), 0);
+    final Point2D pos = p.getPos();
+    pos.setLocation(0, 0);
+    assertEquals(1, p.getX(), 0);
+    assertEquals(2, p.getY(), 0);
+    assertEquals(1, p.getPredictX(), 0);
+    assertEquals(2, p.getPredictY(), 0);
+    final Point2D pred = p.getPredict();
+    pred.setLocation(3, 4);
+    assertEquals(1, p.getX(), 0);
+    assertEquals(2, p.getY(), 0);
+    assertEquals(1, p.getPredictX(), 0);
+    assertEquals(2, p.getPredictY(), 0);
+  }
+
 }
