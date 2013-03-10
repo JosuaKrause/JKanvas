@@ -2,9 +2,12 @@ package jkanvas.animation;
 
 import java.awt.geom.Point2D;
 
+import jkanvas.util.VecUtil;
+
 /**
  * An animated position. Operations are delayed until the next frame of
- * animation is computed.
+ * animation is computed. All public facing methods do copy the {@link Point2D}
+ * objects to ensure that outside changes do not affect them afterwards.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
@@ -30,14 +33,7 @@ public class AnimatedPosition extends Position2D implements Animated {
 
     @Override
     protected Point2D interpolate(final Point2D from, final Point2D to, final double t) {
-      return new Point2D.Double(from.getX() * (1 - t) + to.getX() * t,
-          from.getY() * (1 - t) + to.getY() * t);
-    }
-
-    @Override
-    protected void doSet(final Point2D t) {
-      super.doSet(t);
-      onPositionUpdate(t.getX(), t.getY());
+      return VecUtil.interpolate(from, to, t);
     }
 
   }
@@ -62,6 +58,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @param pos The initial position.
    */
   public AnimatedPosition(final Point2D pos) {
+    // this ensures copying the position
     this(pos.getX(), pos.getY());
   }
 
@@ -86,17 +83,6 @@ public class AnimatedPosition extends Position2D implements Animated {
     return new Point2D.Double(x, y);
   }
 
-  /**
-   * Is called whenever the position changes.
-   * 
-   * @param x The new x position.
-   * @param y The new y position.
-   */
-  protected void onPositionUpdate(@SuppressWarnings("unused") final double x,
-      @SuppressWarnings("unused") final double y) {
-    // nothing to do
-  }
-
   @Override
   public Point2D getPos() {
     return copy(position.get());
@@ -104,11 +90,13 @@ public class AnimatedPosition extends Position2D implements Animated {
 
   @Override
   public double getX() {
+    // no copy needed
     return position.get().getX();
   }
 
   @Override
   public double getY() {
+    // no copy needed
     return position.get().getY();
   }
 
@@ -127,6 +115,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @return The x final position after the animation has finished.
    */
   public double getPredictX() {
+    // no copy needed
     return position.getPredict().getX();
   }
 
@@ -136,6 +125,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @return The final y position after the animation has finished.
    */
   public double getPredictY() {
+    // no copy needed
     return position.getPredict().getY();
   }
 
@@ -167,8 +157,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @param defaultTiming The default timing that is used when no animation is
    *          active.
    */
-  public void changeAnimationTo(final Point2D pos,
-      final AnimationTiming defaultTiming) {
+  public void changeAnimationTo(final Point2D pos, final AnimationTiming defaultTiming) {
     position.changeAnimationTo(copy(pos), defaultTiming);
   }
 

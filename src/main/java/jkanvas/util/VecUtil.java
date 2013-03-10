@@ -50,6 +50,19 @@ public final class VecUtil {
   }
 
   /**
+   * Linearly interpolates between two points.
+   * 
+   * @param from The starting point.
+   * @param to The ending point.
+   * @param t The interpolation progress starting at 0 and going to 1.
+   * @return The interpolated point.
+   */
+  public static Point2D interpolate(final Point2D from, final Point2D to, final double t) {
+    return new Point2D.Double(from.getX() * (1 - t) + to.getX() * t,
+        from.getY() * (1 - t) + to.getY() * t);
+  }
+
+  /**
    * Generates a vector that forms an angle of {@code 90} degrees with the given
    * vector.
    * 

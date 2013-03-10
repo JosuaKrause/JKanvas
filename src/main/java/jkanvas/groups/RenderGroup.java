@@ -16,12 +16,14 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.Animated;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.Animator;
+import jkanvas.animation.GenericAnimated;
 import jkanvas.animation.GroupAnimator;
 import jkanvas.animation.PairAnimator;
 import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.util.PaintUtil;
+import jkanvas.util.VecUtil;
 
 /**
  * A group of render passes. The layout of the render passes is determined by
@@ -38,7 +40,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * 
    * @author Joschi <josua.krause@googlemail.com>
    */
-  protected static final class RenderpassPosition extends AnimatedPosition {
+  protected static final class RenderpassPosition extends GenericAnimated<Point2D> {
 
     /** The render-pass. */
     public final AbstractRenderpass pass;
@@ -55,7 +57,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
      * @param pass The render pass.
      */
     public RenderpassPosition(final AbstractRenderpass pass) {
-      super(pass.getOffsetX(), pass.getOffsetY());
+      super(new Point2D.Double(pass.getOffsetX(), pass.getOffsetY()));
       bbox = pass.getBoundingBox();
       this.pass = pass;
       final Animated p = pass.getAnimated();
@@ -63,8 +65,14 @@ public abstract class RenderGroup extends AbstractRenderpass {
     }
 
     @Override
-    protected void onPositionUpdate(final double x, final double y) {
-      pass.setOffset(x, y);
+    protected Point2D interpolate(final Point2D from, final Point2D to, final double t) {
+      return VecUtil.interpolate(from, to, t);
+    }
+
+    @Override
+    protected void doSet(final Point2D t) {
+      super.doSet(t);
+      pass.setOffset(t.getX(), t.getY());
     }
 
     /**
@@ -101,8 +109,9 @@ public abstract class RenderGroup extends AbstractRenderpass {
     public Rectangle2D getPredictBBox() {
       final Rectangle2D rect = pass.getBoundingBox();
       if(rect == null) return null;
-      return new Rectangle2D.Double(rect.getX() + getPredictX(),
-          rect.getY() + getPredictY(), rect.getWidth(), rect.getHeight());
+      final Point2D pred = getPredict();
+      return new Rectangle2D.Double(rect.getX() + pred.getX(),
+          rect.getY() + pred.getY(), rect.getWidth(), rect.getHeight());
     }
 
   }
