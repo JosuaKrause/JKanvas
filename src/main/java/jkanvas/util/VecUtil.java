@@ -141,6 +141,33 @@ public final class VecUtil {
   }
 
   /**
+   * Returns the difference of both orientations.
+   * 
+   * @param o1 The first orientation which ranges from
+   *          {@code 0.0 - 2.0 * Math.PI}.
+   * @param o2 The second orientation which ranges from
+   *          {@code 0.0 - 2.0 * Math.PI}.
+   * @return The absolute difference between those orientations which ranges
+   *         from {@code 0.0 - Math.PI}.
+   */
+  public static double getOrientationDifference(final double o1, final double o2) {
+    final double diff = Math.abs(o1 - o2);
+    return diff > Math.PI ? 2.0 * Math.PI - diff : diff;
+  }
+
+  /**
+   * Returns the difference of the orientations of the given vectors.
+   * 
+   * @param v1 The first vector.
+   * @param v2 The second vector.
+   * @return The absolute difference between the orientations of the vectors
+   *         which ranges from {@code 0.0 - Math.PI}.
+   */
+  public static double getOrientationDifference(final Point2D v1, final Point2D v2) {
+    return getOrientationDifference(getOrientation(v1), getOrientation(v2));
+  }
+
+  /**
    * Rotates a vector around the origin. The angle is measured in radians and
    * positive angles are counter-clockwise.
    * 
