@@ -61,7 +61,7 @@ public class LinearGroup extends RenderGroup {
       this.alignmentFactor = alignmentFactor;
     }
 
-  }
+  } // Alignment
 
   /**
    * Creates a linear group.

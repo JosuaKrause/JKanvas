@@ -327,7 +327,7 @@ public abstract class GenericAnimated<T> implements Animated {
       this.timing = timing;
     }
 
-  }
+  } // PendingOp
 
   /**
    * Getter.

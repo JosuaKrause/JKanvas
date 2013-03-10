@@ -33,7 +33,7 @@ public class StringDrawer {
      */
     VERTICAL,
 
-  }
+  } // Orientation
 
   /** The point marks the left side of the text. */
   public static final int LEFT = 0;

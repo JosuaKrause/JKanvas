@@ -65,7 +65,7 @@ public class ZoomableUITest {
       refreshed = 0;
     }
 
-  }
+  } // DummyRefreshable
 
   /** Tests the capability of setting the view to an given rectangle. */
   @Test

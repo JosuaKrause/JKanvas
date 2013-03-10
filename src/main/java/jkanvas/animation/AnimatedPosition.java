@@ -36,7 +36,7 @@ public class AnimatedPosition extends Position2D implements Animated {
       return VecUtil.interpolate(from, to, t);
     }
 
-  }
+  } // Point2DAnimated
 
   /** The actual animated position. */
   private final Point2DAnimated position;

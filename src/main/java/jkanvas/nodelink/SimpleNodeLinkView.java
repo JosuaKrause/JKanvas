@@ -125,7 +125,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
       throw new UnsupportedOperationException();
     }
 
-  }
+  } // EdgeIterator
 
   @Override
   public Iterable<Integer> edgesFrom(final int node) {

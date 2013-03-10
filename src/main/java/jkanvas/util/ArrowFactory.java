@@ -31,7 +31,7 @@ public class ArrowFactory {
      */
     public abstract void drawTip(GeneralPath path, Point2D pos, Point2D dir);
 
-  }
+  } // TipType
 
   /** No tip. */
   public static final TipType NONE = new TipType() {
