@@ -1,7 +1,5 @@
 package jkanvas.animation;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -35,7 +33,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
       protected boolean step() {
         if(isStopped.get()) return false;
         final long currentTime = System.currentTimeMillis() - lastStop.get();
-        return doStep(currentTime);
+        return getAnimationList().doAnimate(currentTime);
       }
 
     };
@@ -79,66 +77,17 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   @Override
   public void addPass(final Renderpass r) {
     super.addPass(r);
-    final Animated a = r.getAnimated();
-    if(a != null) {
-      addAnimated(a);
-    }
-  }
-
-  @Override
-  public void removePass(final Renderpass r) {
-    super.removePass(r);
-    final Animated a = r.getAnimated();
-    if(a != null) {
-      removeAnimated(a);
-    }
-  }
-
-  /** All registered animated objects. */
-  private final List<Animated> animated = new ArrayList<>();
-
-  /**
-   * Adds an animatable object.
-   * 
-   * @param animate The object.
-   */
-  public void addAnimated(final Animated animate) {
-    synchronized(animator.getAnimationLock()) {
-      if(animated.contains(animate)) throw new IllegalArgumentException(
-          "animated object already added: " + animate);
-      animated.add(animate);
-    }
-  }
-
-  /**
-   * Removes an animatable object.
-   * 
-   * @param animate The object.
-   */
-  public void removeAnimated(final Animated animate) {
-    synchronized(animator.getAnimationLock()) {
-      animated.remove(animate);
-    }
-  }
-
-  /**
-   * Computes one step for all animated.
-   * 
-   * @param currentTime The current time in milliseconds.
-   * @return Whether a redraw is needed.
-   */
-  protected boolean doStep(final long currentTime) {
-    boolean needsRedraw = false;
-    // animation lock is already acquired
-    for(final Animated a : animated) {
-      needsRedraw = a.animate(currentTime) || needsRedraw;
-    }
-    return needsRedraw;
+    r.setAnimationList(getAnimationList());
   }
 
   @Override
   public Object getAnimationLock() {
     return animator.getAnimationLock();
+  }
+
+  @Override
+  public AnimationList getAnimationList() {
+    return animator.getAnimationList();
   }
 
   @Override

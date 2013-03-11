@@ -15,6 +15,7 @@ import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
 import jkanvas.animation.AnimatedPainter;
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.groups.LinearGroup;
 import jkanvas.groups.LinearGroup.Alignment;
@@ -105,6 +106,15 @@ public class RenderGroupAlignmentMain extends MatrixMain {
     // add group
     p.addPass(group);
     final Canvas c = new Canvas(p, true, 500, 500);
+    group.setOnFinish(new AnimationAction() {
+
+      @Override
+      public void animationFinished() {
+        c.setRestriction(p.getBoundingBox());
+        group.setOnFinish(null);
+      }
+
+    });
     // let p refresh the Canvas
     p.addRefreshable(c);
     // configure the Canvas
@@ -186,7 +196,6 @@ public class RenderGroupAlignmentMain extends MatrixMain {
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    c.setRestriction(p.getBoundingBox());
     c.reset();
     frame.setVisible(true);
   }

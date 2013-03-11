@@ -4,12 +4,13 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import jkanvas.KanvasContext;
-import jkanvas.animation.Animated;
 import jkanvas.animation.AnimatedPosition;
-import jkanvas.animation.GroupAnimator;
+import jkanvas.animation.AnimationList;
 import jkanvas.painter.AbstractRenderpass;
 
 /**
@@ -28,6 +29,9 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
 
   /** The view on the graph. */
   protected final NodeLinkView<T> view;
+
+  /** The animation list. */
+  private AnimationList list;
 
   /**
    * Creates a node link painter.
@@ -81,6 +85,21 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   }
 
   /**
+   * Signals that a garbage collection on animated nodes is needed. This flag is
+   * set when the drawing routine detects that more nodes are in the node set
+   * than in the node list. A garbage collection works as follows. At first all
+   * nodes from the node set are removed from the {@link AnimationList}. Then
+   * the list is automatically filled again during drawing.
+   */
+  private boolean gc;
+
+  /**
+   * The node set. This set is used to detect whether a garbage collection is
+   * necessary.
+   */
+  private final Set<T> lastNodes = new HashSet<>();
+
+  /**
    * Renders all nodes.
    * 
    * @param gfx The graphics context.
@@ -89,7 +108,24 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   private void renderNodes(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D visible = ctx.getVisibleCanvas();
     final NodeRealizer<T> nodeRealizer = getNodeRealizer();
+    if(gc) {
+      // clear all nodes from the animated list
+      // it will be reconstructed when drawing
+      for(final T node : lastNodes) {
+        list.removeAnimated(node);
+      }
+      lastNodes.clear();
+      gc = false;
+    }
+    int count = 0;
     for(final T node : view.nodes()) {
+      ++count;
+      // automatically adds new nodes to the animation list
+      // this needs only to be done in the draw method
+      if(!lastNodes.contains(node)) {
+        list.addAnimated(node);
+        lastNodes.add(node);
+      }
       final double x = node.getX();
       final double y = node.getY();
       final Shape nodeShape = nodeRealizer.createNodeShape(node, x, y);
@@ -99,6 +135,11 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
       final Graphics2D g = (Graphics2D) gfx.create();
       nodeRealizer.drawNode(g, node);
       g.dispose();
+    }
+    if(count != lastNodes.size()) {
+      // we got more nodes than drawn
+      // next draw is a garbage collection
+      gc = true;
     }
   }
 
@@ -148,24 +189,9 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
     return cur;
   }
 
-  /** The group animator for the nodes. */
-  private final GroupAnimator<T> animator = new GroupAnimator<T>() {
-
-    @Override
-    protected Iterable<T> members() {
-      return view.nodes();
-    }
-
-    @Override
-    protected Animated animated(final T member) {
-      return member;
-    }
-
-  };
-
   @Override
-  public Animated getAnimated() {
-    return animator;
+  public void setAnimationList(final AnimationList list) {
+    this.list = list;
   }
 
 }

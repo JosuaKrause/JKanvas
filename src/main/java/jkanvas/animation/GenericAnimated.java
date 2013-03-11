@@ -279,13 +279,8 @@ public abstract class GenericAnimated<T> implements Animated {
     } while(op != null);
   }
 
-  // private long lastTime;
-
   @Override
   public boolean animate(final long currentTime) {
-    // checks if an animated object has been added multiple times
-    // if(currentTime == lastTime) throw new AssertionError();
-    // lastTime = currentTime;
     dispatchAll(currentTime);
     return clearChangeFlag();
   }
