@@ -116,10 +116,10 @@ public class LinearGroup extends RenderGroup {
       final double v = horizontal ? bbox.getHeight() : bbox.getWidth();
       final double opos = (max - v) * alignmentFactor;
       // TODO FIXME where to put the bounding
-      // box position (ie getX(), getY()) consideration?
+      // box position (ie getX(), getY()) consideration? see #13
       final Point2D dest = new Point2D.Double(
-          (horizontal ? pos : opos) - bbox.getX(),
-          (horizontal ? opos : pos) - bbox.getY());
+          (horizontal ? pos : opos),
+          (horizontal ? opos : pos));
       p.startAnimationTo(dest, timing, i == 0 ? onFinish : null);
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
     }

@@ -2,6 +2,8 @@ package jkanvas.animation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import jkanvas.Refreshable;
 import jkanvas.painter.Renderpass;
@@ -17,17 +19,61 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   /** The internal animator. */
   private AbstractAnimator animator;
 
+  /** Whether the animation is stopped for now. */
+  private AtomicBoolean isStopped;
+
+  /** The time in milli-seconds when the last stop occured. */
+  private AtomicLong lastStop;
+
   /** Creates an animated painter. */
   public AnimatedPainter() {
+    final AtomicBoolean isStopped = new AtomicBoolean();
+    final AtomicLong lastStop = new AtomicLong(System.currentTimeMillis());
     animator = new AbstractAnimator() {
 
       @Override
       protected boolean step() {
-        final long currentTime = System.currentTimeMillis();
+        if(isStopped.get()) return false;
+        final long currentTime = System.currentTimeMillis() - lastStop.get();
         return doStep(currentTime);
       }
 
     };
+    this.isStopped = isStopped;
+    this.lastStop = lastStop;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the animation is currently paused.
+   */
+  public boolean isStopped() {
+    return isStopped.get();
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param stopped Stops or resumes the animation.
+   */
+  public void setStopped(final boolean stopped) {
+    synchronized(animator.getAnimationLock()) {
+      final long now = System.currentTimeMillis();
+      if(!stopped) {
+        // nLast = last' + nT
+        lastStop.addAndGet(now);
+      } else {
+        // last' = last - T
+        lastStop.addAndGet(-now);
+      }
+      isStopped.set(stopped);
+      if(!stopped) {
+        animator.forceNextFrame();
+      } else {
+        animator.quickRefresh();
+      }
+    }
   }
 
   @Override

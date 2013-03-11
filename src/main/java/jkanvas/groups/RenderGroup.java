@@ -495,7 +495,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   @Override
-  public final boolean click(final Point2D position, final MouseEvent e) {
+  public boolean click(final Point2D position, final MouseEvent e) {
     if(RenderpassPainter.click(nlFront, position, e)) return true;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
@@ -513,7 +513,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   @Override
-  public final String getTooltip(final Point2D position) {
+  public String getTooltip(final Point2D position) {
     final String tt = RenderpassPainter.getTooltip(nlFront, position);
     if(tt != null) return tt;
     for(final RenderpassPosition p : reverseArray(members())) {
@@ -533,7 +533,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   @Override
-  public final boolean moveMouse(final Point2D cur) {
+  public boolean moveMouse(final Point2D cur) {
     if(RenderpassPainter.moveMouse(nlFront, cur)) return true;
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
@@ -548,6 +548,29 @@ public abstract class RenderGroup extends AbstractRenderpass {
       if(r.moveMouse(pos)) return true;
     }
     return RenderpassPainter.moveMouse(nlBack, cur);
+  }
+
+  /**
+   * Picks a layouted render pass.
+   * 
+   * @param position The position.
+   * @return The render pass at the given position or <code>null</code> if there
+   *         is none.
+   */
+  protected Renderpass pickLayouted(final Point2D position) {
+    for(final RenderpassPosition p : reverseArray(members())) {
+      final Renderpass r = p.pass;
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = r.getBoundingBox();
+      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
+      if(bbox != null && !bbox.contains(pos)) {
+        continue;
+      }
+      return r;
+    }
+    return null;
   }
 
   /** The render-pass currently responsible for dragging. */
@@ -645,14 +668,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
       } else {
         res.add(bbox);
       }
-      if(p.inAnimation()) {
-        res.add(p.getPredictBBox());
-      }
     }
     if(change) {
       invalidate();
     }
-    return res;
+    return res == null ? new Rectangle2D.Double() : res;
   }
 
 }

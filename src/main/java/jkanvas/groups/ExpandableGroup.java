@@ -54,13 +54,13 @@ public class ExpandableGroup extends LinearGroup {
         continue;
       }
       // TODO FIXME where to put the bounding box
-      // position (ie getX(), getY()) consideration?
+      // position (ie getX(), getY()) consideration? see #13
       final Point2D dest = new Point2D.Double(
-          (w - bbox.getWidth()) * 0.5 - bbox.getX(),
-          (h - bbox.getHeight()) * 0.5 - bbox.getY());
+          (w - bbox.getWidth()) * 0.5,
+          (h - bbox.getHeight()) * 0.5);
       if(!m.pass.isVisible()) {
         m.set(dest);
-      } else {
+      } else if(!m.getPredict().equals(dest)) {
         m.startAnimationTo(dest, timing, first ? getOnFinish() : null);
         first = false;
       }
