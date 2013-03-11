@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.painter.Renderpass;
@@ -20,6 +21,9 @@ public class LinearGroup extends RenderGroup {
 
   /** The animation timing. */
   private AnimationTiming timing;
+
+  /** The action that is executed when an animation ends. */
+  private AnimationAction onFinish;
 
   /** The space between render-passes. */
   private double space;
@@ -111,12 +115,12 @@ public class LinearGroup extends RenderGroup {
       }
       final double v = horizontal ? bbox.getHeight() : bbox.getWidth();
       final double opos = (max - v) * alignmentFactor;
-      // TODO FIXME where to put the bounding box position (ie getX(), getY())
-      // consideration?
+      // TODO FIXME where to put the bounding
+      // box position (ie getX(), getY()) consideration? see #13
       final Point2D dest = new Point2D.Double(
-          (horizontal ? pos : opos) - bbox.getX(),
-          (horizontal ? opos : pos) - bbox.getY());
-      p.startAnimationTo(dest, timing);
+          (horizontal ? pos : opos),
+          (horizontal ? opos : pos));
+      p.startAnimationTo(dest, timing, i == 0 ? onFinish : null);
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
     }
   }
@@ -128,7 +132,6 @@ public class LinearGroup extends RenderGroup {
    */
   public void setTiming(final AnimationTiming timing) {
     this.timing = Objects.requireNonNull(timing);
-    invalidate();
   }
 
   /**
@@ -138,6 +141,24 @@ public class LinearGroup extends RenderGroup {
    */
   public AnimationTiming getTiming() {
     return timing;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param onFinish Sets the action that is executed when the animation ends.
+   */
+  public void setOnFinish(final AnimationAction onFinish) {
+    this.onFinish = onFinish;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The action that is executed when the animation ends.
+   */
+  public AnimationAction getOnFinish() {
+    return onFinish;
   }
 
   /**

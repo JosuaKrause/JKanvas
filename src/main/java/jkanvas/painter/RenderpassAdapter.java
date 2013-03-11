@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
-import jkanvas.animation.Animated;
+import jkanvas.animation.AnimationList;
 
 /**
  * An adapter for render-passes.
@@ -73,9 +73,8 @@ public abstract class RenderpassAdapter implements Renderpass {
   }
 
   @Override
-  public Animated getAnimated() {
-    // no associated animated object
-    return null;
+  public void setAnimationList(final AnimationList list) {
+    // we do not need the animation list
   }
 
   @Override

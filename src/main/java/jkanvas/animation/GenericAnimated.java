@@ -37,6 +37,11 @@ public abstract class GenericAnimated<T> implements Animated {
   /** The end time. */
   private long endTime;
 
+  /** The action that is executed when an animation ends normally. */
+  // TODO: write action test cases - corner cases: animation ends when new
+  // starts etc.
+  private AnimationAction onFinish;
+
   /**
    * Creates an animated value.
    * 
@@ -128,13 +133,27 @@ public abstract class GenericAnimated<T> implements Animated {
    * @param timing The animation timing.
    */
   public void startAnimationTo(final T t, final AnimationTiming timing) {
+    startAnimationTo(t, timing, null);
+  }
+
+  /**
+   * Starts an animation to the given value.
+   * 
+   * @param t The end value.
+   * @param timing The animation timing.
+   * @param onFinish An action that is executed when the animation ends
+   *          normally. This may be <code>null</code> when no action is
+   *          required.
+   */
+  public void startAnimationTo(
+      final T t, final AnimationTiming timing, final AnimationAction onFinish) {
     Objects.requireNonNull(timing);
     if(timing.duration <= 0) {
       set(t);
       return;
     }
     Objects.requireNonNull(t);
-    pendingOperations.add(new PendingOp<>(t, timing, true));
+    pendingOperations.add(new PendingOp<>(t, timing, onFinish, true));
     pred = t;
   }
 
@@ -167,20 +186,38 @@ public abstract class GenericAnimated<T> implements Animated {
 
   /**
    * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values.
+   * active a new one is created with the given default values. Actions to
+   * execute when the animation ends are always overwritten.
    * 
    * @param t The new destination value.
    * @param defaultTiming The default timing that is used when no animation is
    *          active.
    */
   public void changeAnimationTo(final T t, final AnimationTiming defaultTiming) {
+    changeAnimationTo(t, defaultTiming, null);
+  }
+
+  /**
+   * Sets the current animation to a new destination. If no current animation is
+   * active a new one is created with the given default values. Actions to
+   * execute when the animation ends are always overwritten.
+   * 
+   * @param t The new destination value.
+   * @param defaultTiming The default timing that is used when no animation is
+   *          active.
+   * @param onFinish An action that is executed when the animation ends
+   *          normally. This may be <code>null</code> when no action is
+   *          required.
+   */
+  public void changeAnimationTo(
+      final T t, final AnimationTiming defaultTiming, final AnimationAction onFinish) {
     Objects.requireNonNull(defaultTiming);
     if(!inAnimation() && defaultTiming.duration <= 0) {
       set(t);
       return;
     }
     Objects.requireNonNull(t);
-    pendingOperations.add(new PendingOp<>(t, defaultTiming, false));
+    pendingOperations.add(new PendingOp<>(t, defaultTiming, onFinish, false));
     pred = t;
   }
 
@@ -192,7 +229,10 @@ public abstract class GenericAnimated<T> implements Animated {
     pred = null;
   }
 
-  /** Aborts the current animation and keeps the current value. */
+  /**
+   * Aborts the current animation and keeps the current value. Actions to
+   * execute when the animation ends will be cleared.
+   */
   public void clearAnimation() {
     pendingOperations.add(new PendingOp<T>());
     doClearAnimation();
@@ -231,6 +271,10 @@ public abstract class GenericAnimated<T> implements Animated {
         default:
           throw new InternalError();
       }
+      // overwrite finish action after calculating positions
+      // otherwise the new finish action would be called when a previous
+      // animation terminates normally during this call
+      onFinish = op.onFinish;
       op = pendingOperations.poll();
     } while(op != null);
   }
@@ -255,6 +299,11 @@ public abstract class GenericAnimated<T> implements Animated {
       end = null;
       pred = null;
       pol = null;
+      if(onFinish != null) {
+        final AnimationAction of = onFinish;
+        onFinish = null;
+        of.animationFinished();
+      }
       return;
     }
     final double t = ((double) currentTime - startTime) / ((double) endTime - startTime);
@@ -294,11 +343,15 @@ public abstract class GenericAnimated<T> implements Animated {
     /** The timing for the animation. */
     public final AnimationTiming timing;
 
+    /** The associated action. */
+    public final AnimationAction onFinish;
+
     /** Creates an animation clearing operation. */
     public PendingOp() {
       operation = OP_CLEAR;
       destination = null;
       timing = null;
+      onFinish = null;
     }
 
     /**
@@ -310,6 +363,7 @@ public abstract class GenericAnimated<T> implements Animated {
       operation = OP_SET;
       destination = val;
       timing = null;
+      onFinish = null;
     }
 
     /**
@@ -317,14 +371,16 @@ public abstract class GenericAnimated<T> implements Animated {
      * 
      * @param destination The destination of the animation.
      * @param timing The timing.
+     * @param onFinish The action that will be executed when the animation ends.
      * @param start Whether this operation starts the animation or changes the
      *          current animation.
      */
-    public PendingOp(final T destination,
-        final AnimationTiming timing, final boolean start) {
+    public PendingOp(final T destination, final AnimationTiming timing,
+        final AnimationAction onFinish, final boolean start) {
       operation = start ? OP_START : OP_CHANGE;
       this.destination = destination;
       this.timing = timing;
+      this.onFinish = onFinish;
     }
 
   } // PendingOp

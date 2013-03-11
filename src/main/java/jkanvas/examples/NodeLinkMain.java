@@ -103,6 +103,13 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   }
 
   @Override
+  public String getTooltip(final Point2D p) {
+    final AnimatedPosition n = pick(p);
+    if(n == null) return null;
+    return "x: " + n.getX() + " y: " + n.getY();
+  }
+
+  @Override
   public boolean acceptDrag(final Point2D p, final MouseEvent e) {
     if(!SwingUtilities.isLeftMouseButton(e)) return false;
     final AnimatedPosition n = pick(p);
@@ -188,6 +195,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
+    // Canvas.DEBUG_BBOX = true;
     final int w = 800;
     final int h = 600;
     final int nodes = 20;
@@ -244,6 +252,20 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
+    final SimpleTextHUD pause = new SimpleTextHUD(TextHUD.LEFT, TextHUD.TOP);
+    pause.addLine("paused");
+    pause.setVisible(false);
+    p.addHUDPass(pause);
+    c.addAction(KeyEvent.VK_T, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        final boolean b = !p.isStopped();
+        pause.setVisible(b);
+        p.setStopped(b);
+      }
+
+    });
     c.addAction(KeyEvent.VK_R, new AbstractAction() {
 
       @Override
@@ -288,6 +310,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
+    info.addLine("T: Pause animation");
     info.addLine("F: Toggle Framerate Display");
     info.addLine("P: Take Photo");
     info.addLine("H: Toggle Help");

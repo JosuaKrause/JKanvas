@@ -35,4 +35,11 @@ public interface Animator extends RefreshManager {
    */
   Object getAnimationLock();
 
+  /**
+   * Getter.
+   * 
+   * @return The animation list.
+   */
+  AnimationList getAnimationList();
+
 }

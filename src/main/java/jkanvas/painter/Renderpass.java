@@ -3,7 +3,7 @@ package jkanvas.painter;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasInteraction;
-import jkanvas.animation.Animated;
+import jkanvas.animation.AnimationList;
 
 /**
  * Render passes can be used to dynamically change what is rendered on a canvas
@@ -44,17 +44,12 @@ public interface Renderpass extends KanvasInteraction {
   Rectangle2D getBoundingBox();
 
   /**
-   * Returns the animated object associated with this render pass. A render pass
-   * is allowed to have up to one animated object associated. Return a
-   * {@link jkanvas.animation.GroupAnimator} for more animated objects. The
-   * associated object automatically gets registered and unregistered when this
-   * render pass is added or removed to a
-   * {@link jkanvas.animation.AnimatedPainter}. When this method returns an
-   * object this object must always be the same over the life-time of the render
-   * pass.
+   * Setter.
    * 
-   * @return An animated object or <code>null</code>.
+   * @param list Sets the animation list so that the render pass can add and
+   *          remove animated objects. If the render pass has nothing to add to
+   *          the list this method can be ignored.
    */
-  Animated getAnimated();
+  void setAnimationList(AnimationList list);
 
 }

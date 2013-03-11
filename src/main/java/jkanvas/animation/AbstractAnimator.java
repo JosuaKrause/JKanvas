@@ -19,6 +19,9 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   /** The animator thread. */
   private final Thread animator;
 
+  /** The animation list containing all animated objects. */
+  private final AnimationList list;
+
   /** Whether this object is already disposed or can still be used. */
   private volatile boolean disposed;
 
@@ -55,6 +58,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
     };
     animator.setDaemon(true);
     animator.start();
+    list = new AnimationList(getAnimationLock());
   }
 
   /**
@@ -79,6 +83,11 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   @Override
   public Object getAnimationLock() {
     return animator;
+  }
+
+  @Override
+  public AnimationList getAnimationList() {
+    return list;
   }
 
   /**
