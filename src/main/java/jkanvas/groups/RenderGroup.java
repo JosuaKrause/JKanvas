@@ -159,6 +159,15 @@ public abstract class RenderGroup extends AbstractRenderpass {
     redoLayout = true;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The animator for this render group.
+   */
+  public Animator getAnimator() {
+    return animator;
+  }
+
   @Override
   public Animated getAnimated() {
     return groupAnimator;
@@ -614,7 +623,9 @@ public abstract class RenderGroup extends AbstractRenderpass {
     boolean change = false;
     Rectangle2D res = RenderpassPainter.getBoundingBox(nlFront);
     final Rectangle2D other = RenderpassPainter.getBoundingBox(nlBack);
-    if(other != null) {
+    if(res == null) {
+      res = other;
+    } else if(other != null) {
       res.add(other);
     }
     for(final RenderpassPosition p : members) {
