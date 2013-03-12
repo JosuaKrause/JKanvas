@@ -1,7 +1,9 @@
 package jkanvas.painter;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
@@ -13,11 +15,11 @@ import jkanvas.KanvasContext;
 import jkanvas.util.StringDrawer;
 
 /**
- * Shows borders of render-passes. Optional titles can be assigned.
+ * Shows borders of render passes. Optional titles can be assigned.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class BorderRenderpass extends RenderpassAdapter {
+public class BorderRenderpass extends HUDRenderpassAdapter {
 
   /** All render-passes to draw borders. */
   private final Map<Renderpass, String> borders = new HashMap<>();
@@ -43,25 +45,28 @@ public class BorderRenderpass extends RenderpassAdapter {
   }
 
   @Override
-  public void draw(final Graphics2D g, final KanvasContext ctx) {
+  public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
+    g.setStroke(new BasicStroke((float) ctx.toComponentLength(2)));
+    final AffineTransform at = ctx.toComponentTransformation();
     for(final Entry<Renderpass, String> e : borders.entrySet()) {
       final Renderpass r = e.getKey();
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = RenderpassPainter.getPassBoundingBox(r);
+      final Rectangle2D bbox = RenderpassPainter.getTopLevelBounds(r);
       if(bbox == null) {
         continue;
       }
       g.setColor(border);
-      g.draw(bbox);
+      final Rectangle2D box = at.createTransformedShape(bbox).getBounds2D();
+      g.draw(box);
       final String title = e.getValue();
       if(title == null) {
         continue;
       }
       g.setColor(text);
       StringDrawer.drawText(g, title,
-          new Point2D.Double(bbox.getCenterX(), bbox.getMaxY()),
+          new Point2D.Double(box.getCenterX(), box.getMaxY()),
           StringDrawer.CENTER_H, StringDrawer.TOP);
     }
   }

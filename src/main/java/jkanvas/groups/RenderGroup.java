@@ -175,6 +175,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
     // nothing to do
   }
 
+  private void addedRenderpassIntern(final RenderpassPosition p) {
+    p.pass.setParent(this);
+    addedRenderpass(p);
+  }
+
   /**
    * This method is called after a render pass is removed.
    * 
@@ -182,6 +187,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
    */
   protected void removedRenderpass(@SuppressWarnings("unused") final RenderpassPosition _) {
     // nothing to do
+  }
+
+  private void removedRenderpassIntern(final RenderpassPosition p) {
+    removedRenderpass(p);
+    p.pass.setParent(null);
   }
 
   /**
@@ -193,7 +203,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
     synchronized(animator.getAnimationLock()) {
       final RenderpassPosition p = convert(pass);
       members.add(p);
-      addedRenderpass(p);
+      addedRenderpassIntern(p);
       invalidate();
     }
   }
@@ -208,7 +218,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
     synchronized(animator.getAnimationLock()) {
       final RenderpassPosition p = convert(pass);
       members.add(index, p);
-      addedRenderpass(p);
+      addedRenderpassIntern(p);
       invalidate();
     }
   }
@@ -236,7 +246,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   public void removeRenderpass(final int index) {
     synchronized(animator.getAnimationLock()) {
       final RenderpassPosition p = members.remove(index);
-      removedRenderpass(p);
+      removedRenderpassIntern(p);
       invalidate();
     }
   }
@@ -247,7 +257,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
       final RenderpassPosition[] rps = members();
       members.clear();
       for(final RenderpassPosition p : rps) {
-        removedRenderpass(p);
+        removedRenderpassIntern(p);
       }
       invalidate();
     }
@@ -282,8 +292,8 @@ public abstract class RenderGroup extends AbstractRenderpass {
     synchronized(animator.getAnimationLock()) {
       final RenderpassPosition p = convert(pass);
       final RenderpassPosition o = members.set(index, p);
-      removedRenderpass(o);
-      addedRenderpass(p);
+      removedRenderpassIntern(o);
+      addedRenderpassIntern(p);
       invalidate();
     }
   }
@@ -654,6 +664,26 @@ public abstract class RenderGroup extends AbstractRenderpass {
       invalidate();
     }
     return res == null ? new Rectangle2D.Double() : res;
+  }
+
+  public Rectangle2D getPredictBoundingBox() {
+    Rectangle2D box = getBoundingBox();
+    for(final RenderpassPosition p : members) {
+      if(!p.pass.isVisible() || !p.inAnimation()) {
+        continue;
+      }
+      final Rectangle2D bbox = p.getPredictBBox();
+      if(bbox == null) {
+        continue;
+      }
+      if(box == null) {
+        box = new Rectangle2D.Double(bbox.getX(), bbox.getY(),
+            bbox.getWidth(), bbox.getHeight());
+      } else {
+        box.add(bbox);
+      }
+    }
+    return box;
   }
 
 }

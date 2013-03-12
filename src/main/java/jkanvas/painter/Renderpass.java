@@ -52,4 +52,6 @@ public interface Renderpass extends KanvasInteraction {
    */
   void setAnimationList(AnimationList list);
 
+  Renderpass getParent();
+
 }

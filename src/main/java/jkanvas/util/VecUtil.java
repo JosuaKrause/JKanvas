@@ -3,6 +3,7 @@ package jkanvas.util;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * A small vector utility class.
@@ -60,6 +61,24 @@ public final class VecUtil {
   public static Point2D interpolate(final Point2D from, final Point2D to, final double t) {
     return new Point2D.Double(from.getX() * (1 - t) + to.getX() * t,
         from.getY() * (1 - t) + to.getY() * t);
+  }
+
+  /**
+   * Linearly interpolates between two rectangles.
+   * 
+   * @param from The starting rectangle.
+   * @param to The ending rectangle.
+   * @param t The interpolation progress starting at 0 and going to 1.
+   * @return The interpolated rectangle.
+   */
+  public static Rectangle2D interpolate(
+      final Rectangle2D from, final Rectangle2D to, final double t) {
+    final double f = 1 - t;
+    return new Rectangle2D.Double(
+        from.getX() * f + to.getX() * t,
+        from.getY() * f + to.getY() * t,
+        from.getWidth() * f + to.getWidth() * t,
+        from.getHeight() * f + to.getHeight() * t);
   }
 
   /**

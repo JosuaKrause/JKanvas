@@ -8,11 +8,12 @@ import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 /**
- * A zoom-able user interface can be translated and zooming can be performed.
+ * The implementation of a zoom-able user interface that can be translated.
+ * Zooming can also be performed.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public final class ZoomableUI {
+public final class ZoomableUI implements ZoomableView {
 
   /** The {@link Refreshable} to be notified when the transformation changes. */
   private final Refreshable refreshee;
@@ -46,12 +47,7 @@ public final class ZoomableUI {
     this.restriction = restriction;
   }
 
-  /**
-   * Setter.
-   * 
-   * @param x The x offset.
-   * @param y The y offset.
-   */
+  @Override
   public void setOffset(final double x, final double y) {
     if(!isRestricted()) {
       offX = x;
@@ -109,26 +105,13 @@ public final class ZoomableUI {
     return true;
   }
 
-  /**
-   * Zooms to the on screen (in component coordinates) position.
-   * 
-   * @param x The x coordinate.
-   * @param y The y coordinate.
-   * @param zooming The amount of zooming.
-   */
+  @Override
   public void zoomTicks(final double x, final double y, final int zooming) {
     final double factor = Math.pow(1.1, -zooming);
     zoomTo(x, y, factor);
   }
 
-  /**
-   * Zooms to the on screen (in component coordinates) position.
-   * 
-   * @param x The x coordinate.
-   * @param y The y coordinate.
-   * @param factor The factor to alter the zoom level. Must be
-   *          <code>&gt;0</code>.
-   */
+  @Override
   public void zoomTo(final double x, final double y, final double factor) {
     double f = factor;
     double newZoom = zoom * factor;
@@ -164,41 +147,19 @@ public final class ZoomableUI {
     setOffset((offX - x) * f + x, (offY - y) * f + y);
   }
 
-  /**
-   * Zooms towards the center of the given rectangle.
-   * 
-   * @param factor The zoom factor.
-   * @param box The rectangle to zoom to in component coordinates.
-   */
+  @Override
   public void zoom(final double factor, final RectangularShape box) {
     zoomTo(box.getCenterX(), box.getCenterY(), factor);
   }
 
-  /**
-   * Resets the view such that the origin of canvas coordinates lies in the
-   * center of the given rectangle in component coordinates.
-   * 
-   * @param screen The screen rectangle in component coordinates.
-   */
+  @Override
   public void resetView(final RectangularShape screen) {
     zoom = 1;
     // does repaint
     setOffset(screen.getCenterX(), screen.getCenterY());
   }
 
-  /**
-   * Transforms the view such that the rectangle <code>view</code> in canvas
-   * coordinates matches the rectangle <code>screen</code> in component
-   * coordinates. An additional margin can be added.
-   * 
-   * @param view The rectangle in canvas coordinates.
-   * @param screen The rectangle in component coordinates.
-   * @param margin The margin.
-   * @param fit If set to <code>true</code> the <code>view</code> will be
-   *          completely visible. When set to <code>false</code> as much as
-   *          possible from <code>view</code> will be visible without showing
-   *          anything else.
-   */
+  @Override
   public void showRectangle(final RectangularShape view, final RectangularShape screen,
       final double margin, final boolean fit) {
     final int nw = (int) (screen.getWidth() - 2 * margin);
@@ -212,201 +173,107 @@ public final class ZoomableUI {
     zoom(factor, screen);
   }
 
-  /**
-   * Getter.
-   * 
-   * @return the x offset
-   */
+  @Override
   public double getOffsetX() {
     return offX;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return the y offset
-   */
+  @Override
   public double getOffsetY() {
     return offY;
   }
 
-  /**
-   * Transforms the given graphics object.
-   * 
-   * @param g The graphics object.
-   */
+  @Override
   public void transform(final Graphics2D g) {
     g.translate(offX, offY);
     g.scale(zoom, zoom);
   }
 
-  /**
-   * Transforms the given affine transformation.
-   * 
-   * @param at The affine transformation.
-   */
+  @Override
   public void transform(final AffineTransform at) {
     at.translate(offX, offY);
     at.scale(zoom, zoom);
   }
 
-  /**
-   * Transforms the given affine transformation back.
-   * 
-   * @param at The affine transformation.
-   */
+  @Override
   public void transformBack(final AffineTransform at) {
     at.scale(1 / zoom, 1 / zoom);
     at.translate(-offX, -offY);
   }
 
-  /**
-   * Calculates the real coordinate of the given input in component coordinates.
-   * 
-   * @param s The coordinate in component coordinates. Due to uniform zooming
-   *          both horizontal and vertical coordinates can be converted.
-   * @return In real coordinates.
-   */
+  @Override
   public double inReal(final double s) {
     return s / zoom;
   }
 
-  /**
-   * Calculates the component coordinate of the given input in real coordinates.
-   * 
-   * @param s The coordinate in real coordinates. Due to uniform zooming both
-   *          horizontal and vertical coordinates can be converted.
-   * @return In screen coordinates.
-   */
+  @Override
   public double fromReal(final double s) {
     return s * zoom;
   }
 
-  /**
-   * Calculates the real coordinate from the components coordinate.
-   * 
-   * @param x The components x coordinate.
-   * @return The real coordinate.
-   */
+  @Override
   public double getXForScreen(final double x) {
     return inReal(x - offX);
   }
 
-  /**
-   * Calculates the real coordinate from the components coordinate.
-   * 
-   * @param y The components y coordinate.
-   * @return The real coordinate.
-   */
+  @Override
   public double getYForScreen(final double y) {
     return inReal(y - offY);
   }
 
-  /**
-   * Calculates the component coordinate from the real coordinate.
-   * 
-   * @param x The real x coordinate.
-   * @return The component coordinate.
-   */
+  @Override
   public double getXFromCanvas(final double x) {
     return fromReal(x) + offX;
   }
 
-  /**
-   * Calculates the component coordinate from the real coordinate.
-   * 
-   * @param y The real y coordinate.
-   * @return The component coordinate.
-   */
+  @Override
   public double getYFromCanvas(final double y) {
     return fromReal(y) + offY;
   }
 
-  /**
-   * Converts a point in component coordinates to canvas coordinates.
-   * 
-   * @param p The point.
-   * @return The point in the canvas coordinates.
-   */
+  @Override
   public Point2D getForScreen(final Point2D p) {
     return new Point2D.Double(getXForScreen(p.getX()), getYForScreen(p.getY()));
   }
 
-  /**
-   * Converts a rectangle in component coordinates to canvas coordinates.
-   * 
-   * @param rect The rectangle.
-   * @return The rectangle in canvas coordinates.
-   */
+  @Override
   public Rectangle2D toCanvas(final RectangularShape rect) {
     return new Rectangle2D.Double(
         getXForScreen(rect.getMinX()), getYForScreen(rect.getMinY()),
         inReal(rect.getWidth()), inReal(rect.getHeight()));
   }
 
-  /**
-   * Getter.
-   * 
-   * @return Whether a restriction is set.
-   */
+  @Override
   public boolean isRestricted() {
     return restriction != null;
   }
 
-  /**
-   * Returns the minimal zoom value.
-   * 
-   * @return The minimal zoom value. If the value is non-positive then no
-   *         restrictions are made.
-   */
+  @Override
   public double getMinZoom() {
     return minZoom;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return Whether zoom has a minimum.
-   */
+  @Override
   public boolean hasMinZoom() {
     return minZoom > 0;
   }
 
-  /**
-   * Sets the current minimal zoom value.
-   * 
-   * @param zoom The new minimal zoom value. Non-positive values indicate no
-   *          restriction.
-   */
+  @Override
   public void setMinZoom(final double zoom) {
     minZoom = zoom;
   }
 
-  /**
-   * Returns the maximal zoom value.
-   * 
-   * @return The maximal zoom value. If the value is non-positive then no
-   *         restrictions are made.
-   */
+  @Override
   public double getMaxZoom() {
     return maxZoom;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return Whether zoom has a maximum.
-   */
+  @Override
   public boolean hasMaxZoom() {
     return maxZoom > 0;
   }
 
-  /**
-   * Sets the current maximal zoom value.
-   * 
-   * @param zoom The new maximal zoom value. Non-positive values indicate no
-   *          restriction.
-   */
+  @Override
   public void setMaxZoom(final double zoom) {
     maxZoom = zoom;
   }

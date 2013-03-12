@@ -40,6 +40,9 @@ public class ExpandableGroup extends LinearGroup {
     double w = 0;
     double h = 0;
     for(final RenderpassPosition m : members) {
+      if(!m.pass.isVisible()) {
+        continue;
+      }
       final Rectangle2D bbox = m.getPredictBBox();
       if(bbox == null) {
         continue;

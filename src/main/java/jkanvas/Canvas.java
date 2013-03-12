@@ -38,7 +38,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public static boolean DEBUG_BBOX;
 
   /** The underlying zoom-able user interface. */
-  protected final ZoomableUI zui;
+  protected final CameraZUI zui;
 
   /** The painter. */
   protected KanvasPainter painter;
@@ -69,7 +69,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       final int width, final int height) {
     setPreferredSize(new Dimension(width, height));
     painter = Objects.requireNonNull(p);
-    zui = new ZoomableUI(this, restricted ? this : null);
+    zui = new CameraZUI(this, restricted);
     final MouseAdapter mouse = new MouseInteraction() {
 
       /** Whether the drag is on the HUD. */
@@ -434,7 +434,13 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @param animator The animator or <code>null</code> if no animation is used.
    */
   public void setAnimator(final Animator animator) {
+    if(this.animator != null) {
+      this.animator.getAnimationList().removeAnimated(zui);
+    }
     this.animator = animator;
+    if(animator != null) {
+      animator.getAnimationList().addAnimated(zui);
+    }
   }
 
   /**
@@ -444,6 +450,10 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public Animator getAnimator() {
     return animator;
+  }
+
+  public Camera getCamera() {
+    return zui;
   }
 
   /**
@@ -499,10 +509,20 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @param bbox The rectangle that is visible.
    */
   public void reset(final RectangularShape bbox) {
+    reset(bbox, getMargin());
+  }
+
+  /**
+   * Resets the viewport to show exactly the given rectangle expanded by the
+   * margin.
+   * 
+   * @param bbox The rectangle that is visible.
+   * @param margin The margin.
+   */
+  public void reset(final RectangularShape bbox, final double margin) {
     if(bbox == null) {
       reset();
     } else {
-      final double margin = getMargin();
       final Rectangle2D rect = getVisibleRect();
       zui.showRectangle(bbox, rect, margin, true);
     }
