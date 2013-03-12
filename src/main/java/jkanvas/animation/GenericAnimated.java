@@ -39,7 +39,7 @@ public abstract class GenericAnimated<T> implements Animated {
 
   /** The action that is executed when an animation ends normally. */
   // TODO: write action test cases - corner cases: animation ends when new
-  // starts etc.
+  // starts etc. #14
   private AnimationAction onFinish;
 
   /**

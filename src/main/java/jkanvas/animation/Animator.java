@@ -29,9 +29,9 @@ public interface Animator extends RefreshManager {
    * 
    * @return The animation lock. This lock is always held when an animation is
    *         processing. In order to avoid concurrent positions during drawing
-   *         {@link jkanvas.Canvas#setPaintLock(Object)} should be called with
-   *         this object. You can also use this lock to avoid concurrent
-   *         modifications on animation lists.
+   *         {@link jkanvas.Canvas#setAnimator(Animator)} should be used. The
+   *         {@link AnimationList} also uses this lock to avoid concurrent
+   *         modification of animated objects.
    */
   Object getAnimationLock();
 

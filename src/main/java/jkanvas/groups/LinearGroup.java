@@ -31,6 +31,8 @@ public class LinearGroup extends RenderGroup {
   /** Whether the render-passes are laid out in horizontal direction. */
   private boolean horizontal;
 
+  private int breakPoint;
+
   /** The alignment of the group. */
   private double alignmentFactor;
 
@@ -106,7 +108,10 @@ public class LinearGroup extends RenderGroup {
         max = v;
       }
     }
+    final boolean breakLines = breakPoint > 0;
     double pos = 0;
+    double ortho = 0;
+    int positioned = 0;
     for(int i = 0; i < members.size(); ++i) {
       final RenderpassPosition p = members.get(i);
       final Rectangle2D bbox = bboxes.get(i);
@@ -118,10 +123,16 @@ public class LinearGroup extends RenderGroup {
       // TODO FIXME where to put the bounding
       // box position (ie getX(), getY()) consideration? see #13
       final Point2D dest = new Point2D.Double(
-          (horizontal ? pos : opos),
-          (horizontal ? opos : pos));
+          (horizontal ? pos : ortho + opos),
+          (horizontal ? ortho + opos : pos));
       p.startAnimationTo(dest, timing, i == 0 ? onFinish : null);
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
+      ++positioned;
+      if(breakLines && positioned >= breakPoint) {
+        pos = 0;
+        ortho += (horizontal ? bbox.getHeight() : bbox.getWidth()) + space;
+        positioned = 0;
+      }
     }
   }
 
@@ -229,6 +240,14 @@ public class LinearGroup extends RenderGroup {
    */
   public double getAlignment() {
     return alignmentFactor;
+  }
+
+  public void setBreakPoint(final int breakPoint) {
+    this.breakPoint = breakPoint;
+  }
+
+  public int getBreakPoint() {
+    return breakPoint;
   }
 
 }

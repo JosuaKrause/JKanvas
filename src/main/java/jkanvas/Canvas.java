@@ -19,6 +19,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+import jkanvas.animation.Animator;
 import jkanvas.util.Stopwatch;
 
 /**
@@ -37,7 +38,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public static boolean DEBUG_BBOX;
 
   /** The underlying zoom-able user interface. */
-  protected final ZoomableUI zui;
+  protected final CameraZUI zui;
 
   /** The painter. */
   protected KanvasPainter painter;
@@ -68,7 +69,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       final int width, final int height) {
     setPreferredSize(new Dimension(width, height));
     painter = Objects.requireNonNull(p);
-    zui = new ZoomableUI(this, restricted ? this : null);
+    zui = new CameraZUI(this, restricted);
     final MouseAdapter mouse = new MouseInteraction() {
 
       /** Whether the drag is on the HUD. */
@@ -375,10 +376,10 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     g.clip(getVisibleRect());
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
-    if(paintLock == null) {
+    if(animator == null) {
       doPaint(g);
     } else {
-      synchronized(paintLock) {
+      synchronized(animator.getAnimationLock()) {
         doPaint(g);
       }
     }
@@ -424,27 +425,35 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     painter.drawHUD(gfx, getHUDContext());
   }
 
-  /** The paint lock. */
-  private Object paintLock;
+  /** The animator. */
+  private Animator animator;
 
   /**
    * Setter.
    * 
-   * @param paintLock The paint lock or <code>null</code> if nothing should be
-   *          locked during painting.
+   * @param animator The animator or <code>null</code> if no animation is used.
    */
-  public void setPaintLock(final Object paintLock) {
-    this.paintLock = paintLock;
+  public void setAnimator(final Animator animator) {
+    if(this.animator != null) {
+      this.animator.getAnimationList().removeAnimated(zui);
+    }
+    this.animator = animator;
+    if(animator != null) {
+      animator.getAnimationList().addAnimated(zui);
+    }
   }
 
   /**
    * Getter.
    * 
-   * @return The paint lock or <code>null</code> if nothing is locked during
-   *         painting.
+   * @return The animator or <code>null</code> if no animation is used.
    */
-  public Object getPaintLock() {
-    return paintLock;
+  public Animator getAnimator() {
+    return animator;
+  }
+
+  public Camera getCamera() {
+    return zui;
   }
 
   /**
@@ -500,10 +509,20 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @param bbox The rectangle that is visible.
    */
   public void reset(final RectangularShape bbox) {
+    reset(bbox, getMargin());
+  }
+
+  /**
+   * Resets the viewport to show exactly the given rectangle expanded by the
+   * margin.
+   * 
+   * @param bbox The rectangle that is visible.
+   * @param margin The margin.
+   */
+  public void reset(final RectangularShape bbox, final double margin) {
     if(bbox == null) {
       reset();
     } else {
-      final double margin = getMargin();
       final Rectangle2D rect = getVisibleRect();
       zui.showRectangle(bbox, rect, margin, true);
     }

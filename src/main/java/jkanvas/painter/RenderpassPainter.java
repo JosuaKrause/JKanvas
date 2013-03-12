@@ -407,4 +407,24 @@ public class RenderpassPainter extends PainterAdapter {
     return getBoundingBox(back);
   }
 
+  public static final Rectangle2D getTopLevelBounds(final Renderpass pass) {
+    final Rectangle2D rect = pass.getBoundingBox();
+    if(rect == null) return null;
+    return getTopLevelBounds(pass, rect);
+  }
+
+  public static final Rectangle2D getTopLevelBounds(
+      final Renderpass pass, final Rectangle2D rect) {
+    final Rectangle2D box = new Rectangle2D.Double(
+        rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+    Renderpass p = pass;
+    do {
+      box.setRect(box.getX() + p.getOffsetX(),
+          box.getY() + p.getOffsetY(),
+          box.getWidth(), box.getHeight());
+      p = p.getParent();
+    } while(p != null);
+    return box;
+  }
+
 }

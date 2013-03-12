@@ -83,4 +83,10 @@ public abstract class RenderpassAdapter implements Renderpass {
     return true;
   }
 
+  @Override
+  public Renderpass getParent() {
+    // no parent
+    return null;
+  }
+
 }

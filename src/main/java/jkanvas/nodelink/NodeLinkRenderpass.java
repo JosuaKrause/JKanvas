@@ -4,7 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Objects;
 import java.util.Set;
 
@@ -97,7 +98,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
    * The node set. This set is used to detect whether a garbage collection is
    * necessary.
    */
-  private final Set<T> lastNodes = new HashSet<>();
+  private final Set<T> lastNodes = Collections.newSetFromMap(new IdentityHashMap<T, Boolean>());
 
   /**
    * Renders all nodes.
@@ -111,6 +112,10 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
     if(gc) {
       // clear all nodes from the animated list
       // it will be reconstructed when drawing
+      // removing and adding has to be made on the
+      // same draw run because otherwise the animation
+      // lock would be released in between which
+      // may lead to missed node animation calls
       for(final T node : lastNodes) {
         list.removeAnimated(node);
       }

@@ -77,4 +77,17 @@ public abstract class AbstractRenderpass extends RenderpassAdapter {
     return bbox;
   }
 
+  private Renderpass parent;
+
+  public void setParent(final Renderpass parent) {
+    if(parent != null && this.parent != null) throw new IllegalStateException(
+        "tried to set two parents");
+    this.parent = parent;
+  }
+
+  @Override
+  public Renderpass getParent() {
+    return parent;
+  }
+
 }

@@ -26,19 +26,29 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   /** Creates an animated painter. */
   public AnimatedPainter() {
     final AtomicBoolean isStopped = new AtomicBoolean();
-    final AtomicLong lastStop = new AtomicLong(System.currentTimeMillis());
+    final AtomicLong lastStop = new AtomicLong(getTime());
     animator = new AbstractAnimator() {
 
       @Override
       protected boolean step() {
         if(isStopped.get()) return false;
-        final long currentTime = System.currentTimeMillis() - lastStop.get();
+        final long currentTime = getTime() - lastStop.get();
         return getAnimationList().doAnimate(currentTime);
       }
 
     };
     this.isStopped = isStopped;
     this.lastStop = lastStop;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Returns the current time. This method can be overwritten to gain
+   *         full control over animation timing.
+   */
+  protected long getTime() {
+    return System.currentTimeMillis();
   }
 
   /**
@@ -57,7 +67,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
    */
   public void setStopped(final boolean stopped) {
     synchronized(animator.getAnimationLock()) {
-      final long now = System.currentTimeMillis();
+      final long now = getTime();
       if(!stopped) {
         // nLast = last' + nT
         lastStop.addAndGet(now);
