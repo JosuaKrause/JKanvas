@@ -35,8 +35,8 @@ public class Stopwatch {
    * @return The duration as human readable string.
    */
   public String current() {
-    final long duration = currentNano() / 1000L / 1000L;
-    return duration + "ms";
+    final double duration = currentNano() / 1000.0 / 1000.0;
+    return String.format("%.6f ms", duration);
   }
 
   /**

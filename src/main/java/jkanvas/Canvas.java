@@ -19,6 +19,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+import jkanvas.animation.Animator;
 import jkanvas.util.Stopwatch;
 
 /**
@@ -375,10 +376,10 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     g.clip(getVisibleRect());
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
-    if(paintLock == null) {
+    if(animator == null) {
       doPaint(g);
     } else {
-      synchronized(paintLock) {
+      synchronized(animator.getAnimationLock()) {
         doPaint(g);
       }
     }
@@ -424,27 +425,25 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     painter.drawHUD(gfx, getHUDContext());
   }
 
-  /** The paint lock. */
-  private Object paintLock;
+  /** The animator. */
+  private Animator animator;
 
   /**
    * Setter.
    * 
-   * @param paintLock The paint lock or <code>null</code> if nothing should be
-   *          locked during painting.
+   * @param animator The animator or <code>null</code> if no animation is used.
    */
-  public void setPaintLock(final Object paintLock) {
-    this.paintLock = paintLock;
+  public void setAnimator(final Animator animator) {
+    this.animator = animator;
   }
 
   /**
    * Getter.
    * 
-   * @return The paint lock or <code>null</code> if nothing is locked during
-   *         painting.
+   * @return The animator or <code>null</code> if no animation is used.
    */
-  public Object getPaintLock() {
-    return paintLock;
+  public Animator getAnimator() {
+    return animator;
   }
 
   /**

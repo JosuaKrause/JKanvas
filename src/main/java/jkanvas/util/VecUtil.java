@@ -125,6 +125,28 @@ public final class VecUtil {
     return mulVec(v, l / getLength(v));
   }
 
+  /** A quarter pi. */
+  public static final double M_PI_4 = Math.PI / 4.0;
+
+  /** A double pi. */
+  public static final double M_2_PI = 2.0 * Math.PI;
+
+  /**
+   * A fast implementation of {@link Math#atan(double)}. The maximum error is
+   * <code>0.0015</code> radians. The behavior is the same as the library
+   * function. The algorithm comes from:
+   * <em>"Efficient approximations for the arctangent function",
+   * Rajan, S. Sichun Wang Inkol, R. Joyal, A., May 2006</em>
+   * 
+   * @param a The value whose arc tangent is to be returned.
+   * @return The arc tangent of the argument.
+   * @see Math#atan(double)
+   */
+  public static double fastArcTan(final double a) {
+    if(a < -1 || a > 1) return Math.atan(a);
+    return M_PI_4 * a - a * (Math.abs(a) - 1) * (0.2447 + 0.0663 * Math.abs(a));
+  }
+
   /**
    * Calculates the absolute orientation of a given vector.
    * 
@@ -137,7 +159,7 @@ public final class VecUtil {
     final double x = vec.getX();
     final double y = vec.getY();
     if(x == 0.0) return Math.PI * (y > 0.0 ? 0.5 : 1.5);
-    return (x < 0 ? Math.PI : (y < 0 ? 2 * Math.PI : 0)) + Math.atan(y / x);
+    return (x < 0 ? Math.PI : (y < 0 ? M_2_PI : 0)) + fastArcTan(y / x);
   }
 
   /**
@@ -152,7 +174,7 @@ public final class VecUtil {
    */
   public static double getOrientationDifference(final double o1, final double o2) {
     final double diff = Math.abs(o1 - o2);
-    return diff > Math.PI ? 2.0 * Math.PI - diff : diff;
+    return diff > Math.PI ? M_2_PI - diff : diff;
   }
 
   /**

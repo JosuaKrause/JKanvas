@@ -219,7 +219,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     c.setBackground(Color.WHITE);
     c.setFrameRateDisplayer(new FrameRateHUD());
     p.addRefreshable(c);
-    c.setPaintLock(p.getAnimationLock());
+    c.setAnimator(p);
     final JFrame frame = new JFrame("Node-Link") {
 
       @Override
