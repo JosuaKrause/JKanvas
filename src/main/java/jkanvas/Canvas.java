@@ -452,6 +452,11 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     return animator;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return THe associated camera.
+   */
   public Camera getCamera() {
     return zui;
   }

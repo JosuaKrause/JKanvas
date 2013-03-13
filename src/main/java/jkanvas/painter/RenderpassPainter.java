@@ -407,12 +407,28 @@ public class RenderpassPainter extends PainterAdapter {
     return getBoundingBox(back);
   }
 
+  /**
+   * Computes the top level bounding box position in canvas coordinates of the
+   * given render pass.
+   * 
+   * @param pass The render pass.
+   * @return The bounding box of the render pass in top level canvas
+   *         coordinates.
+   */
   public static final Rectangle2D getTopLevelBounds(final Renderpass pass) {
     final Rectangle2D rect = pass.getBoundingBox();
     if(rect == null) return null;
     return getTopLevelBounds(pass, rect);
   }
 
+  /**
+   * Converts a rectangle in render pass local coordinates into top level canvas
+   * coordinates.
+   * 
+   * @param pass The render pass.
+   * @param rect The rectangle in local render pass canvas coordinates.
+   * @return The rectangle in top level canvas coordinates.
+   */
   public static final Rectangle2D getTopLevelBounds(
       final Renderpass pass, final Rectangle2D rect) {
     final Rectangle2D box = new Rectangle2D.Double(

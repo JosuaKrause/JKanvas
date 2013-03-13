@@ -175,6 +175,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
     // nothing to do
   }
 
+  /**
+   * This method is always called after a render pass is added.
+   * 
+   * @param p The render pass position.
+   */
   private void addedRenderpassIntern(final RenderpassPosition p) {
     p.pass.setParent(this);
     addedRenderpass(p);
@@ -189,6 +194,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
     // nothing to do
   }
 
+  /**
+   * This method is always called after a render pass is removed.
+   * 
+   * @param p The render pass position.
+   */
   private void removedRenderpassIntern(final RenderpassPosition p) {
     removedRenderpass(p);
     p.pass.setParent(null);
@@ -666,6 +676,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
     return res == null ? new Rectangle2D.Double() : res;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The bounding box considering also the end of layout animations.
+   */
   public Rectangle2D getPredictBoundingBox() {
     Rectangle2D box = getBoundingBox();
     for(final RenderpassPosition p : members) {

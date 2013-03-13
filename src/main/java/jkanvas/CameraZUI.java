@@ -12,19 +12,38 @@ import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.GenericAnimated;
 import jkanvas.util.VecUtil;
 
+/**
+ * A zoom-able view with an attached camera.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 class CameraZUI implements ZoomableView, Camera, Animated {
 
+  /** The underlying zoom-able UI. */
   private final ZoomableUI zui;
 
+  /**
+   * The animation of the current viewport. This value is meant to be write-only
+   * since the used viewport is always that from {@link #zui}.
+   */
   private GenericAnimated<Rectangle2D> view;
 
+  /** The canvas. */
   private final Canvas canvas;
 
+  /**
+   * Creates a zoom-able camera for the given canvas. This method should only be
+   * called by the constructor of the canvas.
+   * 
+   * @param canvas The canvas.
+   * @param restricted Whether the canvas is restricted.
+   */
   CameraZUI(final Canvas canvas, final boolean restricted) {
     zui = new ZoomableUI(canvas, restricted ? canvas : null);
     this.canvas = canvas;
   }
 
+  /** Ensures that {@link #view} is non-<code>null</code>. */
   private void ensureView() {
     if(view != null) return;
     view = new GenericAnimated<Rectangle2D>(getView()) {
@@ -38,6 +57,10 @@ class CameraZUI implements ZoomableView, Camera, Animated {
     };
   }
 
+  /**
+   * Clears the current animation. This method must always be called when the
+   * viewport is set directly.
+   */
   private void stopAnimation() {
     if(view == null) return;
     view.clearAnimation();
@@ -66,10 +89,9 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   @Override
   public boolean animate(final long currentTime) {
     if(view == null) return false;
-    if(!view.inAnimation()) return false;
-    final boolean chg = view.animate(currentTime);
+    if(!view.animate(currentTime)) return false;
     zui.showRectangle(view.get(), canvas.getVisibleRect(), 0, true);
-    return chg;
+    return true;
   }
 
   @Override

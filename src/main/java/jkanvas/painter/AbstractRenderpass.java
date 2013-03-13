@@ -77,8 +77,15 @@ public abstract class AbstractRenderpass extends RenderpassAdapter {
     return bbox;
   }
 
+  /** The parent. */
   private Renderpass parent;
 
+  /**
+   * Setter.
+   * 
+   * @param parent Sets the parent of this render pass. Parents can not be
+   *          directly switched.
+   */
   public void setParent(final Renderpass parent) {
     if(parent != null && this.parent != null) throw new IllegalStateException(
         "tried to set two parents");

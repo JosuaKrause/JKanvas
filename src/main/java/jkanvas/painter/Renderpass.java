@@ -52,6 +52,16 @@ public interface Renderpass extends KanvasInteraction {
    */
   void setAnimationList(AnimationList list);
 
+  /**
+   * Getter.
+   * 
+   * @return The parent of this render pass. The parent is used to calculate
+   *         correct top level canvas positions when render passes are combined
+   *         in groups.
+   * @see jkanvas.painter.RenderpassPainter#getTopLevelBounds(Renderpass)
+   * @see jkanvas.painter.RenderpassPainter#getTopLevelBounds(Renderpass,
+   *      Rectangle2D)
+   */
   Renderpass getParent();
 
 }
