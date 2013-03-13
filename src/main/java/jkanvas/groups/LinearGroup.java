@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
@@ -18,6 +19,9 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public class LinearGroup extends RenderGroup {
+
+  /** The on finish action to use when layouting. */
+  private final AtomicReference<AnimationAction> curOnFinish;
 
   /** The animation timing. */
   private AnimationTiming timing;
@@ -89,6 +93,25 @@ public class LinearGroup extends RenderGroup {
     alignmentFactor = Alignment.MIDDLE.alignmentFactor;
     this.space = space;
     this.timing = Objects.requireNonNull(timing);
+    curOnFinish = new AtomicReference<>();
+  }
+
+  @Override
+  protected void invalidate() {
+    super.invalidate();
+    final AnimationAction cof = curOnFinish.getAndSet(onFinish);
+    if(cof != null) {
+      cof.animationFinished();
+    }
+  }
+
+  /**
+   * Clears the current on finish action.
+   * 
+   * @return The on finish action to use.
+   */
+  protected AnimationAction clearCurrentOnFinish() {
+    return curOnFinish.getAndSet(null);
   }
 
   @Override
@@ -112,10 +135,10 @@ public class LinearGroup extends RenderGroup {
         max = v;
       }
     }
+    AnimationAction cof = clearCurrentOnFinish();
     final boolean breakLines = breakPoint > 0;
     double pos = 0;
     double ortho = 0;
-    boolean first = true;
     for(int i = 0; i < members.size(); ++i) {
       final RenderpassPosition p = members.get(i);
       final Rectangle2D bbox = bboxes.get(i);
@@ -129,16 +152,17 @@ public class LinearGroup extends RenderGroup {
       final Point2D dest = new Point2D.Double(
           (horizontal ? pos : ortho + opos),
           (horizontal ? ortho + opos : pos));
-      p.startAnimationTo(dest, timing, first ? onFinish : null);
-      first = false;
+      p.startAnimationTo(dest, timing, cof);
+      cof = null;
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
       if(breakLines && pos >= breakPoint) {
         pos = 0;
         ortho += (horizontal ? bbox.getHeight() : bbox.getWidth()) + space;
       }
     }
-    if(first && onFinish != null) {
-      onFinish.animationFinished();
+    if(cof != null) {
+      cof.animationFinished();
+      cof = null;
     }
   }
 

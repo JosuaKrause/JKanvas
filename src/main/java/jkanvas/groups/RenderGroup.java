@@ -674,31 +674,6 @@ public abstract class RenderGroup extends AbstractRenderpass {
     return res == null ? new Rectangle2D.Double() : res;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return The bounding box considering also the end of layout animations.
-   */
-  public Rectangle2D getPredictBoundingBox() {
-    Rectangle2D box = getBoundingBox();
-    for(final RenderpassPosition p : members) {
-      if(!p.pass.isVisible() || !p.inAnimation()) {
-        continue;
-      }
-      final Rectangle2D bbox = p.getPredictBBox();
-      if(bbox == null) {
-        continue;
-      }
-      if(box == null) {
-        box = new Rectangle2D.Double(bbox.getX(), bbox.getY(),
-            bbox.getWidth(), bbox.getHeight());
-      } else {
-        box.add(bbox);
-      }
-    }
-    return box;
-  }
-
   @Override
   public boolean isChanging() {
     for(final Renderpass r : nlBack) {

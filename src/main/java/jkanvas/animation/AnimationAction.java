@@ -10,8 +10,8 @@ public interface AnimationAction {
 
   /**
    * Is called when the animation with which it was registered terminates. This
-   * may be when the animation terminates successfully or the animation gets
-   * overwritten.
+   * may be when the animation terminates successfully or when the animation
+   * gets overwritten.
    */
   void animationFinished();
 

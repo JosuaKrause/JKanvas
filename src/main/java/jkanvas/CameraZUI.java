@@ -11,7 +11,6 @@ import jkanvas.animation.Animated;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.GenericAnimated;
-import jkanvas.util.VecUtil;
 
 /**
  * A zoom-able view with an attached camera.
@@ -50,9 +49,9 @@ class CameraZUI implements ZoomableView, Camera, Animated {
     view = new GenericAnimated<Rectangle2D>(getView()) {
 
       @Override
-      protected Rectangle2D interpolate(final Rectangle2D from, final Rectangle2D to,
-          final double t) {
-        return VecUtil.interpolate(from, to, t);
+      protected Rectangle2D interpolate(
+          final Rectangle2D from, final Rectangle2D to, final double t) {
+        return jkanvas.util.VecUtil.interpolate(from, to, t);
       }
 
     };
@@ -80,19 +79,41 @@ class CameraZUI implements ZoomableView, Camera, Animated {
 
   @Override
   public void toView(final Rectangle2D rect,
-      final AnimationTiming timing, final AnimationAction action) {
+      final AnimationTiming timing, final AnimationAction onFinish,
+      final boolean useMargin) {
     Objects.requireNonNull(rect);
     Objects.requireNonNull(timing);
+    final Rectangle2D r =
+        useMargin ? jkanvas.util.PaintUtil.addPadding(rect, canvas.getMargin()) : rect;
+    if(r.isEmpty()) return;
     ensureView();
     view.set(getView());
-    view.startAnimationTo(rect, timing, action);
+    view.startAnimationTo(r, timing, onFinish);
   }
+
+  /** Is used to delay animation until the canvas is displayed the first time. */
+  private Rectangle2D toBeSet;
 
   @Override
   public boolean animate(final long currentTime) {
+    if(toBeSet != null) {
+      final Rectangle2D vis = canvas.getVisibleRect();
+      if(!vis.isEmpty()) {
+        zui.showRectangle(toBeSet, vis, 0, true);
+        toBeSet = null;
+      }
+      return true;
+    }
     if(view == null) return false;
     if(!view.animate(currentTime)) return false;
-    zui.showRectangle(view.get(), canvas.getVisibleRect(), 0, true);
+    final Rectangle2D vis = canvas.getVisibleRect();
+    final Rectangle2D v = view.get();
+    if(v.isEmpty()) return true;
+    if(vis.isEmpty()) {
+      toBeSet = v;
+      return true;
+    }
+    zui.showRectangle(v, vis, 0, true);
     return true;
   }
 

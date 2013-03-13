@@ -19,6 +19,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.util.Stopwatch;
@@ -453,6 +454,28 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     }
   }
 
+  /**
+   * Resets the viewport to fit the bounding box if
+   * {@link KanvasPainter#getBoundingBox()} returns a proper bounding box.
+   * 
+   * @param timing The timing.
+   * @param onFinish The action to perform when the viewport was set or when the
+   *          method returns <code>false</code>. This method may be
+   *          <code>null</code> when no action needs to be performed.
+   * @return Whether the viewport is set.
+   */
+  public boolean reset(final AnimationTiming timing, final AnimationAction onFinish) {
+    final Rectangle2D bbox = painter.getBoundingBox();
+    if(bbox == null) {
+      if(onFinish != null) {
+        onFinish.animationFinished();
+      }
+      return false;
+    }
+    zui.toView(bbox, timing, onFinish, true);
+    return true;
+  }
+
   /** The margin for the viewport reset. The default is <code>10.0</code>. */
   private double margin = 10.0;
 
@@ -557,7 +580,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public void setRestriction(final Rectangle2D restriction, final AnimationTiming timing) {
     if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
     this.restriction = restriction;
-    zui.toView(restriction, timing, null);
+    zui.toView(restriction, timing, null, true);
   }
 
   @Override

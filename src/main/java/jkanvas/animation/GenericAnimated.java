@@ -38,8 +38,7 @@ public abstract class GenericAnimated<T> implements Animated {
   private long endTime;
 
   /** The action that is executed when an animation ends. */
-  // TODO: write action test cases - corner cases: animation ends when new
-  // starts etc. #14
+  // TODO: write action test cases #14
   private AnimationAction onFinish;
 
   /**
@@ -267,11 +266,9 @@ public abstract class GenericAnimated<T> implements Animated {
         default:
           throw new InternalError();
       }
-      // call actions that will otherwise be overwritten
+      // call action which will otherwise be overwritten
       if(onFinish != null) {
-        final AnimationAction action = onFinish;
-        onFinish = null;
-        action.animationFinished();
+        onFinish.animationFinished();
       }
       onFinish = op.onFinish;
       op = pendingOperations.poll();
@@ -299,9 +296,8 @@ public abstract class GenericAnimated<T> implements Animated {
       pred = null;
       pol = null;
       if(onFinish != null) {
-        final AnimationAction of = onFinish;
+        onFinish.animationFinished();
         onFinish = null;
-        of.animationFinished();
       }
       return;
     }

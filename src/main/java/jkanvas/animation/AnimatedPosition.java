@@ -154,12 +154,11 @@ public class AnimatedPosition extends Position2D implements Animated {
    * 
    * @param pos The end point.
    * @param timing The animation timing.
-   * @param onFinish An action that is executed when the animation ends
-   *          normally. This may be <code>null</code> when no action is
-   *          required.
+   * @param onFinish An action that is executed when the animation ends. This
+   *          may be <code>null</code> when no action is required.
    */
-  public void startAnimationTo(final Point2D pos, final AnimationTiming timing,
-      final AnimationAction onFinish) {
+  public void startAnimationTo(final Point2D pos,
+      final AnimationTiming timing, final AnimationAction onFinish) {
     position.startAnimationTo(pos, timing, onFinish);
   }
 

@@ -20,8 +20,10 @@ public interface Camera {
    * @param timing The timing of the scrolling.
    * @param onFinish The action that is executed after the animation has
    *          finished.
+   * @param useMargin Whether to add the canvas margin.
    */
-  void toView(Rectangle2D rect, AnimationTiming timing, AnimationAction onFinish);
+  void toView(Rectangle2D rect, AnimationTiming timing,
+      AnimationAction onFinish, boolean useMargin);
 
   /**
    * Getter.
