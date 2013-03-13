@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 
@@ -67,6 +68,10 @@ public class ExpandableGroup extends LinearGroup {
         m.startAnimationTo(dest, timing, first ? getOnFinish() : null);
         first = false;
       }
+    }
+    final AnimationAction of = getOnFinish();
+    if(first && of != null) {
+      of.animationFinished();
     }
   }
 

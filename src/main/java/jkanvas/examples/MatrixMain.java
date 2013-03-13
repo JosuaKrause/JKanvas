@@ -22,6 +22,7 @@ import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
 import jkanvas.SimpleRefreshManager;
+import jkanvas.animation.AnimationTiming;
 import jkanvas.matrix.AbstractQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
 import jkanvas.matrix.DefaultCellRealizer;
@@ -268,7 +269,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    c.setRestriction(p.getBoundingBox());
+    c.setRestriction(p.getBoundingBox(), AnimationTiming.NO_ANIMATION);
     frame.setVisible(true);
   }
 

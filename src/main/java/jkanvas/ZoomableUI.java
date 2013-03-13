@@ -164,9 +164,8 @@ public final class ZoomableUI implements ZoomableView {
       final double margin, final boolean fit) {
     final int nw = (int) (screen.getWidth() - 2 * margin);
     final int nh = (int) (screen.getHeight() - 2 * margin);
-    final double rw = nw / view.getWidth();
-    final double rh = nh / view.getHeight();
-    final double factor = fit ? Math.min(rw, rh) : Math.max(rw, rh);
+    final double factor = jkanvas.util.PaintUtil.fitIntoPixelScale(
+        nw, nh, view.getWidth(), view.getHeight(), fit);
     zoom = 1;
     setOffset(margin + (nw - view.getWidth()) / 2 - view.getMinX(), margin
         + (nh - view.getHeight()) / 2 - view.getMinY());

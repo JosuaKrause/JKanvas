@@ -8,6 +8,7 @@ import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.animation.Animated;
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.GenericAnimated;
 import jkanvas.util.VecUtil;
@@ -78,12 +79,13 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
-  public void toView(final Rectangle2D rect, final AnimationTiming timing) {
+  public void toView(final Rectangle2D rect,
+      final AnimationTiming timing, final AnimationAction action) {
     Objects.requireNonNull(rect);
     Objects.requireNonNull(timing);
     ensureView();
     view.set(getView());
-    view.startAnimationTo(rect, timing);
+    view.startAnimationTo(rect, timing, action);
   }
 
   @Override

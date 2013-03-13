@@ -2,6 +2,7 @@ package jkanvas;
 
 import java.awt.geom.Rectangle2D;
 
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 
 /**
@@ -17,8 +18,10 @@ public interface Camera {
    * 
    * @param rect The rectangle in canvas coordinates.
    * @param timing The timing of the scrolling.
+   * @param onFinish The action that is executed after the animation has
+   *          finished.
    */
-  void toView(Rectangle2D rect, AnimationTiming timing);
+  void toView(Rectangle2D rect, AnimationTiming timing, AnimationAction onFinish);
 
   /**
    * Getter.

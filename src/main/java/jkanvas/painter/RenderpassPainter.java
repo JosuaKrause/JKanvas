@@ -189,26 +189,25 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   /**
-   * Moves the mouse.
+   * Moves the mouse. This method is always called on every render pass.
    * 
    * @param passes The render passes.
    * @param cur The current position.
-   * @return Whether any render pass has consumed the mouse move.
+   * @return Whether any render pass has been affected by the mouse move.
    * @see #moveMouse(Point2D)
    */
   public static final boolean moveMouse(final List<Renderpass> passes, final Point2D cur) {
+    boolean moved = false;
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, cur);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
+      if(r.moveMouse(pos)) {
+        moved = true;
       }
-      if(r.moveMouse(pos)) return true;
     }
-    return false;
+    return moved;
   }
 
   /** The render-pass currently responsible for dragging. */

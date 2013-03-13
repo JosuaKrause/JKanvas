@@ -37,7 +37,7 @@ public abstract class GenericAnimated<T> implements Animated {
   /** The end time. */
   private long endTime;
 
-  /** The action that is executed when an animation ends normally. */
+  /** The action that is executed when an animation ends. */
   // TODO: write action test cases - corner cases: animation ends when new
   // starts etc. #14
   private AnimationAction onFinish;
@@ -141,9 +141,8 @@ public abstract class GenericAnimated<T> implements Animated {
    * 
    * @param t The end value.
    * @param timing The animation timing.
-   * @param onFinish An action that is executed when the animation ends
-   *          normally. This may be <code>null</code> when no action is
-   *          required.
+   * @param onFinish An action that is executed when the animation ends. This
+   *          may be <code>null</code> when no action is required.
    */
   public void startAnimationTo(
       final T t, final AnimationTiming timing, final AnimationAction onFinish) {
@@ -186,8 +185,7 @@ public abstract class GenericAnimated<T> implements Animated {
 
   /**
    * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values. Actions to
-   * execute when the animation ends are always overwritten.
+   * active a new one is created with the given default values.
    * 
    * @param t The new destination value.
    * @param defaultTiming The default timing that is used when no animation is
@@ -199,15 +197,13 @@ public abstract class GenericAnimated<T> implements Animated {
 
   /**
    * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values. Actions to
-   * execute when the animation ends are always overwritten.
+   * active a new one is created with the given default values.
    * 
    * @param t The new destination value.
    * @param defaultTiming The default timing that is used when no animation is
    *          active.
-   * @param onFinish An action that is executed when the animation ends
-   *          normally. This may be <code>null</code> when no action is
-   *          required.
+   * @param onFinish An action that is executed when the animation ends. This
+   *          may be <code>null</code> when no action is required.
    */
   public void changeAnimationTo(
       final T t, final AnimationTiming defaultTiming, final AnimationAction onFinish) {
@@ -231,7 +227,7 @@ public abstract class GenericAnimated<T> implements Animated {
 
   /**
    * Aborts the current animation and keeps the current value. Actions to
-   * execute when the animation ends will be cleared.
+   * execute when the animation ends will be executed.
    */
   public void clearAnimation() {
     pendingOperations.add(new PendingOp<T>());
@@ -271,9 +267,12 @@ public abstract class GenericAnimated<T> implements Animated {
         default:
           throw new InternalError();
       }
-      // overwrite finish action after calculating positions
-      // otherwise the new finish action would be called when a previous
-      // animation terminates normally during this call
+      // call actions that will otherwise be overwritten
+      if(onFinish != null) {
+        final AnimationAction action = onFinish;
+        onFinish = null;
+        action.animationFinished();
+      }
       onFinish = op.onFinish;
       op = pendingOperations.poll();
     } while(op != null);

@@ -115,6 +115,7 @@ public class LinearGroup extends RenderGroup {
     final boolean breakLines = breakPoint > 0;
     double pos = 0;
     double ortho = 0;
+    boolean first = true;
     for(int i = 0; i < members.size(); ++i) {
       final RenderpassPosition p = members.get(i);
       final Rectangle2D bbox = bboxes.get(i);
@@ -128,12 +129,16 @@ public class LinearGroup extends RenderGroup {
       final Point2D dest = new Point2D.Double(
           (horizontal ? pos : ortho + opos),
           (horizontal ? ortho + opos : pos));
-      p.startAnimationTo(dest, timing, i == 0 ? onFinish : null);
+      p.startAnimationTo(dest, timing, first ? onFinish : null);
+      first = false;
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
       if(breakLines && pos >= breakPoint) {
         pos = 0;
         ortho += (horizontal ? bbox.getHeight() : bbox.getWidth()) + space;
       }
+    }
+    if(first && onFinish != null) {
+      onFinish.animationFinished();
     }
   }
 

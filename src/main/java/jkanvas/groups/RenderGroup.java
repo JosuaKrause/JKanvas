@@ -535,20 +535,18 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public boolean moveMouse(final Point2D cur) {
-    if(RenderpassPainter.moveMouse(nlFront, cur)) return true;
+    boolean moved = RenderpassPainter.moveMouse(nlFront, cur);
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, cur);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
+      if(r.moveMouse(pos)) {
+        moved = true;
       }
-      if(r.moveMouse(pos)) return true;
     }
-    return RenderpassPainter.moveMouse(nlBack, cur);
+    return RenderpassPainter.moveMouse(nlBack, cur) || moved;
   }
 
   /**
@@ -699,6 +697,20 @@ public abstract class RenderGroup extends AbstractRenderpass {
       }
     }
     return box;
+  }
+
+  @Override
+  public boolean isChanging() {
+    for(final Renderpass r : nlBack) {
+      if(r.isChanging()) return true;
+    }
+    for(final Renderpass r : nlFront) {
+      if(r.isChanging()) return true;
+    }
+    for(final RenderpassPosition rp : members) {
+      if(rp.inAnimation()) return true;
+    }
+    return false;
   }
 
 }

@@ -64,4 +64,12 @@ public interface Renderpass extends KanvasInteraction {
    */
   Renderpass getParent();
 
+  /**
+   * Getter.
+   * 
+   * @return Whether the render pass may be altered until the next call of
+   *         {@link #draw(java.awt.Graphics2D, jkanvas.KanvasContext)}.
+   */
+  boolean isChanging();
+
 }

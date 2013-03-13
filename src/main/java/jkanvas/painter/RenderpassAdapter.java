@@ -89,4 +89,10 @@ public abstract class RenderpassAdapter implements Renderpass {
     return null;
   }
 
+  @Override
+  public boolean isChanging() {
+    // be safe and always return true -- TODO is this necessary
+    return true;
+  }
+
 }
