@@ -51,6 +51,17 @@ public final class VecUtil {
   }
 
   /**
+   * Calculates the vector in the middle of the two given vectors.
+   * 
+   * @param a The first vector.
+   * @param b The second vector.
+   * @return The middle vector.
+   */
+  public static Point2D middleVec(final Point2D a, final Point2D b) {
+    return mulVec(addVec(a, b), 0.5);
+  }
+
+  /**
    * Linearly interpolates between two points.
    * 
    * @param from The starting point.
@@ -249,7 +260,7 @@ public final class VecUtil {
    * 
    * @param pos The point to rotate.
    * @param center The center.
-   * @param angle The angle.
+   * @param angle The angle in radians and interpreted counter-clockwise.
    * @return The rotated point.
    */
   public static Point2D rotateByAngle(
