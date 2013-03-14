@@ -13,7 +13,7 @@ public interface RestrictedCanvas {
    * Returns the bounding rectangle in canvas coordinates.
    * 
    * @return The bounding rectangle or <code>null</code> if the canvas should
-   *         not be moveable at all.
+   *         temporarily not be restricted.
    */
   Rectangle2D getBoundingRect();
 

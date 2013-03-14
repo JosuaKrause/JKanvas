@@ -50,7 +50,7 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
     final AffineTransform at = ctx.toComponentTransformation();
     for(final Entry<Renderpass, String> e : borders.entrySet()) {
       final Renderpass r = e.getKey();
-      if(!r.isVisible()) {
+      if(!RenderpassPainter.isTopLevelVisible(r)) {
         continue;
       }
       final Rectangle2D bbox = RenderpassPainter.getTopLevelBounds(r);

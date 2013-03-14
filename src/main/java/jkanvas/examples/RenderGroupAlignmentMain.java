@@ -115,6 +115,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       }
 
     });
+    group.invalidate();
     // let p refresh the Canvas
     p.addRefreshable(c);
     c.setAnimator(p);

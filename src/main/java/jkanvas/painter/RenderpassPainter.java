@@ -407,6 +407,17 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   /**
+   * Whether the render pass is visible at top level.
+   * 
+   * @param pass The render pass.
+   * @return Whether it is actually visible.
+   */
+  public static final boolean isTopLevelVisible(final Renderpass pass) {
+    if(pass == null) return true;
+    return pass.isVisible() && isTopLevelVisible(pass.getParent());
+  }
+
+  /**
    * Computes the top level bounding box position in canvas coordinates of the
    * given render pass.
    * 

@@ -402,7 +402,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   }
 
   /** Invalidates the current layout, recomputes the layout, and repaints. */
-  protected void invalidate() {
+  public void invalidate() {
     redoLayout = true;
     animator.quickRefresh();
   }

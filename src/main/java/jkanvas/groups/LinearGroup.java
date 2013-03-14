@@ -97,7 +97,7 @@ public class LinearGroup extends RenderGroup {
   }
 
   @Override
-  protected void invalidate() {
+  public void invalidate() {
     super.invalidate();
     final AnimationAction cof = curOnFinish.getAndSet(onFinish);
     if(cof != null) {

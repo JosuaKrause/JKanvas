@@ -49,10 +49,12 @@ public final class ZoomableUI implements ZoomableView {
 
   @Override
   public void setOffset(final double x, final double y) {
-    if(!isRestricted()) {
+    if(isRestricted()) {
+      setRestrictedOffset(x, y);
+    } else {
       offX = x;
       offY = y;
-    } else if(!setRestrictedOffset(x, y)) return;
+    }
     refreshee.refresh();
   }
 
@@ -61,17 +63,16 @@ public final class ZoomableUI implements ZoomableView {
    * 
    * @param x The x offset.
    * @param y The y offset.
-   * @return Whether repainting is needed.
    */
-  private boolean setRestrictedOffset(final double x, final double y) {
+  private void setRestrictedOffset(final double x, final double y) {
     final Rectangle2D bbox = restriction.getBoundingRect();
-    if(bbox == null) return false;
     offX = x;
     offY = y;
+    if(bbox == null) return;
     final Rectangle2D comp = restriction.getComponentView();
     final Rectangle2D visBB = toCanvas(comp);
     // snap back
-    if(bbox.contains(visBB)) return true;
+    if(bbox.contains(visBB)) return;
     if(visBB.getWidth() > bbox.getWidth()) {
       offX = comp.getCenterX() - fromReal(bbox.getCenterX());
     } else {
@@ -102,7 +103,6 @@ public final class ZoomableUI implements ZoomableView {
       }
       offY -= fromReal(transY);
     }
-    return true;
   }
 
   @Override
@@ -128,14 +128,15 @@ public final class ZoomableUI implements ZoomableView {
     }
     if(isRestricted()) {
       final Rectangle2D bbox = restriction.getBoundingRect();
-      if(bbox == null) return; // change nothing
-      final Rectangle2D visBB = restriction.getComponentView();
-      // load class only when restricting the view
-      final double min = jkanvas.util.PaintUtil.fitIntoScale(
-          visBB, bbox.getWidth(), bbox.getHeight());
-      if(newZoom < min) {
-        newZoom = min;
-        f = newZoom / zoom;
+      if(bbox != null) {
+        final Rectangle2D visBB = restriction.getComponentView();
+        // load class only when restricting the view
+        final double min = jkanvas.util.PaintUtil.fitIntoScale(
+            visBB, bbox.getWidth(), bbox.getHeight());
+        if(newZoom < min) {
+          newZoom = min;
+          f = newZoom / zoom;
+        }
       }
     }
     // P = (off - mouse) / zoom

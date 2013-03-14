@@ -159,11 +159,11 @@ public class ZoomableUITest {
   }
 
   /**
-   * Validates that the canvas cannot be moved when restricted without bounding
-   * box.
+   * Validates that the canvas can always be moved when restricted without
+   * bounding box.
    */
   @Test
-  public void noMoveTest() {
+  public void moveTest() {
     final Rectangle2D comp = new Rectangle2D.Double(0, 0, 1, 1);
     final DummyRefreshable dummy = new DummyRefreshable();
     final ZoomableUI zui = new ZoomableUI(dummy, new RestrictedCanvas() {
@@ -182,9 +182,9 @@ public class ZoomableUITest {
 
     });
     zui.setOffset(2, 2);
-    zui.zoomTicks(3, 4, 5);
-    dummy.testRefreshed(0);
-    sameRect(comp, zui.toCanvas(comp));
+    zui.zoomTo(2, 2, 2);
+    dummy.testRefreshed(2);
+    sameRect(new Rectangle2D.Double(-1, -1, 0.5, 0.5), zui.toCanvas(comp));
   }
 
   /** Checks the functionality of zooming bounds. */
