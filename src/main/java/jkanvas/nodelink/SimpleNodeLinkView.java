@@ -3,12 +3,11 @@ package jkanvas.nodelink;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import jkanvas.animation.Position2D;
+import jkanvas.util.BitSetIterable;
 
 /**
  * Creates a simple view on a graph. Nodes can only be added.
@@ -82,63 +81,11 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     return "Node " + index;
   }
 
-  /**
-   * Iterates over the edges given by a bit set.
-   * 
-   * @author Joschi <josua.krause@googlemail.com>
-   */
-  private static final class EdgeIterator implements Iterator<Integer> {
-
-    /** The bit set. */
-    private final BitSet edges;
-
-    /** The current edge position. */
-    private int pos;
-
-    /**
-     * Creates an edge iterator.
-     * 
-     * @param start The source id or exactly <code>-1</code> if the graph is
-     *          directed.
-     * @param edges The edge bit set.
-     */
-    public EdgeIterator(final int start, final BitSet edges) {
-      this.edges = edges;
-      pos = edges.nextSetBit(start + 1);
-    }
-
-    @Override
-    public boolean hasNext() {
-      return pos >= 0;
-    }
-
-    @Override
-    public Integer next() {
-      if(pos < 0) throw new NoSuchElementException();
-      final int ret = pos;
-      pos = edges.nextSetBit(pos + 1);
-      return ret;
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-
-  } // EdgeIterator
-
   @Override
   public Iterable<Integer> edgesFrom(final int node) {
-    final int start = isDirected() ? -1 : node;
+    final int start = isDirected() ? 0 : node + 1;
     final BitSet es = edges.get(node);
-    return new Iterable<Integer>() {
-
-      @Override
-      public Iterator<Integer> iterator() {
-        return new EdgeIterator(start, es);
-      }
-
-    };
+    return new BitSetIterable(es, start);
   }
 
   /**
