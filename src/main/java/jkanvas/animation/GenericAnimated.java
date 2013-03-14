@@ -87,9 +87,20 @@ public abstract class GenericAnimated<T> implements Animated {
    * @param t Immediately sets the current value.
    */
   public void set(final T t) {
+    set(t, null);
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param t Immediately sets the current value.
+   * @param onFinish The action that is executed when the position is set. This
+   *          may be <code>null</code> when no action has to be executed.
+   */
+  public void set(final T t, final AnimationAction onFinish) {
     Objects.requireNonNull(t);
     // ensures that every previous animation is cleared
-    pendingOperations.add(new PendingOp<>(t));
+    pendingOperations.add(new PendingOp<>(t, onFinish));
     // set value directly for immediate feed-back
     doSet(t);
     pred = null;
@@ -147,7 +158,7 @@ public abstract class GenericAnimated<T> implements Animated {
       final T t, final AnimationTiming timing, final AnimationAction onFinish) {
     Objects.requireNonNull(timing);
     if(timing.duration <= 0) {
-      set(t);
+      set(t, onFinish);
       return;
     }
     Objects.requireNonNull(t);
@@ -208,7 +219,7 @@ public abstract class GenericAnimated<T> implements Animated {
       final T t, final AnimationTiming defaultTiming, final AnimationAction onFinish) {
     Objects.requireNonNull(defaultTiming);
     if(!inAnimation() && defaultTiming.duration <= 0) {
-      set(t);
+      set(t, onFinish);
       return;
     }
     Objects.requireNonNull(t);
@@ -229,7 +240,18 @@ public abstract class GenericAnimated<T> implements Animated {
    * execute when the animation ends will be executed.
    */
   public void clearAnimation() {
-    pendingOperations.add(new PendingOp<T>());
+    clearAnimation(null);
+  }
+
+  /**
+   * Aborts the current animation and keeps the current value. Actions to
+   * execute when the animation ends will be executed.
+   * 
+   * @param onFinish The action that is executed when the animation is cleared.
+   *          This may be <code>null</code> when no action has to be executed.
+   */
+  public void clearAnimation(final AnimationAction onFinish) {
+    pendingOperations.add(new PendingOp<T>(onFinish));
     doClearAnimation();
   }
 
@@ -341,24 +363,31 @@ public abstract class GenericAnimated<T> implements Animated {
     /** The associated action. */
     public final AnimationAction onFinish;
 
-    /** Creates an animation clearing operation. */
-    public PendingOp() {
+    /**
+     * Creates an animation clearing operation.
+     * 
+     * @param onFinish The action that will be executed when the clearing is
+     *          performed.
+     */
+    public PendingOp(final AnimationAction onFinish) {
       operation = OP_CLEAR;
+      this.onFinish = onFinish;
       destination = null;
       timing = null;
-      onFinish = null;
     }
 
     /**
      * Creates a value setting operation. This clears animations.
      * 
      * @param val The value.
+     * @param onFinish The action that will be executed when the position is
+     *          set.
      */
-    public PendingOp(final T val) {
+    public PendingOp(final T val, final AnimationAction onFinish) {
       operation = OP_SET;
+      this.onFinish = onFinish;
       destination = val;
       timing = null;
-      onFinish = null;
     }
 
     /**

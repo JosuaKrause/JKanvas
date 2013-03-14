@@ -16,16 +16,16 @@ public class AnimationTiming {
   public final Interpolator pol;
 
   /** The duration of the animation in milliseconds. */
-  public final int duration;
+  public final long duration;
 
   /** The long animation duration. */
-  public static final int TIME_LONG = 2000;
+  public static final long TIME_LONG = 2000;
 
   /** The standard animation duration. */
-  public static final int TIME_NORMAL = 1000;
+  public static final long TIME_NORMAL = 1000;
 
   /** Fast animation duration. */
-  public static final int TIME_FAST = 100;
+  public static final long TIME_FAST = 100;
 
   /**
    * Creates an animation timing.
@@ -33,7 +33,7 @@ public class AnimationTiming {
    * @param pol The interpolation type.
    * @param duration The duration of the animation in milliseconds.
    */
-  public AnimationTiming(final Interpolator pol, final int duration) {
+  public AnimationTiming(final Interpolator pol, final long duration) {
     if(duration < 0) throw new IllegalArgumentException("duration: " + duration);
     this.pol = Objects.requireNonNull(pol);
     this.duration = duration;

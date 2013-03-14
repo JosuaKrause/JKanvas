@@ -131,12 +131,23 @@ public class AnimatedPosition extends Position2D implements Animated {
 
   @Override
   public void setPosition(final double x, final double y) {
-    position.set(copy(x, y));
+    setPosition(copy(x, y), null);
   }
 
   @Override
   public void setPosition(final Point2D pos) {
-    position.set(copy(pos));
+    setPosition(pos, null);
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param pos The new position.
+   * @param onFinish An action that is executed when the position is set. This
+   *          may be <code>null</code> when no action is required.
+   */
+  public void setPosition(final Point2D pos, final AnimationAction onFinish) {
+    position.set(copy(pos), onFinish);
   }
 
   /**
@@ -146,7 +157,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * @param timing The animation timing.
    */
   public void startAnimationTo(final Point2D pos, final AnimationTiming timing) {
-    position.startAnimationTo(copy(pos), timing);
+    startAnimationTo(pos, timing, null);
   }
 
   /**
@@ -159,7 +170,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    */
   public void startAnimationTo(final Point2D pos,
       final AnimationTiming timing, final AnimationAction onFinish) {
-    position.startAnimationTo(pos, timing, onFinish);
+    position.startAnimationTo(copy(pos), timing, onFinish);
   }
 
   /**
@@ -171,12 +182,37 @@ public class AnimatedPosition extends Position2D implements Animated {
    *          active.
    */
   public void changeAnimationTo(final Point2D pos, final AnimationTiming defaultTiming) {
-    position.changeAnimationTo(copy(pos), defaultTiming);
+    changeAnimationTo(pos, defaultTiming, null);
+  }
+
+  /**
+   * Sets the current animation to a new destination. If no current animation is
+   * active a new one is created with the given default values.
+   * 
+   * @param pos The new destination position.
+   * @param defaultTiming The default timing that is used when no animation is
+   *          active.
+   * @param onFinish An action that is executed when the animation ends. This
+   *          may be <code>null</code> when no action is required.
+   */
+  public void changeAnimationTo(final Point2D pos,
+      final AnimationTiming defaultTiming, final AnimationAction onFinish) {
+    position.changeAnimationTo(copy(pos), defaultTiming, onFinish);
   }
 
   /** Aborts the current animation and keeps the current position. */
   public void clearAnimation() {
-    position.clearAnimation();
+    clearAnimation(null);
+  }
+
+  /**
+   * Aborts the current animation and keeps the current position.
+   * 
+   * @param onFinish An action that is executed when the animation is cleared.
+   *          This may be <code>null</code> when no action is required.
+   */
+  public void clearAnimation(final AnimationAction onFinish) {
+    position.clearAnimation(onFinish);
   }
 
   @Override
