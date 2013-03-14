@@ -110,13 +110,14 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
       @Override
       public void animationFinished() {
-        c.setRestriction(p.getBoundingBox());
+        c.setRestriction(p.getBoundingBox(), AnimationTiming.SMOOTH);
         group.setOnFinish(null);
       }
 
     });
     // let p refresh the Canvas
     p.addRefreshable(c);
+    c.setAnimator(p);
     // configure the Canvas
     // c.setMargin(40);
     c.setBackground(Color.WHITE);

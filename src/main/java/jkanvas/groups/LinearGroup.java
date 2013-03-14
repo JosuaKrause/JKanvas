@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
@@ -19,6 +20,9 @@ import jkanvas.painter.Renderpass;
  */
 public class LinearGroup extends RenderGroup {
 
+  /** The on finish action to use when layouting. */
+  private final AtomicReference<AnimationAction> curOnFinish;
+
   /** The animation timing. */
   private AnimationTiming timing;
 
@@ -31,7 +35,11 @@ public class LinearGroup extends RenderGroup {
   /** Whether the render-passes are laid out in horizontal direction. */
   private boolean horizontal;
 
-  private int breakPoint;
+  /**
+   * The position where to break the line. If the value is smaller or equal than
+   * zero no line break is performed.
+   */
+  private double breakPoint;
 
   /** The alignment of the group. */
   private double alignmentFactor;
@@ -85,6 +93,25 @@ public class LinearGroup extends RenderGroup {
     alignmentFactor = Alignment.MIDDLE.alignmentFactor;
     this.space = space;
     this.timing = Objects.requireNonNull(timing);
+    curOnFinish = new AtomicReference<>();
+  }
+
+  @Override
+  protected void invalidate() {
+    super.invalidate();
+    final AnimationAction cof = curOnFinish.getAndSet(onFinish);
+    if(cof != null) {
+      cof.animationFinished();
+    }
+  }
+
+  /**
+   * Clears the current on finish action.
+   * 
+   * @return The on finish action to use.
+   */
+  protected AnimationAction clearCurrentOnFinish() {
+    return curOnFinish.getAndSet(null);
   }
 
   @Override
@@ -108,10 +135,10 @@ public class LinearGroup extends RenderGroup {
         max = v;
       }
     }
+    AnimationAction cof = clearCurrentOnFinish();
     final boolean breakLines = breakPoint > 0;
     double pos = 0;
     double ortho = 0;
-    int positioned = 0;
     for(int i = 0; i < members.size(); ++i) {
       final RenderpassPosition p = members.get(i);
       final Rectangle2D bbox = bboxes.get(i);
@@ -125,14 +152,17 @@ public class LinearGroup extends RenderGroup {
       final Point2D dest = new Point2D.Double(
           (horizontal ? pos : ortho + opos),
           (horizontal ? ortho + opos : pos));
-      p.startAnimationTo(dest, timing, i == 0 ? onFinish : null);
+      p.startAnimationTo(dest, timing, cof);
+      cof = null;
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
-      ++positioned;
-      if(breakLines && positioned >= breakPoint) {
+      if(breakLines && pos >= breakPoint) {
         pos = 0;
         ortho += (horizontal ? bbox.getHeight() : bbox.getWidth()) + space;
-        positioned = 0;
       }
+    }
+    if(cof != null) {
+      cof.animationFinished();
+      cof = null;
     }
   }
 
@@ -242,11 +272,23 @@ public class LinearGroup extends RenderGroup {
     return alignmentFactor;
   }
 
-  public void setBreakPoint(final int breakPoint) {
+  /**
+   * Setter.
+   * 
+   * @param breakPoint Sets the maximal width of a linear ordering. Additional
+   *          items are then placed in the next line.
+   */
+  public void setBreakPoint(final double breakPoint) {
     this.breakPoint = breakPoint;
   }
 
-  public int getBreakPoint() {
+  /**
+   * Getter.
+   * 
+   * @return The point where to break lines. This is the maximal width of a
+   *         linear ordering.
+   */
+  public double getBreakPoint() {
     return breakPoint;
   }
 

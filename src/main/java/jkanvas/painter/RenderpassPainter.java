@@ -189,26 +189,25 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   /**
-   * Moves the mouse.
+   * Moves the mouse. This method is always called on every render pass.
    * 
    * @param passes The render passes.
    * @param cur The current position.
-   * @return Whether any render pass has consumed the mouse move.
+   * @return Whether any render pass has been affected by the mouse move.
    * @see #moveMouse(Point2D)
    */
   public static final boolean moveMouse(final List<Renderpass> passes, final Point2D cur) {
+    boolean moved = false;
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, cur);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
+      if(r.moveMouse(pos)) {
+        moved = true;
       }
-      if(r.moveMouse(pos)) return true;
     }
-    return false;
+    return moved;
   }
 
   /** The render-pass currently responsible for dragging. */
@@ -407,12 +406,28 @@ public class RenderpassPainter extends PainterAdapter {
     return getBoundingBox(back);
   }
 
+  /**
+   * Computes the top level bounding box position in canvas coordinates of the
+   * given render pass.
+   * 
+   * @param pass The render pass.
+   * @return The bounding box of the render pass in top level canvas
+   *         coordinates.
+   */
   public static final Rectangle2D getTopLevelBounds(final Renderpass pass) {
     final Rectangle2D rect = pass.getBoundingBox();
     if(rect == null) return null;
     return getTopLevelBounds(pass, rect);
   }
 
+  /**
+   * Converts a rectangle in render pass local coordinates into top level canvas
+   * coordinates.
+   * 
+   * @param pass The render pass.
+   * @param rect The rectangle in local render pass canvas coordinates.
+   * @return The rectangle in top level canvas coordinates.
+   */
   public static final Rectangle2D getTopLevelBounds(
       final Renderpass pass, final Rectangle2D rect) {
     final Rectangle2D box = new Rectangle2D.Double(

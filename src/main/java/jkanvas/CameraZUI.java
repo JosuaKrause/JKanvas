@@ -8,36 +8,59 @@ import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.animation.Animated;
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.GenericAnimated;
-import jkanvas.util.VecUtil;
 
+/**
+ * A zoom-able view with an attached camera.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 class CameraZUI implements ZoomableView, Camera, Animated {
 
+  /** The underlying zoom-able UI. */
   private final ZoomableUI zui;
 
+  /**
+   * The animation of the current viewport. This value is meant to be write-only
+   * since the used viewport is always that from {@link #zui}.
+   */
   private GenericAnimated<Rectangle2D> view;
 
+  /** The canvas. */
   private final Canvas canvas;
 
+  /**
+   * Creates a zoom-able camera for the given canvas. This method should only be
+   * called by the constructor of the canvas.
+   * 
+   * @param canvas The canvas.
+   * @param restricted Whether the canvas is restricted.
+   */
   CameraZUI(final Canvas canvas, final boolean restricted) {
     zui = new ZoomableUI(canvas, restricted ? canvas : null);
     this.canvas = canvas;
   }
 
+  /** Ensures that {@link #view} is non-<code>null</code>. */
   private void ensureView() {
     if(view != null) return;
     view = new GenericAnimated<Rectangle2D>(getView()) {
 
       @Override
-      protected Rectangle2D interpolate(final Rectangle2D from, final Rectangle2D to,
-          final double t) {
-        return VecUtil.interpolate(from, to, t);
+      protected Rectangle2D interpolate(
+          final Rectangle2D from, final Rectangle2D to, final double t) {
+        return jkanvas.util.VecUtil.interpolate(from, to, t);
       }
 
     };
   }
 
+  /**
+   * Clears the current animation. This method must always be called when the
+   * viewport is set directly.
+   */
   private void stopAnimation() {
     if(view == null) return;
     view.clearAnimation();
@@ -55,21 +78,43 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
-  public void toView(final Rectangle2D rect, final AnimationTiming timing) {
+  public void toView(final Rectangle2D rect,
+      final AnimationTiming timing, final AnimationAction onFinish,
+      final boolean useMargin) {
     Objects.requireNonNull(rect);
     Objects.requireNonNull(timing);
+    final Rectangle2D r =
+        useMargin ? jkanvas.util.PaintUtil.addPadding(rect, canvas.getMargin()) : rect;
+    if(r.isEmpty()) return;
     ensureView();
     view.set(getView());
-    view.startAnimationTo(rect, timing);
+    view.startAnimationTo(r, timing, onFinish);
   }
+
+  /** Is used to delay animation until the canvas is displayed the first time. */
+  private Rectangle2D toBeSet;
 
   @Override
   public boolean animate(final long currentTime) {
+    if(toBeSet != null) {
+      final Rectangle2D vis = canvas.getVisibleRect();
+      if(!vis.isEmpty()) {
+        zui.showRectangle(toBeSet, vis, 0, true);
+        toBeSet = null;
+      }
+      return true;
+    }
     if(view == null) return false;
-    if(!view.inAnimation()) return false;
-    final boolean chg = view.animate(currentTime);
-    zui.showRectangle(view.get(), canvas.getVisibleRect(), 0, true);
-    return chg;
+    if(!view.animate(currentTime)) return false;
+    final Rectangle2D vis = canvas.getVisibleRect();
+    final Rectangle2D v = view.get();
+    if(v.isEmpty()) return true;
+    if(vis.isEmpty()) {
+      toBeSet = v;
+      return true;
+    }
+    zui.showRectangle(v, vis, 0, true);
+    return true;
   }
 
   @Override

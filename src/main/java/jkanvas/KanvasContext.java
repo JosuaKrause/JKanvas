@@ -3,6 +3,7 @@ package jkanvas;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 /**
  * The paint context provides information of the state of drawing. Methods for
@@ -13,6 +14,14 @@ import java.awt.geom.Rectangle2D;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public interface KanvasContext {
+
+  /**
+   * Converts a rectangle from canvas to component coordinates.
+   * 
+   * @param r The rectangle in canvas coordinates.
+   * @return The rectangle in component coordinates.
+   */
+  Rectangle2D toComponentCoordinates(RectangularShape r);
 
   /**
    * Converts a point from canvas to component coordinates.
@@ -31,6 +40,14 @@ public interface KanvasContext {
    * @return The length in component coordinates.
    */
   double toComponentLength(double length);
+
+  /**
+   * Converts a rectangle from component to canvas coordinates.
+   * 
+   * @param r The rectangle in component coordinates.
+   * @return The rectangle in canvas coordinates.
+   */
+  Rectangle2D toCanvasCoordinates(RectangularShape r);
 
   /**
    * Converts a point from component to canvas coordinates.

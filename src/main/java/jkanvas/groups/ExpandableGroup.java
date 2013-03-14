@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 
@@ -50,7 +51,7 @@ public class ExpandableGroup extends LinearGroup {
       w = Math.max(w, bbox.getWidth());
       h = Math.max(h, bbox.getHeight());
     }
-    boolean first = true;
+    AnimationAction cof = clearCurrentOnFinish();
     for(final RenderpassPosition m : members) {
       final Rectangle2D bbox = m.getPredictBBox();
       if(bbox == null) {
@@ -64,9 +65,13 @@ public class ExpandableGroup extends LinearGroup {
       if(!m.pass.isVisible()) {
         m.set(dest);
       } else if(!m.getPredict().equals(dest)) {
-        m.startAnimationTo(dest, timing, first ? getOnFinish() : null);
-        first = false;
+        m.startAnimationTo(dest, timing, cof);
+        cof = null;
       }
+    }
+    if(cof != null) {
+      cof.animationFinished();
+      cof = null;
     }
   }
 
@@ -78,6 +83,21 @@ public class ExpandableGroup extends LinearGroup {
   public void setExpanded(final boolean expanded) {
     this.expanded = expanded;
     invalidate();
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param expanded Whether the group is expanded.
+   * @param onFinish The action that will be performed after the layouting is
+   *          complete.
+   */
+  public void setExpanded(final boolean expanded, final AnimationAction onFinish) {
+    this.expanded = expanded;
+    final AnimationAction of = getOnFinish();
+    setOnFinish(onFinish);
+    invalidate();
+    setOnFinish(of);
   }
 
   /**

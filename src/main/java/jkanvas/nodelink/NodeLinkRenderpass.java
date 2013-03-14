@@ -199,4 +199,12 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
     this.list = list;
   }
 
+  @Override
+  public boolean isChanging() {
+    for(final T node : view.nodes()) {
+      if(node.inAnimation()) return true;
+    }
+    return false;
+  }
+
 }

@@ -19,6 +19,8 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+import jkanvas.animation.AnimationAction;
+import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.util.Stopwatch;
 
@@ -233,14 +235,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * 
    * @author Joschi <josua.krause@googlemail.com>
    */
-  private final class CanvasContext implements KanvasContext {
-
-    /** Whether this context is in canvas space. */
-    private final boolean inCanvasSpace;
-    /** The x offset of the context. */
-    private final double offX;
-    /** The y offset of the context. */
-    private final double offY;
+  private final class CanvasContext extends AbstractKanvasContext {
 
     /**
      * Creates a context for this canvas.
@@ -251,15 +246,24 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
      * @param offY The y offset in canvas coordinates.
      */
     public CanvasContext(final boolean inCanvasSpace, final double offX, final double offY) {
-      this.inCanvasSpace = inCanvasSpace;
-      this.offX = offX;
-      this.offY = offY;
+      super(inCanvasSpace, offX, offY);
+    }
+
+    @Override
+    protected KanvasContext create(final boolean inCanvasSpace, final double offX,
+        final double offY) {
+      return new CanvasContext(inCanvasSpace, offX, offY);
+    }
+
+    @Override
+    public Rectangle2D toCanvasCoordinates(final RectangularShape r) {
+      return zui.toCanvas(r);
     }
 
     @Override
     public Point2D toCanvasCoordinates(final Point2D p) {
       final Point2D pos = zui.getForScreen(p);
-      return new Point2D.Double(pos.getX() + offX, pos.getY() + offY);
+      return new Point2D.Double(pos.getX() + getOffsetX(), pos.getY() + getOffsetY());
     }
 
     @Override
@@ -269,8 +273,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
 
     @Override
     public Point2D toComponentCoordinates(final Point2D p) {
-      return new Point2D.Double(zui.getXFromCanvas(p.getX() + offX),
-          zui.getYFromCanvas(p.getY() + offY));
+      return new Point2D.Double(zui.getXFromCanvas(p.getX() + getOffsetX()),
+          zui.getYFromCanvas(p.getY() + getOffsetY()));
     }
 
     @Override
@@ -279,54 +283,18 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     }
 
     @Override
-    public boolean inCanvasCoordinates() {
-      return inCanvasSpace;
-    }
-
-    /** The cache for the visible rectangle in component coordinates. */
-    private Rectangle2D visComp;
-
-    @Override
-    public Rectangle2D getVisibleComponent() {
-      if(visComp == null) {
-        visComp = getVisibleRect();
-      }
-      return visComp;
-    }
-
-    /** The cache for the visible rectangle in canvas coordinates. */
-    private Rectangle2D visCanvas;
-
-    @Override
-    public Rectangle2D getVisibleCanvas() {
-      if(visCanvas == null) {
-        visCanvas = zui.toCanvas(getVisibleComponent());
-        visCanvas.setRect(offX + visCanvas.getX(), offY + visCanvas.getY(),
-            visCanvas.getWidth(), visCanvas.getHeight());
-      }
-      return visCanvas;
+    protected Rectangle2D createVisibleComponent() {
+      return getVisibleRect();
     }
 
     @Override
-    public KanvasContext translate(final double dx, final double dy) {
-      if(dx == 0 && dy == 0) return this;
-      return new CanvasContext(inCanvasSpace, offX - dx, offY - dy);
-    }
-
-    @Override
-    public AffineTransform toComponentTransformation() {
-      final AffineTransform at = new AffineTransform();
+    protected void transform(final AffineTransform at) {
       zui.transform(at);
-      at.translate(offX, offY);
-      return at;
     }
 
     @Override
-    public AffineTransform toCanvasTransformation() {
-      final AffineTransform at = new AffineTransform();
-      at.translate(-offX, -offY);
+    protected void transformBack(final AffineTransform at) {
       zui.transformBack(at);
-      return at;
     }
 
   } // CanvasContext
@@ -452,6 +420,11 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     return animator;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return THe associated camera.
+   */
   public Camera getCamera() {
     return zui;
   }
@@ -479,6 +452,28 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     } else {
       reset(bbox);
     }
+  }
+
+  /**
+   * Resets the viewport to fit the bounding box if
+   * {@link KanvasPainter#getBoundingBox()} returns a proper bounding box.
+   * 
+   * @param timing The timing.
+   * @param onFinish The action to perform when the viewport was set or when the
+   *          method returns <code>false</code>. This method may be
+   *          <code>null</code> when no action needs to be performed.
+   * @return Whether the viewport is set.
+   */
+  public boolean reset(final AnimationTiming timing, final AnimationAction onFinish) {
+    final Rectangle2D bbox = painter.getBoundingBox();
+    if(bbox == null) {
+      if(onFinish != null) {
+        onFinish.animationFinished();
+      }
+      return false;
+    }
+    zui.toView(bbox, timing, onFinish, true);
+    return true;
   }
 
   /** The margin for the viewport reset. The default is <code>10.0</code>. */
@@ -576,17 +571,16 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * Setter.
    * 
    * @param restriction Sets the restriction rectangle.
+   * @param timing How the transition to the restriction rectangle should be
+   *          performed.
    * @throws IllegalStateException When the canvas is not restricted. The canvas
    *           can be restricted only with the constructor.
    * @see #isRestricted()
    */
-  public void setRestriction(final Rectangle2D restriction) {
+  public void setRestriction(final Rectangle2D restriction, final AnimationTiming timing) {
     if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
     this.restriction = restriction;
-    final Rectangle2D canvas = getVisibleCanvas();
-    zui.zoom(
-        Math.min(canvas.getWidth() / restriction.getWidth(),
-            canvas.getHeight() / restriction.getHeight()), canvas);
+    zui.toView(restriction, timing, null, true);
   }
 
   @Override

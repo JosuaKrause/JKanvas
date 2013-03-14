@@ -83,7 +83,7 @@ public interface KanvasInteraction {
    * Is called when the mouse was moved.
    * 
    * @param cur The current position in canvas coordinates.
-   * @return Whether this event was consumed.
+   * @return Whether this event has affected the render pass.
    */
   boolean moveMouse(Point2D cur);
 

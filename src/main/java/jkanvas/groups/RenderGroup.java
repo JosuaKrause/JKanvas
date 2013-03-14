@@ -175,6 +175,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
     // nothing to do
   }
 
+  /**
+   * This method is always called after a render pass is added.
+   * 
+   * @param p The render pass position.
+   */
   private void addedRenderpassIntern(final RenderpassPosition p) {
     p.pass.setParent(this);
     addedRenderpass(p);
@@ -189,6 +194,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
     // nothing to do
   }
 
+  /**
+   * This method is always called after a render pass is removed.
+   * 
+   * @param p The render pass position.
+   */
   private void removedRenderpassIntern(final RenderpassPosition p) {
     removedRenderpass(p);
     p.pass.setParent(null);
@@ -525,20 +535,18 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   @Override
   public boolean moveMouse(final Point2D cur) {
-    if(RenderpassPainter.moveMouse(nlFront, cur)) return true;
+    boolean moved = RenderpassPainter.moveMouse(nlFront, cur);
     for(final RenderpassPosition p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, cur);
-      if(bbox != null && !bbox.contains(pos)) {
-        continue;
+      if(r.moveMouse(pos)) {
+        moved = true;
       }
-      if(r.moveMouse(pos)) return true;
     }
-    return RenderpassPainter.moveMouse(nlBack, cur);
+    return RenderpassPainter.moveMouse(nlBack, cur) || moved;
   }
 
   /**
@@ -666,24 +674,18 @@ public abstract class RenderGroup extends AbstractRenderpass {
     return res == null ? new Rectangle2D.Double() : res;
   }
 
-  public Rectangle2D getPredictBoundingBox() {
-    Rectangle2D box = getBoundingBox();
-    for(final RenderpassPosition p : members) {
-      if(!p.pass.isVisible() || !p.inAnimation()) {
-        continue;
-      }
-      final Rectangle2D bbox = p.getPredictBBox();
-      if(bbox == null) {
-        continue;
-      }
-      if(box == null) {
-        box = new Rectangle2D.Double(bbox.getX(), bbox.getY(),
-            bbox.getWidth(), bbox.getHeight());
-      } else {
-        box.add(bbox);
-      }
+  @Override
+  public boolean isChanging() {
+    for(final Renderpass r : nlBack) {
+      if(r.isChanging()) return true;
     }
-    return box;
+    for(final Renderpass r : nlFront) {
+      if(r.isChanging()) return true;
+    }
+    for(final RenderpassPosition rp : members) {
+      if(rp.inAnimation()) return true;
+    }
+    return false;
   }
 
 }

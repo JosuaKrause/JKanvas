@@ -126,6 +126,25 @@ public final class PaintUtil {
   }
 
   /**
+   * Scales a rectangle such that the rectangle fits into a pixel rectangle.
+   * 
+   * @param pixWidth The pixel rectangle width.
+   * @param pixHeight The pixel rectangle height.
+   * @param w The rectangle width.
+   * @param h The rectangle height.
+   * @param fit If set to <code>true</code> the rectangle will be completely
+   *          visible. When set to <code>false</code> as much as possible from
+   *          the rectangle will be visible without showing anything else.
+   * @return The scaling to apply.
+   */
+  public static double fitIntoPixelScale(final int pixWidth, final int pixHeight,
+      final double w, final double h, final boolean fit) {
+    final double rw = pixWidth / w;
+    final double rh = pixHeight / h;
+    return fit ? Math.min(rw, rh) : Math.max(rw, rh);
+  }
+
+  /**
    * Creates a circle with the given radius.
    * 
    * @param x The x position.
