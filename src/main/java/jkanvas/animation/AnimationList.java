@@ -193,7 +193,7 @@ public final class AnimationList {
     this.currentTime = currentTime;
     final int size = animated.size();
     int depth = suggestDepth(size);
-    depth = 0; // TODO reactivate fork-join-pool
+    depth = 0; // TODO reactivate fork-join-pool #15
     // FIXME dead-lock while laying out during animation
     if(depth <= 0) {
       needsRedraw = compute(0, size);
