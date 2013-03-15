@@ -32,13 +32,15 @@ public class ExpandableGroup extends LinearGroup {
   }
 
   @Override
-  protected AnimationAction chooseLayout(final List<RenderpassPosition> members,
+  protected void chooseLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space,
-      final List<Rectangle2D> bboxes, final double max, final AnimationAction cof) {
-    if(expanded) return linearLayout(members, timing, horizontal,
-        alignmentFactor, space, bboxes, max, cof);
-    return compactLayout(members, timing, bboxes, cof);
+      final List<Rectangle2D> bboxes, final double max) {
+    if(expanded) {
+      linearLayout(members, timing, horizontal, alignmentFactor, space, bboxes, max);
+    } else {
+      compactLayout(members, timing, bboxes);
+    }
   }
 
   /**
@@ -48,14 +50,9 @@ public class ExpandableGroup extends LinearGroup {
    * @param members The members.
    * @param timing The animation timing.
    * @param bboxes The bounding boxes.
-   * @param cof The animation action.
-   * @return The animation action if not used by <em>one</em> render pass
-   *         animation. <code>null</code> otherwise.
    */
-  protected AnimationAction compactLayout(
-      final List<RenderpassPosition> members, final AnimationTiming timing,
-      final List<Rectangle2D> bboxes, final AnimationAction cof) {
-    AnimationAction c = cof;
+  protected void compactLayout(final List<RenderpassPosition> members,
+      final AnimationTiming timing, final List<Rectangle2D> bboxes) {
     double w = 0;
     double h = 0;
     for(final Rectangle2D bbox : bboxes) {
@@ -75,11 +72,9 @@ public class ExpandableGroup extends LinearGroup {
       if(!m.pass.isVisible()) {
         m.set(dest);
       } else if(!m.getPredict().equals(dest)) {
-        m.startAnimationTo(dest, timing, c);
-        c = null;
+        m.startAnimationTo(dest, timing, null);
       }
     }
-    return c;
   }
 
   /**

@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
@@ -201,7 +204,98 @@ public final class AnimationList {
       pool.invoke(task);
       needsRedraw = task.hasChanged();
     }
+    processActions(currentTime);
     return needsRedraw;
+  }
+
+  /**
+   * A timed action that is executed when its due.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
+  private static final class TimedAction {
+
+    /** The action to execute. */
+    private final AnimationAction action;
+    /** Whether the timing is relative. */
+    private boolean relative;
+    /** The relative or absolute due time. */
+    private long due;
+
+    /**
+     * Creates a timed action.
+     * 
+     * @param action The action. Must not be <code>null</code>.
+     * @param wait The time to wait in milliseconds.
+     */
+    public TimedAction(final AnimationAction action, final long wait) {
+      this.action = Objects.requireNonNull(action);
+      relative = true;
+      due = wait > 0 ? wait : 0;
+    }
+
+    /**
+     * Converts a relative action in to an absolute action. If the action is due
+     * it gets executed and needs not be to rescheduled any more.
+     * 
+     * @param currentTime The current time.
+     * @return Whether to reschedule.
+     */
+    public boolean execute(final long currentTime) {
+      if(relative) {
+        due += currentTime;
+        relative = false;
+      }
+      if(currentTime < due) return true;
+      action.animationFinished();
+      return false;
+    }
+
+  } // TimedAction
+
+  /** The queue containing all actions. */
+  private final Queue<TimedAction> actionQueue = new ConcurrentLinkedQueue<TimedAction>();
+
+  /**
+   * Schedules the given action to be executed after the specified time in
+   * milliseconds.
+   * 
+   * @param action The action to be executed. May be <code>null</code> when no
+   *          action needs to be executed.
+   * @param wait The time to wait in milliseconds.
+   */
+  public void scheduleAction(final AnimationAction action, final long wait) {
+    if(action == null) return;
+    actionQueue.offer(new TimedAction(action, wait));
+  }
+
+  /**
+   * Processes the actions.
+   * 
+   * @param currentTime The current time.
+   */
+  private void processActions(final long currentTime) {
+    // we work on the same queue for relative and absolute actions
+    // therefore we have to go through the whole list each time
+    // this is not that expensive because there are usually only few action at a
+    // time
+    TimedAction first = null;
+    TimedAction cur;
+    for(;;) {
+      cur = actionQueue.poll();
+      if(cur == null) return;
+      if(cur == first) {
+        actionQueue.offer(cur);
+        return;
+      }
+      final boolean reschedule = cur.execute(currentTime);
+      if(reschedule) {
+        actionQueue.offer(cur);
+        if(first == null) {
+          first = cur;
+        }
+      }
+    }
   }
 
 }

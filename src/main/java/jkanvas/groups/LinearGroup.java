@@ -135,13 +135,9 @@ public class LinearGroup extends RenderGroup {
         max = v;
       }
     }
-    AnimationAction cof = clearCurrentOnFinish();
-    cof = chooseLayout(members, timing, horizontal,
-        alignmentFactor, space, bboxes, max, cof);
-    if(cof != null) {
-      cof.animationFinished();
-      cof = null;
-    }
+    final AnimationAction cof = clearCurrentOnFinish();
+    getAnimator().getAnimationList().scheduleAction(cof, timing.duration);
+    chooseLayout(members, timing, horizontal, alignmentFactor, space, bboxes, max);
   }
 
   /**
@@ -154,16 +150,12 @@ public class LinearGroup extends RenderGroup {
    * @param space The space between render passes.
    * @param bboxes The bounding boxes.
    * @param max The maximal space a render pass uses.
-   * @param cof The animation action.
-   * @return The animation action if not used by <em>one</em> render pass
-   *         animation. <code>null</code> otherwise.
    */
-  protected AnimationAction chooseLayout(final List<RenderpassPosition> members,
+  protected void chooseLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
-      final double max, final AnimationAction cof) {
-    return linearLayout(members, timing, horizontal,
-        alignmentFactor, space, bboxes, max, cof);
+      final double max) {
+    linearLayout(members, timing, horizontal, alignmentFactor, space, bboxes, max);
   }
 
   /**
@@ -176,15 +168,11 @@ public class LinearGroup extends RenderGroup {
    * @param space The space between render passes.
    * @param bboxes The bounding boxes.
    * @param max The maximal space a render pass uses.
-   * @param cof The animation action.
-   * @return The animation action if not used by <em>one</em> render pass
-   *         animation. <code>null</code> otherwise.
    */
-  protected AnimationAction linearLayout(final List<RenderpassPosition> members,
+  protected void linearLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
-      final double max, final AnimationAction cof) {
-    AnimationAction c = cof;
+      final double max) {
     final boolean breakLines = breakPoint > 0;
     double pos = 0;
     double ortho = 0;
@@ -201,15 +189,13 @@ public class LinearGroup extends RenderGroup {
       final Point2D dest = new Point2D.Double(
           (horizontal ? pos : ortho + opos),
           (horizontal ? ortho + opos : pos));
-      p.startAnimationTo(dest, timing, c);
-      c = null;
+      p.startAnimationTo(dest, timing, null);
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
       if(breakLines && pos >= breakPoint) {
         pos = 0;
         ortho += (horizontal ? bbox.getHeight() : bbox.getWidth()) + space;
       }
     }
-    return c;
   }
 
   /**
