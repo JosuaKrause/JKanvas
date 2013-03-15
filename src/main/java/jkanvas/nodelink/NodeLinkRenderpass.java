@@ -114,7 +114,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
       // it will be reconstructed when drawing
       // removing and adding has to be made on the
       // same draw run because otherwise the animation
-      // lock would be released in between which
+      // phase may be taken place in between which
       // may lead to missed node animation calls
       for(final T node : lastNodes) {
         list.removeAnimated(node);

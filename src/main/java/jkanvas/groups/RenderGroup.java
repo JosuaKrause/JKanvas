@@ -210,12 +210,10 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * @param pass The render pass.
    */
   public void addRenderpass(final AbstractRenderpass pass) {
-    synchronized(animator.getAnimationLock()) {
-      final RenderpassPosition p = convert(pass);
-      members.add(p);
-      addedRenderpassIntern(p);
-      invalidate();
-    }
+    final RenderpassPosition p = convert(pass);
+    members.add(p);
+    addedRenderpassIntern(p);
+    invalidate();
   }
 
   /**
@@ -225,12 +223,10 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * @param pass The render pass.
    */
   public void addRenderpass(final int index, final AbstractRenderpass pass) {
-    synchronized(animator.getAnimationLock()) {
-      final RenderpassPosition p = convert(pass);
-      members.add(index, p);
-      addedRenderpassIntern(p);
-      invalidate();
-    }
+    final RenderpassPosition p = convert(pass);
+    members.add(index, p);
+    addedRenderpassIntern(p);
+    invalidate();
   }
 
   /**
@@ -254,23 +250,19 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * @param index The index.
    */
   public void removeRenderpass(final int index) {
-    synchronized(animator.getAnimationLock()) {
-      final RenderpassPosition p = members.remove(index);
-      removedRenderpassIntern(p);
-      invalidate();
-    }
+    final RenderpassPosition p = members.remove(index);
+    removedRenderpassIntern(p);
+    invalidate();
   }
 
   /** Clears all render passes. */
   public void clearRenderpasses() {
-    synchronized(animator.getAnimationLock()) {
-      final RenderpassPosition[] rps = members();
-      members.clear();
-      for(final RenderpassPosition p : rps) {
-        removedRenderpassIntern(p);
-      }
-      invalidate();
+    final RenderpassPosition[] rps = members();
+    members.clear();
+    for(final RenderpassPosition p : rps) {
+      removedRenderpassIntern(p);
     }
+    invalidate();
   }
 
   /**
@@ -299,13 +291,11 @@ public abstract class RenderGroup extends AbstractRenderpass {
    * @param pass The render pass.
    */
   public void setRenderpass(final int index, final AbstractRenderpass pass) {
-    synchronized(animator.getAnimationLock()) {
-      final RenderpassPosition p = convert(pass);
-      final RenderpassPosition o = members.set(index, p);
-      removedRenderpassIntern(o);
-      addedRenderpassIntern(p);
-      invalidate();
-    }
+    final RenderpassPosition p = convert(pass);
+    final RenderpassPosition o = members.set(index, p);
+    removedRenderpassIntern(o);
+    addedRenderpassIntern(p);
+    invalidate();
   }
 
   /**
@@ -417,11 +407,9 @@ public abstract class RenderGroup extends AbstractRenderpass {
 
   /** Immediately computes the current layout. */
   public void forceLayout() {
-    synchronized(animator.getAnimationLock()) {
-      redoLayout = false;
-      doLayout(Collections.unmodifiableList(members));
-      animator.forceNextFrame();
-    }
+    redoLayout = false;
+    doLayout(Collections.unmodifiableList(members));
+    animator.forceNextFrame();
   }
 
   /** Ensures that the layout is computed. */

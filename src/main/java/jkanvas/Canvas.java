@@ -20,6 +20,8 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import jkanvas.animation.AnimationAction;
+import jkanvas.animation.AnimationBarrier;
+import jkanvas.animation.AnimationBarrier.CloseBlock;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.util.Stopwatch;
@@ -333,7 +335,10 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
 
   @Override
   protected void paintComponent(final Graphics gfx) {
-    final Stopwatch watch = isMeasuringFrameTime() ? new Stopwatch() : null;
+    final boolean mft = isMeasuringFrameTime();
+    final AnimationBarrier barrier = this.barrier;
+    // only use own stop-watch when no barrier is installed
+    final Stopwatch watch = (mft && barrier == null) ? new Stopwatch() : null;
     final Graphics2D g = (Graphics2D) gfx.create();
     // honor opaqueness
     if(isOpaque()) {
@@ -344,15 +349,16 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     g.clip(getVisibleRect());
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
-    if(animator == null) {
+    if(barrier == null) {
       doPaint(g);
     } else {
-      synchronized(animator.getAnimationLock()) {
+      try (CloseBlock b = barrier.openDrawBlock()) {
         doPaint(g);
       }
     }
-    if(watch != null) {
-      frameRateDisplayer.setLastFrameTime(watch.currentNano());
+    if(mft) {
+      final long nano = watch != null ? watch.currentNano() : barrier.lastCycle();
+      frameRateDisplayer.setLastFrameTime(nano);
       frameRateDisplayer.drawFrameRate(g, getVisibleRect());
     }
     g.dispose();
@@ -396,18 +402,30 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /** The animator. */
   private Animator animator;
 
+  /** The animation barrier. */
+  private AnimationBarrier barrier;
+
   /**
    * Setter.
    * 
    * @param animator The animator or <code>null</code> if no animation is used.
+   *          If the animator is non-<code>null</code> a new barrier is
+   *          installed.
    */
   public void setAnimator(final Animator animator) {
     if(this.animator != null) {
+      this.animator.setAnimationBarrier(null, this);
       this.animator.getAnimationList().removeAnimated(zui);
+      if(barrier != null) {
+        barrier.dispose();
+      }
+      barrier = null;
     }
     this.animator = animator;
     if(animator != null) {
       animator.getAnimationList().addAnimated(zui);
+      barrier = new AnimationBarrier(this);
+      animator.setAnimationBarrier(barrier, this);
     }
   }
 
@@ -665,6 +683,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /** Disposes the painter. */
   public void dispose() {
     painter.dispose();
+    setAnimator(null);
   }
 
   @Override

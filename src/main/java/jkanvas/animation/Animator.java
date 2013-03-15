@@ -1,5 +1,6 @@
 package jkanvas.animation;
 
+import jkanvas.Canvas;
 import jkanvas.RefreshManager;
 import jkanvas.Refreshable;
 
@@ -27,19 +28,18 @@ public interface Animator extends RefreshManager {
   /**
    * Getter.
    * 
-   * @return The animation lock. This lock is always held when an animation is
-   *         processing. In order to avoid concurrent positions during drawing
-   *         {@link jkanvas.Canvas#setAnimator(Animator)} should be used. The
-   *         {@link AnimationList} also uses this lock to avoid concurrent
-   *         modification of animated objects.
-   */
-  Object getAnimationLock();
-
-  /**
-   * Getter.
-   * 
    * @return The animation list.
    */
   AnimationList getAnimationList();
+
+  /**
+   * Installs the given animation barrier for the given canvas. The validity of
+   * the barrier must be checked with
+   * {@link AnimationBarrier#ensureValidity(Canvas)}.
+   * 
+   * @param barrier The animation barrier to install.
+   * @param canvas The canvas connected to the barrier.
+   */
+  void setAnimationBarrier(AnimationBarrier barrier, Canvas canvas);
 
 }

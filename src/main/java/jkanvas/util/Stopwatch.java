@@ -10,7 +10,7 @@ public class Stopwatch {
   /** The nano time of the last call to start. */
   private long lastStart;
 
-  /** Creates a new timer. */
+  /** Creates a new timer and starts it. */
   public Stopwatch() {
     start();
   }
@@ -35,8 +35,7 @@ public class Stopwatch {
    * @return The duration as human readable string.
    */
   public String current() {
-    final double duration = currentNano() / 1000.0 / 1000.0;
-    return String.format("%.6f ms", duration);
+    return formatNano(currentNano());
   }
 
   /**
@@ -48,6 +47,17 @@ public class Stopwatch {
     final String res = current();
     start();
     return res;
+  }
+
+  /**
+   * Formats the given time in nano seconds.
+   * 
+   * @param nano The time in nano seconds.
+   * @return The formatted time (in milliseconds).
+   */
+  public static final String formatNano(final long nano) {
+    final double duration = nano / 1000.0 / 1000.0;
+    return String.format("%.6f ms", duration);
   }
 
 }

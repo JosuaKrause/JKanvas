@@ -3,6 +3,7 @@ package jkanvas.animation;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import jkanvas.Canvas;
 import jkanvas.Refreshable;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
@@ -20,7 +21,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   /** Whether the animation is stopped for now. */
   private AtomicBoolean isStopped;
 
-  /** The time in milli-seconds when the last stop occured. */
+  /** The time in milliseconds when the last stop occurred. */
   private AtomicLong lastStop;
 
   /** Creates an animated painter. */
@@ -31,8 +32,11 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
 
       @Override
       protected boolean step() {
-        if(isStopped.get()) return false;
-        final long currentTime = getTime() - lastStop.get();
+        final long currentTime;
+        synchronized(isStopped) {
+          if(isStopped.get()) return false;
+          currentTime = getTime() - lastStop.get();
+        }
         return getAnimationList().doAnimate(currentTime);
       }
 
@@ -66,7 +70,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
    * @param stopped Stops or resumes the animation.
    */
   public void setStopped(final boolean stopped) {
-    synchronized(animator.getAnimationLock()) {
+    synchronized(isStopped) {
       final long now = getTime();
       if(!stopped) {
         // nLast = last' + nT
@@ -91,8 +95,8 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   }
 
   @Override
-  public Object getAnimationLock() {
-    return animator.getAnimationLock();
+  public void setAnimationBarrier(final AnimationBarrier barrier, final Canvas canvas) {
+    animator.setAnimationBarrier(barrier, canvas);
   }
 
   @Override

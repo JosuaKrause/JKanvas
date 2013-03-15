@@ -1,7 +1,9 @@
 package jkanvas.animation;
 
+import jkanvas.Canvas;
 import jkanvas.Refreshable;
 import jkanvas.SimpleRefreshManager;
+import jkanvas.animation.AnimationBarrier.CloseBlock;
 
 /**
  * An abstract animator.
@@ -25,6 +27,12 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   /** Whether this object is already disposed or can still be used. */
   private volatile boolean disposed;
 
+  /**
+   * The animation barrier. If no animation barrier is installed no animation
+   * will be performed and no redraw initiated.
+   */
+  private AnimationBarrier barrier;
+
   /** Creates an animator. */
   public AbstractAnimator() {
     setFramerate(60);
@@ -42,10 +50,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
                 continue;
               }
             }
-            boolean needsRedraw;
-            synchronized(getAnimationLock()) {
-              needsRedraw = step();
-            }
+            final boolean needsRedraw = doStep();
             if(needsRedraw) {
               refreshAll();
             }
@@ -58,7 +63,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
     };
     animator.setDaemon(true);
     animator.start();
-    list = new AnimationList(getAnimationLock());
+    list = new AnimationList();
   }
 
   /**
@@ -81,8 +86,11 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   }
 
   @Override
-  public Object getAnimationLock() {
-    return animator;
+  public void setAnimationBarrier(final AnimationBarrier barrier, final Canvas canvas) {
+    if(barrier != null) {
+      barrier.ensureValidity(canvas);
+    }
+    this.barrier = barrier;
   }
 
   @Override
@@ -91,7 +99,25 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   }
 
   /**
-   * Simulates one step. The animator lock is acquired during the call.
+   * Computes one step by calling {@link #step()}. If no animation barrier is
+   * installed nothing will happen while returning <code>false</code>.
+   * 
+   * @return Whether a redraw is necessary.
+   */
+  protected final boolean doStep() {
+    if(barrier == null) return false;
+    try (CloseBlock b = barrier.openAnimationBlock()) {
+      final boolean needsRedraw = step();
+      if(needsRedraw) {
+        // only animate further if redraw occurred
+        b.setStateAfter(AnimationBarrier.ALLOW_DRAW);
+      }
+      return needsRedraw;
+    }
+  }
+
+  /**
+   * Simulates one step. No visible monitors are acquired during the call.
    * 
    * @return Whether a redraw is necessary.
    */

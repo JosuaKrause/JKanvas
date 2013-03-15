@@ -20,23 +20,44 @@ import java.util.concurrent.RecursiveAction;
  */
 public final class AnimationList {
 
-  /** The animation lock. */
-  private final Object lock;
-
-  /**
-   * Creates an animation list.
-   * 
-   * @param lock The animation lock.
-   */
-  public AnimationList(final Object lock) {
-    this.lock = lock;
-  }
-
   /** All registered animated objects. */
   private final List<Animated> animated = new ArrayList<>();
 
-  /** A quick check to see whether an object is in the list. */
+  /**
+   * A quick check to see whether an object is in the list. This set is also
+   * used as monitor for all list changing operations and setting
+   * {@link #inAnimation}.
+   */
   private final Set<Animated> quickCheck = Collections.newSetFromMap(new IdentityHashMap<Animated, Boolean>());
+
+  /**
+   * The list that is filled when {@link #inAnimation} is <code>true</code>
+   * instead of {@link #animated}. The elements are added when
+   * {@link #inAnimation} is set to <code>false</code>.
+   */
+  private final List<Animated> toBeAdded = new ArrayList<>();
+
+  /**
+   * The list that schedules removal when {@link #inAnimation} is
+   * <code>true</code> and {@link #animated} cannot be changed. The elements are
+   * removed when {@link #inAnimation} is set to <code>false</code>.
+   */
+  private final List<Animated> toBeRemoved = new ArrayList<>();
+
+  /**
+   * When set to <code>true</code> the list {@link #animated} is guaranteed not
+   * to change.
+   */
+  private volatile boolean inAnimation;
+
+  /**
+   * Creates an animation list.
+   */
+  public AnimationList() {
+    inAnimation = false;
+  }
+
+  // ### managing animatable objects ###
 
   /**
    * Adds an animatable object.
@@ -44,11 +65,15 @@ public final class AnimationList {
    * @param animate The object.
    */
   public void addAnimated(final Animated animate) {
-    synchronized(lock) {
+    synchronized(quickCheck) {
       if(quickCheck.contains(animate)) throw new IllegalArgumentException(
           "animated object already added: " + animate);
       quickCheck.add(animate);
-      animated.add(animate);
+      if(inAnimation) {
+        toBeAdded.add(animate);
+      } else {
+        animated.add(animate);
+      }
     }
   }
 
@@ -58,9 +83,18 @@ public final class AnimationList {
    * @param animate The object.
    */
   public void removeAnimated(final Animated animate) {
-    synchronized(lock) {
+    synchronized(quickCheck) {
       if(quickCheck.remove(animate)) {
-        animated.remove(animate);
+        if(inAnimation) {
+          if(!toBeAdded.contains(animate)) {
+            // object must be in animated
+            toBeRemoved.add(animate);
+          } else {
+            toBeAdded.remove(animate);
+          }
+        } else {
+          animated.remove(animate);
+        }
       }
     }
   }
@@ -73,11 +107,35 @@ public final class AnimationList {
    */
   public boolean hasAnimated(final Animated animate) {
     final boolean has;
-    synchronized(lock) {
+    synchronized(quickCheck) {
       has = quickCheck.contains(animate);
     }
     return has;
   }
+
+  /**
+   * Starts the animation phase. This method needs a corresponding
+   * {@link #endAnimating()} call which must be in a finally block.
+   */
+  private void startAnimating() {
+    synchronized(quickCheck) {
+      inAnimation = true;
+    }
+  }
+
+  /** Ends the animation phase and alters {@link #animated}. */
+  private void endAnimating() {
+    synchronized(quickCheck) {
+      inAnimation = false;
+      // remove first because objects could be re-added
+      animated.removeAll(toBeRemoved);
+      toBeRemoved.clear();
+      animated.addAll(toBeAdded);
+      toBeAdded.clear();
+    }
+  }
+
+  // ### performing the animation ###
 
   /** The internal fork join pool. */
   private final ForkJoinPool pool = new ForkJoinPool();
@@ -159,7 +217,7 @@ public final class AnimationList {
       return changed;
     }
 
-  }
+  } // Worker
 
   /**
    * Animates a range of animated objects.
@@ -188,25 +246,29 @@ public final class AnimationList {
    * @return Whether a redraw is needed.
    */
   boolean doAnimate(final long currentTime) {
-    // animation lock is already acquired
     final boolean needsRedraw;
-    this.currentTime = currentTime;
-    final int size = animated.size();
-    int depth = suggestDepth(size);
-    depth = 0; // TODO reactivate fork-join-pool #15
-    // FIXME dead-lock while laying out during animation
-    if(depth <= 0) {
-      needsRedraw = compute(0, size);
-    } else {
-      // a worker has a higher idle time (ie when no animation is happening)
-      // but when we animate it is faster than the sequential version
-      final Worker task = new Worker(depth, 0, size);
-      pool.invoke(task);
-      needsRedraw = task.hasChanged();
+    try {
+      startAnimating();
+      this.currentTime = currentTime;
+      final int size = animated.size();
+      final int depth = suggestDepth(size);
+      if(depth <= 0) {
+        needsRedraw = compute(0, size);
+      } else {
+        // a worker has a higher idle time (ie when no animation is happening)
+        // but when we animate it is faster than the sequential version
+        final Worker task = new Worker(depth, 0, size);
+        pool.invoke(task);
+        needsRedraw = task.hasChanged();
+      }
+      processActions(currentTime);
+    } finally {
+      endAnimating();
     }
-    processActions(currentTime);
     return needsRedraw;
   }
+
+  // ### managing delayed actions ###
 
   /**
    * A timed action that is executed when its due.
