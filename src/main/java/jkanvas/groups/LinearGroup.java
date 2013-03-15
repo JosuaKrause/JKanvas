@@ -115,7 +115,7 @@ public class LinearGroup extends RenderGroup {
   }
 
   @Override
-  protected void doLayout(final List<RenderpassPosition> members) {
+  protected final void doLayout(final List<RenderpassPosition> members) {
     final AnimationTiming timing = getTiming();
     final boolean horizontal = isHorizontal();
     final double alignmentFactor = getAlignment();
@@ -136,6 +136,27 @@ public class LinearGroup extends RenderGroup {
       }
     }
     AnimationAction cof = clearCurrentOnFinish();
+    cof = chooseLayout(members, timing, horizontal,
+        alignmentFactor, space, bboxes, max, cof);
+    if(cof != null) {
+      cof.animationFinished();
+      cof = null;
+    }
+  }
+
+  protected AnimationAction chooseLayout(final List<RenderpassPosition> members,
+      final AnimationTiming timing, final boolean horizontal,
+      final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
+      final double max, final AnimationAction cof) {
+    return linearLayout(members, timing, horizontal,
+        alignmentFactor, space, bboxes, max, cof);
+  }
+
+  protected AnimationAction linearLayout(final List<RenderpassPosition> members,
+      final AnimationTiming timing, final boolean horizontal,
+      final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
+      final double max, final AnimationAction cof) {
+    AnimationAction c = cof;
     final boolean breakLines = breakPoint > 0;
     double pos = 0;
     double ortho = 0;
@@ -152,18 +173,15 @@ public class LinearGroup extends RenderGroup {
       final Point2D dest = new Point2D.Double(
           (horizontal ? pos : ortho + opos),
           (horizontal ? ortho + opos : pos));
-      p.startAnimationTo(dest, timing, cof);
-      cof = null;
+      p.startAnimationTo(dest, timing, c);
+      c = null;
       pos += (horizontal ? bbox.getWidth() : bbox.getHeight()) + space;
       if(breakLines && pos >= breakPoint) {
         pos = 0;
         ortho += (horizontal ? bbox.getHeight() : bbox.getWidth()) + space;
       }
     }
-    if(cof != null) {
-      cof.animationFinished();
-      cof = null;
-    }
+    return c;
   }
 
   /**

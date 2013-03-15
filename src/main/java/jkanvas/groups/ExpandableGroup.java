@@ -32,26 +32,25 @@ public class ExpandableGroup extends LinearGroup {
   }
 
   @Override
-  protected void doLayout(final List<RenderpassPosition> members) {
-    if(expanded) {
-      super.doLayout(members);
-      return;
-    }
-    final AnimationTiming timing = getTiming();
+  protected AnimationAction chooseLayout(final List<RenderpassPosition> members,
+      final AnimationTiming timing, final boolean horizontal,
+      final double alignmentFactor, final double space,
+      final List<Rectangle2D> bboxes, final double max, final AnimationAction cof) {
+    if(expanded) return linearLayout(members, timing, horizontal,
+        alignmentFactor, space, bboxes, max, cof);
+    return compactLayout(members, timing, bboxes, cof);
+  }
+
+  protected AnimationAction compactLayout(
+      final List<RenderpassPosition> members, final AnimationTiming timing,
+      final List<Rectangle2D> bboxes, final AnimationAction cof) {
+    AnimationAction c = cof;
     double w = 0;
     double h = 0;
-    for(final RenderpassPosition m : members) {
-      if(!m.pass.isVisible()) {
-        continue;
-      }
-      final Rectangle2D bbox = m.getPredictBBox();
-      if(bbox == null) {
-        continue;
-      }
+    for(final Rectangle2D bbox : bboxes) {
       w = Math.max(w, bbox.getWidth());
       h = Math.max(h, bbox.getHeight());
     }
-    AnimationAction cof = clearCurrentOnFinish();
     for(final RenderpassPosition m : members) {
       final Rectangle2D bbox = m.getPredictBBox();
       if(bbox == null) {
@@ -65,14 +64,11 @@ public class ExpandableGroup extends LinearGroup {
       if(!m.pass.isVisible()) {
         m.set(dest);
       } else if(!m.getPredict().equals(dest)) {
-        m.startAnimationTo(dest, timing, cof);
-        cof = null;
+        m.startAnimationTo(dest, timing, c);
+        c = null;
       }
     }
-    if(cof != null) {
-      cof.animationFinished();
-      cof = null;
-    }
+    return c;
   }
 
   /**
@@ -89,7 +85,7 @@ public class ExpandableGroup extends LinearGroup {
    * Setter.
    * 
    * @param expanded Whether the group is expanded.
-   * @param onFinish The action that will be performed after the layouting is
+   * @param onFinish The action that will be performed after the laying out is
    *          complete.
    */
   public void setExpanded(final boolean expanded, final AnimationAction onFinish) {
