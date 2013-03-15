@@ -41,6 +41,17 @@ public class ExpandableGroup extends LinearGroup {
     return compactLayout(members, timing, bboxes, cof);
   }
 
+  /**
+   * The compact layout. All render passes are condensed in the space of the
+   * largest render pass.
+   * 
+   * @param members The members.
+   * @param timing The animation timing.
+   * @param bboxes The bounding boxes.
+   * @param cof The animation action.
+   * @return The animation action if not used by <em>one</em> render pass
+   *         animation. <code>null</code> otherwise.
+   */
   protected AnimationAction compactLayout(
       final List<RenderpassPosition> members, final AnimationTiming timing,
       final List<Rectangle2D> bboxes, final AnimationAction cof) {

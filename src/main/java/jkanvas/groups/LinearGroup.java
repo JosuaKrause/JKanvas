@@ -144,6 +144,20 @@ public class LinearGroup extends RenderGroup {
     }
   }
 
+  /**
+   * Chooses the layout algorithm.
+   * 
+   * @param members The members.
+   * @param timing The animation timing.
+   * @param horizontal Whether the primary direction is horizontal.
+   * @param alignmentFactor The alignment factor.
+   * @param space The space between render passes.
+   * @param bboxes The bounding boxes.
+   * @param max The maximal space a render pass uses.
+   * @param cof The animation action.
+   * @return The animation action if not used by <em>one</em> render pass
+   *         animation. <code>null</code> otherwise.
+   */
   protected AnimationAction chooseLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
@@ -152,6 +166,20 @@ public class LinearGroup extends RenderGroup {
         alignmentFactor, space, bboxes, max, cof);
   }
 
+  /**
+   * The linear layout.
+   * 
+   * @param members The members.
+   * @param timing The animation timing.
+   * @param horizontal Whether the primary direction is horizontal.
+   * @param alignmentFactor The alignment factor.
+   * @param space The space between render passes.
+   * @param bboxes The bounding boxes.
+   * @param max The maximal space a render pass uses.
+   * @param cof The animation action.
+   * @return The animation action if not used by <em>one</em> render pass
+   *         animation. <code>null</code> otherwise.
+   */
   protected AnimationAction linearLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
