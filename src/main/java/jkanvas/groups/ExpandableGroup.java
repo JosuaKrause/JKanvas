@@ -39,7 +39,7 @@ public class ExpandableGroup extends LinearGroup {
     if(expanded) {
       linearLayout(members, timing, horizontal, alignmentFactor, space, bboxes, max);
     } else {
-      compactLayout(members, timing, bboxes);
+      compactLayout(members, timing);
     }
   }
 
@@ -49,26 +49,13 @@ public class ExpandableGroup extends LinearGroup {
    * 
    * @param members The members.
    * @param timing The animation timing.
-   * @param bboxes The bounding boxes.
    */
   protected void compactLayout(final List<RenderpassPosition> members,
-      final AnimationTiming timing, final List<Rectangle2D> bboxes) {
-    double w = 0;
-    double h = 0;
-    for(final Rectangle2D bbox : bboxes) {
-      w = Math.max(w, bbox.getWidth());
-      h = Math.max(h, bbox.getHeight());
-    }
+      final AnimationTiming timing) {
     for(final RenderpassPosition m : members) {
-      final Rectangle2D bbox = m.getPredictBBox();
-      if(bbox == null) {
-        continue;
-      }
       // TODO FIXME where to put the bounding box
       // position (ie getX(), getY()) consideration? see #13
-      final Point2D dest = new Point2D.Double(
-          (w - bbox.getWidth()) * 0.5,
-          (h - bbox.getHeight()) * 0.5);
+      final Point2D dest = new Point2D.Double(0, 0);
       if(!m.pass.isVisible()) {
         m.set(dest);
       } else if(!m.getPredict().equals(dest)) {
