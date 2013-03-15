@@ -164,7 +164,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
     c.addAction(KeyEvent.VK_C, new AbstractAction() {
 
       private final Alignment[] align =
-      { Alignment.LEFT, Alignment.RIGHT, Alignment.MIDDLE};
+      { Alignment.LEFT, Alignment.RIGHT, Alignment.CENTER};
 
       private int ac = 0;
 

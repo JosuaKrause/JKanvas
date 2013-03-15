@@ -56,7 +56,7 @@ public class LinearGroup extends RenderGroup {
     LEFT(0),
 
     /** Aligns in the middle. */
-    MIDDLE(0.5),
+    CENTER(0.5),
 
     /** Aligns on the right side. */
     RIGHT(1),
@@ -90,7 +90,7 @@ public class LinearGroup extends RenderGroup {
       final double space, final AnimationTiming timing) {
     super(animator);
     horizontal = isHorizontal;
-    alignmentFactor = Alignment.MIDDLE.alignmentFactor;
+    alignmentFactor = Alignment.CENTER.alignmentFactor;
     this.space = space;
     this.timing = Objects.requireNonNull(timing);
     curOnFinish = new AtomicReference<>();
