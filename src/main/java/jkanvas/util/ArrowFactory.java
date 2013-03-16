@@ -3,7 +3,7 @@ package jkanvas.util;
 import static jkanvas.util.VecUtil.*;
 
 import java.awt.Shape;
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.Objects;
 
@@ -29,7 +29,7 @@ public class ArrowFactory {
      * @param dir The direction of the arrow at the tip. The length determines
      *          the width of the tip.
      */
-    public abstract void drawTip(GeneralPath path, Point2D pos, Point2D dir);
+    public abstract void drawTip(Path2D path, Point2D pos, Point2D dir);
 
   } // TipType
 
@@ -37,7 +37,7 @@ public class ArrowFactory {
   public static final TipType NONE = new TipType() {
 
     @Override
-    public void drawTip(final GeneralPath path, final Point2D pos, final Point2D dir) {
+    public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
       // nothing to draw
     }
 
@@ -47,7 +47,7 @@ public class ArrowFactory {
   public static final TipType FLAT = new TipType() {
 
     @Override
-    public void drawTip(final GeneralPath path, final Point2D pos, final Point2D dir) {
+    public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
       final Point2D side = mulVec(getOrthoLeft(dir), 0.5);
       final Point2D start = addVec(pos, side);
       final Point2D end = subVec(pos, side);
@@ -61,7 +61,7 @@ public class ArrowFactory {
   public static final TipType ARROW_THIN = new TipType() {
 
     @Override
-    public void drawTip(final GeneralPath path, final Point2D pos, final Point2D dir) {
+    public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
       final Point2D side = mulVec(getOrthoLeft(dir), 0.5);
       final Point2D left = subVec(addVec(pos, side), dir);
       final Point2D right = subVec(subVec(pos, side), dir);
@@ -77,7 +77,7 @@ public class ArrowFactory {
   public static final TipType ARROW_FULL = new TipType() {
 
     @Override
-    public void drawTip(final GeneralPath path, final Point2D pos, final Point2D dir) {
+    public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
       final Point2D side = mulVec(getOrthoLeft(dir), 0.5);
       final Point2D left = subVec(addVec(pos, side), dir);
       final Point2D right = subVec(subVec(pos, side), dir);
@@ -93,7 +93,7 @@ public class ArrowFactory {
   public static final TipType CIRCLE = new TipType() {
 
     @Override
-    public void drawTip(final GeneralPath path, final Point2D pos, final Point2D dir) {
+    public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
       path.append(PaintUtil.createCircle(pos.getX(), pos.getY(), getLength(dir)), false);
     }
 
@@ -269,7 +269,7 @@ public class ArrowFactory {
    */
   private Shape createArrow(final Point2D start, final Point2D end,
       final Point2D bendFirst, final Point2D bendSecond) {
-    final GeneralPath path = new GeneralPath();
+    final Path2D path = new Path2D.Double();
     Point2D dirHead;
     Point2D dirTail;
     path.moveTo(start.getX(), start.getY());

@@ -199,6 +199,15 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
     this.list = list;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The animation list.
+   */
+  protected AnimationList getAnimationList() {
+    return list;
+  }
+
   @Override
   public boolean isChanging() {
     for(final T node : view.nodes()) {
