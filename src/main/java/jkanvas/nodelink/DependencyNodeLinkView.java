@@ -72,6 +72,28 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
   }
 
   /**
+   * Adds the given reference directly to the collection.
+   * 
+   * @param others The collection.
+   * @param ref The reference.
+   */
+  private static void addDirect(final Collection<Object> others, final Object ref) {
+    if(ref == null) return;
+    if(others.contains(ref)) return;
+    others.add(ref);
+  }
+
+  /**
+   * Whether the given class is a non primitive array.
+   * 
+   * @param clazz The class.
+   * @return Whether the class is a non primitive array.
+   */
+  private static boolean isValidArray(final Class<?> clazz) {
+    return clazz.isArray() && !clazz.getComponentType().isPrimitive();
+  }
+
+  /**
    * Adds a reference to the collection.
    * 
    * @param others The collection.
@@ -81,12 +103,8 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
     if(ref == null) return;
     if(others.contains(ref)) return;
     final Class<? extends Object> clazz = ref.getClass();
-    if(clazz.isArray() && !clazz.getComponentType().isPrimitive()) {
-      others.add(ref);
-      final Object[] arr = (Object[]) ref;
-      for(final Object r : arr) {
-        addRef(others, r);
-      }
+    if(isValidArray(clazz)) {
+      addDirect(others, ref);
       return;
     }
     final Package pkg = clazz.getPackage();
@@ -101,7 +119,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
       }
     }
     if(allowed) {
-      others.add(ref);
+      addDirect(others, ref);
     }
   }
 
@@ -138,7 +156,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
     if(o == null) return Collections.emptySet();
     final Set<Object> others = Collections.newSetFromMap(new IdentityHashMap<Object, Boolean>());
     Class<? extends Object> clazz = o.getClass();
-    if(clazz.isArray() && !clazz.getComponentType().isPrimitive()) {
+    if(isValidArray(clazz)) {
       final Object[] arr = (Object[]) o;
       for(final Object r : arr) {
         addRef(others, r);
