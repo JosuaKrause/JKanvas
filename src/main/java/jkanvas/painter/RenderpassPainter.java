@@ -453,4 +453,16 @@ public class RenderpassPainter extends PainterAdapter {
     return box;
   }
 
+  /** Whether the render pass painter is already disposed. */
+  private boolean disposed;
+
+  @Override
+  public void dispose() {
+    if(disposed) return;
+    for(final Renderpass r : back) {
+      r.dispose();
+    }
+    disposed = true;
+  }
+
 }

@@ -72,4 +72,7 @@ public interface Renderpass extends KanvasInteraction {
    */
   boolean isChanging();
 
+  /** Disposes this render pass. */
+  void dispose();
+
 }
