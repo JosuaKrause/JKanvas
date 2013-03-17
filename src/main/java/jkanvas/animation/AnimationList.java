@@ -1,15 +1,13 @@
 package jkanvas.animation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+
+import jkanvas.util.SnapshotList;
+import jkanvas.util.SnapshotList.Snapshot;
 
 /**
  * An animation list holds all animated objects. Animated objects by themselves
@@ -20,41 +18,12 @@ import java.util.concurrent.RecursiveAction;
  */
 public final class AnimationList {
 
-  /** All registered animated objects. */
-  private final List<Animated> animated = new ArrayList<>();
+  /** The list containing the animatable objects. */
+  private final SnapshotList<Animated> animated;
 
-  /**
-   * A quick check to see whether an object is in the list. This set is also
-   * used as monitor for all list changing operations and setting
-   * {@link #inAnimation}.
-   */
-  private final Set<Animated> quickCheck = Collections.newSetFromMap(new IdentityHashMap<Animated, Boolean>());
-
-  /**
-   * The list that is filled when {@link #inAnimation} is <code>true</code>
-   * instead of {@link #animated}. The elements are added when
-   * {@link #inAnimation} is set to <code>false</code>.
-   */
-  private final List<Animated> toBeAdded = new ArrayList<>();
-
-  /**
-   * The list that schedules removal when {@link #inAnimation} is
-   * <code>true</code> and {@link #animated} cannot be changed. The elements are
-   * removed when {@link #inAnimation} is set to <code>false</code>.
-   */
-  private final List<Animated> toBeRemoved = new ArrayList<>();
-
-  /**
-   * When set to <code>true</code> the list {@link #animated} is guaranteed not
-   * to change.
-   */
-  private volatile boolean inAnimation;
-
-  /**
-   * Creates an animation list.
-   */
+  /** Creates an animation list. */
   public AnimationList() {
-    inAnimation = false;
+    animated = new SnapshotList<>();
   }
 
   // ### managing animatable objects ###
@@ -65,16 +34,7 @@ public final class AnimationList {
    * @param animate The object.
    */
   public void addAnimated(final Animated animate) {
-    synchronized(quickCheck) {
-      if(quickCheck.contains(animate)) throw new IllegalArgumentException(
-          "animated object already added: " + animate);
-      quickCheck.add(animate);
-      if(inAnimation) {
-        toBeAdded.add(animate);
-      } else {
-        animated.add(animate);
-      }
-    }
+    animated.add(animate);
   }
 
   /**
@@ -83,20 +43,7 @@ public final class AnimationList {
    * @param animate The object.
    */
   public void removeAnimated(final Animated animate) {
-    synchronized(quickCheck) {
-      if(quickCheck.remove(animate)) {
-        if(inAnimation) {
-          if(!toBeAdded.contains(animate)) {
-            // object must be in animated
-            toBeRemoved.add(animate);
-          } else {
-            toBeAdded.remove(animate);
-          }
-        } else {
-          animated.remove(animate);
-        }
-      }
-    }
+    animated.remove(animate);
   }
 
   /**
@@ -106,33 +53,7 @@ public final class AnimationList {
    * @return Whether the animated object is contained in the list.
    */
   public boolean hasAnimated(final Animated animate) {
-    final boolean has;
-    synchronized(quickCheck) {
-      has = quickCheck.contains(animate);
-    }
-    return has;
-  }
-
-  /**
-   * Starts the animation phase. This method needs a corresponding
-   * {@link #endAnimating()} call which must be in a finally block.
-   */
-  private void startAnimating() {
-    synchronized(quickCheck) {
-      inAnimation = true;
-    }
-  }
-
-  /** Ends the animation phase and alters {@link #animated}. */
-  private void endAnimating() {
-    synchronized(quickCheck) {
-      inAnimation = false;
-      // remove first because objects could be re-added
-      animated.removeAll(toBeRemoved);
-      toBeRemoved.clear();
-      animated.addAll(toBeAdded);
-      toBeAdded.clear();
-    }
+    return animated.has(animate);
   }
 
   // ### performing the animation ###
@@ -165,7 +86,13 @@ public final class AnimationList {
    * 
    * @author Joschi <josua.krause@gmail.com>
    */
-  private final class Worker extends RecursiveAction {
+  private static final class Worker extends RecursiveAction {
+
+    /** The current snapshot of animated objects. */
+    private final Snapshot<Animated> list;
+
+    /** The current time in milliseconds. */
+    private final long currentTime;
 
     /** Whether at least one animated object has been changed. */
     private boolean changed;
@@ -182,12 +109,17 @@ public final class AnimationList {
     /**
      * Creates a worker to animate objects.
      * 
+     * @param list The current snapshot of animated objects.
+     * @param currentTime The current time in milliseconds.
      * @param depth The depth of this worker. If it reaches 0 the worker
      *          actually computes the result.
      * @param start The start position.
      * @param end The exclusive end position.
      */
-    public Worker(final int depth, final int start, final int end) {
+    public Worker(final Snapshot<Animated> list, final long currentTime,
+        final int depth, final int start, final int end) {
+      this.list = list;
+      this.currentTime = currentTime;
       this.depth = depth;
       this.start = start;
       this.end = end;
@@ -196,12 +128,12 @@ public final class AnimationList {
     @Override
     protected void compute() {
       if(depth <= 0) {
-        changed = AnimationList.this.compute(start, end);
+        changed = AnimationList.compute(list, start, end, currentTime);
         return;
       }
       final int mid = (start + end) >>> 1;
-      final Worker left = new Worker(depth - 1, start, mid);
-      final Worker right = new Worker(depth - 1, mid, end);
+      final Worker left = new Worker(list, currentTime, depth - 1, start, mid);
+      final Worker right = new Worker(list, currentTime, depth - 1, mid, end);
       right.fork();
       left.compute();
       right.join();
@@ -222,22 +154,22 @@ public final class AnimationList {
   /**
    * Animates a range of animated objects.
    * 
+   * @param s The current list snapshot.
    * @param from The start index inclusive.
    * @param to The end index exclusive.
+   * @param currentTime The current time in milliseconds.
    * @return Whether a redraw is needed.
    */
-  boolean compute(final int from, final int to) {
+  static boolean compute(final Snapshot<Animated> s,
+      final int from, final int to, final long currentTime) {
     int pos = from;
     boolean hasChanged = false;
     while(pos < to) {
-      hasChanged |= animated.get(pos).animate(currentTime);
+      hasChanged |= s.get(pos).animate(currentTime);
       ++pos;
     }
     return hasChanged;
   }
-
-  /** The current time. */
-  long currentTime;
 
   /**
    * Computes one step for all animated.
@@ -247,23 +179,19 @@ public final class AnimationList {
    */
   boolean doAnimate(final long currentTime) {
     final boolean needsRedraw;
-    try {
-      startAnimating();
-      this.currentTime = currentTime;
-      final int size = animated.size();
+    try (Snapshot<Animated> s = animated.getSnapshot()) {
+      final int size = s.size();
       final int depth = suggestDepth(size);
       if(depth <= 0) {
-        needsRedraw = compute(0, size);
+        needsRedraw = compute(s, 0, size, currentTime);
       } else {
         // a worker has a higher idle time (ie when no animation is happening)
         // but when we animate it is faster than the sequential version
-        final Worker task = new Worker(depth, 0, size);
+        final Worker task = new Worker(s, currentTime, depth, 0, size);
         pool.invoke(task);
         needsRedraw = task.hasChanged();
       }
       processActions(currentTime);
-    } finally {
-      endAnimating();
     }
     return needsRedraw;
   }
