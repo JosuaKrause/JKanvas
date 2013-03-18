@@ -286,6 +286,16 @@ public abstract class RenderGroup extends AbstractRenderpass {
     return members.get(index).pass;
   }
 
+  public void setPosition(final AbstractRenderpass pass, final Point2D pos,
+      final AnimationAction onFinish) {
+    setPosition(indexOf(pass), pos, onFinish);
+  }
+
+  public void setPosition(final AbstractRenderpass pass, final Point2D pos,
+      final AnimationTiming timing, final AnimationAction onFinish) {
+    setPosition(indexOf(pass), pos, timing, onFinish);
+  }
+
   public void setPosition(final int index, final Point2D pos,
       final AnimationAction onFinish) {
     members.get(index).set(pos, onFinish);
