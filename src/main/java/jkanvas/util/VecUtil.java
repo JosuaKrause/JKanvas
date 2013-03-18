@@ -285,6 +285,25 @@ public final class VecUtil {
         a.getX(), a.getY(), b.getX(), b.getY()) < 0;
   }
 
+  public static Point2D intersectionPoint(final Line2D l1, final Line2D l2) {
+    final double x1 = l1.getX1();
+    final double y1 = l1.getY1();
+    final double x2 = l1.getX2();
+    final double y2 = l1.getY2();
+
+    final double x3 = l2.getX1();
+    final double y3 = l2.getY1();
+    final double x4 = l2.getX2();
+    final double y4 = l2.getY2();
+
+    final double d = ((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4));
+    if(d == 0) return null;
+    final double a = (x1 * y2) - (y1 * x2);
+    final double b = (x3 * y4) - (y3 * x4);
+    return new Point2D.Double(((a * (x3 - x4)) - ((x1 - x2) * b)) / d,
+        ((a * (y3 - y4)) - ((y1 - y2) * b)) / d);
+  }
+
   /**
    * Whether the given line contains NaNs.
    * 
