@@ -14,7 +14,9 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedPosition;
+import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationList;
+import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.animation.GenericAnimated;
 import jkanvas.painter.AbstractRenderpass;
@@ -282,6 +284,16 @@ public abstract class RenderGroup extends AbstractRenderpass {
    */
   public AbstractRenderpass getRenderpass(final int index) {
     return members.get(index).pass;
+  }
+
+  public void setPosition(final int index, final Point2D pos,
+      final AnimationAction onFinish) {
+    members.get(index).set(pos, onFinish);
+  }
+
+  public void setPosition(final int index, final Point2D pos,
+      final AnimationTiming timing, final AnimationAction onFinish) {
+    members.get(index).startAnimationTo(pos, timing, onFinish);
   }
 
   /**

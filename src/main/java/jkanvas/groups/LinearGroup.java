@@ -121,7 +121,8 @@ public class LinearGroup extends RenderGroup {
     final double alignmentFactor = getAlignment();
     final double space = getSpace();
     final List<Rectangle2D> bboxes = new ArrayList<>(members.size());
-    double max = 0;
+    double maxH = 0;
+    double maxV = 0;
     for(final RenderpassPosition p : members) {
       final Renderpass pass = p.pass;
       final Rectangle2D bbox = pass.getBoundingBox();
@@ -130,14 +131,18 @@ public class LinearGroup extends RenderGroup {
       if(!pass.isVisible()) {
         continue;
       }
-      final double v = horizontal ? bbox.getHeight() : bbox.getWidth();
-      if(v > max) {
-        max = v;
+      final double w = bbox.getWidth();
+      final double h = bbox.getHeight();
+      if(w > maxH) {
+        maxH = w;
+      }
+      if(h > maxV) {
+        maxV = h;
       }
     }
     final AnimationAction cof = clearCurrentOnFinish();
     getAnimator().getAnimationList().scheduleAction(cof, timing.duration);
-    chooseLayout(members, timing, horizontal, alignmentFactor, space, bboxes, max);
+    chooseLayout(members, timing, horizontal, alignmentFactor, space, bboxes, maxH, maxV);
   }
 
   /**
@@ -149,13 +154,14 @@ public class LinearGroup extends RenderGroup {
    * @param alignmentFactor The alignment factor.
    * @param space The space between render passes.
    * @param bboxes The bounding boxes.
-   * @param max The maximal space a render pass uses.
+   * @param maxH The maximal horizontal space a render pass uses.
+   * @param maxV The maximal vertical space a render pass uses.
    */
   protected void chooseLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
-      final double max) {
-    linearLayout(members, timing, horizontal, alignmentFactor, space, bboxes, max);
+      final double maxH, final double maxV) {
+    linearLayout(members, timing, horizontal, alignmentFactor, space, bboxes, maxH, maxV);
   }
 
   /**
@@ -167,12 +173,14 @@ public class LinearGroup extends RenderGroup {
    * @param alignmentFactor The alignment factor.
    * @param space The space between render passes.
    * @param bboxes The bounding boxes.
-   * @param max The maximal space a render pass uses.
+   * @param maxH The maximal horizontal space a render pass uses.
+   * @param maxV The maximal vertical space a render pass uses.
    */
   protected void linearLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
-      final double max) {
+      final double maxH, final double maxV) {
+    final double max = horizontal ? maxV : maxH;
     final boolean breakLines = breakPoint > 0;
     double pos = 0;
     double ortho = 0;

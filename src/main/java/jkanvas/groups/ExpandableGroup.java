@@ -35,9 +35,10 @@ public class ExpandableGroup extends LinearGroup {
   protected void chooseLayout(final List<RenderpassPosition> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space,
-      final List<Rectangle2D> bboxes, final double max) {
+      final List<Rectangle2D> bboxes, final double maxH, final double maxV) {
     if(expanded) {
-      linearLayout(members, timing, horizontal, alignmentFactor, space, bboxes, max);
+      linearLayout(members, timing, horizontal, alignmentFactor,
+          space, bboxes, maxH, maxV);
     } else {
       compactLayout(members, timing);
     }
