@@ -101,6 +101,7 @@ public class LinearGroup extends RenderGroup {
     super.invalidate();
     final AnimationAction cof = curOnFinish.getAndSet(onFinish);
     if(cof != null) {
+      // TODO schedule
       cof.animationFinished();
     }
   }

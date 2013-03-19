@@ -11,6 +11,7 @@ import jkanvas.animation.Animated;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.GenericAnimated;
+import jkanvas.painter.Renderpass;
 
 /**
  * A zoom-able view with an attached camera.
@@ -89,6 +90,17 @@ class CameraZUI implements ZoomableView, Camera, Animated {
     ensureView();
     view.set(getView());
     view.startAnimationTo(r, timing, onFinish);
+  }
+
+  @Override
+  public void toView(final Renderpass pass, final AnimationTiming timing,
+      final AnimationAction onFinish, final boolean useMargin) {
+    final Rectangle2D box = jkanvas.painter.RenderpassPainter.getTopLevelBounds(pass);
+    if(box == null) {
+      canvas.getAnimator().getAnimationList().scheduleAction(onFinish, timing.duration);
+      return;
+    }
+    toView(box, timing, onFinish, useMargin);
   }
 
   /** Is used to delay animation until the canvas is displayed the first time. */

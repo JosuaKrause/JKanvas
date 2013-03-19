@@ -4,6 +4,7 @@ import java.awt.geom.Rectangle2D;
 
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
+import jkanvas.painter.Renderpass;
 
 /**
  * A camera is way to control the viewport of a {@link jkanvas.Canvas}.
@@ -13,7 +14,7 @@ import jkanvas.animation.AnimationTiming;
 public interface Camera {
 
   /**
-   * Scrolls to the specified view. The rectangle will be completely visible
+   * Scrolls to the specified viewport. The rectangle will be completely visible
    * afterwards.
    * 
    * @param rect The rectangle in canvas coordinates.
@@ -23,6 +24,21 @@ public interface Camera {
    * @param useMargin Whether to add the canvas margin.
    */
   void toView(Rectangle2D rect, AnimationTiming timing,
+      AnimationAction onFinish, boolean useMargin);
+
+  /**
+   * Scrolls to the specified render pass. The bounding box of the render pass
+   * will be completely visible afterwards. If the render pass has no bounding
+   * box the finish action will be scheduled normally but otherwise nothing
+   * happens.
+   * 
+   * @param pass The render pass.
+   * @param timing The timing of the scrolling.
+   * @param onFinish The action that is executed after the animation has
+   *          finished.
+   * @param useMargin Whether to add the canvas margin.
+   */
+  void toView(Renderpass pass, AnimationTiming timing,
       AnimationAction onFinish, boolean useMargin);
 
   /**

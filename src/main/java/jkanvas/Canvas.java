@@ -492,6 +492,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     final Rectangle2D bbox = painter.getBoundingBox();
     if(bbox == null) {
       if(onFinish != null) {
+        // TODO schedule on finish
         onFinish.animationFinished();
       }
       return false;

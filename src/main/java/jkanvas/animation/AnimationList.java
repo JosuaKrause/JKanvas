@@ -259,6 +259,8 @@ public final class AnimationList {
     actionQueue.offer(new TimedAction(action, wait));
   }
 
+  // TODO with animation timing
+
   /**
    * Processes the actions.
    * 
