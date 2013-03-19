@@ -173,33 +173,6 @@ public class AnimatedPosition extends Position2D implements Animated {
     position.startAnimationTo(copy(pos), timing, onFinish);
   }
 
-  /**
-   * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values.
-   * 
-   * @param pos The new destination position.
-   * @param defaultTiming The default timing that is used when no animation is
-   *          active.
-   */
-  public void changeAnimationTo(final Point2D pos, final AnimationTiming defaultTiming) {
-    changeAnimationTo(pos, defaultTiming, null);
-  }
-
-  /**
-   * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values.
-   * 
-   * @param pos The new destination position.
-   * @param defaultTiming The default timing that is used when no animation is
-   *          active.
-   * @param onFinish An action that is executed when the animation ends. This
-   *          may be <code>null</code> when no action is required.
-   */
-  public void changeAnimationTo(final Point2D pos,
-      final AnimationTiming defaultTiming, final AnimationAction onFinish) {
-    position.changeAnimationTo(copy(pos), defaultTiming, onFinish);
-  }
-
   /** Aborts the current animation and keeps the current position. */
   public void clearAnimation() {
     clearAnimation(null);

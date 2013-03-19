@@ -174,69 +174,7 @@ public abstract class GenericAnimated<T> implements Animated {
       return;
     }
     Objects.requireNonNull(t);
-    pendingOperations.add(new PendingOp<>(t, timing, beforeAnimation(onFinish), true));
-    pred = t;
-  }
-
-  /**
-   * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values.
-   * 
-   * @param currentTime The current time in milliseconds.
-   * @param t The new destination value.
-   * @param defaultTiming The default timing that is used when no animation is
-   *          active.
-   */
-  private void changeAnimationTo(final long currentTime,
-      final T t, final AnimationTiming defaultTiming) {
-    doAnimate(currentTime);
-    final Interpolator p = pol;
-    // not using inAnimation() because of possible pred racing conditions
-    if(p == null) {
-      startAnimationTo(currentTime, t, defaultTiming);
-      return;
-    }
-    final long et = endTime;
-    start = cur;
-    end = t;
-    pred = t;
-    pol = p;
-    startTime = currentTime;
-    endTime = et;
-  }
-
-  /**
-   * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values.
-   * 
-   * @param t The new destination value.
-   * @param defaultTiming The default timing that is used when no animation is
-   *          active.
-   */
-  public void changeAnimationTo(final T t, final AnimationTiming defaultTiming) {
-    changeAnimationTo(t, defaultTiming, null);
-  }
-
-  /**
-   * Sets the current animation to a new destination. If no current animation is
-   * active a new one is created with the given default values.
-   * 
-   * @param t The new destination value.
-   * @param defaultTiming The default timing that is used when no animation is
-   *          active.
-   * @param onFinish An action that is executed when the animation ends. This
-   *          may be <code>null</code> when no action is required.
-   */
-  public void changeAnimationTo(
-      final T t, final AnimationTiming defaultTiming, final AnimationAction onFinish) {
-    Objects.requireNonNull(defaultTiming);
-    if(!inAnimation() && defaultTiming.duration <= 0) {
-      set(t, onFinish);
-      return;
-    }
-    Objects.requireNonNull(t);
-    pendingOperations.add(new PendingOp<>(t, defaultTiming,
-        beforeAnimation(onFinish), false));
+    pendingOperations.add(new PendingOp<>(t, timing, beforeAnimation(onFinish)));
     pred = t;
   }
 
@@ -289,9 +227,6 @@ public abstract class GenericAnimated<T> implements Animated {
           break;
         case OP_START:
           startAnimationTo(currentTime, op.destination, op.timing);
-          break;
-        case OP_CHANGE:
-          changeAnimationTo(currentTime, op.destination, op.timing);
           break;
         case OP_SET: {
           doClearAnimation();
@@ -350,11 +285,8 @@ public abstract class GenericAnimated<T> implements Animated {
   /** Animation start operation. */
   private static final int OP_START = 1;
 
-  /** Animation change operation. */
-  private static final int OP_CHANGE = 2;
-
   /** Value setting operation. */
-  private static final int OP_SET = 3;
+  private static final int OP_SET = 2;
 
   /**
    * A pending animation operation.
@@ -409,12 +341,10 @@ public abstract class GenericAnimated<T> implements Animated {
      * @param destination The destination of the animation.
      * @param timing The timing.
      * @param onFinish The action that will be executed when the animation ends.
-     * @param start Whether this operation starts the animation or changes the
-     *          current animation.
      */
-    public PendingOp(final T destination, final AnimationTiming timing,
-        final AnimationAction onFinish, final boolean start) {
-      operation = start ? OP_START : OP_CHANGE;
+    public PendingOp(final T destination,
+        final AnimationTiming timing, final AnimationAction onFinish) {
+      operation = OP_START;
       this.destination = destination;
       this.timing = timing;
       this.onFinish = onFinish;

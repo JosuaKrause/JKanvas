@@ -69,8 +69,7 @@ public class AnimatedPositionTest {
     assertEquals(4, p.getPredictX(), 0);
     assertEquals(3, p.getPredictY(), 0);
     assertFalse(p.inAnimation());
-    p.startAnimationTo(new Point2D.Double(12, 10), at);
-    p.changeAnimationTo(new Point2D.Double(6, 5), at);
+    p.startAnimationTo(new Point2D.Double(6, 5), at);
     assertEquals(4, p.getX(), 0);
     assertEquals(3, p.getY(), 0);
     assertEquals(6, p.getPredictX(), 0);
@@ -179,132 +178,6 @@ public class AnimatedPositionTest {
     assertEquals(3, p.getY(), 0);
     assertEquals(4, p.getPredictX(), 0);
     assertEquals(3, p.getPredictY(), 0);
-    assertFalse(p.inAnimation());
-  }
-
-  /**
-   * A call to change animation with no duration should behave exactly like
-   * setPosition().
-   */
-  @Test
-  public void actAsNoAnimationChange() {
-    final AnimationTiming at = new AnimationTiming(Interpolator.LINEAR, 0);
-    final AnimatedPosition p = new AnimatedPosition(new Point2D.Double(3, 4));
-    assertEquals(3, p.getX(), 0);
-    assertEquals(4, p.getY(), 0);
-    assertEquals(3, p.getPredictX(), 0);
-    assertEquals(4, p.getPredictY(), 0);
-    assertFalse(p.inAnimation());
-    p.changeAnimationTo(new Point2D.Double(4, 3), at);
-    assertEquals(4, p.getX(), 0);
-    assertEquals(3, p.getY(), 0);
-    assertEquals(4, p.getPredictX(), 0);
-    assertEquals(3, p.getPredictY(), 0);
-    assertFalse(p.inAnimation());
-    p.animate(0);
-    assertEquals(4, p.getX(), 0);
-    assertEquals(3, p.getY(), 0);
-    assertEquals(4, p.getPredictX(), 0);
-    assertEquals(3, p.getPredictY(), 0);
-    assertFalse(p.inAnimation());
-  }
-
-  /** Checks the behavior of change animation. */
-  @Test
-  public void correctChangeBehavior() {
-    final AnimationTiming at10 = new AnimationTiming(Interpolator.LINEAR, 10);
-    final AnimationTiming at2 = new AnimationTiming(Interpolator.LINEAR, 2);
-    final AnimatedPosition p = new AnimatedPosition(new Point2D.Double(3, 4));
-    assertEquals(3, p.getX(), 0);
-    assertEquals(4, p.getY(), 0);
-    assertEquals(3, p.getPredictX(), 0);
-    assertEquals(4, p.getPredictY(), 0);
-    assertFalse(p.inAnimation());
-    p.startAnimationTo(new Point2D.Double(5, 6), at2);
-    p.animate(0);
-    assertEquals(3, p.getX(), 0);
-    assertEquals(4, p.getY(), 0);
-    assertEquals(5, p.getPredictX(), 0);
-    assertEquals(6, p.getPredictY(), 0);
-    assertTrue(p.inAnimation());
-    p.changeAnimationTo(new Point2D.Double(3, 2), at10);
-    assertEquals(3, p.getX(), 0);
-    assertEquals(4, p.getY(), 0);
-    assertEquals(3, p.getPredictX(), 0);
-    assertEquals(2, p.getPredictY(), 0);
-    p.animate(1);
-    assertEquals(4, p.getX(), 0);
-    assertEquals(5, p.getY(), 0);
-    assertEquals(3, p.getPredictX(), 0);
-    assertEquals(2, p.getPredictY(), 0);
-    assertTrue(p.inAnimation());
-    p.animate(2);
-    assertEquals(3, p.getX(), 0);
-    assertEquals(2, p.getY(), 0);
-    assertEquals(3, p.getPredictX(), 0);
-    assertEquals(2, p.getPredictY(), 0);
-    assertFalse(p.inAnimation());
-  }
-
-  /**
-   * When an animation is changed the new animation timing must not be used even
-   * if it has no duration.
-   */
-  @Test
-  public void overtakeChange() {
-    final AnimationTiming at0 = new AnimationTiming(Interpolator.LINEAR, 0);
-    final AnimationTiming at2 = new AnimationTiming(Interpolator.LINEAR, 2);
-    final AnimatedPosition p = new AnimatedPosition(new Point2D.Double(3, 4));
-    p.startAnimationTo(new Point2D.Double(5, 6), at2);
-    p.animate(0);
-    p.changeAnimationTo(new Point2D.Double(0, 0), at0);
-    assertEquals(3, p.getX(), 0);
-    assertEquals(4, p.getY(), 0);
-    assertEquals(0, p.getPredictX(), 0);
-    assertEquals(0, p.getPredictY(), 0);
-    assertTrue(p.inAnimation());
-    p.animate(1);
-    assertEquals(4, p.getX(), 0);
-    assertEquals(5, p.getY(), 0);
-    assertEquals(0, p.getPredictX(), 0);
-    assertEquals(0, p.getPredictY(), 0);
-    assertTrue(p.inAnimation());
-    p.animate(2);
-    assertEquals(0, p.getX(), 0);
-    assertEquals(0, p.getY(), 0);
-    assertEquals(0, p.getPredictX(), 0);
-    assertEquals(0, p.getPredictY(), 0);
-    assertFalse(p.inAnimation());
-  }
-
-  /** Change behaves like start when no animation is present. */
-  @Test
-  public void changeIsStart() {
-    final AnimationTiming at = new AnimationTiming(Interpolator.LINEAR, 2);
-    final AnimatedPosition p = new AnimatedPosition(new Point2D.Double(0, 0));
-    p.changeAnimationTo(new Point2D.Double(2, 2), at);
-    assertEquals(0, p.getX(), 0);
-    assertEquals(0, p.getY(), 0);
-    assertEquals(2, p.getPredictX(), 0);
-    assertEquals(2, p.getPredictY(), 0);
-    assertTrue(p.inAnimation());
-    p.animate(0);
-    assertEquals(0, p.getX(), 0);
-    assertEquals(0, p.getY(), 0);
-    assertEquals(2, p.getPredictX(), 0);
-    assertEquals(2, p.getPredictY(), 0);
-    assertTrue(p.inAnimation());
-    p.animate(1);
-    assertEquals(1, p.getX(), 0);
-    assertEquals(1, p.getY(), 0);
-    assertEquals(2, p.getPredictX(), 0);
-    assertEquals(2, p.getPredictY(), 0);
-    assertTrue(p.inAnimation());
-    p.animate(2);
-    assertEquals(2, p.getX(), 0);
-    assertEquals(2, p.getY(), 0);
-    assertEquals(2, p.getPredictX(), 0);
-    assertEquals(2, p.getPredictY(), 0);
     assertFalse(p.inAnimation());
   }
 
@@ -424,9 +297,8 @@ public class AnimatedPositionTest {
     assertEquals(0, p.getY(), 0);
     assertEquals(0, p.getPredictX(), 0);
     assertEquals(0, p.getPredictY(), 0);
-    p.startAnimationTo(passing, at);
     passing.setLocation(1, 2);
-    p.changeAnimationTo(passing, at);
+    p.startAnimationTo(passing, at);
     passing.setLocation(0, 0);
     p.animate(0);
     p.animate(1);
