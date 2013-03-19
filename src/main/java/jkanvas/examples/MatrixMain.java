@@ -151,7 +151,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
           final Rectangle2D rect, final QuadraticMatrix<Double> matrix, final int row,
           final int col, final boolean isSelected, final boolean hasSelection) {
         super.drawCell(g, ctx, rect, matrix, row, col, isSelected, hasSelection);
-        // FIXME find better / more stable way
+        // FIXME find better / more stable way #17
         // when leftmost column draw column title
         if(col == 0) {
           final StringDrawer s = new StringDrawer(g, matrix.getName(row));

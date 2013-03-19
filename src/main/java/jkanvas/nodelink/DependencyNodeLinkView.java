@@ -24,7 +24,7 @@ import jkanvas.util.BitSetIterable;
  */
 public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, Animated {
 
-  // TODO better array handling
+  // TODO better array handling #16
 
   /** The base object. */
   private final Object base;
@@ -107,6 +107,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
       addDirect(others, ref);
       return;
     }
+    // TODO find better way to define which class should be included #16
     final Package pkg = clazz.getPackage();
     boolean allowed = false;
     if(pkg != null) {
@@ -220,6 +221,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
     pos.clear();
     fillObjects(base);
     fillEdges();
+    // TODO use layout algorithm #16
     final double maxX = 1000;
     double x = 0;
     double y = 0;
