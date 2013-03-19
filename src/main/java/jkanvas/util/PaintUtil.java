@@ -6,7 +6,7 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
@@ -171,7 +171,7 @@ public final class PaintUtil {
       final double x2, final double y2, final double width) {
     final Point2D ortho = VecUtil.setLength(
         new Point2D.Double(y1 - y2, x2 - x1), width * 0.5);
-    final GeneralPath gp = new GeneralPath();
+    final Path2D gp = new Path2D.Double();
     gp.moveTo(x1 + ortho.getX(), y1 + ortho.getY());
     gp.lineTo(x2 + ortho.getX(), y2 + ortho.getY());
     gp.lineTo(x2 - ortho.getX(), y2 - ortho.getY());

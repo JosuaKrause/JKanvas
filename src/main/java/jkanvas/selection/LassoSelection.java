@@ -2,7 +2,7 @@ package jkanvas.selection;
 
 import java.awt.Color;
 import java.awt.Shape;
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
 import jkanvas.Canvas;
@@ -50,11 +50,11 @@ public abstract class LassoSelection extends AbstractSelector {
   }
 
   /** The selection path. */
-  private GeneralPath path;
+  private Path2D path;
 
   @Override
   public Shape beginShape(final Point2D start, final Point2D cur) {
-    path = new GeneralPath();
+    path = new Path2D.Double();
     path.moveTo(start.getX(), start.getY());
     return growShape(start, cur);
   }
