@@ -82,6 +82,18 @@ public abstract class GenericAnimated<T> implements Animated {
   }
 
   /**
+   * This method is called every time an animation is started.
+   * 
+   * @param onFinish The action that was handed in by the public methods. Note
+   *          that this might be <code>null</code>.
+   * @return The action that will be executed when the animation ends. Note that
+   *         this may substitute the original action.
+   */
+  protected AnimationAction beforeAnimation(final AnimationAction onFinish) {
+    return onFinish;
+  }
+
+  /**
    * Setter.
    * 
    * @param t Immediately sets the current value.
@@ -100,7 +112,7 @@ public abstract class GenericAnimated<T> implements Animated {
   public void set(final T t, final AnimationAction onFinish) {
     Objects.requireNonNull(t);
     // ensures that every previous animation is cleared
-    pendingOperations.add(new PendingOp<>(t, onFinish));
+    pendingOperations.add(new PendingOp<>(t, beforeAnimation(onFinish)));
     // set value directly for immediate feed-back
     doSet(t);
     pred = null;
@@ -162,7 +174,7 @@ public abstract class GenericAnimated<T> implements Animated {
       return;
     }
     Objects.requireNonNull(t);
-    pendingOperations.add(new PendingOp<>(t, timing, onFinish, true));
+    pendingOperations.add(new PendingOp<>(t, timing, beforeAnimation(onFinish), true));
     pred = t;
   }
 
@@ -223,7 +235,8 @@ public abstract class GenericAnimated<T> implements Animated {
       return;
     }
     Objects.requireNonNull(t);
-    pendingOperations.add(new PendingOp<>(t, defaultTiming, onFinish, false));
+    pendingOperations.add(new PendingOp<>(t, defaultTiming,
+        beforeAnimation(onFinish), false));
     pred = t;
   }
 
@@ -251,7 +264,7 @@ public abstract class GenericAnimated<T> implements Animated {
    *          This may be <code>null</code> when no action has to be executed.
    */
   public void clearAnimation(final AnimationAction onFinish) {
-    pendingOperations.add(new PendingOp<T>(onFinish));
+    pendingOperations.add(new PendingOp<T>(beforeAnimation(onFinish)));
     doClearAnimation();
   }
 

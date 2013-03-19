@@ -48,7 +48,9 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
     final boolean noCache = chg || lastChanging;
     lastChanging = chg;
     final Rectangle2D comp = ctx.toComponentCoordinates(bbox);
-    if(noCache || (comp.getWidth() > CACHE_VISIBLE && comp.getHeight() > CACHE_VISIBLE)) {
+    if(!isForceCaching()
+        &&
+        (noCache || (comp.getWidth() > CACHE_VISIBLE && comp.getHeight() > CACHE_VISIBLE))) {
       invalidateCache();
       doDraw(g, ctx);
       return;
@@ -57,6 +59,12 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
     g.scale(scale, scale);
     g.translate(bbox.getX(), bbox.getY());
     g.drawImage(cache, 0, 0, null);
+    if(jkanvas.Canvas.DEBUG_CACHE) {
+      jkanvas.util.PaintUtil.setAlpha(g, 0.3);
+      g.setColor(java.awt.Color.MAGENTA);
+      // we do not use a shape because we want to be as precise as the cache
+      g.fillRect(0, 0, cache.getWidth(null), cache.getHeight(null));
+    }
     return;
   }
 
@@ -109,6 +117,12 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
       cache.flush();
       cache = null;
     }
+  }
+
+  @Override
+  public void dispose() {
+    super.dispose();
+    invalidateCache();
   }
 
   /**
@@ -195,6 +209,6 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
       at.concatenate(toCanvas);
     }
 
-  }
+  } // CacheContext
 
 }

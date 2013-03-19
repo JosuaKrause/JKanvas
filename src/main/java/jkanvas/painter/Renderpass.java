@@ -72,6 +72,21 @@ public interface Renderpass extends KanvasInteraction {
    */
   boolean isChanging();
 
+  /**
+   * Setter.
+   * 
+   * @param forceCache Force caching. This can be useful when the render pass is
+   *          moving and caching is supported.
+   */
+  public void setForceCache(final boolean forceCache);
+
+  /**
+   * Getter.
+   * 
+   * @return Whether to force caching when caching is supported.
+   */
+  public boolean isForceCaching();
+
   /** Disposes this render pass. */
   void dispose();
 

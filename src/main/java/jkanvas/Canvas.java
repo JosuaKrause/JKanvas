@@ -41,6 +41,12 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public static boolean DEBUG_BBOX;
 
+  /**
+   * A debug flag to show when a render pass is cached. This flag is optional to
+   * interpret.
+   */
+  public static boolean DEBUG_CACHE;
+
   /** The underlying zoom-able user interface. */
   protected final CameraZUI zui;
 

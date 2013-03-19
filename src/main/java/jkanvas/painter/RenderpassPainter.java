@@ -2,7 +2,6 @@ package jkanvas.painter;
 
 import static jkanvas.util.ArrayUtil.*;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -70,7 +69,7 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
-    g.setColor(Color.GRAY);
+    g.setColor(java.awt.Color.GRAY);
     draw(back, g, ctx);
   }
 

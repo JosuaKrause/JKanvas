@@ -15,6 +15,19 @@ import jkanvas.animation.AnimationList;
  */
 public abstract class RenderpassAdapter implements Renderpass {
 
+  /** Whether caching is forced. */
+  private boolean forceCache;
+
+  @Override
+  public void setForceCache(final boolean forceCache) {
+    this.forceCache = forceCache;
+  }
+
+  @Override
+  public boolean isForceCaching() {
+    return forceCache;
+  }
+
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
     // do nothing

@@ -2,7 +2,6 @@ package jkanvas.groups;
 
 import static jkanvas.util.ArrayUtil.*;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -63,6 +62,22 @@ public abstract class RenderGroup extends AbstractRenderpass {
     }
 
     @Override
+    protected AnimationAction beforeAnimation(final AnimationAction onFinish) {
+      pass.setForceCache(true);
+      return new AnimationAction() {
+
+        @Override
+        public void animationFinished() {
+          pass.setForceCache(false);
+          if(onFinish != null) {
+            onFinish.animationFinished();
+          }
+        }
+
+      };
+    }
+
+    @Override
     protected Point2D interpolate(final Point2D from, final Point2D to, final double t) {
       return VecUtil.interpolate(from, to, t);
     }
@@ -112,7 +127,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
           rect.getY() + pred.getY(), rect.getWidth(), rect.getHeight());
     }
 
-  }
+  } // RenderpassPosition
 
   /** If this flag is set the layout is recomputed when the group is drawn. */
   private boolean redoLayout;
@@ -477,7 +492,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     ensureLayout();
-    gfx.setColor(Color.GREEN);
+    gfx.setColor(java.awt.Color.GREEN);
     RenderpassPainter.draw(nlBack, gfx, ctx);
     final Rectangle2D view = ctx.getVisibleCanvas();
     boolean changed = false;
@@ -507,7 +522,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
     if(jkanvas.Canvas.DEBUG_BBOX) {
       final Graphics2D g = (Graphics2D) gfx.create();
       PaintUtil.setAlpha(g, 0.3);
-      g.setColor(Color.BLUE);
+      g.setColor(java.awt.Color.BLUE);
       for(final RenderpassPosition rp : members) {
         final Renderpass r = rp.pass;
         if(!r.isVisible()) {
@@ -523,7 +538,7 @@ public abstract class RenderGroup extends AbstractRenderpass {
         g.fill(bbox);
       }
     }
-    gfx.setColor(Color.GREEN);
+    gfx.setColor(java.awt.Color.GREEN);
     RenderpassPainter.draw(nlFront, gfx, ctx);
     if(changed) {
       invalidate();
