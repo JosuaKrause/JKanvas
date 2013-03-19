@@ -38,7 +38,6 @@ public abstract class GenericAnimated<T> implements Animated {
   private long endTime;
 
   /** The action that is executed when an animation ends. */
-  // TODO: write action test cases #14
   private AnimationAction onFinish;
 
   /**
@@ -217,6 +216,8 @@ public abstract class GenericAnimated<T> implements Animated {
       doAnimate(currentTime);
       return;
     }
+    // whether to clear on finish actions when last operation in queue
+    boolean clearOnFinish;
     // process pending operations
     do {
       switch(op.operation) {
@@ -224,13 +225,16 @@ public abstract class GenericAnimated<T> implements Animated {
           // clear was called prior to animation so we
           // do not compute the next value
           doClearAnimation();
+          clearOnFinish = true;
           break;
         case OP_START:
           startAnimationTo(currentTime, op.destination, op.timing);
+          clearOnFinish = false;
           break;
         case OP_SET: {
           doClearAnimation();
           doSet(op.destination);
+          clearOnFinish = true;
           break;
         }
         default:
@@ -243,6 +247,10 @@ public abstract class GenericAnimated<T> implements Animated {
       onFinish = op.onFinish;
       op = pendingOperations.poll();
     } while(op != null);
+    if(onFinish != null && clearOnFinish) {
+      onFinish.animationFinished();
+      onFinish = null;
+    }
   }
 
   @Override
