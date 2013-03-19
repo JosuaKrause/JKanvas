@@ -285,6 +285,15 @@ public final class VecUtil {
         a.getX(), a.getY(), b.getX(), b.getY()) < 0;
   }
 
+  /**
+   * Calculates the intersection point where the two infinitely enlarged lines
+   * meet.
+   * 
+   * @param l1 The first line.
+   * @param l2 The second line.
+   * @return The intersection point or <code>null</code> if the lines are
+   *         parallel.
+   */
   public static Point2D intersectionPoint(final Line2D l1, final Line2D l2) {
     final double x1 = l1.getX1();
     final double y1 = l1.getY1();
@@ -297,6 +306,7 @@ public final class VecUtil {
     final double y4 = l2.getY2();
 
     final double d = ((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4));
+    // TODO check whether both are the same line
     if(d == 0) return null;
     final double a = (x1 * y2) - (y1 * x2);
     final double b = (x3 * y4) - (y3 * x4);

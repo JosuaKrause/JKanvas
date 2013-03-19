@@ -286,21 +286,55 @@ public abstract class RenderGroup extends AbstractRenderpass {
     return members.get(index).pass;
   }
 
+  /**
+   * Sets the position of the given render pass and executes the given action
+   * afterwards.
+   * 
+   * @param pass The render pass.
+   * @param pos The new position.
+   * @param onFinish The (optional) action to execute afterwards.
+   */
   public void setPosition(final AbstractRenderpass pass, final Point2D pos,
       final AnimationAction onFinish) {
     setPosition(indexOf(pass), pos, onFinish);
   }
 
-  public void setPosition(final AbstractRenderpass pass, final Point2D pos,
-      final AnimationTiming timing, final AnimationAction onFinish) {
-    setPosition(indexOf(pass), pos, timing, onFinish);
-  }
-
+  /**
+   * Sets the position of the given render pass and executes the given action
+   * afterwards.
+   * 
+   * @param index The index of the render pass.
+   * @param pos The new position.
+   * @param onFinish The (optional) action to execute afterwards.
+   */
   public void setPosition(final int index, final Point2D pos,
       final AnimationAction onFinish) {
     members.get(index).set(pos, onFinish);
   }
 
+  /**
+   * Transitions a render pass to the given position and executes the given
+   * action afterwards.
+   * 
+   * @param pass The render pass.
+   * @param pos The new position.
+   * @param timing The animation timing.
+   * @param onFinish The (optional) action to execute afterwards.
+   */
+  public void setPosition(final AbstractRenderpass pass, final Point2D pos,
+      final AnimationTiming timing, final AnimationAction onFinish) {
+    setPosition(indexOf(pass), pos, timing, onFinish);
+  }
+
+  /**
+   * Transitions a render pass to the given position and executes the given
+   * action afterwards.
+   * 
+   * @param index The index of the render pass.
+   * @param pos The new position.
+   * @param timing The animation timing.
+   * @param onFinish The (optional) action to execute afterwards.
+   */
   public void setPosition(final int index, final Point2D pos,
       final AnimationTiming timing, final AnimationAction onFinish) {
     members.get(index).startAnimationTo(pos, timing, onFinish);
