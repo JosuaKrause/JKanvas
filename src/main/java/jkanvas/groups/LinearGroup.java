@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
+import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
 
 /**
@@ -17,8 +18,9 @@ import jkanvas.painter.Renderpass;
  * are <em>not</em> allowed.
  * 
  * @author Joschi <josua.krause@googlemail.com>
+ * @param <T> The type of layouted render passes.
  */
-public class LinearGroup extends RenderGroup {
+public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
 
   /** The on finish action to use when layouting. */
   private final AtomicReference<AnimationAction> curOnFinish;
@@ -113,7 +115,7 @@ public class LinearGroup extends RenderGroup {
   }
 
   @Override
-  protected final void doLayout(final List<RenderpassPosition> members) {
+  protected final void doLayout(final List<RenderpassPosition<T>> members) {
     final AnimationTiming timing = getTiming();
     final boolean horizontal = isHorizontal();
     final double alignmentFactor = getAlignment();
@@ -121,7 +123,7 @@ public class LinearGroup extends RenderGroup {
     final List<Rectangle2D> bboxes = new ArrayList<>(members.size());
     double maxH = 0;
     double maxV = 0;
-    for(final RenderpassPosition p : members) {
+    for(final RenderpassPosition<T> p : members) {
       final Renderpass pass = p.pass;
       final Rectangle2D bbox = pass.getBoundingBox();
       if(bbox == null) throw new IllegalStateException("bbox must not be null");
@@ -155,7 +157,7 @@ public class LinearGroup extends RenderGroup {
    * @param maxH The maximal horizontal space a render pass uses.
    * @param maxV The maximal vertical space a render pass uses.
    */
-  protected void chooseLayout(final List<RenderpassPosition> members,
+  protected void chooseLayout(final List<RenderpassPosition<T>> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
       final double maxH, final double maxV) {
@@ -174,7 +176,7 @@ public class LinearGroup extends RenderGroup {
    * @param maxH The maximal horizontal space a render pass uses.
    * @param maxV The maximal vertical space a render pass uses.
    */
-  protected void linearLayout(final List<RenderpassPosition> members,
+  protected void linearLayout(final List<RenderpassPosition<T>> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space, final List<Rectangle2D> bboxes,
       final double maxH, final double maxV) {
@@ -183,7 +185,7 @@ public class LinearGroup extends RenderGroup {
     double pos = 0;
     double ortho = 0;
     for(int i = 0; i < members.size(); ++i) {
-      final RenderpassPosition p = members.get(i);
+      final RenderpassPosition<T> p = members.get(i);
       final Rectangle2D bbox = bboxes.get(i);
       if(!p.pass.isVisible()) {
         continue;

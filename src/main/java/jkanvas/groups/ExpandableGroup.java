@@ -7,13 +7,15 @@ import java.util.List;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
+import jkanvas.painter.AbstractRenderpass;
 
 /**
  * A group that can be expanded.
  * 
  * @author Joschi <josua.krause@gmail.com>
+ * @param <T> The type of layouted render passes.
  */
-public class ExpandableGroup extends LinearGroup {
+public class ExpandableGroup<T extends AbstractRenderpass> extends LinearGroup<T> {
 
   /** Whether the group is expanded. */
   private boolean expanded = false;
@@ -32,7 +34,7 @@ public class ExpandableGroup extends LinearGroup {
   }
 
   @Override
-  protected void chooseLayout(final List<RenderpassPosition> members,
+  protected void chooseLayout(final List<RenderpassPosition<T>> members,
       final AnimationTiming timing, final boolean horizontal,
       final double alignmentFactor, final double space,
       final List<Rectangle2D> bboxes, final double maxH, final double maxV) {
@@ -51,9 +53,9 @@ public class ExpandableGroup extends LinearGroup {
    * @param members The members.
    * @param timing The animation timing.
    */
-  protected void compactLayout(final List<RenderpassPosition> members,
+  protected void compactLayout(final List<RenderpassPosition<T>> members,
       final AnimationTiming timing) {
-    for(final RenderpassPosition m : members) {
+    for(final RenderpassPosition<T> m : members) {
       // TODO FIXME where to put the bounding box
       // position (ie getX(), getY()) consideration? see #13
       final Point2D dest = new Point2D.Double(0, 0);

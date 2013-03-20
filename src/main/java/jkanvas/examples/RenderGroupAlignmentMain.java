@@ -66,16 +66,17 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
     };
     final AnimatedPainter p = new AnimatedPainter();
-    final LinearGroup group = new LinearGroup(p, true, 50.0, AnimationTiming.SMOOTH) {
+    final LinearGroup<RenderGroupAlignmentMain> group =
+        new LinearGroup<RenderGroupAlignmentMain>(p, true, 50.0, AnimationTiming.SMOOTH) {
 
-      @Override
-      public void draw(final Graphics2D g, final KanvasContext ctx) {
-        super.draw(g, ctx);
-        g.setColor(Color.GRAY);
-        g.draw(getBoundingBox());
-      }
+          @Override
+          public void draw(final Graphics2D g, final KanvasContext ctx) {
+            super.draw(g, ctx);
+            g.setColor(Color.GRAY);
+            g.draw(getBoundingBox());
+          }
 
-    };
+        };
     for(int num = 0; num < 3; ++num) {
       final MutableQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(
           9 + num * num) {
