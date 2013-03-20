@@ -252,14 +252,24 @@ public final class AnimationList {
    * 
    * @param action The action to be executed. May be <code>null</code> when no
    *          action needs to be executed.
+   * @param timing The timing to infer the duration.
+   */
+  public void scheduleAction(final AnimationAction action, final AnimationTiming timing) {
+    scheduleAction(action, timing.duration);
+  }
+
+  /**
+   * Schedules the given action to be executed after the specified time in
+   * milliseconds.
+   * 
+   * @param action The action to be executed. May be <code>null</code> when no
+   *          action needs to be executed.
    * @param wait The time to wait in milliseconds.
    */
   public void scheduleAction(final AnimationAction action, final long wait) {
     if(action == null) return;
     actionQueue.offer(new TimedAction(action, wait));
   }
-
-  // TODO with animation timing
 
   /**
    * Processes the actions.

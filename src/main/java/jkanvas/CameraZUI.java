@@ -93,14 +93,15 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
-  public void toView(final Renderpass pass, final AnimationTiming timing,
+  public boolean toView(final Renderpass pass, final AnimationTiming timing,
       final AnimationAction onFinish, final boolean useMargin) {
     final Rectangle2D box = jkanvas.painter.RenderpassPainter.getTopLevelBounds(pass);
     if(box == null) {
-      canvas.getAnimator().getAnimationList().scheduleAction(onFinish, timing.duration);
-      return;
+      canvas.scheduleAction(onFinish, timing);
+      return false;
     }
     toView(box, timing, onFinish, useMargin);
+    return true;
   }
 
   /** Is used to delay animation until the canvas is displayed the first time. */

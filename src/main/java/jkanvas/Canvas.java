@@ -445,6 +445,34 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   }
 
   /**
+   * Schedules the given action to be executed after the specified time in
+   * milliseconds.
+   * 
+   * @param action The action to be executed. May be <code>null</code> when no
+   *          action needs to be executed.
+   * @param timing The timing to infer the duration.
+   * @see jkanvas.animation.AnimationList#scheduleAction(AnimationAction,
+   *      AnimationTiming)
+   */
+  public void scheduleAction(final AnimationAction action, final AnimationTiming timing) {
+    scheduleAction(action, timing.duration);
+  }
+
+  /**
+   * Schedules the given action to be executed after the specified time in
+   * milliseconds.
+   * 
+   * @param action The action to be executed. May be <code>null</code> when no
+   *          action needs to be executed.
+   * @param delay The time to wait in milliseconds.
+   * @see jkanvas.animation.AnimationList#scheduleAction(AnimationAction, long)
+   */
+  public void scheduleAction(final AnimationAction action, final long delay) {
+    if(animator == null) throw new IllegalStateException("no animator installed");
+    animator.getAnimationList().scheduleAction(action, delay);
+  }
+
+  /**
    * Getter.
    * 
    * @return THe associated camera.
@@ -491,10 +519,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public boolean reset(final AnimationTiming timing, final AnimationAction onFinish) {
     final Rectangle2D bbox = painter.getBoundingBox();
     if(bbox == null) {
-      if(onFinish != null) {
-        // TODO schedule on finish
-        onFinish.animationFinished();
-      }
+      scheduleAction(onFinish, timing);
       return false;
     }
     zui.toView(bbox, timing, onFinish, true);

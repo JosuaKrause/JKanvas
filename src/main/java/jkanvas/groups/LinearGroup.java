@@ -100,10 +100,7 @@ public class LinearGroup extends RenderGroup {
   public void invalidate() {
     super.invalidate();
     final AnimationAction cof = curOnFinish.getAndSet(onFinish);
-    if(cof != null) {
-      // TODO schedule
-      cof.animationFinished();
-    }
+    getAnimator().getAnimationList().scheduleAction(cof, timing);
   }
 
   /**
@@ -142,7 +139,7 @@ public class LinearGroup extends RenderGroup {
       }
     }
     final AnimationAction cof = clearCurrentOnFinish();
-    getAnimator().getAnimationList().scheduleAction(cof, timing.duration);
+    getAnimator().getAnimationList().scheduleAction(cof, timing);
     chooseLayout(members, timing, horizontal, alignmentFactor, space, bboxes, maxH, maxV);
   }
 

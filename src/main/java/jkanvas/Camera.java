@@ -37,8 +37,10 @@ public interface Camera {
    * @param onFinish The action that is executed after the animation has
    *          finished.
    * @param useMargin Whether to add the canvas margin.
+   * @return Whether an actual transition has been started depending on whether
+   *         the render pass had an bounding box.
    */
-  void toView(Renderpass pass, AnimationTiming timing,
+  boolean toView(Renderpass pass, AnimationTiming timing,
       AnimationAction onFinish, boolean useMargin);
 
   /**
