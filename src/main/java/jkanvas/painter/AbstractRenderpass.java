@@ -1,6 +1,5 @@
 package jkanvas.painter;
 
-
 /**
  * An abstract implementation of a {@link Renderpass}.
  * 
@@ -34,9 +33,7 @@ public abstract class AbstractRenderpass extends RenderpassAdapter {
   private double y;
 
   /**
-   * Setter. Implementations may override this method with an
-   * {@link UnsupportedOperationException} when they provide the value by
-   * themselves.
+   * Setter.
    * 
    * @param x Sets the x offset in canvas coordinates.
    * @param y Sets the y offset in canvas coordinates.

@@ -3,7 +3,7 @@ package jkanvas.painter;
 import jkanvas.HUDInteraction;
 
 /**
- * A HUD render-pass is always in component coordinates.
+ * A HUD render pass is always in component coordinates.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */

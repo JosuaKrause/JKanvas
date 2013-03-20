@@ -45,10 +45,10 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   protected static final class RenderpassPosition<T extends AbstractRenderpass>
       extends GenericAnimated<Point2D> {
 
-    /** The render-pass. */
+    /** The render pass. */
     public final T pass;
 
-    /** The current render-pass bounding box. */
+    /** The current render pass bounding box. */
     private Rectangle2D bbox;
 
     /**
@@ -149,7 +149,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   private final Animator animator;
 
   /**
-   * Creates a new render-pass group.
+   * Creates a new render pass group.
    * 
    * @param animator The underlying animator.
    */
@@ -239,7 +239,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   }
 
   /**
-   * Inserts a render-pass.
+   * Inserts a render pass.
    * 
    * @param index The index where the render pass will be inserted.
    * @param pass The render pass.
@@ -391,7 +391,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   /**
    * Inserts a render pass that is not used for the layout.
    * 
-   * @param index The index where the render-pass will be inserted.
+   * @param index The index where the render pass will be inserted.
    * @param pass The render pass.
    * @param front Whether this pass is added in front of the layouted passes.
    */
@@ -636,10 +636,10 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     return null;
   }
 
-  /** The render-pass currently responsible for dragging. */
+  /** The render pass currently responsible for dragging. */
   private Renderpass dragging = null;
 
-  /** The start position of the drag in the render-pass coordinates. */
+  /** The start position of the drag in the render pass coordinates. */
   private Point2D start = null;
 
   /**

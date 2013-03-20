@@ -30,7 +30,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
   private final boolean isDirected;
 
   /**
-   * Creates a simple node link view.
+   * Creates a simple node-link view.
    * 
    * @param isDirected Whether the graph is directed.
    */

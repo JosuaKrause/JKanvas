@@ -51,7 +51,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   private final SimpleNodeLinkView<AnimatedPosition> simpleView;
 
   /**
-   * Creates a node link diagram.
+   * Creates a node-link diagram.
    * 
    * @param view The view on the graph.
    */

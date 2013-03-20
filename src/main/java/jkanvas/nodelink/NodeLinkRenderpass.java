@@ -15,7 +15,7 @@ import jkanvas.animation.AnimationList;
 import jkanvas.painter.AbstractRenderpass;
 
 /**
- * Paints a layouted node link diagram.
+ * Paints a layouted node-link diagram.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of nodes.
@@ -35,7 +35,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   private AnimationList list;
 
   /**
-   * Creates a node link painter.
+   * Creates a node-link painter.
    * 
    * @param view The view on the graph.
    */

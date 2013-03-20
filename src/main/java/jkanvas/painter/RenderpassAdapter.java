@@ -9,7 +9,7 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
 
 /**
- * An adapter for render-passes.
+ * An adapter for render passes.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
@@ -104,7 +104,7 @@ public abstract class RenderpassAdapter implements Renderpass {
 
   @Override
   public boolean isChanging() {
-    // be safe and always return true -- TODO is this necessary
+    // be safe and always return true -- TODO is this necessary?
     return true;
   }
 

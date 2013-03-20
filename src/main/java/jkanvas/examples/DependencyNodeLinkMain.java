@@ -27,7 +27,7 @@ import jkanvas.util.Screenshot;
 public final class DependencyNodeLinkMain {
 
   /**
-   * Creates a window with the node link diagram.
+   * Creates a window with the node-link diagram.
    * 
    * @param start The start object or <code>null</code> if the own canvas should
    *          be used.

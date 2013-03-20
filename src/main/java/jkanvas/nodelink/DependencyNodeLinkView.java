@@ -45,7 +45,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
   private final String[] allowedPkgs;
 
   /**
-   * Creates a node link view of dependencies.
+   * Creates a node-link view of dependencies.
    * 
    * @param base The base object.
    */
@@ -54,7 +54,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
   }
 
   /**
-   * Creates a node link view of dependencies.
+   * Creates a node-link view of dependencies.
    * 
    * @param base The base object.
    * @param allowedPkgs The allowed packages.

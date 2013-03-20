@@ -21,20 +21,20 @@ import jkanvas.util.StringDrawer;
  */
 public class BorderRenderpass extends HUDRenderpassAdapter {
 
-  /** All render-passes to draw borders. */
+  /** All render passes to draw borders. */
   private final Map<Renderpass, String> borders = new HashMap<>();
   /** The border color. */
   private final Color border;
   /** The text color. */
   private final Color text;
 
-  /** Creates a border render-pass. */
+  /** Creates a border render pass. */
   public BorderRenderpass() {
     this(Color.BLACK, Color.BLACK);
   }
 
   /**
-   * Creates a border render-pass.
+   * Creates a border render pass.
    * 
    * @param border The border color.
    * @param text The text color.
@@ -72,18 +72,18 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
   }
 
   /**
-   * Adds a render-pass.
+   * Adds a render pass.
    * 
-   * @param renderpass The render-pass.
+   * @param renderpass The render pass.
    */
   public void add(final Renderpass renderpass) {
     add(renderpass, null);
   }
 
   /**
-   * Adds a render-pass with a title.
+   * Adds a render pass with a title.
    * 
-   * @param renderpass The render-pass.
+   * @param renderpass The render pass.
    * @param title The title. May be <code>null</code>.
    */
   public void add(final Renderpass renderpass, final String title) {
@@ -91,9 +91,9 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
   }
 
   /**
-   * Sets the title of a given render-pass.
+   * Sets the title of a given render pass.
    * 
-   * @param renderpass The render-pass.
+   * @param renderpass The render pass.
    * @param title The title. May be <code>null</code>.
    */
   public void setTitle(final Renderpass renderpass, final String title) {
@@ -101,9 +101,9 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
   }
 
   /**
-   * Removes a render-pass.
+   * Removes a render pass.
    * 
-   * @param renderpass The render-pass.
+   * @param renderpass The render pass.
    */
   public void remove(final Renderpass renderpass) {
     borders.remove(renderpass);

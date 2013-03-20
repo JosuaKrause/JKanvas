@@ -209,10 +209,10 @@ public class RenderpassPainter extends PainterAdapter {
     return moved;
   }
 
-  /** The render-pass currently responsible for dragging. */
+  /** The render pass currently responsible for dragging. */
   private Renderpass dragging = null;
 
-  /** The start position of the drag in the render-pass coordinates. */
+  /** The start position of the drag in the render pass coordinates. */
   private Point2D start = null;
 
   @Override
@@ -289,7 +289,7 @@ public class RenderpassPainter extends PainterAdapter {
     return null;
   }
 
-  /** The HUD-render-pass currently responsible for dragging. */
+  /** The HUD render pass currently responsible for dragging. */
   private HUDRenderpass draggingHUD = null;
 
   @Override
@@ -323,11 +323,11 @@ public class RenderpassPainter extends PainterAdapter {
 
   /**
    * Converts a position in canvas coordinates to the position of the given
-   * render-pass.
+   * render pass.
    * 
-   * @param r The render-pass.
+   * @param r The render pass.
    * @param pos The position in canvas coordinates.
-   * @return The position in render-pass coordinates.
+   * @return The position in render pass coordinates.
    */
   public static final Point2D getPositionFromCanvas(final Renderpass r, final Point2D pos) {
     return new Point2D.Double(pos.getX() - r.getOffsetX(), pos.getY() - r.getOffsetY());
@@ -335,12 +335,12 @@ public class RenderpassPainter extends PainterAdapter {
 
   /**
    * Converts a position in component coordinates to the position of the given
-   * render-pass.
+   * render pass.
    * 
-   * @param r The render-pass.
-   * @param ctx The current (non render-pass adjusted) context.
+   * @param r The render pass.
+   * @param ctx The current (non render pass adjusted) context.
    * @param pos The position in components coordinates.
-   * @return The position in render-pass coordinates.
+   * @return The position in render pass coordinates.
    */
   public static final Point2D getPositionFromComponent(final Renderpass r,
       final KanvasContext ctx, final Point2D pos) {
@@ -348,10 +348,10 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   /**
-   * Converts the given context to represent the context of the given
-   * render-pass.
+   * Converts the given context to represent the context of the given render
+   * pass.
    * 
-   * @param r The render-pass.
+   * @param r The render pass.
    * @param ctx The context.
    * @return The transformed context.
    */
@@ -363,8 +363,8 @@ public class RenderpassPainter extends PainterAdapter {
   /**
    * Getter.
    * 
-   * @param r The render-pass.
-   * @return The bounding box of the render-pass in canvas coordinates.
+   * @param r The render pass.
+   * @return The bounding box of the render pass in canvas coordinates.
    */
   public static final Rectangle2D getPassBoundingBox(final Renderpass r) {
     final Rectangle2D rect = r.getBoundingBox();
@@ -440,9 +440,9 @@ public class RenderpassPainter extends PainterAdapter {
    */
   public static final Rectangle2D getTopLevelBounds(
       final Renderpass pass, final Rectangle2D rect) {
-    final Rectangle2D box = new Rectangle2D.Double(
-        rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     Renderpass p = pass;
+    final Rectangle2D box = new Rectangle2D.Double();
+    box.setFrame(rect);
     do {
       box.setRect(box.getX() + p.getOffsetX(),
           box.getY() + p.getOffsetY(),
@@ -450,6 +450,23 @@ public class RenderpassPainter extends PainterAdapter {
       p = p.getParent();
     } while(p != null);
     return box;
+  }
+
+  /**
+   * Computes the top level offset of the given render pass in canvas
+   * coordinates.
+   * 
+   * @param pass The render pass.
+   * @return The offset of the render pass in top level canvas coordinates.
+   */
+  public static final Point2D getTopLevelOffset(final Renderpass pass) {
+    Renderpass p = pass;
+    final Point2D res = new Point2D.Double();
+    do {
+      res.setLocation(res.getX() + pass.getOffsetX(), res.getY() + pass.getOffsetY());
+      p = p.getParent();
+    } while(p != null);
+    return res;
   }
 
   /** Whether the render pass painter is already disposed. */

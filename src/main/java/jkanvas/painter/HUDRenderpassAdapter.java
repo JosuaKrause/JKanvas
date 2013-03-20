@@ -7,19 +7,19 @@ import java.awt.geom.Point2D;
 import jkanvas.KanvasContext;
 
 /**
- * An adapter for a HUD render-pass.
+ * An adapter for a HUD render pass.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
 public class HUDRenderpassAdapter implements HUDRenderpass {
 
-  /** Whether this render-pass is visible. */
+  /** Whether this render pass is visible. */
   private boolean visible = true;
 
   /**
    * Setter.
    * 
-   * @param isVisible Whether this render-pass is visible.
+   * @param isVisible Whether this render pass is visible.
    */
   public void setVisible(final boolean isVisible) {
     visible = isVisible;

@@ -38,7 +38,7 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
   /** The canvas to select on. */
   private final Canvas canvas;
 
-  /** The list of selectable render-passes. */
+  /** The list of selectable render passes. */
   private final List<SelectableRenderpass> selects = new ArrayList<>();
 
   /**
@@ -134,10 +134,10 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
   }
 
   /**
-   * Adds a selectable render-pass. If the render-pass is already added nothing
+   * Adds a selectable render pass. If the render pass is already added nothing
    * happens.
    * 
-   * @param selectable The render-pass.
+   * @param selectable The render pass.
    */
   public void addSelectable(final SelectableRenderpass selectable) {
     if(selects.contains(selectable)) return;
@@ -145,18 +145,18 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
   }
 
   /**
-   * Removes a selectable render-pass. If the render-pass is not contained
+   * Removes a selectable render pass. If the render pass is not contained
    * nothing happens.
    * 
-   * @param selectable The render-pass.
+   * @param selectable The render pass.
    */
   public void removeSelectable(final SelectableRenderpass selectable) {
     selects.remove(selectable);
   }
 
   /**
-   * Does the actual selection of the given shape on all select-able
-   * render-passes.
+   * Does the actual selection of the given shape on all select-able render
+   * passes.
    * 
    * @param s The shape in component coordinates.
    * @param preview Whether the selection should only be a preview.

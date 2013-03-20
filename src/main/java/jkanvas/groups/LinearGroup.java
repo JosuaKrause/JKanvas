@@ -14,7 +14,7 @@ import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
 
 /**
- * A group linearly ordering the members. Render-passes without bounding boxes
+ * A group linearly ordering the members. Render passes without bounding boxes
  * are <em>not</em> allowed.
  * 
  * @author Joschi <josua.krause@googlemail.com>
@@ -31,10 +31,10 @@ public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
   /** The action that is executed when an animation ends. */
   private AnimationAction onFinish;
 
-  /** The space between render-passes. */
+  /** The space between render passes. */
   private double space;
 
-  /** Whether the render-passes are laid out in horizontal direction. */
+  /** Whether the render passes are laid out in horizontal direction. */
   private boolean horizontal;
 
   /**
@@ -83,9 +83,9 @@ public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
    * Creates a linear group.
    * 
    * @param animator The underlying animator.
-   * @param isHorizontal Whether render-passes are laid out in horizontal
+   * @param isHorizontal Whether render passes are laid out in horizontal
    *          direction.
-   * @param space The space between two render-passes.
+   * @param space The space between two render passes.
    * @param timing The animation timing.
    */
   public LinearGroup(final Animator animator, final boolean isHorizontal,
@@ -245,7 +245,7 @@ public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
   /**
    * Setter.
    * 
-   * @param space The space between render-passes.
+   * @param space The space between render passes.
    */
   public void setSpace(final double space) {
     this.space = space;
@@ -255,7 +255,7 @@ public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
   /**
    * Getter.
    * 
-   * @return The space between render-passes.
+   * @return The space between render passes.
    */
   public double getSpace() {
     return space;
