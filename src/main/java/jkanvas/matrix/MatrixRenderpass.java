@@ -157,11 +157,6 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRend
   }
 
   @Override
-  public void setBoundingBox(final Rectangle2D bbox) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Rectangle2D getBoundingBox() {
     double w = 0;
     double h = 0;

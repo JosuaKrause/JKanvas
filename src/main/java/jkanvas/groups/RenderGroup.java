@@ -698,12 +698,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   }
 
   @Override
-  public void setBoundingBox(final Rectangle2D bbox) {
-    // own bounding box calculation
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Rectangle2D getBoundingBox() {
     ensureLayout();
     boolean change = false;

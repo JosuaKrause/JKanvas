@@ -1,6 +1,5 @@
 package jkanvas.painter;
 
-import java.awt.geom.Rectangle2D;
 
 /**
  * An abstract implementation of a {@link Renderpass}.
@@ -55,26 +54,6 @@ public abstract class AbstractRenderpass extends RenderpassAdapter {
   @Override
   public double getOffsetY() {
     return y;
-  }
-
-  /** The optional bounding box. */
-  private Rectangle2D bbox;
-
-  /**
-   * Setter. Implementations may override this method with an
-   * {@link UnsupportedOperationException} when they provide the value by
-   * themselves.
-   * 
-   * @param bbox Sets the optional bounding box. This method does <em>not</em>
-   *          have to account for the offset.
-   */
-  public void setBoundingBox(final Rectangle2D bbox) {
-    this.bbox = bbox;
-  }
-
-  @Override
-  public Rectangle2D getBoundingBox() {
-    return bbox;
   }
 
   /** The parent. */

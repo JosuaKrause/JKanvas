@@ -136,13 +136,6 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   }
 
   @Override
-  public void setBoundingBox(final Rectangle2D bbox) {
-    // super class supports setting bounding box -- since we compute the
-    // bounding box by ourselves this method is ignored
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Rectangle2D getBoundingBox() {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
     Rectangle2D bbox = null;
