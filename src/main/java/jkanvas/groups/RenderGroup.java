@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -131,6 +130,16 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
           rect.getY() + pred.getY(), rect.getWidth(), rect.getHeight());
     }
 
+    /**
+     * Properly removes this render pass position.
+     * 
+     * @param list The animation list.
+     */
+    public void dispose(final AnimationList list) {
+      list.removeAnimated(this);
+      pass.dispose();
+    }
+
   } // RenderpassPosition
 
   /** If this flag is set the layout is recomputed when the group is drawn. */
@@ -172,6 +181,34 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   public void setAnimationList(final AnimationList list) {
     if(animator.getAnimationList() != list) throw new IllegalArgumentException(
         "attempt to set group to other animation list");
+  }
+
+  /**
+   * Creates a render pass position directly without adding it to the member
+   * list yet. Note that if this position will not be used it must be removed
+   * with {@link #remove(RenderpassPosition)}. This method is a convenience
+   * method for methods that have direct access to the member list like
+   * {@link #doLayout(List)}.
+   * 
+   * @param pass The render pass.
+   * @return The converted render pass position.
+   */
+  protected RenderpassPosition<T> create(final T pass) {
+    final RenderpassPosition<T> rp = convert(pass);
+    rp.checkBBoxChange();
+    addedRenderpassIntern(rp);
+    return rp;
+  }
+
+  /**
+   * Safely removes a render pass position directly without altering the member
+   * list. This method is a convenience method for methods that have direct
+   * access to the member list like {@link #doLayout(List)}.
+   * 
+   * @param rp The render pass position.
+   */
+  protected void remove(final RenderpassPosition<T> rp) {
+    removedRenderpassIntern(rp);
   }
 
   /**
@@ -223,6 +260,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
    */
   private void removedRenderpassIntern(final RenderpassPosition<T> p) {
     removedRenderpass(p);
+    p.dispose(animator.getAnimationList());
     p.pass.setParent(null);
   }
 
@@ -483,7 +521,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   /** Immediately computes the current layout. */
   public void forceLayout() {
     invalidate();
-    doLayout(Collections.unmodifiableList(members));
+    doLayout(members);
     redoLayout = false;
     animator.forceNextFrame();
   }
