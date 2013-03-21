@@ -60,7 +60,7 @@ public abstract class RenderpassAdapter implements Renderpass {
   @Override
   public void endDrag(final Point2D start, final Point2D end,
       final double dx, final double dy) {
-    // do nothing
+    drag(start, end, dx, dy);
   }
 
   @Override
