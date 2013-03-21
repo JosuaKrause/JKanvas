@@ -16,12 +16,25 @@ public interface Interpolator {
    */
   double interpolate(double t);
 
+  /**
+   * Inversely maps the input to a value from 0 to 1.
+   * 
+   * @param t The input value from 0 to 1.
+   * @return The mapped value from 0 to 1.
+   */
+  double inverseInterpolate(double t);
+
   /** Smooth interpolation. */
   Interpolator SMOOTH = new Interpolator() {
 
     @Override
     public double interpolate(final double t) {
       return Math.sin((t - 0.5) * Math.PI) * 0.5 + 0.5;
+    }
+
+    @Override
+    public double inverseInterpolate(final double t) {
+      return 0.5 - Math.asin(1 - 2 * t) / Math.PI;
     }
 
   };
@@ -31,6 +44,11 @@ public interface Interpolator {
 
     @Override
     public double interpolate(final double t) {
+      return t;
+    }
+
+    @Override
+    public double inverseInterpolate(final double t) {
       return t;
     }
 

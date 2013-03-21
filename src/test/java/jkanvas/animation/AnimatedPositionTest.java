@@ -194,6 +194,11 @@ public class AnimatedPositionTest {
         return (t > .25 && t < .75) ? 0 : 1;
       }
 
+      @Override
+      public double inverseInterpolate(final double t) {
+        throw new UnsupportedOperationException();
+      }
+
     };
     final AnimationTiming at = new AnimationTiming(i, 5);
     final AnimatedPosition p = new AnimatedPosition(new Point2D.Double(0, 0));
