@@ -130,14 +130,19 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
           rect.getY() + pred.getY(), rect.getWidth(), rect.getHeight());
     }
 
+    /** Whether this render pass position is already disposed. */
+    private boolean isDisposed;
+
     /**
      * Properly removes this render pass position.
      * 
      * @param list The animation list.
      */
     public void dispose(final AnimationList list) {
+      if(isDisposed) return;
       list.removeAnimated(this);
       pass.dispose();
+      isDisposed = true;
     }
 
   } // RenderpassPosition
