@@ -108,9 +108,4 @@ public abstract class RenderpassAdapter implements Renderpass {
     return true;
   }
 
-  @Override
-  public void dispose() {
-    // nothing to dispose
-  }
-
 }

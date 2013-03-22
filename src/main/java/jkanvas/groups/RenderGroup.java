@@ -130,16 +130,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
           rect.getY() + pred.getY(), rect.getWidth(), rect.getHeight());
     }
 
-    /** Whether this render pass position is already disposed. */
-    private boolean isDisposed;
-
-    /** Disposes this render pass position. */
-    public void dispose() {
-      if(isDisposed) return;
-      pass.dispose();
-      isDisposed = true;
-    }
-
   } // RenderpassPosition
 
   /** If this flag is set the layout is recomputed when the group is drawn. */

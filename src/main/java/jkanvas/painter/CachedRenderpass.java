@@ -119,12 +119,6 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
     }
   }
 
-  @Override
-  public void dispose() {
-    super.dispose();
-    invalidateCache();
-  }
-
   /**
    * The {@link KanvasContext} that is used during cache creation.
    * 
