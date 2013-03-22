@@ -139,9 +139,7 @@ public final class AnimationList {
    * @param from The start index inclusive.
    * @param to The end index exclusive.
    * @param currentTime The current time in milliseconds.
-   * @return The number of encountered <code>null</code> pointers. When the
-   *         value is negative a redraw is necessary and all bits must be
-   *         flipped in order to get the correct value.
+   * @return Whether a redraw is needed.
    */
   static boolean compute(final Snapshot<Animated> s,
       final int from, final int to, final long currentTime) {

@@ -85,10 +85,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
     renderNodes(gfx, ctx);
   }
 
-  /**
-   * The node set. This set is used to detect whether a garbage collection is
-   * necessary.
-   */
+  /** The node set. This set is used to detect whether a node is new. */
   private final Set<T> lastNodes = Collections.newSetFromMap(new IdentityHashMap<T, Boolean>());
 
   /**
@@ -100,7 +97,9 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   private void renderNodes(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D visible = ctx.getVisibleCanvas();
     final NodeRealizer<T> nodeRealizer = getNodeRealizer();
+    int count = 0;
     for(final T node : view.nodes()) {
+      ++count;
       // automatically adds new nodes to the animation list
       // this needs only to be done in the draw method
       if(!lastNodes.contains(node)) {
@@ -116,6 +115,10 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
       final Graphics2D g = (Graphics2D) gfx.create();
       nodeRealizer.drawNode(g, node);
       g.dispose();
+    }
+    if(count < lastNodes.size()) {
+      // clear set when nodes got removed
+      lastNodes.clear();
     }
   }
 

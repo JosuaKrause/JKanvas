@@ -25,7 +25,7 @@ import java.util.Set;
 public final class SnapshotList<T> {
 
   /** All registered objects. */
-  private final ArrayList<WeakReference<T>> list = new ArrayList<>();
+  private final List<WeakReference<T>> list = new ArrayList<>();
 
   /**
    * The list that is filled instead of {@link #list} when there are
