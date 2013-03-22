@@ -421,7 +421,6 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public void setAnimator(final Animator animator) {
     if(this.animator != null) {
       this.animator.setAnimationBarrier(null, this);
-      this.animator.getAnimationList().removeAnimated(zui);
       if(barrier != null) {
         barrier.dispose();
       }
