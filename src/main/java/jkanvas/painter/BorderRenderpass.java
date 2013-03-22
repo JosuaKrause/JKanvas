@@ -23,6 +23,8 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
 
   /** All render passes to draw borders. */
   private final Map<Renderpass, String> borders = new HashMap<>();
+  /** All render pass stroke widths. */
+  private final Map<Renderpass, Double> widths = new HashMap<>();
   /** The border color. */
   private final Color border;
   /** The text color. */
@@ -46,7 +48,6 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
 
   @Override
   public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
-    g.setStroke(new BasicStroke((float) ctx.toComponentLength(2)));
     final AffineTransform at = ctx.toComponentTransformation();
     for(final Entry<Renderpass, String> e : borders.entrySet()) {
       final Renderpass r = e.getKey();
@@ -57,6 +58,8 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
       if(bbox == null) {
         continue;
       }
+      final Double d = widths.get(r);
+      g.setStroke(new BasicStroke((float) ctx.toComponentLength(d != null ? d : 2)));
       g.setColor(border);
       final Rectangle2D box = at.createTransformedShape(bbox).getBounds2D();
       g.draw(box);
@@ -98,6 +101,17 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
    */
   public void setTitle(final Renderpass renderpass, final String title) {
     add(renderpass, title);
+  }
+
+  /**
+   * Sets the width of the border.
+   * 
+   * @param renderpass The render pass.
+   * @param width The width;
+   */
+  public void setWidth(final Renderpass renderpass, final double width) {
+    if(width <= 0) throw new IllegalArgumentException("" + width);
+    widths.put(renderpass, width);
   }
 
   /**
