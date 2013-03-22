@@ -89,29 +89,50 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       public void mousePressed(final MouseEvent e) {
         getFocusComponent().grabFocus();
         final Point2D p = e.getPoint();
-        if(painter.clickHUD(p)) {
-          refresh();
-          return;
+        try {
+          if(painter.clickHUD(p)) {
+            refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
         }
-        if(painter.acceptDragHUD(p, e)) {
-          hudDrag = true;
-          startDragging(p);
-          refresh();
-          return;
+        try {
+          if(painter.acceptDragHUD(p, e)) {
+            hudDrag = true;
+            startDragging(p);
+            refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
         }
         final Point2D c = zui.getForScreen(p);
-        if(painter.click(c, e)) {
-          refresh();
-          return;
+        try {
+          if(painter.click(c, e)) {
+            refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
         }
-        if(painter.acceptDrag(c, e)) {
-          hudDrag = false;
-          startDragging(c);
-          refresh();
-          return;
+        try {
+          if(painter.acceptDrag(c, e)) {
+            hudDrag = false;
+            startDragging(c);
+            refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
         }
-        if(isMoveable() && painter.isAllowingPan(c, e)) {
-          startDragging(e, zui.getOffsetX(), zui.getOffsetY());
+        try {
+          if(isMoveable() && painter.isAllowingPan(c, e)) {
+            startDragging(e, zui.getOffsetX(), zui.getOffsetY());
+          }
+        } catch(final IgnoreInteractionException i) {
+          // somebody is going to throw such an exception here
+          // so handle it correctly anyway
         }
       }
 
