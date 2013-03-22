@@ -25,7 +25,7 @@ import java.util.Set;
 public final class SnapshotList<T> {
 
   /** All registered objects. */
-  private final List<WeakReference<T>> list = new ArrayList<>();
+  private final ArrayList<WeakReference<T>> list = new ArrayList<>();
 
   /**
    * The list that is filled instead of {@link #list} when there are
@@ -73,6 +73,8 @@ public final class SnapshotList<T> {
     private final List<WeakReference<T>> content;
     /** The snapshot list. */
     private SnapshotList<T> list;
+    /** Whether we encountered any <code>null</code> pointers. */
+    protected boolean hasNull;
 
     /**
      * Creates a snapshot.
@@ -101,7 +103,11 @@ public final class SnapshotList<T> {
      */
     public T get(final int index) {
       ensureOpen();
-      return content.get(index).get();
+      final T res = content.get(index).get();
+      if(res == null) {
+        hasNull = true;
+      }
+      return res;
     }
 
     /**
@@ -130,7 +136,11 @@ public final class SnapshotList<T> {
         @Override
         public T next() {
           if(!hasNext()) throw new NoSuchElementException();
-          return content.get(pos++).get();
+          final T res = content.get(pos++).get();
+          if(res == null) {
+            hasNull = true;
+          }
+          return res;
         }
 
         @Override
@@ -144,37 +154,44 @@ public final class SnapshotList<T> {
     @Override
     public void close() {
       if(list == null) return;
-      list.endSnapshot();
+      list.endSnapshot(hasNull);
       list = null;
     }
 
   } // Snapshot
 
   /**
-   * Actually adds the elements of the waiting list and removes all
-   * <code>null</code> pointers.
+   * Actually adds the elements of the waiting list.
+   * 
+   * @param gc Whether to also remove all <code>null</code> pointers.
    */
-  private void addAll() {
+  private void addAll(final boolean gc) {
     // must be in synchronization
-    if(toBeAdded.isEmpty()) {
-      final Iterator<WeakReference<T>> it = list.iterator();
-      while(it.hasNext()) {
-        final T t = it.next().get();
+    if(gc) {
+      int i = 0;
+      int k = 0;
+      while(k < list.size()) {
+        final WeakReference<T> ref = list.get(k);
+        final T t = ref.get();
         if(t == null) {
-          it.remove();
+          ++k;
+          continue;
         }
+        if(k > i) {
+          list.set(i, ref);
+        }
+        ++i;
+        ++k;
       }
-      return;
+      while(k > i) {
+        list.remove(--k);
+      }
     }
+    if(toBeAdded.isEmpty()) return;
     final Set<T> contained = new HashSet<>();
-    final Iterator<WeakReference<T>> it = list.iterator();
-    while(it.hasNext()) {
-      final T t = it.next().get();
-      if(t == null) {
-        it.remove();
-        continue;
-      }
-      contained.add(t);
+    for(final WeakReference<T> el : list) {
+      // we do not care for null elements
+      contained.add(el.get());
     }
     for(final T add : toBeAdded) {
       if(contained.contains(add)) {
@@ -190,18 +207,23 @@ public final class SnapshotList<T> {
   protected void startSnapshot() {
     synchronized(toBeAdded) {
       if(snapshots <= 0) {
-        addAll();
+        addAll(false);
       }
       ++snapshots;
     }
   }
 
-  /** Ends a snapshot. */
-  protected void endSnapshot() {
+  /**
+   * Ends a snapshot.
+   * 
+   * @param gc Whether to remove all <code>null</code> pointers when this
+   *          snapshot was the last.
+   */
+  protected void endSnapshot(final boolean gc) {
     synchronized(toBeAdded) {
       --snapshots;
       if(snapshots > 0) return;
-      addAll();
+      addAll(gc);
     }
   }
 

@@ -126,16 +126,26 @@ public class SnapshotListTest {
    * @param numVolatile The number of volatile objects that will be removed.
    * @param numConst The number of constant objects that must no be removed.
    * @param add Whether to add during the snapshot.
+   * @param volatileBefore Whether the volatile elements are added before the
+   *          objects.
    */
-  private static void testGC(final int numVolatile, final int numConst, final boolean add) {
+  private static void testGC(final int numVolatile, final int numConst,
+      final boolean add, final boolean volatileBefore) {
     final SnapshotList<Object> list = new SnapshotList<>();
     final Object[] objConst = new Object[numConst];
+    if(volatileBefore) {
+      for(int i = 0; i < numVolatile; ++i) {
+        list.add(new Object());
+      }
+    }
     for(int i = 0; i < objConst.length; ++i) {
       objConst[i] = new Object();
       list.add(objConst[i]);
     }
-    for(int i = 0; i < numVolatile; ++i) {
-      list.add(new Object());
+    if(!volatileBefore) {
+      for(int i = 0; i < numVolatile; ++i) {
+        list.add(new Object());
+      }
     }
     // when test fails increase to generate more garbage for the GC
     final int tmp = 100;
@@ -182,9 +192,11 @@ public class SnapshotListTest {
   @Test
   public void testGC() {
     // !!! very slow test !!!
-    testGC(0, 10000, true);
-    testGC(10000, 10000, false);
-    testGC(10000, 10000, true);
+    testGC(0, 10000, true, true);
+    testGC(10000, 10000, false, true);
+    testGC(10000, 10000, true, true);
+    testGC(10000, 10000, false, false);
+    testGC(10000, 10000, true, false);
   }
 
 }
