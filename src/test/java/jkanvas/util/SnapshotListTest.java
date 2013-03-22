@@ -3,6 +3,7 @@ package jkanvas.util;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import jkanvas.util.SnapshotList.Snapshot;
 
@@ -22,9 +23,17 @@ public class SnapshotListTest {
    * @param list The list.
    */
   private static void equal(final Snapshot<String> s, final String[] list) {
-    assertEquals(list.length, s.size());
-    for(int i = 0; i < list.length; ++i) {
-      assertEquals(list[i], s.get(i));
+    try {
+      assertEquals(list.length, s.size());
+      for(int i = 0; i < list.length; ++i) {
+        assertEquals(list[i], s.get(i));
+      }
+    } catch(final AssertionError e) {
+      // print content on failure
+      for(final String item : s) {
+        System.out.println(item);
+      }
+      throw e;
     }
   }
 
@@ -33,7 +42,7 @@ public class SnapshotListTest {
   public void addingDuringSnapshot() {
     final String a = "a", b = "b", c = "c", d = "d", e = "e";
     final String[] first = { a, b, c};
-    final String[] then = { b, c, d, a};
+    final String[] then = { a, b, c, d, e};
     final SnapshotList<String> sl = new SnapshotList<>();
     sl.add(a);
     sl.add(b);
@@ -45,11 +54,8 @@ public class SnapshotListTest {
       final Iterator<String> it = s.iterator();
       equal(s, first);
       sl.add(d);
-      sl.remove(a);
       sl.add(e);
-      sl.remove(d);
       sl.add(d);
-      sl.remove(e);
       sl.add(a);
       for(int i = 0; i < first.length; ++i) {
         assertTrue(it.hasNext());
@@ -96,32 +102,89 @@ public class SnapshotListTest {
   public void addingOnlyOnce() {
     final String a = "a";
     final SnapshotList<String> sl = new SnapshotList<>();
-    assertFalse(sl.has(a));
     sl.add(a);
-    assertTrue(sl.has(a));
-    try {
-      sl.add(a);
-      fail("should throw illegal argument exception");
-    } catch(final IllegalArgumentException e) {
-      // everything is fine
+    sl.add(a);
+    try (Snapshot<String> s = sl.getSnapshot()) {
+      assertEquals(1, s.size());
+      assertEquals(a, s.get(0));
+      final Iterator<String> it = s.iterator();
+      assertTrue(it.hasNext());
+      assertEquals(a, it.next());
+      assertFalse(it.hasNext());
+      try {
+        it.next();
+        fail();
+      } catch(final NoSuchElementException e) {
+        // expected behavior
+      }
     }
   }
 
-  /** Ensures that elements are directly removed when no snapshot is present. */
-  @Test
-  public void directRemoving() {
-    final String a = "a";
-    final SnapshotList<String> sl = new SnapshotList<>();
-    sl.add(a);
-    sl.remove(a);
-    try (Snapshot<String> s = sl.getSnapshot()) {
-      equal(s, new String[] { });
+  /**
+   * Tests whether automatic removal via garbage collection works fine.
+   * 
+   * @param numVolatile The number of volatile objects that will be removed.
+   * @param numConst The number of constant objects that must no be removed.
+   * @param add Whether to add during the snapshot.
+   */
+  private static void testGC(final int numVolatile, final int numConst, final boolean add) {
+    final SnapshotList<Object> list = new SnapshotList<>();
+    final Object[] objConst = new Object[numConst];
+    for(int i = 0; i < objConst.length; ++i) {
+      objConst[i] = new Object();
+      list.add(objConst[i]);
     }
-    try {
-      sl.remove(a);
-      fail("should throw illegal argument exception");
-    } catch(final IllegalArgumentException e) {
-      // everything is fine
+    for(int i = 0; i < numVolatile; ++i) {
+      list.add(new Object());
+    }
+    // when test fails increase to generate more garbage for the GC
+    final int tmp = 100;
+    int turns = 10;
+    int curNum;
+    do {
+      Object[] objTmp = new Object[tmp];
+      for(int k = 0; k < objTmp.length; ++k) {
+        objTmp[k] = new Object();
+      }
+      for(int k = 0; k < objTmp.length; ++k) {
+        objTmp[k] = null;
+      }
+      objTmp = null;
+      curNum = 0;
+      try (Snapshot<Object> s = list.getSnapshot()) {
+        for(int k = 0; k < 10; ++k) {
+          System.gc();
+        }
+        for(final Object o : s) {
+          if(o != null) {
+            ++curNum;
+          }
+        }
+        if(add) {
+          for(int i = 0; i < objConst.length; ++i) {
+            list.add(objConst[i]);
+          }
+        }
+      }
+    } while(--turns > 0 && curNum != numConst);
+    if(turns <= 0) {
+      fail();
+    }
+    try (Snapshot<Object> s = list.getSnapshot()) {
+      assertEquals(numConst, s.size());
+      for(int i = 0; i < s.size(); ++i) {
+        assertEquals(objConst[i], s.get(i));
+      }
     }
   }
+
+  /** Tests whether the automatic removal of elements works correctly. */
+  @Test
+  public void testGC() {
+    // !!! very slow test !!!
+    testGC(0, 10000, true);
+    testGC(10000, 10000, false);
+    testGC(10000, 10000, true);
+  }
+
 }

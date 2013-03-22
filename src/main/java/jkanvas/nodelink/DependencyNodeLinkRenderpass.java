@@ -78,10 +78,6 @@ public class DependencyNodeLinkRenderpass extends NodeLinkRenderpass<IndexedPosi
 
   @Override
   public void setAnimationList(final AnimationList list) {
-    final AnimationList old = getAnimationList();
-    if(old != null) {
-      old.removeAnimated(v);
-    }
     super.setAnimationList(list);
     list.addAnimated(v);
   }

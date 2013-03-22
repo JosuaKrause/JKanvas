@@ -86,15 +86,6 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   }
 
   /**
-   * Signals that a garbage collection on animated nodes is needed. This flag is
-   * set when the drawing routine detects that more nodes are in the node set
-   * than in the node list. A garbage collection works as follows. At first all
-   * nodes from the node set are removed from the {@link AnimationList}. Then
-   * the list is automatically filled again during drawing.
-   */
-  private boolean gc;
-
-  /**
    * The node set. This set is used to detect whether a garbage collection is
    * necessary.
    */
@@ -109,22 +100,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   private void renderNodes(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D visible = ctx.getVisibleCanvas();
     final NodeRealizer<T> nodeRealizer = getNodeRealizer();
-    if(gc) {
-      // clear all nodes from the animated list
-      // it will be reconstructed when drawing
-      // removing and adding has to be made on the
-      // same draw run because otherwise the animation
-      // phase may be taken place in between which
-      // may lead to missed node animation calls
-      for(final T node : lastNodes) {
-        list.removeAnimated(node);
-      }
-      lastNodes.clear();
-      gc = false;
-    }
-    int count = 0;
     for(final T node : view.nodes()) {
-      ++count;
       // automatically adds new nodes to the animation list
       // this needs only to be done in the draw method
       if(!lastNodes.contains(node)) {
@@ -140,11 +116,6 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
       final Graphics2D g = (Graphics2D) gfx.create();
       nodeRealizer.drawNode(g, node);
       g.dispose();
-    }
-    if(count != lastNodes.size()) {
-      // we got more nodes than drawn
-      // next draw is a garbage collection
-      gc = true;
     }
   }
 

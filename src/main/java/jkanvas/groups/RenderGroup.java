@@ -133,14 +133,9 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     /** Whether this render pass position is already disposed. */
     private boolean isDisposed;
 
-    /**
-     * Properly removes this render pass position.
-     * 
-     * @param list The animation list.
-     */
-    public void dispose(final AnimationList list) {
+    /** Disposes this render pass position. */
+    public void dispose() {
       if(isDisposed) return;
-      list.removeAnimated(this);
       pass.dispose();
       isDisposed = true;
     }
@@ -265,7 +260,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
    */
   private void removedRenderpassIntern(final RenderpassPosition<T> p) {
     removedRenderpass(p);
-    p.dispose(animator.getAnimationList());
     p.pass.setParent(null);
   }
 

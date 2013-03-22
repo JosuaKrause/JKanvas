@@ -37,25 +37,6 @@ public final class AnimationList {
     animated.add(animate);
   }
 
-  /**
-   * Removes an animatable object.
-   * 
-   * @param animate The object.
-   */
-  public void removeAnimated(final Animated animate) {
-    animated.remove(animate);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @param animate The animated object.
-   * @return Whether the animated object is contained in the list.
-   */
-  public boolean hasAnimated(final Animated animate) {
-    return animated.has(animate);
-  }
-
   // ### performing the animation ###
 
   /** The internal fork join pool. */
@@ -94,9 +75,6 @@ public final class AnimationList {
     /** The current time in milliseconds. */
     private final long currentTime;
 
-    /** Whether at least one animated object has been changed. */
-    private boolean changed;
-
     /** The start position of this worker. */
     private final int start;
 
@@ -105,6 +83,9 @@ public final class AnimationList {
 
     /** The depth of the worker. If 0 the worker does the computation. */
     private final int depth;
+
+    /** Whether at least one animated object has been changed. */
+    private boolean changed;
 
     /**
      * Creates a worker to animate objects.
@@ -158,14 +139,19 @@ public final class AnimationList {
    * @param from The start index inclusive.
    * @param to The end index exclusive.
    * @param currentTime The current time in milliseconds.
-   * @return Whether a redraw is needed.
+   * @return The number of encountered <code>null</code> pointers. When the
+   *         value is negative a redraw is necessary and all bits must be
+   *         flipped in order to get the correct value.
    */
   static boolean compute(final Snapshot<Animated> s,
       final int from, final int to, final long currentTime) {
     int pos = from;
     boolean hasChanged = false;
     while(pos < to) {
-      hasChanged |= s.get(pos).animate(currentTime);
+      final Animated e = s.get(pos);
+      if(e != null) {
+        hasChanged |= e.animate(currentTime);
+      }
       ++pos;
     }
     return hasChanged;

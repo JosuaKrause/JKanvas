@@ -51,7 +51,7 @@ public class AnimationListTest {
       return time;
     }
 
-  }
+  } // TestAnimated
 
   /**
    * Checks whether the animated objects have the given time.
@@ -92,9 +92,6 @@ public class AnimationListTest {
     for(final TestAnimated a : it) {
       list.addAnimated(a);
     }
-    for(final TestAnimated a : it) {
-      assertTrue(list.hasAnimated(a));
-    }
     assertFalse(list.doAnimate(1));
     checkAnimated(it, 1);
     if(size > 0) {
@@ -103,9 +100,6 @@ public class AnimationListTest {
     }
     assertFalse(list.doAnimate(3));
     checkAnimated(it, 3);
-    for(final TestAnimated a : it) {
-      list.removeAnimated(a);
-    }
   }
 
   /**
@@ -160,12 +154,6 @@ public class AnimationListTest {
     for(final TestAnimated a : it2) {
       list.addAnimated(a);
     }
-    for(final TestAnimated a : it1) {
-      assertTrue(list.hasAnimated(a));
-    }
-    for(final TestAnimated a : it2) {
-      assertTrue(list.hasAnimated(a));
-    }
     assertFalse(list.doAnimate(0));
     checkAnimated(it1, 0);
     checkAnimated(it2, 0);
@@ -188,12 +176,6 @@ public class AnimationListTest {
       assertTrue(list.doAnimate(3));
       checkAnimated(it1, 3);
       checkAnimated(it2, 3);
-    }
-    for(final TestAnimated a : it1) {
-      list.removeAnimated(a);
-    }
-    for(final TestAnimated a : it2) {
-      list.removeAnimated(a);
     }
   }
 
