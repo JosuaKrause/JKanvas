@@ -102,11 +102,4 @@ public class GhostRenderpass<T extends Renderpass> extends AbstractRenderpass {
     // the entity will set it
   }
 
-  @Override
-  public void dispose() {
-    // we do not need to dispose the entity
-    // it will be disposed by itself
-    super.dispose();
-  }
-
 }

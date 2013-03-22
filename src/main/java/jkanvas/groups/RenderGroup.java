@@ -130,21 +130,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
           rect.getY() + pred.getY(), rect.getWidth(), rect.getHeight());
     }
 
-    /** Whether this render pass position is already disposed. */
-    private boolean isDisposed;
-
-    /**
-     * Properly removes this render pass position.
-     * 
-     * @param list The animation list.
-     */
-    public void dispose(final AnimationList list) {
-      if(isDisposed) return;
-      list.removeAnimated(this);
-      pass.dispose();
-      isDisposed = true;
-    }
-
   } // RenderpassPosition
 
   /** If this flag is set the layout is recomputed when the group is drawn. */
@@ -265,7 +250,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
    */
   private void removedRenderpassIntern(final RenderpassPosition<T> p) {
     removedRenderpass(p);
-    p.dispose(animator.getAnimationList());
     p.pass.setParent(null);
   }
 

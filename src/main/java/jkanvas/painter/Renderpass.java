@@ -87,7 +87,4 @@ public interface Renderpass extends KanvasInteraction {
    */
   public boolean isForceCaching();
 
-  /** Disposes this render pass. */
-  void dispose();
-
 }
