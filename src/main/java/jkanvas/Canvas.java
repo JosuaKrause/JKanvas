@@ -213,7 +213,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
         try {
           if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
         } catch(final IgnoreInteractionException i) {
-          // better refresh also in this case
+          // better refresh also in this case --
           // some method may have returned true
         }
         refresh();

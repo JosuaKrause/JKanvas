@@ -521,6 +521,22 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     forceLayout();
   }
 
+  /**
+   * Enables to draw between two adjacent render passes.
+   * 
+   * @param gfx The graphics context. This context must be copied implementation
+   *          side and must therefore <em>not</em> be altered without creating a
+   *          copy.
+   * @param ctx The canvas context.
+   * @param left The left (first) render pass or <code>null</code>.
+   * @param right The right (second) render pass or <code>null</code>.
+   */
+  protected void drawBetween(@SuppressWarnings("unused") final Graphics2D gfx,
+      @SuppressWarnings("unused") final KanvasContext ctx,
+      @SuppressWarnings("unused") final T left, @SuppressWarnings("unused") final T right) {
+    // nothing to do here
+  }
+
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     ensureLayout();
@@ -528,8 +544,9 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     RenderpassPainter.draw(nlBack, gfx, ctx);
     final Rectangle2D view = ctx.getVisibleCanvas();
     boolean changed = false;
+    T last = null;
     for(final RenderpassPosition<T> p : members) {
-      final Renderpass r = p.pass;
+      final T r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
@@ -550,7 +567,10 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       final KanvasContext c = RenderpassPainter.getContextFor(r, ctx);
       r.draw(g, c);
       g.dispose();
+      drawBetween(gfx, ctx, last, r);
+      last = r;
     }
+    drawBetween(gfx, ctx, last, null);
     if(jkanvas.Canvas.DEBUG_BBOX) {
       final Graphics2D g = (Graphics2D) gfx.create();
       PaintUtil.setAlpha(g, 0.3);

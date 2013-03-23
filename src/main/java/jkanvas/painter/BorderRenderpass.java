@@ -118,9 +118,12 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
    * Removes a render pass.
    * 
    * @param renderpass The render pass.
+   * @return Whether the render pass existed.
    */
-  public void remove(final Renderpass renderpass) {
+  public boolean remove(final Renderpass renderpass) {
+    if(!borders.containsKey(renderpass)) return false;
     borders.remove(renderpass);
+    return true;
   }
 
 }
