@@ -50,6 +50,11 @@ public class GhostRenderpass<T extends Renderpass> extends AbstractRenderpass {
   }
 
   @Override
+  public boolean doubleClick(final Point2D p, final MouseEvent e) {
+    return entity.doubleClick(p, e);
+  }
+
+  @Override
   public String getTooltip(final Point2D p) {
     return entity.getTooltip(p);
   }

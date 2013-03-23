@@ -605,6 +605,24 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   }
 
   @Override
+  public boolean doubleClick(final Point2D position, final MouseEvent e) {
+    if(RenderpassPainter.doubleClick(nlFront, position, e)) return true;
+    for(final RenderpassPosition<T> p : reverseArray(members())) {
+      final Renderpass r = p.pass;
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = r.getBoundingBox();
+      final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
+      if(bbox != null && !bbox.contains(pos)) {
+        continue;
+      }
+      if(r.doubleClick(pos, e)) return true;
+    }
+    return RenderpassPainter.doubleClick(nlBack, position, e);
+  }
+
+  @Override
   public String getTooltip(final Point2D position) {
     final String tt = RenderpassPainter.getTooltip(nlFront, position);
     if(tt != null) return tt;

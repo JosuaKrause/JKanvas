@@ -40,6 +40,12 @@ public abstract class RenderpassAdapter implements Renderpass {
   }
 
   @Override
+  public boolean doubleClick(final Point2D p, final MouseEvent e) {
+    // do nothing when double clicking
+    return false;
+  }
+
+  @Override
   public String getTooltip(final Point2D p) {
     // no tool-tip
     return null;

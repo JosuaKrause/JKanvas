@@ -153,6 +153,36 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   @Override
+  public boolean doubleClick(final Point2D p, final MouseEvent e) {
+    return doubleClick(back, p, e);
+  }
+
+  /**
+   * Double clicks on render passes.
+   * 
+   * @param passes The list of render passes.
+   * @param p The double clicked point in canvas coordinates.
+   * @param e The mouse event.
+   * @return Whether the click was consumed.
+   * @see #doubleClick(Point2D, MouseEvent)
+   */
+  public static final boolean doubleClick(
+      final List<Renderpass> passes, final Point2D p, final MouseEvent e) {
+    for(final Renderpass r : reverseList(passes)) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      final Rectangle2D bbox = r.getBoundingBox();
+      final Point2D pos = getPositionFromCanvas(r, p);
+      if(bbox != null && !bbox.contains(pos)) {
+        continue;
+      }
+      if(r.doubleClick(pos, e)) return true;
+    }
+    return false;
+  }
+
+  @Override
   public final String getTooltip(final Point2D p) {
     return getTooltip(back, p);
   }
@@ -273,6 +303,17 @@ public class RenderpassPainter extends PainterAdapter {
         continue;
       }
       if(r.clickHUD(p)) return true;
+    }
+    return false;
+  }
+
+  @Override
+  public final boolean doubleClickHUD(final Point2D p) {
+    for(final HUDRenderpass r : reverseList(front)) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      if(r.doubleClickHUD(p)) return true;
     }
     return false;
   }

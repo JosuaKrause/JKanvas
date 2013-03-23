@@ -34,7 +34,19 @@ public class PainterAdapter implements KanvasPainter {
   }
 
   @Override
+  public boolean doubleClick(final Point2D p, final MouseEvent e) {
+    // the event is not consumed
+    return false;
+  }
+
+  @Override
   public boolean clickHUD(final Point2D p) {
+    // the event is not consumed
+    return false;
+  }
+
+  @Override
+  public boolean doubleClickHUD(final Point2D p) {
     // the event is not consumed
     return false;
   }

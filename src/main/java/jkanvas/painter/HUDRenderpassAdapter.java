@@ -42,6 +42,12 @@ public class HUDRenderpassAdapter implements HUDRenderpass {
   }
 
   @Override
+  public boolean doubleClickHUD(final Point2D p) {
+    // ignore double clicks
+    return false;
+  }
+
+  @Override
   public String getTooltipHUD(final Point2D p) {
     // no tool-tips
     return null;

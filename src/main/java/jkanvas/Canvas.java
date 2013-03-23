@@ -137,6 +137,30 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       }
 
       @Override
+      public void mouseClicked(final MouseEvent e) {
+        if(e.getClickCount() < 2) return;
+        getFocusComponent().grabFocus();
+        final Point2D p = e.getPoint();
+        try {
+          if(painter.doubleClickHUD(p)) {
+            refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+        final Point2D c = zui.getForScreen(p);
+        try {
+          if(painter.doubleClick(c, e)) {
+            refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+      }
+
+      @Override
       public void mouseDragged(final MouseEvent e) {
         if(!isDragging()) return;
         if(!isPointDrag()) {

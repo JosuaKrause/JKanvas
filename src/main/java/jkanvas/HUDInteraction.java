@@ -33,6 +33,18 @@ public interface HUDInteraction {
   boolean clickHUD(Point2D p);
 
   /**
+   * Is called when the user performs a double click at the component. The
+   * coordinates are in the components coordinate space and therefore suitable
+   * for clicks on HUDs. When this method returns <code>true</code> no double
+   * click events on objects will happen. However, this method does not
+   * interfere with other clicks or drags.
+   * 
+   * @param p The double click position in component coordinates.
+   * @return Whether the double click was consumed.
+   */
+  boolean doubleClickHUD(Point2D p);
+
+  /**
    * Is called when the user moves the mouse over the component. This method
    * returns the tool-tip that should be displayed at the given position. This
    * method is called before {@link KanvasInteraction#getTooltip(Point2D)}.
