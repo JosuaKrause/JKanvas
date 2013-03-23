@@ -36,13 +36,13 @@ public class HUDRenderpassAdapter implements HUDRenderpass {
   }
 
   @Override
-  public boolean clickHUD(final Point2D p) {
+  public boolean clickHUD(final Point2D p, final MouseEvent e) {
     // ignore clicks
     return false;
   }
 
   @Override
-  public boolean doubleClickHUD(final Point2D p) {
+  public boolean doubleClickHUD(final Point2D p, final MouseEvent e) {
     // ignore double clicks
     return false;
   }

@@ -90,7 +90,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
         getFocusComponent().grabFocus();
         final Point2D p = e.getPoint();
         try {
-          if(painter.clickHUD(p)) {
+          if(painter.clickHUD(p, e)) {
             refresh();
             return;
           }
@@ -126,13 +126,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
-        try {
-          if(isMoveable() && painter.isAllowingPan(c, e)) {
-            startDragging(e, zui.getOffsetX(), zui.getOffsetY());
-          }
-        } catch(final IgnoreInteractionException i) {
-          // somebody is going to throw such an exception here
-          // so handle it correctly anyway
+        if(isMoveable() && painter.isAllowingPan(c, e)) {
+          startDragging(e, zui.getOffsetX(), zui.getOffsetY());
         }
       }
 
@@ -142,7 +137,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
         getFocusComponent().grabFocus();
         final Point2D p = e.getPoint();
         try {
-          if(painter.doubleClickHUD(p)) {
+          if(painter.doubleClickHUD(p, e)) {
             refresh();
             return;
           }
@@ -215,7 +210,12 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
 
       @Override
       public void mouseMoved(final MouseEvent e) {
-        if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
+        try {
+          if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
+        } catch(final IgnoreInteractionException i) {
+          // better refresh also in this case
+          // some method may have returned true
+        }
         refresh();
       }
 
@@ -228,6 +228,29 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     grabFocus();
     setOpaque(true);
     focus = this;
+  }
+
+  /**
+   * Prevents peers from processing the given interaction. When a peer has
+   * already processed an interaction this method has no influence. This means
+   * that when an earlier peer consumes the interaction this method will not be
+   * called. The difference to consuming an interaction is that other
+   * interaction types are still called afterwards. So when a
+   * {@link KanvasInteraction#click(Point2D, MouseEvent)} interaction calls this
+   * method for example
+   * {@link KanvasInteraction#acceptDrag(Point2D, MouseEvent)} will still be
+   * called.
+   * 
+   * @see HUDInteraction#clickHUD(Point2D, MouseEvent)
+   * @see HUDInteraction#acceptDragHUD(Point2D, MouseEvent)
+   * @see KanvasInteraction#click(Point2D, MouseEvent)
+   * @see KanvasInteraction#acceptDrag(Point2D, MouseEvent)
+   * @see HUDInteraction#doubleClickHUD(Point2D, MouseEvent)
+   * @see KanvasInteraction#doubleClick(Point2D, MouseEvent)
+   * @see KanvasInteraction#moveMouse(Point2D)
+   */
+  public static final void preventPeerInteraction() {
+    throw IgnoreInteractionException.INSTANCE;
   }
 
   /**

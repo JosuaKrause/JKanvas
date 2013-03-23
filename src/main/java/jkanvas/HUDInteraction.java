@@ -25,24 +25,31 @@ public interface HUDInteraction {
    * components coordinate space and therefore suitable for clicks on HUDs. This
    * method is the first in the order of click processing and other actions
    * (object clicking and dragging) won't happen if this method returns
-   * <code>true</code>.
+   * <code>true</code>. In this method peers can be prevented to get processed
+   * by calling {@link Canvas#preventPeerInteraction()}. In contrast to
+   * returning <code>true</code> other interaction types still get processed.
    * 
    * @param p The click position in component coordinates.
+   * @param e The mouse event.
    * @return Whether the click was consumed.
    */
-  boolean clickHUD(Point2D p);
+  boolean clickHUD(Point2D p, MouseEvent e);
 
   /**
    * Is called when the user performs a double click at the component. The
    * coordinates are in the components coordinate space and therefore suitable
    * for clicks on HUDs. When this method returns <code>true</code> no double
    * click events on objects will happen. However, this method does not
-   * interfere with other clicks or drags.
+   * interfere with other clicks or drags. In this method peers can be prevented
+   * to get processed by calling {@link Canvas#preventPeerInteraction()}. In
+   * contrast to returning <code>true</code> other interaction types still get
+   * processed.
    * 
    * @param p The double click position in component coordinates.
+   * @param e The mouse event.
    * @return Whether the double click was consumed.
    */
-  boolean doubleClickHUD(Point2D p);
+  boolean doubleClickHUD(Point2D p, MouseEvent e);
 
   /**
    * Is called when the user moves the mouse over the component. This method
@@ -57,7 +64,10 @@ public interface HUDInteraction {
 
   /**
    * Is called when the user starts a dragging operation on the canvas. The
-   * coordinates are in the component coordinate space.
+   * coordinates are in the component coordinate space. In this method peers can
+   * be prevented to get processed by calling
+   * {@link Canvas#preventPeerInteraction()}. In contrast to returning
+   * <code>true</code> other interaction types still get processed.
    * 
    * @param p The position where the drag starts in component coordinates.
    * @param e The mouse event.

@@ -8,15 +8,19 @@ package jkanvas;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class IgnoreInteractionException extends RuntimeException {
+class IgnoreInteractionException extends RuntimeException {
+
+  /** The only instance. */
+  static final IgnoreInteractionException INSTANCE = new IgnoreInteractionException();
 
   /** Creates a new ignore interaction exception. */
-  public IgnoreInteractionException() {
+  private IgnoreInteractionException() {
     // nothing to do
   }
 
   @Override
   public synchronized Throwable fillInStackTrace() {
+    // we wont use the stack trace so we safe the costs of creating it
     return this;
   }
 

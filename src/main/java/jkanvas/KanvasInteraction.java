@@ -28,11 +28,15 @@ public interface KanvasInteraction {
    * consume the event. The coordinates are in the {@link KanvasPainter
    * Painters} coordinate space and therefore suitable for clicks on objects on
    * the canvas. This method is the second in the order of click processing and
-   * no dragging is performed, when this method returns <code>true</code>.
+   * no dragging is performed, when this method returns <code>true</code>. In
+   * this method peers can be prevented to get processed by calling
+   * {@link Canvas#preventPeerInteraction()}. In contrast to returning
+   * <code>true</code> other interaction types still get processed.
    * 
    * @param p The click position in canvas coordinates.
    * @param e The original event.
    * @return Whether the click was consumed.
+   * @see Canvas#preventPeerInteraction()
    */
   boolean click(Point2D p, MouseEvent e);
 
@@ -41,11 +45,14 @@ public interface KanvasInteraction {
    * HUD action does not consume the event. The coordinates are in the
    * {@link KanvasPainter Painters} coordinate space and therefore suitable for
    * clicks on the objects on the canvas. This method does not interfere with
-   * other clicks or drags.
+   * other clicks or drags. In this method peers can be prevented to get
+   * processed by calling {@link Canvas#preventPeerInteraction()}. In contrast
+   * to returning <code>true</code> other interaction types still get processed.
    * 
    * @param p The double click position in canvas coordinates.
    * @param e The original event.
    * @return Whether the double click was consumed.
+   * @see Canvas#preventPeerInteraction()
    */
   boolean doubleClick(Point2D p, MouseEvent e);
 
@@ -64,11 +71,15 @@ public interface KanvasInteraction {
   /**
    * Is called when the user starts a dragging operation on the canvas. The
    * coordinates are in the {@link KanvasPainter Painters} coordinate space and
-   * therefore suitable for dragging of objects on the canvas.
+   * therefore suitable for dragging of objects on the canvas. In this method
+   * peers can be prevented to get processed by calling
+   * {@link Canvas#preventPeerInteraction()}. In contrast to returning
+   * <code>true</code> other interaction types still get processed.
    * 
    * @param p The position where the drag starts in canvas coordinates.
    * @param e The mouse event.
    * @return Whether the drag is accepted and the dragging should start.
+   * @see Canvas#preventPeerInteraction()
    */
   boolean acceptDrag(Point2D p, MouseEvent e);
 
@@ -95,10 +106,14 @@ public interface KanvasInteraction {
   void endDrag(Point2D start, Point2D end, double dx, double dy);
 
   /**
-   * Is called when the mouse was moved.
+   * Is called when the mouse was moved. In this method peers can be prevented
+   * to get processed by calling {@link Canvas#preventPeerInteraction()}.
+   * Returning <code>true</code> on the other hand does not prevent peers from
+   * being executed in this method.
    * 
    * @param cur The current position in canvas coordinates.
    * @return Whether this event has affected the render pass.
+   * @see Canvas#preventPeerInteraction()
    */
   boolean moveMouse(Point2D cur);
 

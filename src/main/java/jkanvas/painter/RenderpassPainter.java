@@ -297,23 +297,23 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   @Override
-  public final boolean clickHUD(final Point2D p) {
+  public final boolean clickHUD(final Point2D p, final MouseEvent e) {
     for(final HUDRenderpass r : reverseList(front)) {
       if(!r.isVisible()) {
         continue;
       }
-      if(r.clickHUD(p)) return true;
+      if(r.clickHUD(p, e)) return true;
     }
     return false;
   }
 
   @Override
-  public final boolean doubleClickHUD(final Point2D p) {
+  public final boolean doubleClickHUD(final Point2D p, final MouseEvent e) {
     for(final HUDRenderpass r : reverseList(front)) {
       if(!r.isVisible()) {
         continue;
       }
-      if(r.doubleClickHUD(p)) return true;
+      if(r.doubleClickHUD(p, e)) return true;
     }
     return false;
   }
