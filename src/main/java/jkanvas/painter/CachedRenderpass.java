@@ -48,9 +48,8 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
     final boolean noCache = chg || lastChanging;
     lastChanging = chg;
     final Rectangle2D comp = ctx.toComponentCoordinates(bbox);
-    if(!isForceCaching()
-        &&
-        (noCache || (comp.getWidth() > CACHE_VISIBLE && comp.getHeight() > CACHE_VISIBLE))) {
+    if((!isForceCaching() && (noCache || (comp.getWidth() > CACHE_VISIBLE && comp.getHeight() > CACHE_VISIBLE)))
+        || jkanvas.Canvas.DISABLE_CACHING) {
       invalidateCache();
       doDraw(g, ctx);
       return;

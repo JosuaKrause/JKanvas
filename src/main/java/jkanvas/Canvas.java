@@ -47,6 +47,9 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public static boolean DEBUG_CACHE;
 
+  /** Disables render pass caching. */
+  public static boolean DISABLE_CACHING;
+
   /** The underlying zoom-able user interface. */
   protected final CameraZUI zui;
 

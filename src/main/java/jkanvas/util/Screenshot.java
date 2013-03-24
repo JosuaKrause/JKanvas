@@ -19,7 +19,7 @@ import javax.swing.JComponent;
 public final class Screenshot {
 
   /** The scaling factor for raster screen-shots. */
-  private static final int SCALE = 4;
+  private static final int SCALE = 3;
 
   /** No constructor. */
   private Screenshot() {
@@ -44,10 +44,10 @@ public final class Screenshot {
    * 
    * @param dir The directory.
    * @param prefix The name prefix.
-   * @param postfix The name postfix.
+   * @param postfix The name postfix. The dot before the extension is needed.
    * @return The file that does not yet exist.
    */
-  private static File nextFile(final File dir, final String prefix, final String postfix) {
+  public static File findFile(final File dir, final String prefix, final String postfix) {
     ensureDir(dir);
     final File out;
     int i = 0;
@@ -72,7 +72,7 @@ public final class Screenshot {
    */
   public static File savePNG(final File dir, final String prefix, final JComponent comp)
       throws IOException {
-    final File out = nextFile(dir, prefix, ".png");
+    final File out = findFile(dir, prefix, ".png");
     savePNG(new FileOutputStream(out), comp);
     return out;
   }
@@ -86,15 +86,38 @@ public final class Screenshot {
    */
   public static void savePNG(final OutputStream out, final JComponent comp)
       throws IOException {
-    final Rectangle rect = comp.getVisibleRect();
+    final Rectangle rect = outputSize(comp);
     final BufferedImage img = new BufferedImage(
         rect.width * SCALE, rect.height * SCALE, BufferedImage.TYPE_INT_ARGB);
     final Graphics2D g = img.createGraphics();
     g.scale(SCALE, SCALE);
-    comp.paintAll(g);
+    final boolean isCacheDisabled = jkanvas.Canvas.DISABLE_CACHING;
+    jkanvas.Canvas.DISABLE_CACHING = true;
+    paint(comp, g);
+    jkanvas.Canvas.DISABLE_CACHING = isCacheDisabled;
     g.dispose();
     ImageIO.write(img, "png", out);
     out.close();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param comp The component to take a screen-shot of.
+   * @return The size of the screen-shot.
+   */
+  public static Rectangle outputSize(final JComponent comp) {
+    return comp.getVisibleRect();
+  }
+
+  /**
+   * Paints a screen-shot of the given component to the graphics context.
+   * 
+   * @param comp The component.
+   * @param g The graphics context.
+   */
+  public static void paint(final JComponent comp, final Graphics2D g) {
+    comp.paintAll(g);
   }
 
 }
