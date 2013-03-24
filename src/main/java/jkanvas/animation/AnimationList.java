@@ -165,7 +165,7 @@ public final class AnimationList {
     final boolean needsRedraw;
     try (Snapshot<Animated> s = animated.getSnapshot()) {
       final int size = s.size();
-      final int depth = suggestDepth(size);
+      final int depth = suggestDepth(size) - 4; // work on larger chunks
       if(depth <= 0) {
         needsRedraw = compute(s, 0, size, currentTime);
       } else {

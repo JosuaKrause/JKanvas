@@ -1,5 +1,7 @@
 package jkanvas.animation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import jkanvas.util.Benchmark;
@@ -12,6 +14,47 @@ import jkanvas.util.Interpolator;
  * @author Joschi <josua.krause@gmail.com>
  */
 public class AnimationListBenchmark {
+
+  /**
+   * An action for the benchmark.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
+  private static final class BenchmarkAction implements AnimationAction {
+
+    /** The hardness of the action. */
+    private final int hardness;
+    /** The sum. */
+    public long sum;
+
+    /**
+     * Creates an action for the given hardness.
+     * 
+     * @param hardness The hardness.
+     */
+    public BenchmarkAction(final int hardness) {
+      this.hardness = hardness;
+    }
+
+    /**
+     * Performs a summing or subtracting operation.
+     * 
+     * @return The sum.
+     */
+    private long sum() {
+      long sum = 0;
+      for(int i = 0; i < hardness; ++i) {
+        sum += i;
+      }
+      return sum;
+    }
+
+    @Override
+    public void animationFinished() {
+      sum = sum();
+    }
+
+  } // BenchmarkAction
 
   /**
    * An animation list benchmark task.
@@ -83,20 +126,8 @@ public class AnimationListBenchmark {
      * 
      * @return Creates an action.
      */
-    private AnimationAction createAction() {
-      final int hardness = actionHardness;
-      return new AnimationAction() {
-
-        @Override
-        public void animationFinished() {
-          @SuppressWarnings("unused")
-          int sum = 0;
-          for(int i = 0; i < hardness; ++i) {
-            sum += i;
-          }
-        }
-
-      };
+    private BenchmarkAction createAction() {
+      return new BenchmarkAction(actionHardness);
     }
 
     /** The animation list. */
@@ -122,13 +153,15 @@ public class AnimationListBenchmark {
 
     @Override
     public void execute() {
+      final List<BenchmarkAction> actions = new ArrayList<>();
       final AnimationTiming timing = new AnimationTiming(
           Interpolator.SMOOTH, taskDuration);
       for(int i = 0; i < animated.length; ++i) {
         final GenericAnimated<Double> a = animated[i];
-        final AnimationAction action;
+        final BenchmarkAction action;
         if(rnd.nextDouble() < actionChance) {
           action = createAction();
+          actions.add(action);
         } else {
           action = null;
         }
@@ -138,11 +171,17 @@ public class AnimationListBenchmark {
       final AnimationTiming actionTiming = new AnimationTiming(
           Interpolator.SMOOTH, actionDuration);
       for(int i = 0; i < numSchedules; ++i) {
-        list.scheduleAction(createAction(), actionTiming);
+        final BenchmarkAction action = createAction();
+        list.scheduleAction(action, actionTiming);
+        actions.add(action);
       }
       final long iterations = Math.max(taskDuration, actionDuration) + 10L;
       for(long i = 0; i < iterations; ++i) {
-        list.doAnimate(iterations);
+        list.doAnimate(i);
+      }
+      final long sum = (actionHardness - 1L) * (actionHardness) / 2L;
+      for(final BenchmarkAction action : actions) {
+        if(action.sum != sum) throw new IllegalStateException("missed action: " + action);
       }
     }
 
@@ -155,15 +194,11 @@ public class AnimationListBenchmark {
    */
   public static void main(final String[] args) {
     final AnimationListExecutor[] benchmarks = {
-        new AnimationListExecutor(10, 1000, 0, 0, 500, 1000), // #0
-        new AnimationListExecutor(10, 1000, .3, 10, 500, 1000), // #1
-        new AnimationListExecutor(10, 1000, .6, 10, 500, 1000), // #2
-        new AnimationListExecutor(10, 1000, 1, 10, 500, 1000), // #3
-        new AnimationListExecutor(1000, 1000, 0, 100, 1000, 1000), // #4
-        new AnimationListExecutor(1000, 1000, .3, 100, 1000, 1000), // #5
-        new AnimationListExecutor(1000, 1000, .6, 100, 1000, 1000), // #6
-        new AnimationListExecutor(1000, 1000, 1, 100, 1000, 1000), // #7
-        new AnimationListExecutor(10000, 1000, .5, 100, 1000, 1000), // #8
+        new AnimationListExecutor(10, 1000, .5, 0, 500, 1000000), // #0
+        new AnimationListExecutor(10, 1000, 0, 10, 500, 1000), // #1
+        new AnimationListExecutor(10, 1000, 1, 10, 500, 1000), // #1
+        new AnimationListExecutor(1000, 1000, .5, 100, 1000, 1000), // #2
+        new AnimationListExecutor(10000, 1000, .5, 100, 1000, 1000), // #3
     };
     final Benchmark benchmark = new Benchmark(benchmarks);
     benchmark.getResults(System.out, System.err);
@@ -181,15 +216,11 @@ public class AnimationListBenchmark {
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * | configuration                                                                                    |            mean |              stddev |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
-   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.0 hardness: 1000 ]       |    20,833380 ms | +/-     1,718439 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.3 hardness: 1000 ]      |    48,320260 ms | +/-     6,349045 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.6 hardness: 1000 ]      |    46,250000 ms | +/-     5,146774 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |    46,375980 ms | +/-     5,094906 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.0 hardness: 1000 ]  |   212,188160 ms | +/-    44,612220 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.3 hardness: 1000 ]  |   213,122620 ms | +/-    45,326996 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.6 hardness: 1000 ]  |   210,592520 ms | +/-    44,002505 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 1.0 hardness: 1000 ]  |   213,236920 ms | +/-    45,218314 ms |
-   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   573,501020 ms | +/-    69,913724 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.5 hardness: 1000000 ]    |     3,361840 ms | +/-     0,847815 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.0 hardness: 1000 ]      |     1,216960 ms | +/-     0,582757 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |     0,984560 ms | +/-     0,445051 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ]  |    68,804540 ms | +/-     4,340669 ms |
+   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   483,164240 ms | +/-    23,308089 ms |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * =============================
    * sequential execution
@@ -197,15 +228,11 @@ public class AnimationListBenchmark {
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * | configuration                                                                                    |            mean |              stddev |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
-   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.0 hardness: 1000 ]       |     1,092320 ms | +/-     0,866097 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.3 hardness: 1000 ]      |    14,775540 ms | +/-     4,986127 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.6 hardness: 1000 ]      |    14,914860 ms | +/-     4,931201 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |    14,261280 ms | +/-     5,894706 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.0 hardness: 1000 ]  |   171,166760 ms | +/-    38,442687 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.3 hardness: 1000 ]  |   173,057680 ms | +/-    38,635925 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.6 hardness: 1000 ]  |   173,705880 ms | +/-    38,453111 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 1.0 hardness: 1000 ]  |   172,804840 ms | +/-    38,841471 ms |
-   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   770,142080 ms | +/-    74,611816 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.5 hardness: 1000000 ]    |     3,287600 ms | +/-     0,937443 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.0 hardness: 1000 ]      |     1,235260 ms | +/-     0,684073 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |     1,078780 ms | +/-     0,128728 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ]  |    71,328060 ms | +/-     4,859123 ms |
+   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   712,813320 ms | +/-    13,848873 ms |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * </pre>
    */
