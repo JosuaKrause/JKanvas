@@ -169,4 +169,45 @@ public class AnimationListBenchmark {
     benchmark.getResults(System.out, System.err);
   }
 
+  /**
+   * <pre>
+   * Benchmark on Mac OS X 10.8.3
+   * 2.66 GHz Intel Core i7
+   * 8GB Ram 1067 MHz DDR3
+   * no VM arguments
+   * =============================
+   * parallel execution
+   * =============================
+   * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
+   * | configuration                                                                                    |            mean |              stddev |
+   * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
+   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.0 hardness: 1000 ]       |    20,833380 ms | +/-     1,718439 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.3 hardness: 1000 ]      |    48,320260 ms | +/-     6,349045 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.6 hardness: 1000 ]      |    46,250000 ms | +/-     5,146774 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |    46,375980 ms | +/-     5,094906 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.0 hardness: 1000 ]  |   212,188160 ms | +/-    44,612220 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.3 hardness: 1000 ]  |   213,122620 ms | +/-    45,326996 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.6 hardness: 1000 ]  |   210,592520 ms | +/-    44,002505 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 1.0 hardness: 1000 ]  |   213,236920 ms | +/-    45,218314 ms |
+   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   573,501020 ms | +/-    69,913724 ms |
+   * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
+   * =============================
+   * sequential execution
+   * =============================
+   * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
+   * | configuration                                                                                    |            mean |              stddev |
+   * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
+   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.0 hardness: 1000 ]       |     1,092320 ms | +/-     0,866097 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.3 hardness: 1000 ]      |    14,775540 ms | +/-     4,986127 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.6 hardness: 1000 ]      |    14,914860 ms | +/-     4,931201 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |    14,261280 ms | +/-     5,894706 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.0 hardness: 1000 ]  |   171,166760 ms | +/-    38,442687 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.3 hardness: 1000 ]  |   173,057680 ms | +/-    38,635925 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.6 hardness: 1000 ]  |   173,705880 ms | +/-    38,453111 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 1.0 hardness: 1000 ]  |   172,804840 ms | +/-    38,841471 ms |
+   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   770,142080 ms | +/-    74,611816 ms |
+   * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
+   * </pre>
+   */
+
 }

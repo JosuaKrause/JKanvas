@@ -203,6 +203,7 @@ public class Benchmark {
    */
   public void getResults(final PrintStream out, final PrintStream progress) {
     final StringBuilder builder = new StringBuilder();
+    getDelimiter(builder);
     getHeadLine(builder);
     getDelimiter(builder);
     int i = 0;
@@ -212,6 +213,7 @@ public class Benchmark {
       progress.println();
       ++i;
     }
+    getDelimiter(builder);
     out.print(builder.toString());
   }
 
