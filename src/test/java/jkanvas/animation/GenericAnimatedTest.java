@@ -145,4 +145,31 @@ public class GenericAnimatedTest {
     assertFalse(a.inAnimation());
   }
 
+  /** Immediate actions in an action should not create a live-lock. */
+  @Test
+  public void liveLockTest() {
+    final TestAnimated animated = new TestAnimated();
+    final AnimationAction finish = new AnimationAction() {
+
+      @Override
+      public void animationFinished() {
+        animated.clearAnimation(this);
+      }
+
+    };
+    animated.clearAnimation(finish);
+    animated.animate(0);
+    final AnimationList list = new AnimationList();
+    final AnimationAction action = new AnimationAction() {
+
+      @Override
+      public void animationFinished() {
+        list.scheduleAction(this, 0);
+      }
+
+    };
+    list.scheduleAction(action, 0);
+    list.doAnimate(0);
+  }
+
 }

@@ -263,8 +263,8 @@ public final class AnimationList {
   private void processActions(final long currentTime) {
     // we work on the same queue for relative and absolute actions
     // therefore we have to go through the whole list each time
-    // this is not that expensive because there are usually only few action at a
-    // time
+    // this is not that expensive because there are usually
+    // only few actions at a time
     TimedAction first = null;
     TimedAction cur;
     for(;;) {
