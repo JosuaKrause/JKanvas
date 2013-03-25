@@ -20,7 +20,7 @@ public class AnimationListBenchmark {
    * 
    * @author Joschi <josua.krause@gmail.com>
    */
-  private static final class BenchmarkAction implements AnimationAction {
+  private static final class BenchmarkAction extends AnimationAction {
 
     /** The hardness of the action. */
     private final int hardness;
@@ -216,11 +216,11 @@ public class AnimationListBenchmark {
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * | configuration                                                                                    |            mean |              stddev |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
-   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.5 hardness: 1000000 ]    |     3,361840 ms | +/-     0,847815 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.0 hardness: 1000 ]      |     1,216960 ms | +/-     0,582757 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |     0,984560 ms | +/-     0,445051 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ]  |    68,804540 ms | +/-     4,340669 ms |
-   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   483,164240 ms | +/-    23,308089 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.5 hardness: 1000000 ]    |     3,379400 ms | +/-     0,756371 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.0 hardness: 1000 ]      |     1,301360 ms | +/-     0,957903 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |     1,145800 ms | +/-     0,552058 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ]  |    68,929720 ms | +/-     6,339674 ms |
+   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   471,164540 ms | +/-    33,193038 ms |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * =============================
    * sequential execution
@@ -228,11 +228,11 @@ public class AnimationListBenchmark {
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * | configuration                                                                                    |            mean |              stddev |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
-   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.5 hardness: 1000000 ]    |     3,287600 ms | +/-     0,937443 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.0 hardness: 1000 ]      |     1,235260 ms | +/-     0,684073 ms |
-   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |     1,078780 ms | +/-     0,128728 ms |
-   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ]  |    71,328060 ms | +/-     4,859123 ms |
-   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   712,813320 ms | +/-    13,848873 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 0 duration: 500 chance: 0.5 hardness: 1000000 ]    |     3,517360 ms | +/-     1,184715 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 0.0 hardness: 1000 ]      |     1,217100 ms | +/-     0,732385 ms |
+   * | tasks[count: 10 duration: 1000] action[count: 10 duration: 500 chance: 1.0 hardness: 1000 ]      |     1,118680 ms | +/-     0,509277 ms |
+   * | tasks[count: 1000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ]  |    69,031580 ms | +/-     5,682776 ms |
+   * | tasks[count: 10000 duration: 1000] action[count: 100 duration: 1000 chance: 0.5 hardness: 1000 ] |   679,798680 ms | +/-    15,851845 ms |
    * +--------------------------------------------------------------------------------------------------+-----------------+---------------------+
    * </pre>
    */

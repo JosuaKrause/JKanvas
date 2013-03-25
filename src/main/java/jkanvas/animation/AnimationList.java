@@ -1,5 +1,7 @@
 package jkanvas.animation;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -16,7 +18,7 @@ import jkanvas.util.SnapshotList.Snapshot;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public final class AnimationList {
+public final class AnimationList implements AnimationToken {
 
   /** The list containing the animatable objects. */
   private final SnapshotList<Animated> animated;
@@ -71,35 +73,34 @@ public final class AnimationList {
 
     /** The current snapshot of animated objects. */
     private final Snapshot<Animated> list;
-
     /** The current time in milliseconds. */
     private final long currentTime;
-
     /** The start position of this worker. */
     private final int start;
-
     /** The exclusive end position of this worker. */
     private final int end;
-
     /** The depth of the worker. If 0 the worker does the computation. */
     private final int depth;
-
     /** Whether at least one animated object has been changed. */
     private boolean changed;
+    /** The animation token. */
+    private final AnimationToken token;
 
     /**
      * Creates a worker to animate objects.
      * 
      * @param list The current snapshot of animated objects.
+     * @param token The animation token.
      * @param currentTime The current time in milliseconds.
      * @param depth The depth of this worker. If it reaches 0 the worker
      *          actually computes the result.
      * @param start The start position.
      * @param end The exclusive end position.
      */
-    public Worker(final Snapshot<Animated> list, final long currentTime,
-        final int depth, final int start, final int end) {
+    public Worker(final Snapshot<Animated> list, final AnimationToken token,
+        final long currentTime, final int depth, final int start, final int end) {
       this.list = list;
+      this.token = token;
       this.currentTime = currentTime;
       this.depth = depth;
       this.start = start;
@@ -109,12 +110,12 @@ public final class AnimationList {
     @Override
     protected void compute() {
       if(depth <= 0) {
-        changed = AnimationList.compute(list, start, end, currentTime);
+        changed = AnimationList.compute(list, token, start, end, currentTime);
         return;
       }
       final int mid = (start + end) >>> 1;
-      final Worker left = new Worker(list, currentTime, depth - 1, start, mid);
-      final Worker right = new Worker(list, currentTime, depth - 1, mid, end);
+      final Worker left = new Worker(list, token, currentTime, depth - 1, start, mid);
+      final Worker right = new Worker(list, token, currentTime, depth - 1, mid, end);
       right.fork();
       left.compute();
       right.join();
@@ -136,13 +137,15 @@ public final class AnimationList {
    * Animates a range of animated objects.
    * 
    * @param s The current list snapshot.
+   * @param token The animation token.
    * @param from The start index inclusive.
    * @param to The end index exclusive.
    * @param currentTime The current time in milliseconds.
    * @return Whether a redraw is needed.
    */
-  static boolean compute(final Snapshot<Animated> s,
+  static boolean compute(final Snapshot<Animated> s, final AnimationToken token,
       final int from, final int to, final long currentTime) {
+    AnimationAction.setToken(token);
     int pos = from;
     boolean hasChanged = false;
     while(pos < to) {
@@ -167,15 +170,16 @@ public final class AnimationList {
       final int size = s.size();
       final int depth = suggestDepth(size) - 4; // work on larger chunks
       if(depth <= 0) {
-        needsRedraw = compute(s, 0, size, currentTime);
+        needsRedraw = compute(s, this, 0, size, currentTime);
       } else {
         // a worker has a higher idle time (ie when no animation is happening)
         // but when we animate it is faster than the sequential version
-        final Worker task = new Worker(s, currentTime, depth, 0, size);
+        final Worker task = new Worker(s, this, currentTime, depth, 0, size);
         pool.invoke(task);
         needsRedraw = task.hasChanged();
       }
       processActions(currentTime);
+      executeAndClear();
     }
     return needsRedraw;
   }
@@ -221,7 +225,7 @@ public final class AnimationList {
         relative = false;
       }
       if(currentTime < due) return true;
-      action.animationFinished();
+      AnimationAction.enqueue(action);
       return false;
     }
 
@@ -252,7 +256,7 @@ public final class AnimationList {
    */
   public void scheduleAction(final AnimationAction action, final long wait) {
     if(action == null) return;
-    actionQueue.offer(new TimedAction(action, wait));
+    actionQueue.add(new TimedAction(action, wait));
   }
 
   /**
@@ -261,6 +265,7 @@ public final class AnimationList {
    * @param currentTime The current time.
    */
   private void processActions(final long currentTime) {
+    AnimationAction.setToken(this);
     // we work on the same queue for relative and absolute actions
     // therefore we have to go through the whole list each time
     // this is not that expensive because there are usually
@@ -271,15 +276,52 @@ public final class AnimationList {
       cur = actionQueue.poll();
       if(cur == null) return;
       if(cur == first) {
-        actionQueue.offer(cur);
+        actionQueue.add(cur);
         return;
       }
       final boolean reschedule = cur.execute(currentTime);
       if(reschedule) {
-        actionQueue.offer(cur);
+        actionQueue.add(cur);
         if(first == null) {
           first = cur;
         }
+      }
+    }
+  }
+
+  // ### Animation Token ###
+
+  /** The queue of all registered action lists. */
+  private final Queue<WeakReference<List<AnimationAction>>> tokenQueue = new ConcurrentLinkedQueue<>();
+
+  @Override
+  public void register(final List<AnimationAction> list) {
+    Objects.requireNonNull(list);
+    tokenQueue.add(new WeakReference<List<AnimationAction>>(list));
+  }
+
+  @Override
+  public void executeAndClear() {
+    WeakReference<List<AnimationAction>> first = null;
+    WeakReference<List<AnimationAction>> cur;
+    for(;;) {
+      cur = tokenQueue.poll();
+      if(cur == null) return;
+      if(cur == first) {
+        tokenQueue.add(cur);
+        return;
+      }
+      final List<AnimationAction> list = cur.get();
+      if(list == null) {
+        continue;
+      }
+      for(final AnimationAction action : list) {
+        action.animationFinished();
+      }
+      list.clear();
+      tokenQueue.add(cur);
+      if(first == null) {
+        first = cur;
       }
     }
   }

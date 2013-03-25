@@ -242,13 +242,13 @@ public abstract class GenericAnimated<T> implements Animated {
       }
       // call action which will otherwise be overwritten
       if(onFinish != null) {
-        onFinish.animationFinished();
+        AnimationAction.enqueue(onFinish);
       }
       onFinish = op.onFinish;
       op = pendingOperations.poll();
     } while(op != null);
     if(onFinish != null && clearOnFinish) {
-      onFinish.animationFinished();
+      AnimationAction.enqueue(onFinish);
       onFinish = null;
     }
   }
@@ -274,7 +274,7 @@ public abstract class GenericAnimated<T> implements Animated {
       pred = null;
       pol = null;
       if(onFinish != null) {
-        onFinish.animationFinished();
+        AnimationAction.enqueue(onFinish);
         onFinish = null;
       }
       return;

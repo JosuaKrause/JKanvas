@@ -87,7 +87,9 @@ public class GenericAnimatedTest {
       }
 
     };
+    final AnimationList list = new AnimationList();
     final TestAnimated a = new TestAnimated();
+    list.addAnimated(a);
     test(a, e, 0, 0, 0);
     a.set(1.0);
     test(a, e, 1, 1, 0);
@@ -95,51 +97,51 @@ public class GenericAnimatedTest {
     test(a, e, 2, 0, 0);
     a.startAnimationTo(2.0, timing, action);
     test(a, e, 3, 0, 0);
-    a.animate(0);
+    list.doAnimate(0);
     test(a, e, 3, 0, 1);
-    a.animate(1);
+    list.doAnimate(1);
     test(a, e, 3, 1, 1);
-    a.animate(2);
+    list.doAnimate(2);
     test(a, e, 3, 2, 2);
     a.startAnimationTo(1.0, timing, action);
     test(a, e, 4, 2, 2);
     a.clearAnimation(action);
     test(a, e, 5, 2, 2);
-    a.animate(3);
+    list.doAnimate(3);
     test(a, e, 5, 2, 4);
     a.startAnimationTo(4.0, timing);
     test(a, e, 6, 2, 4);
-    a.animate(4);
+    list.doAnimate(4);
     test(a, e, 6, 2, 4);
-    a.animate(5);
+    list.doAnimate(5);
     test(a, e, 6, 3, 4);
     a.clearAnimation(action);
     test(a, e, 7, 3, 4);
-    a.animate(6);
+    list.doAnimate(6);
     test(a, e, 7, 3, 5);
     a.clearAnimation();
     test(a, e, 8, 3, 5);
     a.startAnimationTo(10.0, timing, action);
     a.set(5.0, action);
     test(a, e, 10, 5, 5);
-    a.animate(7);
+    list.doAnimate(7);
     test(a, e, 10, 5, 7);
     a.startAnimationTo(10.0, AnimationTiming.NO_ANIMATION, action);
     test(a, e, 11, 10, 7);
-    a.animate(8);
+    list.doAnimate(8);
     test(a, e, 11, 10, 8);
     a.set(.0, action);
     test(a, e, 12, 0, 8);
-    a.animate(8);
+    list.doAnimate(8);
     test(a, e, 12, 0, 9);
     a.startAnimationTo(1.0, timing);
     test(a, e, 13, 0, 9);
     assertTrue(a.inAnimation());
     assertEquals(1.0, a.getPredict(), 0.0);
-    a.animate(9);
+    list.doAnimate(9);
     assertTrue(a.inAnimation());
-    a.animate(10);
-    a.animate(11);
+    list.doAnimate(10);
+    list.doAnimate(11);
     test(a, e, 13, 1, 9);
     assertEquals(1.0, a.getPredict(), 0.0);
     assertFalse(a.inAnimation());
@@ -151,8 +153,14 @@ public class GenericAnimatedTest {
     final TestAnimated animated = new TestAnimated();
     final AnimationAction finish = new AnimationAction() {
 
+      private int count;
+
       @Override
       public void animationFinished() {
+        ++count;
+        if(count > 100) {
+          fail("livelock detected");
+        }
         animated.clearAnimation(this);
       }
 
@@ -162,8 +170,14 @@ public class GenericAnimatedTest {
     final AnimationList list = new AnimationList();
     final AnimationAction action = new AnimationAction() {
 
+      private int count;
+
       @Override
       public void animationFinished() {
+        ++count;
+        if(count > 100) {
+          fail("livelock detected");
+        }
         list.scheduleAction(this, 0);
       }
 
