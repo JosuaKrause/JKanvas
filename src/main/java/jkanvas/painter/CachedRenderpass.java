@@ -25,10 +25,10 @@ import jkanvas.KanvasContext;
 public abstract class CachedRenderpass extends RenderpassAdapter {
 
   /** The visible size at which the caching comes into effect. */
-  private static final int CACHE_VISIBLE = 1280;
+  private static final int CACHE_VISIBLE = 256;
 
   /** The orientation for the size of the cache. */
-  private static final int CACHE_SIZE = 1024;
+  private static final int CACHE_SIZE = 512;
 
   /** The cached image. */
   private Image cache;
@@ -48,7 +48,7 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
     final boolean noCache = chg || lastChanging;
     lastChanging = chg;
     final Rectangle2D comp = ctx.toComponentCoordinates(bbox);
-    if((!isForceCaching() && (noCache || (comp.getWidth() > CACHE_VISIBLE && comp.getHeight() > CACHE_VISIBLE)))
+    if((!isForceCaching() && (noCache || (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE)))
         || jkanvas.Canvas.DISABLE_CACHING) {
       invalidateCache();
       doDraw(g, ctx);
