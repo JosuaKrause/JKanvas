@@ -424,8 +424,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     }
     // clip the visible area
     g.clip(getVisibleRect());
-    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     if(barrier == null) {
       doPaint(g);
     } else {
