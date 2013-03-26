@@ -232,7 +232,7 @@ public final class VecUtil {
     final double sin = Math.sin(theta);
     final double x = vec.getX();
     final double y = vec.getY();
-    return new Point2D.Double(x * cos + y * sin, -x * sin + y * cos);
+    return new Point2D.Double(x * cos - y * sin, x * sin + y * cos);
   }
 
   /**
