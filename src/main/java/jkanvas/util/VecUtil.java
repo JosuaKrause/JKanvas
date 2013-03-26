@@ -242,9 +242,9 @@ public final class VecUtil {
    * @param pos The point to rotate.
    * @param center The center.
    * @param dist The distance. Positive values rotate in clockwise direction.
-   * @return The point that has the given distance to the original point.
-   * @throws IllegalArgumentException When the distance is longer than the
-   *           diameter.
+   * @return The point that has the given distance to the original point. Or is
+   *         at the exact opposite position if the distance is larger than the
+   *         diameter.
    */
   public static Point2D rotate(final Point2D pos, final Point2D center, final double dist) {
     final double f = dist > 0 ? 1 : -1;
@@ -279,8 +279,8 @@ public final class VecUtil {
    * @param b Point b.
    * @return Whether the rotation must be clockwise.
    */
-  public static boolean isClockwiseOf(final Point2D center, final Point2D a,
-      final Point2D b) {
+  public static boolean isClockwiseOf(final Point2D center,
+      final Point2D a, final Point2D b) {
     return Line2D.relativeCCW(center.getX(), center.getY(),
         a.getX(), a.getY(), b.getX(), b.getY()) < 0;
   }
