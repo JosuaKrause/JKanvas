@@ -181,6 +181,26 @@ public final class PaintUtil {
   }
 
   /**
+   * Interpolates between two colors.
+   * 
+   * @param from The color to interpolate from.
+   * @param to The color to interpolate to.
+   * @param t The interpolation value from <code>0</code> to <code>1</code>.
+   * @return The interpolated color.
+   */
+  public static Color interpolate(final Color from, final Color to, final double t) {
+    final float[] fromRGBA = new float[4];
+    final float[] toRGBA = new float[4];
+    from.getRGBComponents(fromRGBA);
+    to.getRGBComponents(toRGBA);
+    final double r = fromRGBA[0] * (1 - t) + toRGBA[0] * t;
+    final double g = fromRGBA[1] * (1 - t) + toRGBA[1] * t;
+    final double b = fromRGBA[2] * (1 - t) + toRGBA[2] * t;
+    final double a = fromRGBA[3] * (1 - t) + toRGBA[3] * t;
+    return new Color((float) r, (float) g, (float) b, (float) a);
+  }
+
+  /**
    * Sets the alpha value of a color. Hint: Consider using
    * {@link #setAlpha(Graphics2D, double)}.
    * 
