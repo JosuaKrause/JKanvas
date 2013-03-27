@@ -34,6 +34,7 @@ public class InterpolatorTest {
     testInverse(Interpolator.LINEAR);
     testInverse(Interpolator.SMOOTH);
     testInverse(Interpolator.SLOW_IN_OUT);
+    testInverse(Interpolator.QUAD_IN_OUT);
   }
 
   /**
@@ -52,6 +53,7 @@ public class InterpolatorTest {
     testStartEnd(Interpolator.LINEAR);
     testStartEnd(Interpolator.SMOOTH);
     testStartEnd(Interpolator.SLOW_IN_OUT);
+    testStartEnd(Interpolator.QUAD_IN_OUT);
   }
 
 }

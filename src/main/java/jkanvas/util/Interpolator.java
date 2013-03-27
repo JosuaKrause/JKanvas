@@ -39,7 +39,7 @@ public interface Interpolator {
 
   };
 
-  /** Smooth interpolation. */
+  /** Arc tangents slow in slow out interpolation. */
   Interpolator SLOW_IN_OUT = new Interpolator() {
 
     /** The strength of the fast phase. */
@@ -59,6 +59,21 @@ public interface Interpolator {
     @Override
     public double inverseInterpolate(final double t) {
       return 0.5 - Math.tan(-MIN_VAL - RANGE * t) / STRENGTH;
+    }
+
+  };
+
+  /** Quadratic slow in slow out interpolation. */
+  Interpolator QUAD_IN_OUT = new Interpolator() {
+
+    @Override
+    public double interpolate(final double t) {
+      return t <= 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t);
+    }
+
+    @Override
+    public double inverseInterpolate(final double t) {
+      return t <= 0.5 ? Math.sqrt(t * 0.5) : 1 - Math.sqrt(1 - t) / Math.sqrt(2);
     }
 
   };
