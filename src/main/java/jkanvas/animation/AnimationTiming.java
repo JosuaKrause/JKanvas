@@ -45,7 +45,7 @@ public class AnimationTiming {
 
   /** Slow and smooth animation. */
   public static final AnimationTiming SLOW = new AnimationTiming(
-      Interpolator.SMOOTH, TIME_LONG);
+      Interpolator.SLOW_IN_OUT, TIME_LONG);
 
   /** Fast and linear animation. */
   public static final AnimationTiming FAST = new AnimationTiming(
@@ -53,6 +53,6 @@ public class AnimationTiming {
 
   /** Smooth animation with normal duration. */
   public static final AnimationTiming SMOOTH = new AnimationTiming(
-      Interpolator.SMOOTH, TIME_NORMAL);
+      Interpolator.SLOW_IN_OUT, TIME_NORMAL);
 
 }

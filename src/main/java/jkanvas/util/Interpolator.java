@@ -39,6 +39,30 @@ public interface Interpolator {
 
   };
 
+  /** Smooth interpolation. */
+  Interpolator SLOW_IN_OUT = new Interpolator() {
+
+    /** The strength of the fast phase. */
+    private final double STRENGTH = 4;
+
+    /** The minimal value of the arc tangents. */
+    private final double MIN_VAL = VecUtil.fastArcTan(-0.5 * STRENGTH);
+
+    /** The range of the arc tangets. */
+    private final double RANGE = -MIN_VAL * 2;
+
+    @Override
+    public double interpolate(final double t) {
+      return (VecUtil.fastArcTan((t - 0.5) * STRENGTH) - MIN_VAL) / RANGE;
+    }
+
+    @Override
+    public double inverseInterpolate(final double t) {
+      return 0.5 - Math.tan(-MIN_VAL - RANGE * t) / STRENGTH;
+    }
+
+  };
+
   /** Linear interpolation. */
   Interpolator LINEAR = new Interpolator() {
 

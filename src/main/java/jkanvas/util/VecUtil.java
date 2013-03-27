@@ -155,8 +155,11 @@ public final class VecUtil {
     return mulVec(v, l / getLength(v));
   }
 
+  /** A half pi. */
+  public static final double M_PI_2 = Math.PI * 0.5;
+
   /** A quarter pi. */
-  public static final double M_PI_4 = Math.PI / 4.0;
+  public static final double M_PI_4 = Math.PI * 0.25;
 
   /** A double pi. */
   public static final double M_2_PI = 2.0 * Math.PI;

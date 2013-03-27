@@ -17,12 +17,12 @@ public class InterpolatorTest {
    * @param pol The interpolator.
    */
   private static void testInverse(final Interpolator pol) {
-    for(double t = 0; t < 1; t += 0.001) {
-      assertEquals(t, pol.inverseInterpolate(pol.interpolate(t)), 0.00001);
-      assertEquals(t, pol.interpolate(pol.inverseInterpolate(t)), 0.00001);
+    for(double t = 0; t < 1; t += 1e-5) {
+      assertEquals(t, pol.inverseInterpolate(pol.interpolate(t)), 1e-3);
+      assertEquals(t, pol.interpolate(pol.inverseInterpolate(t)), 1e-3);
     }
-    assertEquals(1.0, pol.inverseInterpolate(pol.interpolate(1)), 0.00001);
-    assertEquals(1.0, pol.interpolate(pol.inverseInterpolate(1)), 0.00001);
+    assertEquals(1.0, pol.inverseInterpolate(pol.interpolate(1)), 1e-3);
+    assertEquals(1.0, pol.interpolate(pol.inverseInterpolate(1)), 1e-3);
   }
 
   /**
@@ -33,6 +33,25 @@ public class InterpolatorTest {
   public void testInverse() {
     testInverse(Interpolator.LINEAR);
     testInverse(Interpolator.SMOOTH);
+    testInverse(Interpolator.SLOW_IN_OUT);
+  }
+
+  /**
+   * Tests start and end points.
+   * 
+   * @param pol The interpolation.
+   */
+  private static void testStartEnd(final Interpolator pol) {
+    assertEquals(0, pol.interpolate(0), 1e-3);
+    assertEquals(1, pol.interpolate(1), 1e-3);
+  }
+
+  /** Checks whether start and end points are interpolated correctly. */
+  @Test
+  public void testStartEnd() {
+    testStartEnd(Interpolator.LINEAR);
+    testStartEnd(Interpolator.SMOOTH);
+    testStartEnd(Interpolator.SLOW_IN_OUT);
   }
 
 }
