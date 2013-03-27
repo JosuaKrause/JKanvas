@@ -199,7 +199,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
 
       @Override
       public boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
-        return SwingUtilities.isRightMouseButton(e) && e.isShiftDown();
+        return SwingUtilities.isLeftMouseButton(e) && e.isShiftDown();
       }
 
     };

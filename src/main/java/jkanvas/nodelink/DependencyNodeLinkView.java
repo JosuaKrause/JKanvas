@@ -42,7 +42,32 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
   private final BitSet edges;
 
   /** All allowed packages. */
-  private final String[] allowedPkgs;
+  private final String[] allowedClasses;
+
+  /** Classes that will never be included. */
+  public static final String[] NEVER = {
+      "java.io.ObjectStreamField",
+      "java.lang.Boolean",
+      "java.lang.Class",
+      "java.lang.Double",
+      "java.lang.Float",
+      "java.lang.Integer",
+      "java.lang.Long",
+      "java.lang.String",
+  };
+
+  /** The standard set of allowed classes. */
+  public static final String[] STD_CLASSES = {
+      "java.awt.BasicStroke",
+      "java.awt.Color",
+      "java.awt.Dimension",
+      "java.lang.ref.WeakReference",
+      "java.util.ArrayList",
+      "java.util.BitSet",
+      "java.util.concurrent",
+      "java.util.WeakHashMap",
+      "jkanvas",
+  };
 
   /**
    * Creates a node-link view of dependencies.
@@ -50,18 +75,18 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
    * @param base The base object.
    */
   public DependencyNodeLinkView(final Object base) {
-    this(base, new String[] { "jkanvas", "java.util"});
+    this(base, STD_CLASSES);
   }
 
   /**
    * Creates a node-link view of dependencies.
    * 
    * @param base The base object.
-   * @param allowedPkgs The allowed packages.
+   * @param allowedClasses The allowed class prefixes.
    */
-  public DependencyNodeLinkView(final Object base, final String[] allowedPkgs) {
-    this.allowedPkgs = Objects.requireNonNull(allowedPkgs);
-    for(final String s : allowedPkgs) {
+  public DependencyNodeLinkView(final Object base, final String[] allowedClasses) {
+    this.allowedClasses = Objects.requireNonNull(allowedClasses);
+    for(final String s : allowedClasses) {
       Objects.requireNonNull(s);
     }
     this.base = Objects.requireNonNull(base);
@@ -94,6 +119,25 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
   }
 
   /**
+   * Getter.
+   * 
+   * @param clazz The class.
+   * @return Whether the class is allowed.
+   */
+  private boolean isAllowed(final Class<?> clazz) {
+    if(clazz.isArray() && clazz.getComponentType().isPrimitive()) return false;
+    final String name = clazz.getName();
+    for(final String a : NEVER) {
+      if(name.startsWith(a)) return false;
+    }
+    for(final String a : allowedClasses) {
+      if(name.startsWith(a)) return true;
+    }
+    System.out.println(name);
+    return false;
+  }
+
+  /**
    * Adds a reference to the collection.
    * 
    * @param others The collection.
@@ -101,25 +145,14 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
    */
   private void addRef(final Collection<Object> others, final Object ref) {
     if(ref == null) return;
+    if(others.size() > 1000) return;
     if(others.contains(ref)) return;
     final Class<? extends Object> clazz = ref.getClass();
     if(isValidArray(clazz)) {
       addDirect(others, ref);
       return;
     }
-    // TODO find better way to define which class should be included #16
-    final Package pkg = clazz.getPackage();
-    boolean allowed = false;
-    if(pkg != null) {
-      final String name = pkg.getName();
-      for(final String a : allowedPkgs) {
-        if(name.startsWith(a)) {
-          allowed = true;
-          break;
-        }
-      }
-    }
-    if(allowed) {
+    if(isAllowed(clazz)) {
       addDirect(others, ref);
     }
   }
@@ -182,6 +215,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
     final Queue<Object> objs = new LinkedList<>();
     addRef(objs, o);
     while(!objs.isEmpty()) {
+      if(objects.size() > 1000) return;
       final Object cur = objs.poll();
       if(backMap.containsKey(cur)) {
         continue;
