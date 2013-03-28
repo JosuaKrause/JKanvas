@@ -94,7 +94,8 @@ public final class VecUtil {
 
   /**
    * Generates a vector that forms an angle of {@code 90} degrees with the given
-   * vector.
+   * vector. A straight vector in positive x direction will lead to a straight
+   * vector pointing in positive y direction.
    * 
    * @param a The given vector.
    * @return The orthogonal vector of the left side.
@@ -105,7 +106,8 @@ public final class VecUtil {
 
   /**
    * Generates a vector that forms an angle of {@code -90} degrees with the
-   * given vector.
+   * given vector. A straight vector in positive x direction will lead to a
+   * straight vector pointing in negative y direction.
    * 
    * @param a The given vector.
    * @return The orthogonal vector of the right side.
