@@ -104,6 +104,29 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
   }
 
   /**
+   * Getter.
+   * 
+   * @param renderpass The render pass.
+   * @return Whether the render pass has a border from this render pass.
+   */
+  public boolean hasBorder(final Renderpass renderpass) {
+    return borders.containsKey(renderpass);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param renderpass The render pass.
+   * @return The title of the render pass or the empty string if the render pass
+   *         has no title or has no border from this render pass.
+   * @see #hasBorder(Renderpass)
+   */
+  public String getTitle(final Renderpass renderpass) {
+    final String title = borders.get(renderpass);
+    return title != null ? title : "";
+  }
+
+  /**
    * Sets the width of the border.
    * 
    * @param renderpass The render pass.
@@ -112,6 +135,21 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
   public void setWidth(final Renderpass renderpass, final double width) {
     if(width <= 0) throw new IllegalArgumentException("" + width);
     widths.put(renderpass, width);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param renderpass The render pass.
+   * @return The border width of the render pass. Note that this method will
+   *         always return values even when the render pass has no border from
+   *         this render pass. Then, however, the default value will be
+   *         returned.
+   * @see #hasBorder(Renderpass)
+   */
+  public double getWidth(final Renderpass renderpass) {
+    final Double res = widths.get(renderpass);
+    return res != null ? res : 2;
   }
 
   /**
