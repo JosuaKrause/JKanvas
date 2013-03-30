@@ -47,6 +47,17 @@ public final class PaintUtil {
   }
 
   /**
+   * Creates a circle to draw a point.
+   * 
+   * @param pos The point.
+   * @param size The size of the point.
+   * @return The circle.
+   */
+  public static Ellipse2D pixelRound(final Point2D pos, final double size) {
+    return createCircle(pos.getX(), pos.getY(), size * 0.5);
+  }
+
+  /**
    * Adds padding to a rectangle.
    * 
    * @param rect The rectangle.
