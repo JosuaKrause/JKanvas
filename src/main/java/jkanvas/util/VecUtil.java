@@ -93,26 +93,28 @@ public final class VecUtil {
   }
 
   /**
-   * Generates a vector that forms an angle of {@code 90} degrees with the given
-   * vector. A straight vector in positive x direction will lead to a straight
-   * vector pointing in positive y direction.
-   * 
-   * @param a The given vector.
-   * @return The orthogonal vector of the left side.
-   */
-  public static Point2D getOrthoLeft(final Point2D a) {
-    return new Point2D.Double(-a.getY(), a.getX());
-  }
-
-  /**
    * Generates a vector that forms an angle of {@code -90} degrees with the
    * given vector. A straight vector in positive x direction will lead to a
-   * straight vector pointing in negative y direction.
+   * straight vector pointing in positive y direction. Note that positive y
+   * direction points downwards.
    * 
    * @param a The given vector.
    * @return The orthogonal vector of the right side.
    */
   public static Point2D getOrthoRight(final Point2D a) {
+    return new Point2D.Double(-a.getY(), a.getX());
+  }
+
+  /**
+   * Generates a vector that forms an angle of {@code 90} degrees with the given
+   * vector. A straight vector in positive x direction will lead to a straight
+   * vector pointing in negative y direction. Note that positive y direction
+   * points downwards.
+   * 
+   * @param a The given vector.
+   * @return The orthogonal vector of the left side.
+   */
+  public static Point2D getOrthoLeft(final Point2D a) {
     return new Point2D.Double(a.getY(), -a.getX());
   }
 
@@ -186,13 +188,14 @@ public final class VecUtil {
    * Calculates the absolute orientation of a given vector.
    * 
    * @param vec The vector.
-   * @return The angle from this vector to the x-axis in counter-clockwise
-   *         order. The range is from {@code 0.0 - 2.0 * Math.PI}. The vector
-   *         (0, 0) results in an angle of <code>0</code>.
+   * @return The angle from this vector to the x-axis in counter-clockwise or
+   *         negative y-axis order. The range is from
+   *         {@code 0.0 - 2.0 * Math.PI}. The vector (0, 0) results in an angle
+   *         of <code>0</code>. Note that positive y direction points downwards.
    */
   public static double getOrientation(final Point2D vec) {
     final double x = vec.getX();
-    final double y = vec.getY();
+    final double y = -vec.getY();
     if(x == 0.0) return Math.PI * (y > 0.0 ? 0.5 : 1.5);
     return (x < 0 ? Math.PI : (y < 0 ? M_2_PI : 0)) + fastArcTan(y / x);
   }
@@ -226,15 +229,16 @@ public final class VecUtil {
 
   /**
    * Rotates a vector around the origin. The angle is measured in radians and
-   * positive angles are counter-clockwise.
+   * positive angles are counter-clockwise or in negative y direction. Note that
+   * positive y direction points downwards.
    * 
    * @param vec The vector to rotate.
    * @param theta The angle in radians.
    * @return The rotated vector.
    */
   public static Point2D rotate(final Point2D vec, final double theta) {
-    final double cos = Math.cos(theta);
-    final double sin = Math.sin(theta);
+    final double cos = Math.cos(-theta);
+    final double sin = Math.sin(-theta);
     final double x = vec.getX();
     final double y = vec.getY();
     return new Point2D.Double(x * cos - y * sin, x * sin + y * cos);
@@ -246,10 +250,11 @@ public final class VecUtil {
    * 
    * @param pos The point to rotate.
    * @param center The center.
-   * @param dist The distance. Positive values rotate in clockwise direction.
+   * @param dist The distance. Positive values rotate in counter-clockwise or
+   *          negative y direction.
    * @return The point that has the given distance to the original point. Or is
    *         at the exact opposite position if the distance is larger than the
-   *         diameter.
+   *         diameter. Note that positive y direction points downwards.
    */
   public static Point2D rotate(final Point2D pos, final Point2D center, final double dist) {
     final double f = dist > 0 ? 1 : -1;
@@ -265,7 +270,8 @@ public final class VecUtil {
    * 
    * @param pos The point to rotate.
    * @param center The center.
-   * @param angle The angle in radians and interpreted counter-clockwise.
+   * @param angle The angle in radians and interpreted counter-clockwise or
+   *          negative y direction. Note that the y direction is downwards.
    * @return The rotated point.
    */
   public static Point2D rotateByAngle(
@@ -276,15 +282,16 @@ public final class VecUtil {
   }
 
   /**
-   * Whether point a must be rotated clockwise around the center point to align
-   * with point b.
+   * Whether point a must be rotated counter-clockwise or in negative y
+   * direction around the center point to align with point b. Note that the y
+   * direction is downwards.
    * 
    * @param center The center of rotation.
    * @param a Point a.
    * @param b Point b.
-   * @return Whether the rotation must be clockwise.
+   * @return Whether the rotation must be counter-clockwise.
    */
-  public static boolean isClockwiseOf(final Point2D center,
+  public static boolean isCounterClockwiseOf(final Point2D center,
       final Point2D a, final Point2D b) {
     return Line2D.relativeCCW(center.getX(), center.getY(),
         a.getX(), a.getY(), b.getX(), b.getY()) < 0;

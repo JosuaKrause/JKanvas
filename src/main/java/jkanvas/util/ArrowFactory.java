@@ -48,7 +48,7 @@ public class ArrowFactory {
 
     @Override
     public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
-      final Point2D side = mulVec(getOrthoLeft(dir), 0.5);
+      final Point2D side = mulVec(getOrthoRight(dir), 0.5);
       final Point2D start = addVec(pos, side);
       final Point2D end = subVec(pos, side);
       path.moveTo(start.getX(), start.getY());
@@ -62,7 +62,7 @@ public class ArrowFactory {
 
     @Override
     public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
-      final Point2D side = mulVec(getOrthoLeft(dir), 0.5);
+      final Point2D side = mulVec(getOrthoRight(dir), 0.5);
       final Point2D left = subVec(addVec(pos, side), dir);
       final Point2D right = subVec(subVec(pos, side), dir);
       path.moveTo(pos.getX(), pos.getY());
@@ -78,7 +78,7 @@ public class ArrowFactory {
 
     @Override
     public void drawTip(final Path2D path, final Point2D pos, final Point2D dir) {
-      final Point2D side = mulVec(getOrthoLeft(dir), 0.5);
+      final Point2D side = mulVec(getOrthoRight(dir), 0.5);
       final Point2D left = subVec(addVec(pos, side), dir);
       final Point2D right = subVec(subVec(pos, side), dir);
       path.moveTo(pos.getX(), pos.getY());
@@ -220,7 +220,7 @@ public class ArrowFactory {
     Objects.requireNonNull(start);
     Objects.requireNonNull(end);
     final Point2D mid = mulVec(subVec(end, start), 0.5);
-    final Point2D right = setLength(getOrthoRight(mid), bend);
+    final Point2D right = setLength(getOrthoLeft(mid), bend);
     final Point2D bendPos = addVec(addVec(start, mid), right);
     return createArrow(start, end, bendPos, null);
   }

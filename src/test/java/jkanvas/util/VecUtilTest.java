@@ -71,22 +71,22 @@ public class VecUtilTest {
     equals(new Point2D.Double(1.0, 2), interpolate(b, c, 0.5));
     equals(new Point2D.Double(0.5, 3), interpolate(b, c, 0.75));
     equals(new Point2D.Double(0.0, 4), interpolate(b, c, 1));
-    equals(new Point2D.Double(6, 3), getOrthoRight(d));
-    equals(new Point2D.Double(-6, -3), getOrthoLeft(d));
+    equals(new Point2D.Double(6, 3), getOrthoLeft(d));
+    equals(new Point2D.Double(-6, -3), getOrthoRight(d));
     equals(new Point2D.Double(-6, 12), setLength(d, 2 * Math.sqrt(45)));
     assertEquals(Math.toRadians(60),
-        getOrientation(new Point2D.Double(1, Math.sqrt(3))), 1e-9);
-    assertEquals(M_2_PI - Math.toRadians(60),
         getOrientation(new Point2D.Double(1, -Math.sqrt(3))), 1e-9);
+    assertEquals(M_2_PI - Math.toRadians(60),
+        getOrientation(new Point2D.Double(1, Math.sqrt(3))), 1e-9);
   }
 
   /** Tests rotation functions. */
   @Test
   public void rotations() {
     final Point2D v = new Point2D.Double(2, 0);
-    equals(new Point2D.Double(0, 2), rotate(v, Math.PI * 0.5));
+    equals(new Point2D.Double(0, -2), rotate(v, Math.PI * 0.5));
     equals(new Point2D.Double(-2, 0), rotate(v, Math.PI));
-    equals(new Point2D.Double(0, -2), rotate(v, Math.PI * 1.5));
+    equals(new Point2D.Double(0, 2), rotate(v, Math.PI * 1.5));
     equals(v, rotate(v, Math.PI * 2));
     final Point2D a = new Point2D.Double(2, 3);
     final Point2D b = new Point2D.Double(3, 3);
