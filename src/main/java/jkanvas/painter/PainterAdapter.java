@@ -116,6 +116,11 @@ public class PainterAdapter implements KanvasPainter {
   }
 
   @Override
+  public void processMessage(final String[] ids, final String msg) {
+    // nothing that can be done here
+  }
+
+  @Override
   public void dispose() {
     // nothing to do
   }

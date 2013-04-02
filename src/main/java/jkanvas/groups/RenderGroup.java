@@ -811,4 +811,17 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     return false;
   }
 
+  @Override
+  public void processMessage(final String[] ids, final String msg) {
+    super.processMessage(ids, msg);
+    RenderpassPainter.processMessage(nlBack, ids, msg);
+    RenderpassPainter.processMessage(nlFront, ids, msg);
+    for(final RenderpassPosition<T> p : members) {
+      if(!p.pass.isVisible()) {
+        continue;
+      }
+      p.pass.processMessage(ids, msg);
+    }
+  }
+
 }
