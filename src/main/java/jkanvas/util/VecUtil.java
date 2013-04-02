@@ -277,7 +277,7 @@ public final class VecUtil {
   public static Point2D rotateByAngle(
       final Point2D pos, final Point2D center, final double angle) {
     final AffineTransform at = AffineTransform.getRotateInstance(
-        angle, center.getX(), center.getY());
+        -angle, center.getX(), center.getY());
     return at.transform(pos, null);
   }
 

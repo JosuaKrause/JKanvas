@@ -93,15 +93,15 @@ public class VecUtilTest {
     final Point2D c = new Point2D.Double(2, 4);
     final Point2D d = new Point2D.Double(1, 3);
     final Point2D e = new Point2D.Double(2, 2);
-    equals(b, rotateByAngle(b, a, 0));
-    equals(c, rotateByAngle(b, a, Math.PI * 0.5));
-    equals(d, rotateByAngle(b, a, Math.PI));
-    equals(e, rotateByAngle(b, a, Math.PI * 1.5));
     equals(b, rotateByAngle(b, a, Math.PI * 2));
+    equals(c, rotateByAngle(b, a, Math.PI * 1.5));
+    equals(d, rotateByAngle(b, a, Math.PI));
+    equals(e, rotateByAngle(b, a, Math.PI * 0.5));
+    equals(b, rotateByAngle(b, a, 0));
     equals(b, rotate(b, a, 0));
-    equals(c, rotate(b, a, Math.sqrt(2)));
+    equals(c, rotate(b, a, -Math.sqrt(2)));
     equals(d, rotate(b, a, 2));
-    equals(e, rotate(b, a, -Math.sqrt(2)));
+    equals(e, rotate(b, a, Math.sqrt(2)));
     equals(d, rotate(b, a, 3));
   }
 
