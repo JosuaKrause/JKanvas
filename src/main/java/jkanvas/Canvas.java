@@ -341,6 +341,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
           for(final String m : msgs) {
             postMessage(m);
           }
+          refresh();
         }
 
       };
