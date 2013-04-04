@@ -14,10 +14,10 @@ import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.nodelink.DependencyNodeLinkRenderpass;
-import jkanvas.nodelink.DependencyNodeLinkView;
 import jkanvas.painter.FrameRateHUD;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
+import jkanvas.util.ObjectDependencies;
 import jkanvas.util.Screenshot;
 
 /**
@@ -136,7 +136,7 @@ public final class DependencyNodeLinkMain {
    */
   public static void main(final String[] args) {
     // Canvas.DEBUG_BBOX = true;
-    createFrame(null, DependencyNodeLinkView.STD_CLASSES);
+    createFrame(null, ObjectDependencies.STD_CLASSES);
   }
 
 }

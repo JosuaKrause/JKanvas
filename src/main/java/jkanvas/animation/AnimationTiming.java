@@ -51,6 +51,10 @@ public class AnimationTiming {
   public static final AnimationTiming FAST = new AnimationTiming(
       Interpolator.LINEAR, TIME_FAST);
 
+  /** Linear animation with normal duration. */
+  public static final AnimationTiming LINEAR = new AnimationTiming(
+      Interpolator.LINEAR, TIME_LONG);
+
   /** Smooth animation with normal duration. */
   public static final AnimationTiming SMOOTH = new AnimationTiming(
       Interpolator.QUAD_IN_OUT, TIME_NORMAL);

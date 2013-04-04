@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 
 import jkanvas.animation.AnimationList;
 import jkanvas.util.ArrowFactory;
+import jkanvas.util.ObjectDependencies;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.StringDrawer;
 import jkanvas.util.VecUtil;
@@ -28,7 +29,7 @@ public class DependencyNodeLinkRenderpass extends NodeLinkRenderpass<IndexedPosi
    * @param allowdPkgs Allowed packages.
    */
   public DependencyNodeLinkRenderpass(final Object base, final String[] allowdPkgs) {
-    this(new DependencyNodeLinkView(base, allowdPkgs));
+    this(new DependencyNodeLinkView(base, new ObjectDependencies(allowdPkgs)));
   }
 
   /**

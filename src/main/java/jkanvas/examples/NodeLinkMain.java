@@ -26,6 +26,10 @@ import jkanvas.nodelink.DefaultNodeRealizer;
 import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
+import jkanvas.nodelink.layout.CircleLayouter;
+import jkanvas.nodelink.layout.ForceDirectedLayouter;
+import jkanvas.nodelink.layout.RandomLayouter;
+import jkanvas.nodelink.layout.SimpleLayoutedView;
 import jkanvas.painter.FrameRateHUD;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
@@ -164,19 +168,15 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
    * Fills the given graph.
    * 
    * @param view The view on the graph.
-   * @param width The allowed width.
-   * @param height The allowed height.
    * @param nodes The number of nodes.
    * @param edges The number of edges.
    */
   private static void fillGraph(final SimpleNodeLinkView<AnimatedPosition> view,
-      final int width, final int height, final int nodes, final int edges) {
-    final double rad = DefaultNodeRealizer.RADIUS;
-    final Random rnd = new Random();
+      final int nodes, final int edges) {
     for(int i = 0; i < nodes; ++i) {
-      view.addNode(new AnimatedPosition(rad + rnd.nextDouble() * (width - 2 * rad),
-          rad + rnd.nextDouble() * (height - 2 * rad)));
+      view.addNode(new AnimatedPosition(0, 0));
     }
+    final Random rnd = new Random();
     for(int i = 0; i < edges; ++i) {
       view.addEdge(rnd.nextInt(nodes), rnd.nextInt(nodes));
     }
@@ -193,9 +193,10 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     final int h = 600;
     final int nodes = 20;
     final int edges = 100;
-    final SimpleNodeLinkView<AnimatedPosition> view = new SimpleNodeLinkView<>(false);
-    fillGraph(view, w, h, nodes, edges);
     final AnimatedPainter p = new AnimatedPainter();
+    final Canvas c = new Canvas(p, w, h);
+    final SimpleLayoutedView<AnimatedPosition> view = new SimpleLayoutedView<>(c, false);
+    fillGraph(view, nodes, edges);
     final NodeLinkMain r = new NodeLinkMain(view);
     r.setEdgeRealizer(new DefaultEdgeRealizer<>());
     r.setNodeRealizer(new DefaultNodeRealizer<AnimatedPosition>() {
@@ -208,7 +209,6 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     });
     p.addPass(r);
     // configure Canvas
-    final Canvas c = new Canvas(p, w, h);
     c.setBackground(Color.WHITE);
     c.setFrameRateDisplayer(new FrameRateHUD());
     p.addRefreshable(c);
@@ -217,8 +217,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 
       @Override
       public void dispose() {
-        // The Canvas also disposes the animator, which terminates the animation
-        // daemon
+        // The Canvas also disposes the animator,
+        // which terminates the animation daemon
         c.dispose();
         super.dispose();
       }
@@ -259,24 +259,27 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
-    c.addAction(KeyEvent.VK_R, new AbstractAction() {
+    c.addAction(KeyEvent.VK_1, new AbstractAction() {
 
       @Override
       public void actionPerformed(final ActionEvent e) {
-        final Rectangle2D rect = c.getVisibleCanvas();
-        final double w = rect.getWidth();
-        final double h = rect.getHeight();
-        final double r = Math.min(w, h) / 2 - DefaultNodeRealizer.RADIUS;
-        final int count = view.nodeCount();
-        final double step = 2 * Math.PI / count;
-        double angle = 0;
-        for(int i = 0; i < count; ++i) {
-          final double x = rect.getCenterX() + Math.sin(angle) * r;
-          final double y = rect.getCenterY() + Math.cos(angle) * r;
-          view.getNode(i).startAnimationTo(new Point2D.Double(x, y),
-              AnimationTiming.SMOOTH);
-          angle += step;
-        }
+        view.setLayouter(new RandomLayouter<>());
+      }
+
+    });
+    c.addAction(KeyEvent.VK_2, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        view.setLayouter(new CircleLayouter<>());
+      }
+
+    });
+    c.addAction(KeyEvent.VK_3, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        view.setLayouter(new ForceDirectedLayouter<>());
       }
 
     });
@@ -307,7 +310,9 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     info.addLine("F: Toggle Framerate Display");
     info.addLine("P: Take Photo");
     info.addLine("H: Toggle Help");
-    info.addLine("R: Lay out nodes in a circle");
+    info.addLine("1: Lay out nodes randomly once");
+    info.addLine("2: Lay out nodes in a circle");
+    info.addLine("3: Force directed layout");
     info.addLine("Q/ESC: Quit");
     p.addHUDPass(info);
     // pack and show window
@@ -316,6 +321,9 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
+    final RandomLayouter<AnimatedPosition> rl = new RandomLayouter<>();
+    rl.setTiming(AnimationTiming.NO_ANIMATION);
+    view.setLayouter(rl);
   }
 
 }
