@@ -26,6 +26,7 @@ import jkanvas.nodelink.DefaultNodeRealizer;
 import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
+import jkanvas.nodelink.layout.BouncingLayouter;
 import jkanvas.nodelink.layout.CircleLayouter;
 import jkanvas.nodelink.layout.ForceDirectedLayouter;
 import jkanvas.nodelink.layout.RandomLayouter;
@@ -283,6 +284,14 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
+    c.addAction(KeyEvent.VK_4, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        view.setLayouter(new BouncingLayouter<>());
+      }
+
+    });
     c.addAction(KeyEvent.VK_P, new AbstractAction() {
 
       @Override
@@ -313,6 +322,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     info.addLine("1: Lay out nodes randomly once");
     info.addLine("2: Lay out nodes in a circle");
     info.addLine("3: Force directed layout");
+    info.addLine("4: Bounce layout");
     info.addLine("Q/ESC: Quit");
     p.addHUDPass(info);
     // pack and show window

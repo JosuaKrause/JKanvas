@@ -131,8 +131,6 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
       }
       return;
     }
-    // force rectangle to stay the same
-    setRectangle(getRectangle());
     canvas.scheduleAction(new AnimationAction() {
 
       @Override
