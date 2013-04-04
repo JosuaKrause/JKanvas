@@ -1,10 +1,7 @@
 package jkanvas.nodelink;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -16,6 +13,7 @@ import java.util.Set;
 
 import jkanvas.animation.Animated;
 import jkanvas.util.BitSetIterable;
+import jkanvas.util.ObjectDependencies;
 
 /**
  * Creates a graph based on fields of objects referencing each other.
@@ -41,33 +39,8 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
   /** The edges. */
   private final BitSet edges;
 
-  /** All allowed packages. */
-  private final String[] allowedClasses;
-
-  /** Classes that will never be included. */
-  public static final String[] NEVER = {
-      "java.io.ObjectStreamField",
-      "java.lang.Boolean",
-      "java.lang.Class",
-      "java.lang.Double",
-      "java.lang.Float",
-      "java.lang.Integer",
-      "java.lang.Long",
-      "java.lang.String",
-  };
-
-  /** The standard set of allowed classes. */
-  public static final String[] STD_CLASSES = {
-      "java.awt.BasicStroke",
-      "java.awt.Color",
-      "java.awt.Dimension",
-      "java.lang.ref.WeakReference",
-      "java.util.ArrayList",
-      "java.util.BitSet",
-      "java.util.concurrent",
-      "java.util.WeakHashMap",
-      "jkanvas",
-  };
+  /** The object dependency. */
+  private final ObjectDependencies dependency;
 
   /**
    * Creates a node-link view of dependencies.
@@ -75,133 +48,22 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
    * @param base The base object.
    */
   public DependencyNodeLinkView(final Object base) {
-    this(base, STD_CLASSES);
+    this(base, new ObjectDependencies());
   }
 
   /**
    * Creates a node-link view of dependencies.
    * 
    * @param base The base object.
-   * @param allowedClasses The allowed class prefixes.
+   * @param dependency The object dependency handler.
    */
-  public DependencyNodeLinkView(final Object base, final String[] allowedClasses) {
-    this.allowedClasses = Objects.requireNonNull(allowedClasses);
-    for(final String s : allowedClasses) {
-      Objects.requireNonNull(s);
-    }
+  public DependencyNodeLinkView(final Object base, final ObjectDependencies dependency) {
+    this.dependency = Objects.requireNonNull(dependency);
     this.base = Objects.requireNonNull(base);
     backMap = new IdentityHashMap<>();
     objects = new ArrayList<>();
     pos = new ArrayList<>();
     edges = new BitSet();
-  }
-
-  /**
-   * Adds the given reference directly to the collection.
-   * 
-   * @param others The collection.
-   * @param ref The reference.
-   */
-  private static void addDirect(final Collection<Object> others, final Object ref) {
-    if(ref == null) return;
-    if(others.contains(ref)) return;
-    others.add(ref);
-  }
-
-  /**
-   * Whether the given class is a non primitive array.
-   * 
-   * @param clazz The class.
-   * @return Whether the class is a non primitive array.
-   */
-  private static boolean isValidArray(final Class<?> clazz) {
-    return clazz.isArray() && !clazz.getComponentType().isPrimitive();
-  }
-
-  /**
-   * Getter.
-   * 
-   * @param clazz The class.
-   * @return Whether the class is allowed.
-   */
-  private boolean isAllowed(final Class<?> clazz) {
-    if(clazz.isArray() && clazz.getComponentType().isPrimitive()) return false;
-    final String name = clazz.getName();
-    for(final String a : NEVER) {
-      if(name.startsWith(a)) return false;
-    }
-    for(final String a : allowedClasses) {
-      if(name.startsWith(a)) return true;
-    }
-    System.out.println(name);
-    return false;
-  }
-
-  /**
-   * Adds a reference to the collection.
-   * 
-   * @param others The collection.
-   * @param ref The reference.
-   */
-  private void addRef(final Collection<Object> others, final Object ref) {
-    if(ref == null) return;
-    if(others.size() > 1000) return;
-    if(others.contains(ref)) return;
-    final Class<? extends Object> clazz = ref.getClass();
-    if(isValidArray(clazz)) {
-      addDirect(others, ref);
-      return;
-    }
-    if(isAllowed(clazz)) {
-      addDirect(others, ref);
-    }
-  }
-
-  /**
-   * Adds all fields of an object.
-   * 
-   * @param clazz The class of the reference.
-   * @param others The set of objects.
-   * @param o The reference to get the field from.
-   */
-  private void fields(final Class<? extends Object> clazz,
-      final Set<Object> others, final Object o) {
-    final Field[] fields = clazz.getDeclaredFields();
-    for(final Field f : fields) {
-      try {
-        final boolean acc = f.isAccessible();
-        f.setAccessible(true);
-        final Object ref = f.get(o);
-        addRef(others, ref);
-        f.setAccessible(acc);
-      } catch(IllegalArgumentException | IllegalAccessException e) {
-        e.printStackTrace();
-      }
-    }
-  }
-
-  /**
-   * Getter.
-   * 
-   * @param o The reference.
-   * @return The neighbors of this reference.
-   */
-  private Set<Object> neighbors(final Object o) {
-    if(o == null) return Collections.emptySet();
-    final Set<Object> others = Collections.newSetFromMap(new IdentityHashMap<Object, Boolean>());
-    Class<? extends Object> clazz = o.getClass();
-    if(isValidArray(clazz)) {
-      final Object[] arr = (Object[]) o;
-      for(final Object r : arr) {
-        addRef(others, r);
-      }
-      return others;
-    }
-    do {
-      fields(clazz, others, o);
-      clazz = clazz.getSuperclass();
-    } while(clazz != null);
-    return others;
   }
 
   /**
@@ -213,7 +75,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
     backMap.clear();
     objects.clear();
     final Queue<Object> objs = new LinkedList<>();
-    addRef(objs, o);
+    dependency.addRef(objs, o);
     while(!objs.isEmpty()) {
       if(objects.size() > 1000) return;
       final Object cur = objs.poll();
@@ -223,7 +85,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
       final int pos = objects.size();
       objects.add(cur);
       backMap.put(cur, pos);
-      final Set<Object> set = neighbors(cur);
+      final Set<Object> set = dependency.neighbors(cur);
       objs.addAll(set);
     }
   }
@@ -236,7 +98,7 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
       if(from == null) {
         continue;
       }
-      final Set<Object> neighbors = neighbors(f);
+      final Set<Object> neighbors = dependency.neighbors(f);
       for(final Object n : neighbors) {
         final Integer to = backMap.get(n);
         if(to != null) {

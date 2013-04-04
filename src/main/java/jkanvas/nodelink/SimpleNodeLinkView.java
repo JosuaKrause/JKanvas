@@ -63,6 +63,11 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     return nodes.size();
   }
 
+  /** This method is called whenever the graph changes. */
+  protected void onChange() {
+    // nothing to do
+  }
+
   /**
    * Adds a node.
    * 
@@ -74,6 +79,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     idMap.put(node, nodes.size());
     nodes.add(node);
     edges.add(new BitSet());
+    onChange();
   }
 
   @Override
@@ -124,6 +130,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     if(!isDirected()) {
       edges.get(to).set(from);
     }
+    onChange();
   }
 
   /**
@@ -148,6 +155,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     if(!isDirected()) {
       edges.get(to).clear(from);
     }
+    onChange();
   }
 
   @Override
@@ -161,6 +169,7 @@ public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T>
     for(final BitSet es : edges) {
       es.clear();
     }
+    onChange();
   }
 
   @Override
