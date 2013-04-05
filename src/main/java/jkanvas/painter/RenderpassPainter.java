@@ -446,6 +446,30 @@ public class RenderpassPainter extends PainterAdapter {
     return getBoundingBox(back);
   }
 
+  @Override
+  public void processMessage(final String[] ids, final String msg) {
+    processMessage(back, ids, msg);
+  }
+
+  /**
+   * Processes a message handed in via the
+   * {@link jkanvas.Canvas#postMessage(String)} method. This method forwards the
+   * message to all visible children.
+   * 
+   * @param passes The children.
+   * @param ids The ids that accept the message.
+   * @param msg The message.
+   */
+  public static final void processMessage(final Iterable<Renderpass> passes,
+      final String[] ids, final String msg) {
+    for(final Renderpass r : passes) {
+      if(!r.isVisible()) {
+        continue;
+      }
+      r.processMessage(ids, msg);
+    }
+  }
+
   /**
    * Whether the render pass is visible at top level.
    * 

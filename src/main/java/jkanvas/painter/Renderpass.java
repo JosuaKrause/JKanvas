@@ -78,13 +78,29 @@ public interface Renderpass extends KanvasInteraction {
    * @param forceCache Force caching. This can be useful when the render pass is
    *          moving and caching is supported.
    */
-  public void setForceCache(final boolean forceCache);
+  void setForceCache(final boolean forceCache);
 
   /**
    * Getter.
    * 
    * @return Whether to force caching when caching is supported.
    */
-  public boolean isForceCaching();
+  boolean isForceCaching();
+
+  /**
+   * Getter.
+   * 
+   * @return The ids associated with this render pass. Multiple ids may be
+   *         separated with space '<code>&#20;</code>'.
+   */
+  String getIds();
+
+  /**
+   * Setter.
+   * 
+   * @param ids The ids associated with this render pass. Multiple ids may be
+   *          separated with space '<code>&#20;</code>'.
+   */
+  void setIds(String ids);
 
 }

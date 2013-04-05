@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -11,8 +12,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -307,6 +313,46 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     input.put(KeyStroke.getKeyStroke(key, 0), token);
     final ActionMap action = getActionMap();
     action.put(token, a);
+  }
+
+  /** The map containing all keyboard messages. */
+  private final Map<String, List<String>> messageActions = new HashMap<>();
+
+  /** The action to handle all keyboard messages. */
+  private Action messageDispatcher;
+
+  /**
+   * Adds a keyboard message.
+   * 
+   * @param key The key id, given by {@link java.awt.event.KeyEvent}. (Constants
+   *          beginning with <code>VK</code>)
+   * @param message The message that is posted.
+   */
+  public void addMessageAction(final int key, final String message) {
+    if(messageDispatcher == null) {
+      final Map<String, List<String>> msgActions = messageActions;
+      messageDispatcher = new AbstractAction() {
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+          final String cmd = e.getActionCommand();
+          final List<String> msgs = msgActions.get(cmd);
+          if(msgs == null) throw new IllegalStateException("cmd must have list: " + cmd);
+          for(final String m : msgs) {
+            postMessage(m);
+          }
+          refresh();
+        }
+
+      };
+    }
+    final KeyStroke stroke = KeyStroke.getKeyStroke(key, 0);
+    final String cmd = "" + (char) stroke.getKeyCode();
+    if(!messageActions.containsKey(cmd)) {
+      messageActions.put(cmd, new ArrayList<String>());
+    }
+    messageActions.get(cmd).add(message);
+    addAction(key, messageDispatcher);
   }
 
   /**
@@ -779,6 +825,44 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public void setMaxZoom(final double zoom) {
     zui.setMaxZoom(zoom);
     zui.zoom(1, getVisibleCanvas());
+  }
+
+  /**
+   * Posts a message to be processed by {@link KanvasInteraction}. A message
+   * contains of two parts: The optional id part and the actual message. The id
+   * is separated from the message via the character '<code>#</code>'. Multiple
+   * ids may be passed by separating them with space '<code>&#20;</code>'
+   * 
+   * @param msg The message to post.
+   * @throws IllegalArgumentException If the message part is empty.
+   */
+  public void postMessage(final String msg) {
+    final int idEnd = msg.indexOf('#');
+    if(msg.isEmpty() || idEnd >= msg.length() - 1) throw new IllegalArgumentException(
+        "empty message not allowed: '" + msg + "'");
+    final String[] ids = idEnd < 0 ? new String[0] : msg.substring(0, idEnd).split(" ");
+    int emptyCount = 0;
+    for(final String id : ids) {
+      if(id.isEmpty()) {
+        ++emptyCount;
+      }
+    }
+    String[] realIds;
+    if(emptyCount > 0) {
+      // handling empty strings
+      realIds = new String[ids.length - emptyCount];
+      int i = 0;
+      for(final String id : ids) {
+        if(id.isEmpty()) {
+          continue;
+        }
+        realIds[i++] = id;
+      }
+    } else {
+      realIds = ids;
+    }
+    final String m = msg.substring(idEnd + 1);
+    painter.processMessage(realIds, m);
   }
 
   /** Disposes the painter. */

@@ -53,16 +53,35 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   private static final Color SEC_SEL = new Color(5, 113, 176);
 
   /** The simple view in order to add nodes dynamically. */
-  private final SimpleNodeLinkView<AnimatedPosition> simpleView;
+  private final SimpleLayoutedView<AnimatedPosition> simpleView;
 
   /**
    * Creates a node-link diagram.
    * 
    * @param view The view on the graph.
    */
-  public NodeLinkMain(final SimpleNodeLinkView<AnimatedPosition> view) {
+  public NodeLinkMain(final SimpleLayoutedView<AnimatedPosition> view) {
     super(view);
     simpleView = view;
+    setIds("nl");
+  }
+
+  @Override
+  protected void processMessage(final String msg) {
+    switch(msg) {
+      case "random":
+        simpleView.setLayouter(new RandomLayouter<>());
+        break;
+      case "circle":
+        simpleView.setLayouter(new CircleLayouter<>());
+        break;
+      case "force":
+        simpleView.setLayouter(new ForceDirectedLayouter<>());
+        break;
+      case "bounce":
+        simpleView.setLayouter(new BouncingLayouter<>());
+        break;
+    }
   }
 
   /**
@@ -260,38 +279,10 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
-    c.addAction(KeyEvent.VK_1, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        view.setLayouter(new RandomLayouter<>());
-      }
-
-    });
-    c.addAction(KeyEvent.VK_2, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        view.setLayouter(new CircleLayouter<>());
-      }
-
-    });
-    c.addAction(KeyEvent.VK_3, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        view.setLayouter(new ForceDirectedLayouter<>());
-      }
-
-    });
-    c.addAction(KeyEvent.VK_4, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        view.setLayouter(new BouncingLayouter<>());
-      }
-
-    });
+    c.addMessageAction(KeyEvent.VK_1, "nl#random");
+    c.addMessageAction(KeyEvent.VK_2, "nl#circle");
+    c.addMessageAction(KeyEvent.VK_3, "nl#force");
+    c.addMessageAction(KeyEvent.VK_4, "nl#bounce");
     c.addAction(KeyEvent.VK_P, new AbstractAction() {
 
       @Override
