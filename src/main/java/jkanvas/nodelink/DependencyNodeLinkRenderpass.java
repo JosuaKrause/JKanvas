@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 
+import jkanvas.Canvas;
 import jkanvas.animation.AnimationList;
 import jkanvas.util.ArrowFactory;
 import jkanvas.util.ObjectDependencies;
@@ -25,11 +26,13 @@ public class DependencyNodeLinkRenderpass extends NodeLinkRenderpass<IndexedPosi
   /**
    * Creates a dependency render pass.
    * 
+   * @param canvas The canvas.
    * @param base The base object.
    * @param allowdPkgs Allowed packages.
    */
-  public DependencyNodeLinkRenderpass(final Object base, final String[] allowdPkgs) {
-    this(new DependencyNodeLinkView(base, new ObjectDependencies(allowdPkgs)));
+  public DependencyNodeLinkRenderpass(
+      final Canvas canvas, final Object base, final String[] allowdPkgs) {
+    this(new DependencyNodeLinkView(canvas, base, new ObjectDependencies(allowdPkgs)));
   }
 
   /**
@@ -75,6 +78,15 @@ public class DependencyNodeLinkRenderpass extends NodeLinkRenderpass<IndexedPosi
       }
 
     });
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The view.
+   */
+  public DependencyNodeLinkView getView() {
+    return v;
   }
 
   @Override

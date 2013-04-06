@@ -14,6 +14,8 @@ import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.nodelink.DependencyNodeLinkRenderpass;
+import jkanvas.nodelink.IndexedPosition;
+import jkanvas.nodelink.layout.CircleLayouter;
 import jkanvas.painter.FrameRateHUD;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
@@ -43,7 +45,7 @@ public final class DependencyNodeLinkMain {
     c.setBackground(Color.WHITE);
     c.setFrameRateDisplayer(new FrameRateHUD());
     final DependencyNodeLinkRenderpass pass =
-        new DependencyNodeLinkRenderpass(start == null ? c : start, pkgs);
+        new DependencyNodeLinkRenderpass(c, start == null ? c : start, pkgs);
     p.addRefreshable(c);
     c.setAnimator(p);
     p.addPass(pass);
@@ -118,7 +120,6 @@ public final class DependencyNodeLinkMain {
     info.addLine("F: Toggle Framerate Display");
     info.addLine("P: Take Photo");
     info.addLine("H: Toggle Help");
-    info.addLine("R: Lay out nodes in a circle");
     info.addLine("Q/ESC: Quit");
     p.addHUDPass(info);
     // pack and show window
@@ -127,6 +128,7 @@ public final class DependencyNodeLinkMain {
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
+    pass.getView().setLayouter(new CircleLayouter<IndexedPosition>());
   }
 
   /**

@@ -11,7 +11,10 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
+import jkanvas.Canvas;
 import jkanvas.animation.Animated;
+import jkanvas.nodelink.layout.AbstractLayouter;
+import jkanvas.nodelink.layout.LayoutedView;
 import jkanvas.util.BitSetIterable;
 import jkanvas.util.ObjectDependencies;
 
@@ -20,44 +23,43 @@ import jkanvas.util.ObjectDependencies;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, Animated {
-
-  // TODO better array handling #16
+public class DependencyNodeLinkView implements LayoutedView<IndexedPosition>, Animated {
 
   /** The base object. */
   private final Object base;
-
   /** The mapping from objects to indices. */
   private final Map<Object, Integer> backMap;
-
   /** The objects. */
   private final List<Object> objects;
-
   /** The positions of the objects. */
   private final List<IndexedPosition> pos;
-
   /** The edges. */
   private final BitSet edges;
-
   /** The object dependency. */
   private final ObjectDependencies dependency;
+  /** The canvas. */
+  private final Canvas canvas;
 
   /**
    * Creates a node-link view of dependencies.
    * 
+   * @param canvas The canvas.
    * @param base The base object.
    */
-  public DependencyNodeLinkView(final Object base) {
-    this(base, new ObjectDependencies());
+  public DependencyNodeLinkView(final Canvas canvas, final Object base) {
+    this(canvas, base, new ObjectDependencies());
   }
 
   /**
    * Creates a node-link view of dependencies.
    * 
+   * @param canvas The canvas.
    * @param base The base object.
    * @param dependency The object dependency handler.
    */
-  public DependencyNodeLinkView(final Object base, final ObjectDependencies dependency) {
+  public DependencyNodeLinkView(final Canvas canvas, final Object base,
+      final ObjectDependencies dependency) {
+    this.canvas = Objects.requireNonNull(canvas);
     this.dependency = Objects.requireNonNull(dependency);
     this.base = Objects.requireNonNull(base);
     backMap = new IdentityHashMap<>();
@@ -117,17 +119,11 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
     pos.clear();
     fillObjects(base);
     fillEdges();
-    // TODO use layout algorithm #16
-    final double maxX = 1000;
-    double x = 0;
-    double y = 0;
     for(int i = 0; i < objects.size(); ++i) {
-      pos.add(new IndexedPosition(x, y, i));
-      x += 100;
-      if(x > maxX) {
-        x = 0;
-        y += 100;
-      }
+      pos.add(new IndexedPosition(0, 0, i));
+    }
+    if(layouter != null) {
+      layouter.layout(false);
     }
     lastTime = currentTime;
     return true;
@@ -253,6 +249,26 @@ public class DependencyNodeLinkView implements NodeLinkView<IndexedPosition>, An
   @Override
   public boolean isDirected() {
     return true;
+  }
+
+  /** The current layouter. */
+  private AbstractLayouter<IndexedPosition> layouter;
+
+  @Override
+  public void setLayouter(final AbstractLayouter<IndexedPosition> layouter) {
+    if(this.layouter != null) {
+      this.layouter.deregister();
+    }
+    this.layouter = layouter;
+    if(layouter != null) {
+      layouter.register(canvas, this);
+      layouter.layout(false);
+    }
+  }
+
+  @Override
+  public AbstractLayouter<IndexedPosition> getLayouter() {
+    return layouter;
   }
 
 }
