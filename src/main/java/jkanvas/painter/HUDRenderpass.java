@@ -16,4 +16,20 @@ public interface HUDRenderpass extends HUDInteraction {
    */
   boolean isVisible();
 
+  /**
+   * Getter.
+   * 
+   * @return The ids associated with this render pass. Multiple ids may be
+   *         separated with space '<code>&#20;</code>'.
+   */
+  String getIds();
+
+  /**
+   * Setter.
+   * 
+   * @param ids The ids associated with this render pass. Multiple ids may be
+   *          separated with space '<code>&#20;</code>'.
+   */
+  void setIds(String ids);
+
 }

@@ -3,7 +3,9 @@ package jkanvas.painter;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.util.Objects;
 
+import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 
 /**
@@ -69,6 +71,41 @@ public class HUDRenderpassAdapter implements HUDRenderpass {
   public void endDragHUD(final Point2D start, final Point2D end, final double dx,
       final double dy) {
     dragHUD(start, end, dx, dy);
+  }
+
+  /** The ids associated with this HUD render pass. */
+  private String ids = "";
+
+  @Override
+  public void setIds(final String ids) {
+    this.ids = " " + Objects.requireNonNull(ids) + " ";
+  }
+
+  @Override
+  public String getIds() {
+    return ids;
+  }
+
+  @Override
+  public void processMessage(final String[] ids, final String msg) {
+    for(final String id : ids) {
+      if(this.ids.contains(id) && this.ids.contains(" " + id + " ")) {
+        processMessage(msg);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Processes a message handed in via the {@link Canvas#postMessage(String)}
+   * method. The message ids are already processed at this point.
+   * 
+   * @param msg The message to be processed. Due to technical reasons the
+   *          character '<code>#</code>' cannot be in messages. Messages cannot
+   *          be the empty string.
+   */
+  protected void processMessage(@SuppressWarnings("unused") final String msg) {
+    // nothing to do
   }
 
 }
