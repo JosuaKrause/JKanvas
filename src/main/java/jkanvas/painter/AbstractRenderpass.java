@@ -73,4 +73,26 @@ public abstract class AbstractRenderpass extends RenderpassAdapter {
     return parent;
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * This implementation handles the messages "<code>visible:true</code> ", "
+   * <code>visible:false</code>", and "<code>visible:toggle</code>".
+   */
+  @Override
+  protected void processMessage(final String msg) {
+    super.processMessage(msg);
+    switch(msg) {
+      case "visible:true":
+        setVisible(true);
+        break;
+      case "visible:false":
+        setVisible(false);
+        break;
+      case "visible:toggle":
+        setVisible(!isVisible());
+        break;
+    }
+  }
+
 }

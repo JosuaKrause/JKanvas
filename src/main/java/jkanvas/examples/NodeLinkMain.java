@@ -297,15 +297,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 
     });
     final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
-    c.addAction(KeyEvent.VK_H, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        info.setVisible(!info.isVisible());
-        c.refresh();
-      }
-
-    });
+    info.setIds("info");
+    c.addMessageAction(KeyEvent.VK_H, "info#visible:toggle");
     info.addLine("T: Pause animation");
     info.addLine("F: Toggle Framerate Display");
     info.addLine("P: Take Photo");

@@ -348,11 +348,25 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     }
     final KeyStroke stroke = KeyStroke.getKeyStroke(key, 0);
     final String cmd = "" + (char) stroke.getKeyCode();
+    addMessage(cmd, message);
+    final String lc = cmd.toLowerCase();
+    if(!lc.equals(cmd)) {
+      addMessage(lc, message);
+    }
+    addAction(key, messageDispatcher);
+  }
+
+  /**
+   * Adds the message for the given command.
+   * 
+   * @param cmd The command.
+   * @param message The message.
+   */
+  private void addMessage(final String cmd, final String message) {
     if(!messageActions.containsKey(cmd)) {
       messageActions.put(cmd, new ArrayList<String>());
     }
     messageActions.get(cmd).add(message);
-    addAction(key, messageDispatcher);
   }
 
   /**

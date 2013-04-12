@@ -464,9 +464,6 @@ public class RenderpassPainter extends PainterAdapter {
   public static final void processMessage(final Iterable<Renderpass> passes,
       final String[] ids, final String msg) {
     for(final Renderpass r : passes) {
-      if(!r.isVisible()) {
-        continue;
-      }
       r.processMessage(ids, msg);
     }
   }
@@ -483,9 +480,6 @@ public class RenderpassPainter extends PainterAdapter {
   public static final void processHUDMessage(final Iterable<HUDRenderpass> passes,
       final String[] ids, final String msg) {
     for(final HUDRenderpass r : passes) {
-      if(!r.isVisible()) {
-        continue;
-      }
       r.processMessage(ids, msg);
     }
   }

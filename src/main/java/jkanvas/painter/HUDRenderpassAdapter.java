@@ -99,13 +99,26 @@ public class HUDRenderpassAdapter implements HUDRenderpass {
   /**
    * Processes a message handed in via the {@link Canvas#postMessage(String)}
    * method. The message ids are already processed at this point.
+   * <p>
+   * The default implementation handles the messages "<code>visible:true</code>
+   * ", "<code>visible:false</code>", and "<code>visible:toggle</code>".
    * 
    * @param msg The message to be processed. Due to technical reasons the
    *          character '<code>#</code>' cannot be in messages. Messages cannot
    *          be the empty string.
    */
-  protected void processMessage(@SuppressWarnings("unused") final String msg) {
-    // nothing to do
+  protected void processMessage(final String msg) {
+    switch(msg) {
+      case "visible:true":
+        setVisible(true);
+        break;
+      case "visible:false":
+        setVisible(false);
+        break;
+      case "visible:toggle":
+        setVisible(!isVisible());
+        break;
+    }
   }
 
 }

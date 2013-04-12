@@ -107,21 +107,14 @@ public final class DependencyNodeLinkMain {
 
     });
     final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
-    c.addAction(KeyEvent.VK_H, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        info.setVisible(!info.isVisible());
-        c.refresh();
-      }
-
-    });
+    info.setIds("info");
     info.addLine("T: Pause animation");
     info.addLine("F: Toggle Framerate Display");
     info.addLine("P: Take Photo");
     info.addLine("H: Toggle Help");
     info.addLine("Q/ESC: Quit");
     p.addHUDPass(info);
+    c.addMessageAction(KeyEvent.VK_H, "info#visible:toggle");
     // pack and show window
     frame.add(c);
     frame.pack();
