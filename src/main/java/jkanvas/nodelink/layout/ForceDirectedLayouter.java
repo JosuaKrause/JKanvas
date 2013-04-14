@@ -3,6 +3,8 @@ package jkanvas.nodelink.layout;
 import static jkanvas.util.VecUtil.*;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationTiming;
@@ -17,13 +19,17 @@ import jkanvas.nodelink.NodeLinkView;
 public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     AbstractLayouter<T> {
 
+  /** The preferred length of an edge. */
+  private double preferredLength = 200;
+  /** The spring factor. */
+  private double factor = 0.4;
+  /** The movement decay. */
+  private double decay = 0.3;
+
   /** Creates a force directed layouter. */
   public ForceDirectedLayouter() {
     setTiming(AnimationTiming.FAST);
   }
-
-  /** The preferred length of an edge. */
-  private double preferredLength = 200;
 
   /**
    * Setter.
@@ -43,6 +49,22 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     return preferredLength;
   }
 
+  public void setFactor(final double factor) {
+    this.factor = factor;
+  }
+
+  public double getFactor() {
+    return factor;
+  }
+
+  public void setDecay(final double decay) {
+    this.decay = decay;
+  }
+
+  public double getDecay() {
+    return decay;
+  }
+
   @Override
   protected boolean iterate() {
     return true;
@@ -55,43 +77,49 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     super.setTiming(timing);
   }
 
+  private final List<Point2D> velocity = new ArrayList<>();
+
+  @Override
+  public void deregister() {
+    super.deregister();
+    velocity.clear();
+  }
+
   @Override
   protected boolean doLayout(final NodeLinkView<T> view) {
     boolean chg = false;
     final int count = view.nodeCount();
-    final Point2D[] positions = new Point2D[count];
-    for(int n = 0; n < count; ++n) {
-      positions[n] = view.getNode(n).getPos();
+    while(velocity.size() < count) {
+      velocity.add(new Point2D.Double());
     }
     for(int n = 0; n < count; ++n) {
-      final Point2D pos = positions[n];
+      final T node = view.getNode(n);
+      final Point2D pos = node.getPos();
       Point2D force = new Point2D.Double();
       for(int e = 0; e < count; ++e) {
-        if(view.areConnected(n, e)) {
-          final Point2D f = calcImpulse(pos, positions[e]);
-          force = addVec(force, f);
-        } else {
-          force = subVec(force, new Point2D.Double());
+        final T other = view.getNode(e);
+        final Point2D diff = subVec(pos, other.getPos());
+        final double lenSq = getLengthSq(diff);
+        if(view.areConnected(n, e) || lenSq < preferredLength * preferredLength) {
+          if(lenSq < 1e-9) {
+            force = addVec(force, mulVec(
+                new Point2D.Double(Math.random() - 0.5, Math.random() - 0.5), factor));
+          } else {
+            force = addVec(force, spring(diff));
+          }
         }
       }
-      force = mulVec(force, 1.0 / count);
-      final T node = view.getNode(n);
-      chg = setPosition(node, addVec(pos, force)) || chg;
+      Point2D move = velocity.get(n);
+      move = mulVec(addVec(move, force), decay);
+      velocity.set(n, move);
+      chg = setPosition(node, addVec(pos, move)) || chg;
     }
     return chg;
   }
 
-  /**
-   * Calculates the impulse created by another node.
-   * 
-   * @param from The node to be impacted.
-   * @param to The node creating the impulse.
-   * @return The impulse.
-   */
-  private Point2D calcImpulse(final Point2D from, final Point2D to) {
-    final Point2D diff = subVec(to, from);
-    final double len = getLength(diff);
-    if(len < 1e-9) return new Point2D.Double();
-    return setLength(diff, (preferredLength + len) * 0.5);
+  private Point2D spring(final Point2D diff) {
+    final double len = getLength(diff) - preferredLength;
+    return setLength(diff, -len * factor);
   }
+
 }

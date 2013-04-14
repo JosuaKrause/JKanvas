@@ -149,14 +149,17 @@ public final class VecUtil {
   }
 
   /**
-   * Sets the length of a vector.
+   * Sets the length of a vector. If the vector is <code>(0, 0)</code> the same
+   * vector is returned.
    * 
    * @param v The vector.
    * @param l The new length.
    * @return The vector with the given length.
    */
   public static Point2D setLength(final Point2D v, final double l) {
-    return mulVec(v, l / getLength(v));
+    final double len = getLength(v);
+    if(len == 0) return v;
+    return mulVec(v, l / len);
   }
 
   /** A half pi. */
