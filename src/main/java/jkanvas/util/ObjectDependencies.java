@@ -25,6 +25,7 @@ public class ObjectDependencies {
       "java.lang.Integer",
       "java.lang.Long",
       "java.lang.String",
+      "jkanvas.nodelink.Dependency",
       "jkanvas.util.ObjectDependencies",
   };
 

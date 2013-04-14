@@ -74,7 +74,7 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
   }
 
   /** The precision of coordinate equivalence. */
-  private static final double PRECISION = 1e-12;
+  public static double PRECISION = 1e-12;
 
   /**
    * Sets the position of the given node.
@@ -122,6 +122,15 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
    * @param deregisterOnEnd Whether to unregister the layouter after completion.
    */
   public void layout(final boolean deregisterOnEnd) {
+    startLayout(deregisterOnEnd);
+  }
+
+  /**
+   * Computes the layout.
+   * 
+   * @param deregisterOnEnd Whether to unregister the layouter after completion.
+   */
+  protected void startLayout(final boolean deregisterOnEnd) {
     // check whether we are still registered
     if(view == null) return;
     final boolean chg = doLayout(view);
@@ -135,7 +144,7 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
 
       @Override
       public void animationFinished() {
-        layout(deregisterOnEnd);
+        startLayout(deregisterOnEnd);
       }
 
     }, timing);

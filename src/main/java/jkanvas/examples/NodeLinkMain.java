@@ -196,9 +196,16 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     for(int i = 0; i < nodes; ++i) {
       view.addNode(new AnimatedPosition(0, 0));
     }
+    final int numMain = 5;
+    final int factorMore = 10000;
     final Random rnd = new Random();
     for(int i = 0; i < edges; ++i) {
-      view.addEdge(rnd.nextInt(nodes), rnd.nextInt(nodes));
+      final int start = rnd.nextInt(nodes);
+      int end = rnd.nextInt(nodes + factorMore * numMain);
+      if(end >= nodes) {
+        end = end % numMain;
+      }
+      view.addEdge(start, end);
     }
   }
 

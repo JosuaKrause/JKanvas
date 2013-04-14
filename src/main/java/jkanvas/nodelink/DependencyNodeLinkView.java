@@ -115,7 +115,7 @@ public class DependencyNodeLinkView implements LayoutedView<IndexedPosition>, An
 
   @Override
   public boolean animate(final long currentTime) {
-    if(lastTime != 0 && currentTime - lastTime < 10000) return false;
+    if(lastTime != 0 && currentTime - lastTime < 5 * 60 * 1000) return false;
     pos.clear();
     fillObjects(base);
     fillEdges();

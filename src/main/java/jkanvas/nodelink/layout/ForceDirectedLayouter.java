@@ -22,7 +22,7 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
   /** The preferred length of an edge. */
   private double preferredLength = 200;
   /** The spring factor. */
-  private double factor = 0.4;
+  private double factor = 0.2;
   /** The movement decay. */
   private double decay = 0.3;
 
@@ -106,15 +106,28 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     velocity.clear();
   }
 
+  /** The current decay. */
+  private double curDecay;
+
+  /** The minimal movement. */
+  public static double MIN_MOVEMENT = 1e-9;
+
+  @Override
+  public void layout(final boolean deregisterOnEnd) {
+    velocity.clear();
+    curDecay = decay;
+    super.layout(deregisterOnEnd);
+  }
+
   @Override
   protected boolean doLayout(final NodeLinkView<T> view) {
-    boolean chg = false;
     final int count = view.nodeCount();
     while(velocity.size() < count) {
       velocity.add(new Point2D.Double());
     }
-    // TODO make less random when at equal position
+    Point2D all = new Point2D.Double();
     for(int n = 0; n < count; ++n) {
+      boolean needsMovement = false;
       final T node = view.getNode(n);
       final Point2D pos = node.getPos();
       Point2D force = new Point2D.Double();
@@ -123,19 +136,33 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
         final Point2D diff = subVec(pos, other.getPos());
         final double lenSq = getLengthSq(diff);
         if(view.areConnected(n, e) || lenSq < preferredLength * preferredLength) {
-          if(lenSq < 1e-9) {
-            force = addVec(force, mulVec(
-                new Point2D.Double(Math.random() - 0.5, Math.random() - 0.5), factor));
+          if(lenSq < MIN_MOVEMENT) {
+            needsMovement = true;
           } else {
             force = addVec(force, spring(diff));
           }
         }
       }
       Point2D move = velocity.get(n);
-      move = mulVec(addVec(move, force), decay);
+      if(needsMovement && force.getX() < MIN_MOVEMENT && force.getY() < MIN_MOVEMENT) {
+        final double x = Math.random() - 0.5;
+        final double y = Math.random() - 0.5;
+        force = new Point2D.Double(x * preferredLength, y * preferredLength);
+      }
+      move = mulVec(addVec(move, force), curDecay);
+      all = addVec(all, move);
+      velocity.set(n, move);
+    }
+    all = mulVec(all, 1.0 / count);
+    boolean chg = false;
+    for(int n = 0; n < count; ++n) {
+      final T node = view.getNode(n);
+      final Point2D pos = node.getPos();
+      final Point2D move = subVec(velocity.get(n), all);
       velocity.set(n, move);
       chg = setPosition(node, addVec(pos, move)) || chg;
     }
+    curDecay *= 0.99;
     return chg;
   }
 
