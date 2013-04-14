@@ -49,18 +49,38 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     return preferredLength;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param factor The spring constant.
+   */
   public void setFactor(final double factor) {
     this.factor = factor;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The spring constant.
+   */
   public double getFactor() {
     return factor;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param decay The decay of movement.
+   */
   public void setDecay(final double decay) {
     this.decay = decay;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The decay of movement.
+   */
   public double getDecay() {
     return decay;
   }
@@ -77,6 +97,7 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     super.setTiming(timing);
   }
 
+  /** The list of node velocities. */
   private final List<Point2D> velocity = new ArrayList<>();
 
   @Override
@@ -117,6 +138,12 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     return chg;
   }
 
+  /**
+   * Computes the spring acceleration for the given difference.
+   * 
+   * @param diff The difference vector of two nodes.
+   * @return The acceleration.
+   */
   private Point2D spring(final Point2D diff) {
     final double len = getLength(diff) - preferredLength;
     return setLength(diff, -len * factor);

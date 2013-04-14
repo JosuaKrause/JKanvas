@@ -315,6 +315,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
+    // TODO start with MDS layout #24
     final RandomLayouter<AnimatedPosition> rl = new RandomLayouter<>();
     rl.setTiming(AnimationTiming.NO_ANIMATION);
     view.setLayouter(rl);

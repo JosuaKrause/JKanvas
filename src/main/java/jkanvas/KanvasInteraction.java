@@ -21,8 +21,6 @@ public interface KanvasInteraction {
    */
   void draw(Graphics2D g, KanvasContext ctx);
 
-  // TODO explain IgnoreInteractionException
-
   /**
    * Is called when the user clicks at the component and the HUD action does not
    * consume the event. The coordinates are in the {@link KanvasPainter
