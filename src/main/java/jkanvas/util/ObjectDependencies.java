@@ -1,6 +1,7 @@
 package jkanvas.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -118,6 +119,9 @@ public class ObjectDependencies {
     return false;
   }
 
+  /** Whether to exclude static fields. */
+  public static boolean avoidStatic = true;
+
   /**
    * Adds all fields of an object.
    * 
@@ -132,6 +136,12 @@ public class ObjectDependencies {
     final Field[] fields = clazz.getDeclaredFields();
     for(final Field f : fields) {
       try {
+        if(f.isEnumConstant()) {
+          continue;
+        }
+        if(avoidStatic && Modifier.isStatic(f.getModifiers())) {
+          continue;
+        }
         final boolean acc = f.isAccessible();
         f.setAccessible(true);
         final Object ref = f.get(o);
@@ -140,6 +150,10 @@ public class ObjectDependencies {
       } catch(IllegalArgumentException | IllegalAccessException e) {
         e.printStackTrace();
       }
+    }
+    final Class<?> superClazz = clazz.getSuperclass();
+    if(superClazz != null) {
+      chg |= fields(superClazz, others, o);
     }
     return chg;
   }

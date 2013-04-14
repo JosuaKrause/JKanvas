@@ -113,6 +113,7 @@ public class ForceDirectedLayouter<T extends AnimatedPosition> extends
     while(velocity.size() < count) {
       velocity.add(new Point2D.Double());
     }
+    // TODO make less random when at equal position
     for(int n = 0; n < count; ++n) {
       final T node = view.getNode(n);
       final Point2D pos = node.getPos();

@@ -15,7 +15,7 @@ import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.nodelink.DependencyNodeLinkRenderpass;
 import jkanvas.nodelink.IndexedPosition;
-import jkanvas.nodelink.layout.CircleLayouter;
+import jkanvas.nodelink.layout.ForceDirectedLayouter;
 import jkanvas.painter.FrameRateHUD;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
@@ -121,7 +121,7 @@ public final class DependencyNodeLinkMain {
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
-    pass.getView().setLayouter(new CircleLayouter<IndexedPosition>());
+    pass.getView().setLayouter(new ForceDirectedLayouter<IndexedPosition>());
   }
 
   /**
