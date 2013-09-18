@@ -1,7 +1,11 @@
 package jkanvas.examples;
 
+import java.awt.event.KeyEvent;
+
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
+import jkanvas.animation.AnimationTiming;
+import jkanvas.painter.SimpleTextHUD;
 import jkanvas.present.DefaultSlideMetrics;
 import jkanvas.present.Presentation;
 import jkanvas.present.Slide;
@@ -23,8 +27,12 @@ public final class PresentationMain {
    */
   public static void main(final String[] args) {
     final AnimatedPainter p = new AnimatedPainter();
+    final Canvas c = new Canvas(p, true, 1024, 768);
     final SlideMetrics m = new DefaultSlideMetrics();
-    final Presentation present = new Presentation(p, m);
+    final SimpleTextHUD info = ExampleUtil.setupCanvas("Presentation", c, p,
+        true, true, true);
+    final Presentation present = new Presentation(c, m, AnimationTiming.SMOOTH);
+    present.setIds("presentation");
     final Slide s0 = new Slide();
     present.addRenderpass(s0);
     s0.add(new TextRender("Hello World!", VerticalSlideAlignment.TOP));
@@ -36,8 +44,13 @@ public final class PresentationMain {
         VerticalSlideAlignment.TOP));
     s1.add(new TextRender("Hello World! 3", VerticalSlideAlignment.TOP));
     p.addPass(present);
-    final Canvas c = new Canvas(p, true, 1024, 768);
-    ExampleUtil.setupCanvas("Presentation", c, p, true, true, true);
+    c.addMessageAction(KeyEvent.VK_LEFT, "presentation#slide:prev");
+    c.addMessageAction(KeyEvent.VK_RIGHT, "presentation#slide:next");
+    c.addMessageAction(KeyEvent.VK_S, "presentation#present:toggle");
+    info.addLine("S: Toggle presentation mode");
+    info.addLine("LEFT: Previous slide");
+    info.addLine("RIGHT: Next slide");
+    present.setPresentationMode(true);
   }
 
 }
