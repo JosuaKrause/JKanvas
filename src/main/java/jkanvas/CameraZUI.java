@@ -79,6 +79,11 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
+  public boolean inAnimation() {
+    return view.inAnimation();
+  }
+
+  @Override
   public void toView(final Rectangle2D rect,
       final AnimationTiming timing, final AnimationAction onFinish,
       final boolean useMargin) {

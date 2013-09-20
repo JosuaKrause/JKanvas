@@ -329,31 +329,56 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @param message The message that is posted.
    */
   public void addMessageAction(final int key, final String message) {
-    if(messageDispatcher == null) {
-      final Map<String, List<String>> msgActions = messageActions;
-      messageDispatcher = new AbstractAction() {
+    // almost all printable keys
+    final boolean printKey = (key >= 0x2C && key <= 0x39) || (key >= 0x41 && key <= 0x5A);
+    final String cmd;
+    if(printKey) {
+      cmd = "" + (char) key;
+    } else {
+      cmd = "undef:" + key;
+    }
+    addMessage(cmd, message);
+    if(!printKey) {
+      addAction(key, new AbstractAction() {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-          final String cmd = e.getActionCommand();
-          final List<String> msgs = msgActions.get(cmd);
-          if(msgs == null) throw new IllegalStateException("cmd must have list: " + cmd);
-          for(final String m : msgs) {
-            postMessage(m);
-          }
-          refresh();
+          processForActionCommand(cmd);
         }
 
-      };
+      });
+    } else {
+      final String lc = cmd.toLowerCase();
+      if(!lc.equals(cmd)) {
+        addMessage(lc, message);
+      }
+      if(messageDispatcher == null) {
+        messageDispatcher = new AbstractAction() {
+
+          @Override
+          public void actionPerformed(final ActionEvent e) {
+            final String cmd = e.getActionCommand();
+            processForActionCommand(cmd);
+          }
+
+        };
+      }
+      addAction(key, messageDispatcher);
     }
-    final KeyStroke stroke = KeyStroke.getKeyStroke(key, 0);
-    final String cmd = "" + (char) stroke.getKeyCode();
-    addMessage(cmd, message);
-    final String lc = cmd.toLowerCase();
-    if(!lc.equals(cmd)) {
-      addMessage(lc, message);
+  }
+
+  /**
+   * Processes messages for an action command.
+   * 
+   * @param cmd The action command.
+   */
+  void processForActionCommand(final String cmd) {
+    final List<String> msgs = messageActions.get(cmd);
+    if(msgs == null) throw new IllegalStateException("cmd must have list: " + cmd);
+    for(final String m : msgs) {
+      postMessage(m);
     }
-    addAction(key, messageDispatcher);
+    refresh();
   }
 
   /**
@@ -758,8 +783,30 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public void setRestriction(final Rectangle2D restriction, final AnimationTiming timing) {
     if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
+    this.restriction = null;
+    if(restriction != null) {
+      final Rectangle2D rest = jkanvas.util.PaintUtil.addPadding(restriction, getMargin());
+      zui.toView(rest, timing, new AnimationAction() {
+
+        @Override
+        public void animationFinished() {
+          if(!zui.inAnimation()) {
+            setRestrictionDirectly(rest);
+          }
+        }
+
+      }, false);
+    }
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param restriction Directly sets the restriction. This method should only
+   *          be used internally.
+   */
+  void setRestrictionDirectly(final Rectangle2D restriction) {
     this.restriction = restriction;
-    zui.toView(restriction, timing, null, true);
   }
 
   @Override

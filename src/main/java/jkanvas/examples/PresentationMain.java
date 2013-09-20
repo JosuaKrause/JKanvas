@@ -31,11 +31,14 @@ public final class PresentationMain {
     final SlideMetrics m = new DefaultSlideMetrics();
     final SimpleTextHUD info = ExampleUtil.setupCanvas("Presentation", c, p,
         true, true, true);
+
     final Presentation present = new Presentation(c, m, AnimationTiming.SMOOTH);
     present.setIds("presentation");
+    // slide 0
     final Slide s0 = new Slide();
     present.addRenderpass(s0);
     s0.add(new TextRender("Hello World!", VerticalSlideAlignment.TOP));
+    // slide 1
     final Slide s1 = new Slide();
     s1.add(new TextRender("Hello World! 0", VerticalSlideAlignment.TOP));
     present.addRenderpass(s1);
@@ -43,6 +46,14 @@ public final class PresentationMain {
     s1.add(new TextRender("The quick brown fox jumped over the lazy dog!",
         VerticalSlideAlignment.TOP));
     s1.add(new TextRender("Hello World! 3", VerticalSlideAlignment.TOP));
+    // slide 2
+    final Slide s2 = new Slide();
+    s2.add(new TextRender("The quick brown fox jumped over the lazy dog!",
+        VerticalSlideAlignment.TOP));
+    s2.add(new TextRender("hi! 0", VerticalSlideAlignment.TOP));
+    s2.add(new TextRender(TextRender.BULLET + " Jj", VerticalSlideAlignment.TOP, 1));
+    present.addRenderpass(s2);
+
     p.addPass(present);
     c.addMessageAction(KeyEvent.VK_LEFT, "presentation#slide:prev");
     c.addMessageAction(KeyEvent.VK_RIGHT, "presentation#slide:next");
