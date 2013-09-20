@@ -37,21 +37,21 @@ public final class PresentationMain {
     // slide 0
     final Slide s0 = new Slide();
     present.addRenderpass(s0);
-    s0.add(new TextRender("Hello World!", VerticalSlideAlignment.TOP));
+    new TextRender(s0, "Hello World!", VerticalSlideAlignment.TOP);
     // slide 1
     final Slide s1 = new Slide();
-    s1.add(new TextRender("Hello World! 0", VerticalSlideAlignment.TOP));
+    new TextRender(s1, "Hello World! 0", VerticalSlideAlignment.TOP);
     present.addRenderpass(s1);
-    s1.add(new TextRender(TextRender.BULLET + " Jj", VerticalSlideAlignment.TOP, 1));
-    s1.add(new TextRender("The quick brown fox jumped over the lazy dog!",
-        VerticalSlideAlignment.TOP));
-    s1.add(new TextRender("Hello World! 3", VerticalSlideAlignment.TOP));
+    new TextRender(s1, TextRender.BULLET + " Jj", VerticalSlideAlignment.TOP, 1);
+    new TextRender(s1, "The quick brown fox jumped over the lazy dog!",
+        VerticalSlideAlignment.TOP);
+    new TextRender(s1, "Hello World! 3", VerticalSlideAlignment.TOP);
     // slide 2
     final Slide s2 = new Slide();
-    s2.add(new TextRender("The quick brown fox jumped over the lazy dog!",
-        VerticalSlideAlignment.TOP));
-    s2.add(new TextRender("hi! 0", VerticalSlideAlignment.TOP));
-    s2.add(new TextRender(TextRender.BULLET + " Jj", VerticalSlideAlignment.TOP, 1));
+    new TextRender(s2, "The quick brown fox jumped over the lazy dog!",
+        VerticalSlideAlignment.CENTER);
+    new TextRender(s2, "hi! 0", VerticalSlideAlignment.CENTER);
+    new TextRender(s2, TextRender.BULLET + " Jj", VerticalSlideAlignment.BOTTOM, 1);
     present.addRenderpass(s2);
 
     p.addPass(present);

@@ -17,7 +17,7 @@ import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class TextRender implements SlideObject {
+public class TextRender extends SlideObject {
 
   /** A list bullet point. */
   public static final String BULLET = "\u2022";
@@ -28,14 +28,14 @@ public class TextRender implements SlideObject {
   private Font font;
   /** The text. */
   private String text;
-  /** The size of the text. */
-  private double size;
   /** The horizontal alignment behavior of the text. */
   private HorizontalSlideAlignment hAlign;
   /** The line the text is in. */
   private int line;
   /** The indentation of the text. */
   private int indent;
+  /** The size of the text. */
+  private double size;
   /** The width of the text. */
   private double width;
   /** The height of the text. */
@@ -46,51 +46,60 @@ public class TextRender implements SlideObject {
   /**
    * Creates an empty text.
    * 
+   * @param owner The owner of the object.
    * @param vAlign The vertical alignment.
    */
-  public TextRender(final VerticalSlideAlignment vAlign) {
-    this("", vAlign);
+  public TextRender(final Slide owner, final VerticalSlideAlignment vAlign) {
+    this(owner, "", vAlign);
   }
 
   /**
    * Creates a text object.
    * 
+   * @param owner The owner of the object.
    * @param text The initial text.
    * @param vAlign The vertical alignment.
    */
-  public TextRender(final String text, final VerticalSlideAlignment vAlign) {
-    this(text, vAlign, 0);
+  public TextRender(final Slide owner, final String text,
+      final VerticalSlideAlignment vAlign) {
+    this(owner, text, vAlign, 0);
   }
 
   /**
    * Creates a text object.
    * 
+   * @param owner The owner of the object.
    * @param text The initial text.
    * @param vAlign The vertical alignment.
    * @param indent The initial indent.
    */
-  public TextRender(final String text,
+  public TextRender(final Slide owner, final String text,
       final VerticalSlideAlignment vAlign, final int indent) {
-    this(text, vAlign, indent, HorizontalSlideAlignment.LEFT);
+    this(owner, text, vAlign, indent, HorizontalSlideAlignment.LEFT);
   }
 
   /**
    * Creates a text object.
    * 
+   * @param owner The owner of the object.
    * @param text The initial text.
    * @param vAlign The vertical alignment.
    * @param indent The initial indent.
    * @param hAlign The initial horizontal alignment.
    */
-  public TextRender(final String text, final VerticalSlideAlignment vAlign,
+  public TextRender(final Slide owner, final String text,
+      final VerticalSlideAlignment vAlign,
       final int indent, final HorizontalSlideAlignment hAlign) {
+    super(owner);
     this.hAlign = Objects.requireNonNull(hAlign);
     this.vAlign = Objects.requireNonNull(vAlign);
     this.text = Objects.requireNonNull(text);
     this.indent = indent;
-    size = 0;
+    size = Double.NaN;
     line = Integer.MIN_VALUE;
     width = Double.NaN;
+    height = Double.NaN;
+    voff = Double.NaN;
     font = null;
   }
 
@@ -159,25 +168,15 @@ public class TextRender implements SlideObject {
   }
 
   @Override
-  public void configure(final Slide slide, final SlideMetrics metric) {
+  public void beforeDraw(final Graphics2D gfx, final SlideMetrics metric) {
     if(line == Integer.MIN_VALUE) {
-      switch(vAlign) {
-        case TOP:
-          line = slide.getCurrentTopLine();
-          slide.incrementTopLine();
-          break;
-        case BOTTOM:
-          line = slide.getCurrentBottomLine();
-          slide.incrementBottomLine();
-          break;
-      }
+      final Slide slide = getSlide();
+      line = slide.getLineCount(vAlign);
+      slide.incrementLine(vAlign);
     }
-    size = metric.lineHeight();
-  }
-
-  @Override
-  public void beforeDraw(final Graphics2D gfx) {
-    if(Double.isNaN(width)) {
+    final double s = metric.lineHeight();
+    if(s != size) {
+      size = s;
       if(font == null) {
         font = gfx.getFont().deriveFont((float) size);
       }
@@ -190,11 +189,14 @@ public class TextRender implements SlideObject {
 
   @Override
   public Point2D getOffset(final SlideMetrics metric) {
-    return metric.getOffsetFor(indent, width, hAlign, line, vAlign);
+    return metric.getOffsetFor(indent, width, hAlign, line,
+        getSlide().getLineCount(vAlign), vAlign);
   }
 
   @Override
   public Rectangle2D getBoundingBox() {
+    if(Double.isNaN(width) || Double.isNaN(height)) throw new IllegalStateException(
+        "size not initialized");
     return new Rectangle2D.Double(0, 0, width, height);
   }
 

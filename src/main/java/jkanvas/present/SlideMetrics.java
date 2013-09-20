@@ -34,6 +34,8 @@ public abstract class SlideMetrics {
   public static enum VerticalSlideAlignment {
     /** The object is aligned to the top of the slide. */
     TOP,
+    /** The object is aligned in the center of the slide. */
+    CENTER,
     /** The object is aligned to the bottom of the slide. */
     BOTTOM,
   } // VerticalSlideAlignment
@@ -190,16 +192,22 @@ public abstract class SlideMetrics {
    * Computes the vertical offset for the given configuration.
    * 
    * @param line The line.
+   * @param maxLine The number of lines.
    * @param align The alignment.
    * @return The top offset of the given configuration.
    */
-  public double getVerticalOffsetFor(final int line, final VerticalSlideAlignment align) {
+  public double getVerticalOffsetFor(final int line, final int maxLine,
+      final VerticalSlideAlignment align) {
     switch(align) {
       case TOP:
         return verticalOffset() + line * (lineHeight() + lineSpace());
       case BOTTOM:
         return slideHeight() - verticalOffset() -
             (line + 1) * lineHeight() - line * lineSpace();
+      case CENTER:
+        final double h = lineHeight();
+        final double s = lineSpace();
+        return (slideHeight() - maxLine * h - (maxLine - 1) * s) * 0.5 + line * (h + s);
       default:
         throw new NullPointerException("align");
     }
@@ -244,14 +252,15 @@ public abstract class SlideMetrics {
    * @param width The width of the object.
    * @param hAlign The horizontal alignment.
    * @param line The line.
+   * @param maxLine The number of lines.
    * @param vAlign The vertical alignment.
    * @return The top left offset of the object.
    */
   public Point2D getOffsetFor(
       final int indents, final double width, final HorizontalSlideAlignment hAlign,
-      final int line, final VerticalSlideAlignment vAlign) {
+      final int line, final int maxLine, final VerticalSlideAlignment vAlign) {
     return new Point2D.Double(getHorizontalOffsetFor(indents, width, hAlign),
-        getVerticalOffsetFor(line, vAlign));
+        getVerticalOffsetFor(line, maxLine, vAlign));
   }
 
 }

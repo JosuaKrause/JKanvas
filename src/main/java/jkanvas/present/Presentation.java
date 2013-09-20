@@ -137,13 +137,13 @@ public class Presentation extends LinearGroup<Slide> {
   @Override
   protected void beforeAdding(final Slide slide) {
     super.beforeAdding(slide);
-    slide.setMetrics(metrics);
+    slide.setMetric(metrics);
   }
 
   @Override
   protected void removedRenderpass(final RenderpassPosition<Slide> rp) {
     super.removedRenderpass(rp);
-    rp.pass.setMetrics(null);
+    rp.pass.setMetric(null);
   }
 
 }

@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.painter.AbstractRenderpass;
+import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 
 /**
  * A slide.
@@ -20,10 +21,12 @@ public class Slide extends AbstractRenderpass {
 
   /** The metrics for the slide. */
   private SlideMetrics metric;
-  /** The current line counted from the top. */
+  /** The current line counted for the top. */
   private int currentTopLine;
-  /** The current line counted from the bottom. */
+  /** The current line counted for the bottom. */
   private int currentBottomLine;
+  /** The current line counted for the center. */
+  private int currentCenterLine;
   /** The slide content. */
   private final List<SlideObject> content;
 
@@ -32,35 +35,48 @@ public class Slide extends AbstractRenderpass {
     metric = null;
     currentTopLine = 0;
     currentBottomLine = 0;
+    currentCenterLine = 0;
     content = new ArrayList<>();
   }
 
   /**
    * Getter.
    * 
-   * @return The current line counted from the top.
+   * @param align The alignment.
+   * @return The line count for the given alignment.
    */
-  public int getCurrentTopLine() {
-    return currentTopLine;
+  public int getLineCount(final VerticalSlideAlignment align) {
+    switch(align) {
+      case BOTTOM:
+        return currentBottomLine;
+      case TOP:
+        return currentTopLine;
+      case CENTER:
+        return currentCenterLine;
+      default:
+        throw new NullPointerException("align");
+    }
   }
 
   /**
-   * Getter.
+   * Increments the line counter for the given alignment.
    * 
-   * @return The current line counted from the bottom.
+   * @param align The alignment.
    */
-  public int getCurrentBottomLine() {
-    return currentBottomLine;
-  }
-
-  /** Increments the line counter for the top. */
-  public void incrementTopLine() {
-    ++currentTopLine;
-  }
-
-  /** Increments the line counter for the bottom. */
-  public void incrementBottomLine() {
-    ++currentBottomLine;
+  public void incrementLine(final VerticalSlideAlignment align) {
+    switch(align) {
+      case BOTTOM:
+        ++currentBottomLine;
+        break;
+      case TOP:
+        ++currentTopLine;
+        break;
+      case CENTER:
+        ++currentCenterLine;
+        break;
+      default:
+        throw new NullPointerException("align");
+    }
   }
 
   /**
@@ -82,15 +98,10 @@ public class Slide extends AbstractRenderpass {
    * 
    * @param metric Sets the metrics for the slide.
    */
-  public void setMetrics(final SlideMetrics metric) {
+  public void setMetric(final SlideMetrics metric) {
     if(isPositioned() && metric != null) throw new IllegalStateException(
         "must remove metrics first");
     this.metric = metric;
-    if(metric != null) {
-      for(final SlideObject obj : content) {
-        obj.configure(this, metric);
-      }
-    }
   }
 
   /**
@@ -98,12 +109,9 @@ public class Slide extends AbstractRenderpass {
    * 
    * @param obj The object to add.
    */
-  public void add(final SlideObject obj) {
+  void add(final SlideObject obj) {
     Objects.requireNonNull(obj);
     content.add(obj);
-    if(isPositioned()) {
-      obj.configure(this, metric);
-    }
   }
 
   @Override
@@ -114,7 +122,7 @@ public class Slide extends AbstractRenderpass {
     gfx.setColor(Color.BLACK);
     gfx.draw(outer);
     for(final SlideObject obj : content) {
-      obj.beforeDraw(gfx);
+      obj.beforeDraw(gfx, metric);
       final Point2D off = obj.getOffset(metric);
       final Rectangle2D bbox = getBoundingBox(obj, off);
       if(!view.intersects(bbox)) {
