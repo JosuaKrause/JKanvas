@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.json.JSONElement;
 import jkanvas.painter.AbstractRenderpass;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 
@@ -37,6 +38,49 @@ public class Slide extends AbstractRenderpass {
     currentBottomLine = 0;
     currentCenterLine = 0;
     content = new ArrayList<>();
+  }
+
+  /**
+   * Parses a JSON element.
+   * 
+   * @param json The JSON element.
+   */
+  public void parseJSON(final JSONElement json) {
+    json.expectObject();
+    if(json.hasValue("top")) {
+      final JSONElement top = json.getValue("top");
+      top.expectArray();
+      for(final JSONElement el : top) {
+        getFor(el, VerticalSlideAlignment.TOP);
+      }
+    }
+    if(json.hasValue("center")) {
+      final JSONElement center = json.getValue("center");
+      center.expectArray();
+      for(final JSONElement el : center) {
+        getFor(el, VerticalSlideAlignment.CENTER);
+      }
+    }
+    if(json.hasValue("bottom")) {
+      final JSONElement bottom = json.getValue("bottom");
+      bottom.expectArray();
+      for(final JSONElement el : bottom) {
+        getFor(el, VerticalSlideAlignment.BOTTOM);
+      }
+    }
+  }
+
+  /**
+   * Creates a slide object for the given JSON element.
+   * 
+   * @param el The JSON element.
+   * @param align The alignment of the object.
+   * @return The slide object. The object is already added to the slide.
+   */
+  private SlideObject getFor(final JSONElement el, final VerticalSlideAlignment align) {
+    if(el.isString()) return new TextRender(this, el.string(), align);
+    // TODO
+    throw new UnsupportedOperationException("other types not yet supported");
   }
 
   /**

@@ -1,17 +1,17 @@
 package jkanvas.examples;
 
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.StringReader;
 
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
-import jkanvas.animation.AnimationTiming;
+import jkanvas.json.JSONElement;
+import jkanvas.json.JSONReader;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.present.DefaultSlideMetrics;
 import jkanvas.present.Presentation;
-import jkanvas.present.Slide;
 import jkanvas.present.SlideMetrics;
-import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
-import jkanvas.present.TextRender;
 
 /**
  * A short example showing the presentation capabilities of Kanvas.
@@ -20,39 +20,32 @@ import jkanvas.present.TextRender;
  */
 public final class PresentationMain {
 
+  /** The JSON string containing presentation information. */
+  private static final String JSON = "{ "
+      + "\"metric\": {\"lineHeight\": \"7%\"},"
+      + "\"slides\": ["
+      + "{\"top\": [\"Hello World!\"]},"
+      + "{\"top\": [\"The quick brown fox jumped over the lazy dog!\",\"Second text\"]},"
+      + "{\"center\": [\"The quick brown fox jumped over the lazy dog!\"]},"
+      + "]}";
+
   /**
    * Starts the example application.
    * 
    * @param args No arguments.
+   * @throws IOException I/O Exception.
    */
-  public static void main(final String[] args) {
+  public static void main(final String[] args) throws IOException {
     final AnimatedPainter p = new AnimatedPainter();
     final Canvas c = new Canvas(p, true, 1024, 768);
-    final SlideMetrics m = new DefaultSlideMetrics();
     final SimpleTextHUD info = ExampleUtil.setupCanvas("Presentation", c, p,
         true, true, true);
 
-    final Presentation present = new Presentation(c, m, AnimationTiming.SMOOTH);
+    final JSONElement el = new JSONReader(new StringReader(JSON)).get();
+    final SlideMetrics m = new DefaultSlideMetrics();
+
+    final Presentation present = Presentation.fromJSON(c, el, m);
     present.setIds("presentation");
-    // slide 0
-    final Slide s0 = new Slide();
-    present.addRenderpass(s0);
-    new TextRender(s0, "Hello World!", VerticalSlideAlignment.TOP);
-    // slide 1
-    final Slide s1 = new Slide();
-    new TextRender(s1, "Hello World! 0", VerticalSlideAlignment.TOP);
-    present.addRenderpass(s1);
-    new TextRender(s1, TextRender.BULLET + " Jj", VerticalSlideAlignment.TOP, 1);
-    new TextRender(s1, "The quick brown fox jumped over the lazy dog!",
-        VerticalSlideAlignment.TOP);
-    new TextRender(s1, "Hello World! 3", VerticalSlideAlignment.TOP);
-    // slide 2
-    final Slide s2 = new Slide();
-    new TextRender(s2, "The quick brown fox jumped over the lazy dog!",
-        VerticalSlideAlignment.CENTER);
-    new TextRender(s2, "hi! 0", VerticalSlideAlignment.CENTER);
-    new TextRender(s2, TextRender.BULLET + " Jj", VerticalSlideAlignment.BOTTOM, 1);
-    present.addRenderpass(s2);
 
     p.addPass(present);
     c.addMessageAction(KeyEvent.VK_LEFT, "presentation#slide:prev");

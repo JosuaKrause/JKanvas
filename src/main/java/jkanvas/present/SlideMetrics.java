@@ -224,8 +224,8 @@ public abstract class SlideMetrics {
    */
   public Point2D getOffsetFor(final int indents, final double width,
       final HorizontalSlideAlignment align, final double vRatio) {
-    return new Point2D.Double(getHorizontalOffsetFor(indents, width, align), vRatio
-        * slideHeight());
+    return new Point2D.Double(getHorizontalOffsetFor(indents, width, align),
+        vRatio * slideHeight());
   }
 
   /**
@@ -241,8 +241,8 @@ public abstract class SlideMetrics {
    */
   public Point2D getOffsetFor(final int indents, final double width,
       final HorizontalSlideAlignment align, final double vRatio, final double height) {
-    return new Point2D.Double(getHorizontalOffsetFor(indents, width, align), vRatio
-        * slideHeight() - height * 0.5);
+    return new Point2D.Double(getHorizontalOffsetFor(indents, width, align),
+        vRatio * slideHeight() - height * 0.5);
   }
 
   /**

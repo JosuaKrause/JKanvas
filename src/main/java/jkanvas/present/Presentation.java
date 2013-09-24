@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import jkanvas.Canvas;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.groups.LinearGroup;
+import jkanvas.json.JSONElement;
 import jkanvas.painter.RenderpassPainter;
 
 /**
@@ -144,6 +145,37 @@ public class Presentation extends LinearGroup<Slide> {
   protected void removedRenderpass(final RenderpassPosition<Slide> rp) {
     super.removedRenderpass(rp);
     rp.pass.setMetric(null);
+  }
+
+  /**
+   * Creates a presentation from the given JSON element.
+   * 
+   * @param c The canvas.
+   * @param json The JSON element.
+   * @param base The default slide metrics.
+   * @return The presentation.
+   */
+  public static final Presentation fromJSON(final Canvas c,
+      final JSONElement json, final SlideMetrics base) {
+    json.expectObject();
+    final SlideMetrics metric;
+    if(json.hasValue("metric")) {
+      metric = new JSONSlideMetrics(json.getValue("metric"), base);
+    } else {
+      metric = base;
+    }
+    // TODO parse animation timing
+    final Presentation res = new Presentation(c, metric, AnimationTiming.NO_ANIMATION);
+    if(json.hasValue("slides")) {
+      final JSONElement slides = json.getValue("slides");
+      slides.expectArray();
+      for(final JSONElement slide : slides) {
+        final Slide s = new Slide();
+        s.parseJSON(slide);
+        res.addRenderpass(s);
+      }
+    }
+    return res;
   }
 
 }

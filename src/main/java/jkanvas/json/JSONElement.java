@@ -110,6 +110,68 @@ public class JSONElement implements Iterable<JSONElement> {
   }
 
   /**
+   * Ensures that the element has the given type.
+   * 
+   * @param type The expected type.
+   * @throws IllegalStateException When the type is not correct.
+   */
+  private void expectType(final JSONType type) {
+    if(type() != type) throw new IllegalStateException(
+        "wrong type: " + type + "! expected: " + type());
+  }
+
+  /**
+   * Expects an object. @throws IllegalStateException When the type is not
+   * correct.
+   */
+  public void expectObject() {
+    expectType(JSONType.OBJECT);
+  }
+
+  /**
+   * Expects an array. @throws IllegalStateException When the type is not
+   * correct.
+   */
+  public void expectArray() {
+    expectType(JSONType.ARRAY);
+  }
+
+  /**
+   * Expects a string. @throws IllegalStateException When the type is not
+   * correct.
+   */
+  public void expectString() {
+    expectType(JSONType.STRING);
+  }
+
+  /**
+   * Whether the type of the element is an object.
+   * 
+   * @return Whether it is an object.
+   */
+  public boolean isObject() {
+    return type() == JSONType.OBJECT;
+  }
+
+  /**
+   * Whether the type of the element is an array.
+   * 
+   * @return Whether it is an array.
+   */
+  public boolean isArray() {
+    return type() == JSONType.ARRAY;
+  }
+
+  /**
+   * Whether the type of the element is a string.
+   * 
+   * @return Whether it is a string.
+   */
+  public boolean isString() {
+    return type() == JSONType.STRING;
+  }
+
+  /**
    * Getter.
    * 
    * @return The name of the element or <code>null</code> if it has none.
@@ -123,7 +185,7 @@ public class JSONElement implements Iterable<JSONElement> {
    * 
    * @return The type of the element.
    */
-  public JSONType type() {
+  protected JSONType type() {
     return type;
   }
 
@@ -286,6 +348,88 @@ public class JSONElement implements Iterable<JSONElement> {
       }
     }
     sb.append('"');
+  }
+
+  // quick retrieving methods
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @param defaultValue The default value.
+   * @return The double value.
+   */
+  public double getDouble(final String name, final double defaultValue) {
+    if(hasValue(name)) return Double.parseDouble(getValue(name).string());
+    return defaultValue;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @param defaultValue The default value.
+   * @return The double value of the given child.
+   */
+  public int getInt(final String name, final int defaultValue) {
+    if(hasValue(name)) return Integer.parseInt(getValue(name).string());
+    return defaultValue;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @param defaultValue The default value.
+   * @return The string value of the given child.
+   */
+  public String getString(final String name, final String defaultValue) {
+    if(hasValue(name)) return getValue(name).string();
+    return defaultValue;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @param defaultValue The default value.
+   * @return The boolean value of the given child.
+   */
+  public boolean getBool(final String name, final boolean defaultValue) {
+    if(!hasValue(name)) return defaultValue;
+    final String str = getValue(name).string();
+    if(str.equals("false")) return false;
+    if(str.equals("true")) return true;
+    throw new IllegalArgumentException("value must be either true or false: " + str);
+  }
+
+  /**
+   * Whether the given child has a percentage value.
+   * 
+   * @param name The name of the element.
+   * @return Whether the given child has a percentage value.
+   */
+  public boolean hasPrecentage(final String name) {
+    if(!hasValue(name)) return false;
+    final JSONElement el = getValue(name);
+    if(el.type() != JSONType.STRING) return false;
+    return el.string().endsWith("%");
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @param defaultPercentage The default value.
+   * @return The percentage value of the child as ratio between 0.0 and 1.0. A
+   *         '%' is expected at the end of the string.
+   */
+  public double getPercentage(final String name, final double defaultPercentage) {
+    if(!hasValue(name)) return defaultPercentage;
+    final String str = getValue(name).string();
+    if(!str.endsWith("%")) throw new IllegalArgumentException(
+        "value must end in %: " + str);
+    return Double.parseDouble(str.substring(0, str.length() - 1)) * 0.01;
   }
 
 }
