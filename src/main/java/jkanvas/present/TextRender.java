@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -22,16 +20,10 @@ public class TextRender extends SlideObject {
   /** A list bullet point. */
   public static final String BULLET = "\u2022";
 
-  /** The vertical alignment behavior of the text. */
-  private final VerticalSlideAlignment vAlign;
   /** The font of the text. */
   private Font font;
   /** The text. */
   private String text;
-  /** The horizontal alignment behavior of the text. */
-  private HorizontalSlideAlignment hAlign;
-  /** The line the text is in. */
-  private int line;
   /** The indentation of the text. */
   private int indent;
   /** The size of the text. */
@@ -41,7 +33,9 @@ public class TextRender extends SlideObject {
   /** The height of the text. */
   private double height;
   /** The vertical offset of the text. */
-  private double voff;
+  private double vOff;
+  /** The text offset. */
+  private double tOff;
 
   /**
    * Creates an empty text.
@@ -90,16 +84,14 @@ public class TextRender extends SlideObject {
   public TextRender(final Slide owner, final String text,
       final VerticalSlideAlignment vAlign,
       final int indent, final HorizontalSlideAlignment hAlign) {
-    super(owner);
-    this.hAlign = Objects.requireNonNull(hAlign);
-    this.vAlign = Objects.requireNonNull(vAlign);
+    super(owner, hAlign, vAlign);
     this.text = Objects.requireNonNull(text);
     this.indent = indent;
     size = Double.NaN;
-    line = Integer.MIN_VALUE;
     width = Double.NaN;
     height = Double.NaN;
-    voff = Double.NaN;
+    vOff = Double.NaN;
+    tOff = Double.NaN;
     font = null;
   }
 
@@ -112,40 +104,9 @@ public class TextRender extends SlideObject {
     this.indent = indent;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return The indentation of the text.
-   */
+  @Override
   public int getIndent() {
     return indent;
-  }
-
-  /**
-   * Setter.
-   * 
-   * @param hAlign Sets the horizontal alignment.
-   */
-  public void setHorizontalAlign(final HorizontalSlideAlignment hAlign) {
-    this.hAlign = Objects.requireNonNull(hAlign);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The horizontal alignment.
-   */
-  public HorizontalSlideAlignment getHorizontalAlign() {
-    return hAlign;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The vertical alignment.
-   */
-  public VerticalSlideAlignment getVerticalAlign() {
-    return vAlign;
   }
 
   /**
@@ -169,11 +130,6 @@ public class TextRender extends SlideObject {
 
   @Override
   public void beforeDraw(final Graphics2D gfx, final SlideMetrics metric) {
-    if(line == Integer.MIN_VALUE) {
-      final Slide slide = getSlide();
-      line = slide.getLineCount(vAlign);
-      slide.incrementLine(vAlign);
-    }
     final double s = metric.lineHeight();
     if(s != size) {
       size = s;
@@ -182,29 +138,40 @@ public class TextRender extends SlideObject {
       }
       final FontMetrics fm = gfx.getFontMetrics(font);
       width = fm.stringWidth(getText());
-      voff = fm.getMaxAscent() + fm.getLeading();
-      height = voff + fm.getMaxDescent();
+      tOff = fm.getMaxAscent() + fm.getLeading();
+      height = tOff + fm.getMaxDescent();
+    }
+    if(Double.isNaN(vOff)) {
+      final Slide slide = getSlide();
+      final VerticalSlideAlignment vAlign = getVerticalAlignment();
+      vOff = slide.getTotalHeight(vAlign);
+      slide.addHeight(s, vAlign);
     }
   }
 
   @Override
-  public Point2D getOffset(final SlideMetrics metric) {
-    return metric.getOffsetFor(indent, width, hAlign, line,
-        getSlide().getLineCount(vAlign), vAlign);
+  public double getWidth() throws IllegalStateException {
+    if(Double.isNaN(width)) throw new IllegalStateException("width not initialized");
+    return width;
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    if(Double.isNaN(width) || Double.isNaN(height)) throw new IllegalStateException(
-        "size not initialized");
-    return new Rectangle2D.Double(0, 0, width, height);
+  public double getHeight() throws IllegalStateException {
+    if(Double.isNaN(height)) throw new IllegalStateException("height not initialized");
+    return height;
+  }
+
+  @Override
+  public double getTop() throws IllegalStateException {
+    if(Double.isNaN(vOff)) throw new IllegalStateException("top not initialized");
+    return vOff;
   }
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
     g.setColor(Color.BLACK);
     g.setFont(font);
-    g.translate(0, voff);
+    g.translate(0, tOff);
     g.drawString(text, 0, 0);
   }
 

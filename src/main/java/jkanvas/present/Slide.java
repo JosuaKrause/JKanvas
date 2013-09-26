@@ -21,22 +21,26 @@ import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 public class Slide extends AbstractRenderpass {
 
   /** The metrics for the slide. */
-  private SlideMetrics metric;
-  /** The current line counted for the top. */
-  private int currentTopLine;
-  /** The current line counted for the bottom. */
-  private int currentBottomLine;
-  /** The current line counted for the center. */
-  private int currentCenterLine;
+  private final SlideMetrics metric;
+  /** The current height of top objects. */
+  private double currentTopHeight;
+  /** The current height of bottom objects. */
+  private double currentBottomHeight;
+  /** The current height of center objects. */
+  private double currentCenterHeight;
   /** The slide content. */
   private final List<SlideObject> content;
 
-  /** Creates an empty slide. */
-  public Slide() {
-    metric = null;
-    currentTopLine = 0;
-    currentBottomLine = 0;
-    currentCenterLine = 0;
+  /**
+   * Creates an empty slide.
+   * 
+   * @param metric The metric for the slide.
+   */
+  public Slide(final SlideMetrics metric) {
+    this.metric = metric;
+    currentTopHeight = 0;
+    currentBottomHeight = 0;
+    currentCenterHeight = 0;
     content = new ArrayList<>();
   }
 
@@ -87,65 +91,50 @@ public class Slide extends AbstractRenderpass {
    * Getter.
    * 
    * @param align The alignment.
-   * @return The line count for the given alignment.
+   * @return The total height of the given alignment.
    */
-  public int getLineCount(final VerticalSlideAlignment align) {
+  public double getTotalHeight(final VerticalSlideAlignment align) {
     switch(align) {
       case BOTTOM:
-        return currentBottomLine;
+        return currentBottomHeight;
       case TOP:
-        return currentTopLine;
+        return currentTopHeight;
       case CENTER:
-        return currentCenterLine;
+        return currentCenterHeight;
       default:
         throw new NullPointerException("align");
     }
   }
 
   /**
-   * Increments the line counter for the given alignment.
+   * Adds height to the given alignment.
    * 
+   * @param height The height without additional space.
    * @param align The alignment.
    */
-  public void incrementLine(final VerticalSlideAlignment align) {
+  public void addHeight(final double height, final VerticalSlideAlignment align) {
     switch(align) {
       case BOTTOM:
-        ++currentBottomLine;
+        if(currentBottomHeight > 0) {
+          currentBottomHeight += metric.lineSpace();
+        }
+        currentBottomHeight += height;
         break;
       case TOP:
-        ++currentTopLine;
+        if(currentTopHeight > 0) {
+          currentTopHeight += metric.lineSpace();
+        }
+        currentTopHeight += height;
         break;
       case CENTER:
-        ++currentCenterLine;
+        if(currentCenterHeight > 0) {
+          currentCenterHeight += metric.lineSpace();
+        }
+        currentCenterHeight += height;
         break;
       default:
         throw new NullPointerException("align");
     }
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return Whether the slide has positioning already.
-   */
-  public boolean isPositioned() {
-    return metric != null;
-  }
-
-  /** Ensures that elements on the slide can be positioned. */
-  protected void checkPositioned() {
-    if(!isPositioned()) throw new IllegalStateException("slide must be positioned first");
-  }
-
-  /**
-   * Setter.
-   * 
-   * @param metric Sets the metrics for the slide.
-   */
-  public void setMetric(final SlideMetrics metric) {
-    if(isPositioned() && metric != null) throw new IllegalStateException(
-        "must remove metrics first");
-    this.metric = metric;
   }
 
   /**
@@ -197,7 +186,6 @@ public class Slide extends AbstractRenderpass {
 
   @Override
   public Rectangle2D getBoundingBox() {
-    checkPositioned();
     return metric.getBoundingBox();
   }
 

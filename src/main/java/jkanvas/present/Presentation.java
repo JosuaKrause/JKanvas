@@ -15,8 +15,6 @@ import jkanvas.painter.RenderpassPainter;
  */
 public class Presentation extends LinearGroup<Slide> {
 
-  /** The metrics for the presentation. */
-  private final SlideMetrics metrics;
   /** The canvas. */
   private final Canvas canvas;
   /** The animation timing. */
@@ -26,15 +24,13 @@ public class Presentation extends LinearGroup<Slide> {
    * Creates a presentation.
    * 
    * @param canvas The canvas.
-   * @param metrics The slide metrics.
+   * @param hSpace The horizontal space between slides.
    * @param timing The animation timing.
    */
-  public Presentation(final Canvas canvas, final SlideMetrics metrics,
+  public Presentation(final Canvas canvas, final double hSpace,
       final AnimationTiming timing) {
-    super(canvas.getAnimator(), true, metrics.slideSpaceHor(),
-        AnimationTiming.NO_ANIMATION);
+    super(canvas.getAnimator(), true, hSpace, AnimationTiming.NO_ANIMATION);
     this.canvas = canvas;
-    this.metrics = metrics;
     this.timing = timing;
   }
 
@@ -135,18 +131,6 @@ public class Presentation extends LinearGroup<Slide> {
     canvas.setRestriction(box, timing);
   }
 
-  @Override
-  protected void beforeAdding(final Slide slide) {
-    super.beforeAdding(slide);
-    slide.setMetric(metrics);
-  }
-
-  @Override
-  protected void removedRenderpass(final RenderpassPosition<Slide> rp) {
-    super.removedRenderpass(rp);
-    rp.pass.setMetric(null);
-  }
-
   /**
    * Creates a presentation from the given JSON element.
    * 
@@ -165,12 +149,13 @@ public class Presentation extends LinearGroup<Slide> {
       metric = base;
     }
     // TODO parse animation timing
-    final Presentation res = new Presentation(c, metric, AnimationTiming.NO_ANIMATION);
+    final Presentation res = new Presentation(c,
+        metric.slideSpaceHor(), AnimationTiming.NO_ANIMATION);
     if(json.hasValue("slides")) {
       final JSONElement slides = json.getValue("slides");
       slides.expectArray();
       for(final JSONElement slide : slides) {
-        final Slide s = new Slide();
+        final Slide s = new Slide(metric);
         s.parseJSON(slide);
         res.addRenderpass(s);
       }

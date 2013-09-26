@@ -191,23 +191,21 @@ public abstract class SlideMetrics {
   /**
    * Computes the vertical offset for the given configuration.
    * 
-   * @param line The line.
-   * @param maxLine The number of lines.
+   * @param vOff The vertical offset of the object.
+   * @param ownHeight The height of the object.
+   * @param totalHeight The total height of all objects with the same alignment.
    * @param align The alignment.
    * @return The top offset of the given configuration.
    */
-  public double getVerticalOffsetFor(final int line, final int maxLine,
-      final VerticalSlideAlignment align) {
+  public double getVerticalOffsetFor(final double vOff, final double ownHeight,
+      final double totalHeight, final VerticalSlideAlignment align) {
     switch(align) {
       case TOP:
-        return verticalOffset() + line * (lineHeight() + lineSpace());
+        return verticalOffset() + vOff;
       case BOTTOM:
-        return slideHeight() - verticalOffset() -
-            (line + 1) * lineHeight() - line * lineSpace();
+        return slideHeight() - vOff - ownHeight;
       case CENTER:
-        final double h = lineHeight();
-        final double s = lineSpace();
-        return (slideHeight() - maxLine * h - (maxLine - 1) * s) * 0.5 + line * (h + s);
+        return (slideHeight() - totalHeight) * 0.5 + vOff;
       default:
         throw new NullPointerException("align");
     }
@@ -218,49 +216,20 @@ public abstract class SlideMetrics {
    * 
    * @param indents The indentation.
    * @param width The width of the object.
-   * @param align The horizontal alignment.
-   * @param vRatio The vertical offset as ratio to the height of the slide.
-   * @return The top left offset of the object.
-   */
-  public Point2D getOffsetFor(final int indents, final double width,
-      final HorizontalSlideAlignment align, final double vRatio) {
-    return new Point2D.Double(getHorizontalOffsetFor(indents, width, align),
-        vRatio * slideHeight());
-  }
-
-  /**
-   * Computes the offset of the given configuration.
-   * 
-   * @param indents The indentation.
-   * @param width The width of the object.
-   * @param align The horizontal alignment.
-   * @param vRatio The vertical offset as ratio to the height of the slide for
-   *          the center of the object.
-   * @param height The height of the object.
-   * @return The top left offset of the object.
-   */
-  public Point2D getOffsetFor(final int indents, final double width,
-      final HorizontalSlideAlignment align, final double vRatio, final double height) {
-    return new Point2D.Double(getHorizontalOffsetFor(indents, width, align),
-        vRatio * slideHeight() - height * 0.5);
-  }
-
-  /**
-   * Computes the offset of the given configuration.
-   * 
-   * @param indents The indentation.
-   * @param width The width of the object.
    * @param hAlign The horizontal alignment.
-   * @param line The line.
-   * @param maxLine The number of lines.
+   * @param vOff The vertical offset of the object.
+   * @param ownHeight The height of the object.
+   * @param totalHeight The total height of all objects with the same vertical
+   *          alignment.
    * @param vAlign The vertical alignment.
    * @return The top left offset of the object.
    */
   public Point2D getOffsetFor(
       final int indents, final double width, final HorizontalSlideAlignment hAlign,
-      final int line, final int maxLine, final VerticalSlideAlignment vAlign) {
+      final double vOff, final double ownHeight, final double totalHeight,
+      final VerticalSlideAlignment vAlign) {
     return new Point2D.Double(getHorizontalOffsetFor(indents, width, hAlign),
-        getVerticalOffsetFor(line, maxLine, vAlign));
+        getVerticalOffsetFor(vOff, ownHeight, totalHeight, vAlign));
   }
 
 }

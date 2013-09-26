@@ -6,6 +6,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
+import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 
 /**
  * An object that can be added to a slide. A {@link SlideObject} can be added to
@@ -17,14 +19,23 @@ public abstract class SlideObject {
 
   /** The slide that owns the object. */
   private final Slide slide;
+  /** The vertical alignment. */
+  private final VerticalSlideAlignment vAlign;
+  /** The horizontal alignment behavior of the text. */
+  private HorizontalSlideAlignment hAlign;
 
   /**
    * Creates a slide object.
    * 
    * @param slide The slide that owns the object.
+   * @param hAlign The initial horizontal alignment of the object.
+   * @param vAlign The vertical alignment of the object.
    */
-  public SlideObject(final Slide slide) {
+  public SlideObject(final Slide slide, final HorizontalSlideAlignment hAlign,
+      final VerticalSlideAlignment vAlign) {
     this.slide = Objects.requireNonNull(slide);
+    this.vAlign = Objects.requireNonNull(vAlign);
+    this.hAlign = Objects.requireNonNull(hAlign);
     slide.add(this);
   }
 
@@ -43,7 +54,70 @@ public abstract class SlideObject {
    * @param metric The metric.
    * @return The offset of the object.
    */
-  public abstract Point2D getOffset(SlideMetrics metric);
+  public Point2D getOffset(final SlideMetrics metric) {
+    final VerticalSlideAlignment v = getVerticalAlignment();
+    final double h = getSlide().getTotalHeight(v);
+    return metric.getOffsetFor(getIndent(), getWidth(),
+        getHorizontalAlignment(), getTop(), getHeight(), h, v);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The top offset.
+   * @throws IllegalStateException When the object has not been initialized yet.
+   */
+  public abstract double getTop() throws IllegalStateException;
+
+  /**
+   * Getter.
+   * 
+   * @return The height of the object.
+   * @throws IllegalStateException When the object has not been initialized yet.
+   */
+  public abstract double getHeight() throws IllegalStateException;
+
+  /**
+   * Getter.
+   * 
+   * @return The width of the object.
+   * @throws IllegalStateException When the object has not been initialized yet.
+   */
+  public abstract double getWidth() throws IllegalStateException;
+
+  /**
+   * Getter.
+   * 
+   * @return The indentation of the object.
+   */
+  public abstract int getIndent();
+
+  /**
+   * Getter.
+   * 
+   * @return The horizontal alignment.
+   */
+  public HorizontalSlideAlignment getHorizontalAlignment() {
+    return hAlign;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param hAlign Sets the horizontal alignment.
+   */
+  public void setHorizontalAlignment(final HorizontalSlideAlignment hAlign) {
+    this.hAlign = Objects.requireNonNull(hAlign);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The vertical alignment.
+   */
+  public VerticalSlideAlignment getVerticalAlignment() {
+    return vAlign;
+  }
 
   /**
    * Getter.
@@ -51,7 +125,9 @@ public abstract class SlideObject {
    * @return The bounding box of the object without the offset.
    * @throws IllegalStateException When the object has not been drawn yet.
    */
-  public abstract Rectangle2D getBoundingBox() throws IllegalStateException;
+  public Rectangle2D getBoundingBox() throws IllegalStateException {
+    return new Rectangle2D.Double(0, 0, getWidth(), getHeight());
+  }
 
   /**
    * Draws the object.
