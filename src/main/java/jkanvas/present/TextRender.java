@@ -116,7 +116,7 @@ public class TextRender extends SlideObject {
    */
   public void setText(final String text) {
     this.text = Objects.requireNonNull(text);
-    width = Double.NaN;
+    size = Double.NaN;
   }
 
   /**
@@ -126,6 +126,26 @@ public class TextRender extends SlideObject {
    */
   public String getText() {
     return text;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The font used or <code>null</code> if it is not yet initialized.
+   */
+  public Font getFont() {
+    return font;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param font Sets the font that will be used to render the text.
+   *          <code>null</code> uses the standard font.
+   */
+  public void setFont(final Font font) {
+    this.font = font;
+    size = Double.NaN;
   }
 
   @Override
