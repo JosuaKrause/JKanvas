@@ -161,22 +161,13 @@ public class Slide extends AbstractRenderpass {
   public void addHeight(final double height, final VerticalSlideAlignment align) {
     switch(align) {
       case BOTTOM:
-        if(currentBottomHeight > 0) {
-          currentBottomHeight += metric.lineSpace();
-        }
-        currentBottomHeight += height;
+        currentBottomHeight += height + metric.lineSpace();
         break;
       case TOP:
-        if(currentTopHeight > 0) {
-          currentTopHeight += metric.lineSpace();
-        }
-        currentTopHeight += height;
+        currentTopHeight += height + metric.lineSpace();
         break;
       case CENTER:
-        if(currentCenterHeight > 0) {
-          currentCenterHeight += metric.lineSpace();
-        }
-        currentCenterHeight += height;
+        currentCenterHeight += height + metric.lineSpace();
         break;
       default:
         throw new NullPointerException("align");

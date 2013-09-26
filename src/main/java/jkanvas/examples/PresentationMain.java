@@ -24,7 +24,7 @@ public final class PresentationMain {
   private static final String JSON = "{ "
       + "\"metric\": {\"lineHeight\": \"7%\"}, "
       + "\"slides\": ["
-      + "{\"top\": [\"Hello World!\"]}, "
+      + "{\"top\": [\"Hello World!\", {\"type\":\"jkanvas.present.ImageRender\", \"src\":\"test.png\", \"align\":\"center\"}]}, "
       + "{\"top\": [\"The quick brown fox jumped over the lazy dog!\",\"Second text\"]}, "
       + "{\"center\": [\"The quick brown fox jumped over the lazy dog!\", "
       + "{\"type\": \"jkanvas.present.TextRender\", \"align\": \"center\", "

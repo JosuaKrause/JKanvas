@@ -2,10 +2,16 @@ package jkanvas.present;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import jkanvas.KanvasContext;
+import jkanvas.json.JSONElement;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
+import jkanvas.util.ResourceLoader;
 
 /**
  * An image slide object.
@@ -86,6 +92,25 @@ public class ImageRender extends SlideObject {
   public double getTop() throws IllegalStateException {
     if(Double.isNaN(top)) throw new IllegalStateException("top not initialized");
     return top;
+  }
+
+  /**
+   * Creates an image object from a JSON element.
+   * 
+   * @param el The element.
+   * @param slide The slide.
+   * @param hAlign The horizontal alignment.
+   * @param vAlign The vertical alignment.
+   * @return The image object.
+   * @throws IOException I/O Exception.
+   */
+  public static ImageRender loadFromJSON(final JSONElement el, final Slide slide,
+      final HorizontalSlideAlignment hAlign, final VerticalSlideAlignment vAlign)
+      throws IOException {
+    final String src = el.getString("src", null);
+    final ResourceLoader rl = ResourceLoader.getResourceLoader();
+    final BufferedImage img = ImageIO.read(rl.loadResource(src));
+    return new ImageRender(img, slide, vAlign, hAlign);
   }
 
 }
