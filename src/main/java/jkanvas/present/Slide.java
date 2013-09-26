@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +13,7 @@ import java.util.Objects;
 import jkanvas.KanvasContext;
 import jkanvas.json.JSONElement;
 import jkanvas.painter.AbstractRenderpass;
+import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 
 /**
@@ -78,13 +81,56 @@ public class Slide extends AbstractRenderpass {
    * Creates a slide object for the given JSON element.
    * 
    * @param el The JSON element.
-   * @param align The alignment of the object.
+   * @param vAlign The vertical alignment of the object.
    * @return The slide object. The object is already added to the slide.
    */
-  private SlideObject getFor(final JSONElement el, final VerticalSlideAlignment align) {
-    if(el.isString()) return new TextRender(this, el.string(), align);
-    // TODO
-    throw new UnsupportedOperationException("other types not yet supported");
+  private SlideObject getFor(final JSONElement el, final VerticalSlideAlignment vAlign) {
+    if(el.isString()) return new TextRender(this, el.string(), vAlign);
+    if(!el.isObject()) throw new IllegalArgumentException("el must be a string or object");
+    final HorizontalSlideAlignment hAlign;
+    final String ha = el.getString("align", "left");
+    switch(ha) {
+      case "left":
+        hAlign = HorizontalSlideAlignment.LEFT;
+        break;
+      case "center":
+        hAlign = HorizontalSlideAlignment.CENTER;
+        break;
+      case "right":
+        hAlign = HorizontalSlideAlignment.RIGHT;
+        break;
+      default:
+        throw new IllegalArgumentException("illegal hAlign: " + ha);
+    }
+    return fromJSONloader(el, vAlign, hAlign);
+  }
+
+  /**
+   * Loads a slide object from a JSON loader.
+   * 
+   * @param el The element.
+   * @param vAlign The vertical alignment.
+   * @param hAlign The horizontal alignment.
+   * @return The slide object.
+   */
+  private SlideObject fromJSONloader(final JSONElement el,
+      final VerticalSlideAlignment vAlign, final HorizontalSlideAlignment hAlign) {
+    final String type = el.getString("type", "");
+    try {
+      final Class<?> clz = Class.forName(type);
+      final Class<SlideObject> so = SlideObject.class;
+      if(!so.isAssignableFrom(clz)) throw new IllegalArgumentException(
+          "class " + type + " must be a " + so.getName());
+      final Method m = clz.getDeclaredMethod("loadFromJSON",
+          JSONElement.class, Slide.class, HorizontalSlideAlignment.class,
+          VerticalSlideAlignment.class);
+      if(!clz.isAssignableFrom(m.getReturnType())) throw new IllegalArgumentException(
+          "return type of method must be a " + clz.getName());
+      return (SlideObject) m.invoke(null, el, this, hAlign, vAlign);
+    } catch(final ClassNotFoundException | NoSuchMethodException | SecurityException
+        | IllegalAccessException | InvocationTargetException e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   /**
@@ -156,6 +202,8 @@ public class Slide extends AbstractRenderpass {
     gfx.draw(outer);
     for(final SlideObject obj : content) {
       obj.beforeDraw(gfx, metric);
+    }
+    for(final SlideObject obj : content) {
       final Point2D off = obj.getOffset(metric);
       final Rectangle2D bbox = getBoundingBox(obj, off);
       if(!view.intersects(bbox)) {

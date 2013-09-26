@@ -22,11 +22,13 @@ public final class PresentationMain {
 
   /** The JSON string containing presentation information. */
   private static final String JSON = "{ "
-      + "\"metric\": {\"lineHeight\": \"7%\"},"
+      + "\"metric\": {\"lineHeight\": \"7%\"}, "
       + "\"slides\": ["
-      + "{\"top\": [\"Hello World!\"]},"
-      + "{\"top\": [\"The quick brown fox jumped over the lazy dog!\",\"Second text\"]},"
-      + "{\"center\": [\"The quick brown fox jumped over the lazy dog!\"]},"
+      + "{\"top\": [\"Hello World!\"]}, "
+      + "{\"top\": [\"The quick brown fox jumped over the lazy dog!\",\"Second text\"]}, "
+      + "{\"center\": [\"The quick brown fox jumped over the lazy dog!\", "
+      + "{\"type\": \"jkanvas.present.TextRender\", \"align\": \"center\", "
+      + "\"text\": \"centered text\",\"font\": \"times\"},\"test test test test\"]},"
       + "]}";
 
   /**

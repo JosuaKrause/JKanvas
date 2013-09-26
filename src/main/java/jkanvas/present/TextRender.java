@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.json.JSONElement;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 
@@ -116,7 +117,7 @@ public class TextRender extends SlideObject {
    */
   public void setText(final String text) {
     this.text = Objects.requireNonNull(text);
-    size = Double.NaN;
+    invalidate();
   }
 
   /**
@@ -129,6 +130,17 @@ public class TextRender extends SlideObject {
   }
 
   /**
+   * Setter.
+   * 
+   * @param font Sets the font that will be used to render the text.
+   *          <code>null</code> uses the standard font.
+   */
+  public void setFont(final Font font) {
+    this.font = font;
+    invalidate();
+  }
+
+  /**
    * Getter.
    * 
    * @return The font used or <code>null</code> if it is not yet initialized.
@@ -137,15 +149,12 @@ public class TextRender extends SlideObject {
     return font;
   }
 
-  /**
-   * Setter.
-   * 
-   * @param font Sets the font that will be used to render the text.
-   *          <code>null</code> uses the standard font.
-   */
-  public void setFont(final Font font) {
-    this.font = font;
+  /** Invalidates the current computed sizes. */
+  private void invalidate() {
     size = Double.NaN;
+    width = Double.NaN;
+    height = Double.NaN;
+    tOff = Double.NaN;
   }
 
   @Override
@@ -155,6 +164,8 @@ public class TextRender extends SlideObject {
       size = s;
       if(font == null) {
         font = gfx.getFont().deriveFont((float) size);
+      } else {
+        font = font.deriveFont((float) size);
       }
       final FontMetrics fm = gfx.getFontMetrics(font);
       width = fm.stringWidth(getText());
@@ -193,6 +204,33 @@ public class TextRender extends SlideObject {
     g.setFont(font);
     g.translate(0, tOff);
     g.drawString(text, 0, 0);
+  }
+
+  /**
+   * Creates a text object from a JSON element.
+   * 
+   * @param el The element.
+   * @param slide The slide.
+   * @param hAlign The horizontal alignment.
+   * @param vAlign The vertical alignment.
+   * @return The text object.
+   */
+  public static TextRender loadFromJSON(final JSONElement el, final Slide slide,
+      final HorizontalSlideAlignment hAlign, final VerticalSlideAlignment vAlign) {
+    final String text = el.getString("text", "");
+    final int indent = el.getInt("indent", 0);
+    final Font font;
+    if(el.hasValue("font")) {
+      final String f = el.getString("font", null);
+      font = Font.decode(f);
+    } else {
+      font = null;
+    }
+    final TextRender res = new TextRender(slide, text, vAlign, indent, hAlign);
+    if(font != null) {
+      res.setFont(font);
+    }
+    return res;
   }
 
 }
