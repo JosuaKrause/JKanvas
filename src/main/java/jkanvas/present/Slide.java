@@ -4,14 +4,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.json.JSONElement;
+import jkanvas.json.JSONLoader;
 import jkanvas.painter.AbstractRenderpass;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
@@ -102,35 +101,9 @@ public class Slide extends AbstractRenderpass {
       default:
         throw new IllegalArgumentException("illegal hAlign: " + ha);
     }
-    return fromJSONloader(el, vAlign, hAlign);
-  }
-
-  /**
-   * Loads a slide object from a JSON loader.
-   * 
-   * @param el The element.
-   * @param vAlign The vertical alignment.
-   * @param hAlign The horizontal alignment.
-   * @return The slide object.
-   */
-  private SlideObject fromJSONloader(final JSONElement el,
-      final VerticalSlideAlignment vAlign, final HorizontalSlideAlignment hAlign) {
-    final String type = el.getString("type", "");
-    try {
-      final Class<?> clz = Class.forName(type);
-      final Class<SlideObject> so = SlideObject.class;
-      if(!so.isAssignableFrom(clz)) throw new IllegalArgumentException(
-          "class " + type + " must be a " + so.getName());
-      final Method m = clz.getDeclaredMethod("loadFromJSON",
-          JSONElement.class, Slide.class, HorizontalSlideAlignment.class,
-          VerticalSlideAlignment.class);
-      if(!clz.isAssignableFrom(m.getReturnType())) throw new IllegalArgumentException(
-          "return type of method must be a " + clz.getName());
-      return (SlideObject) m.invoke(null, el, this, hAlign, vAlign);
-    } catch(final ClassNotFoundException | NoSuchMethodException | SecurityException
-        | IllegalAccessException | InvocationTargetException e) {
-      throw new IllegalArgumentException(e);
-    }
+    return JSONLoader.fromJSONloader(el, SlideObject.class, new Object[] {
+        this, hAlign, vAlign
+    });
   }
 
   /**
