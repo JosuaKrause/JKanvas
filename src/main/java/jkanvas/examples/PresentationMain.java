@@ -2,7 +2,8 @@ package jkanvas.examples;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
@@ -12,6 +13,7 @@ import jkanvas.painter.SimpleTextHUD;
 import jkanvas.present.DefaultSlideMetrics;
 import jkanvas.present.Presentation;
 import jkanvas.present.SlideMetrics;
+import jkanvas.util.ResourceLoader;
 
 /**
  * A short example showing the presentation capabilities of Kanvas.
@@ -19,17 +21,6 @@ import jkanvas.present.SlideMetrics;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public final class PresentationMain {
-
-  /** The JSON string containing presentation information. */
-  private static final String JSON = "{ "
-      + "\"metric\": {\"lineHeight\": \"7%\"}, "
-      + "\"slides\": ["
-      + "{\"top\": [\"Hello World!\", {\"type\":\"jkanvas.present.ImageRender\", \"src\":\"test.png\", \"align\":\"center\"}]}, "
-      + "{\"top\": [\"The quick brown fox jumped over the lazy dog!\",\"Second text\"]}, "
-      + "{\"center\": [\"The quick brown fox jumped over the lazy dog!\", "
-      + "{\"type\": \"jkanvas.present.TextRender\", \"align\": \"center\", "
-      + "\"text\": \"centered text\",\"font\": \"times\"},\"test test test test\"]},"
-      + "]}";
 
   /**
    * Starts the example application.
@@ -43,7 +34,8 @@ public final class PresentationMain {
     final SimpleTextHUD info = ExampleUtil.setupCanvas("Presentation", c, p,
         true, true, true);
 
-    final JSONElement el = new JSONReader(new StringReader(JSON)).get();
+    final InputStream json = ResourceLoader.getResourceLoader().loadResource("test.json");
+    final JSONElement el = new JSONReader(new InputStreamReader(json, "UTF-8")).get();
     final SlideMetrics m = new DefaultSlideMetrics();
 
     final Presentation present = Presentation.fromJSON(c, el, m);

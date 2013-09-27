@@ -1,0 +1,34 @@
+{
+  "metric": {"lineHeight": "7%"},
+  "slides": [
+    {
+      "top": [
+        "Hello World!",
+        {
+          "type": "jkanvas.present.ImageRender",
+          "src": "test.png",
+          "align": "center",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "top": [
+        "The quick brown fox jumped over the lazy dog!",
+        "Second text"
+      ]
+    },
+    {
+      "center": [
+        "The quick brown fox jumped over the lazy dog!",
+        {
+          "type": "jkanvas.present.TextRender",
+          "align": "center",
+          "text": "centered text",
+          "font": "times"
+        },
+        "test test test test"
+      ]
+    },
+  ]
+}

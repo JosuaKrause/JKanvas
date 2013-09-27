@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -38,7 +39,7 @@ public class ImageRender extends SlideObject {
    */
   public ImageRender(final Image img, final Slide slide,
       final VerticalSlideAlignment vAlign) {
-    this(img, slide, vAlign, HorizontalSlideAlignment.CENTER);
+    this(img, slide, vAlign, HorizontalSlideAlignment.CENTER, -1, -1);
   }
 
   /**
@@ -48,13 +49,23 @@ public class ImageRender extends SlideObject {
    * @param slide The slide.
    * @param vAlign The vertical alignment.
    * @param hAlign The horizontal alignment.
+   * @param width The requested width or -1 for automatic width.
+   * @param height The requested height or -1 for automatic width.
    */
   public ImageRender(final Image img, final Slide slide,
-      final VerticalSlideAlignment vAlign, final HorizontalSlideAlignment hAlign) {
+      final VerticalSlideAlignment vAlign, final HorizontalSlideAlignment hAlign,
+      final int width, final int height) {
     super(slide, hAlign, vAlign);
-    this.img = img;
-    width = img.getWidth(null);
-    height = img.getHeight(null);
+    Objects.requireNonNull(img);
+    if(width < 0 && height < 0) {
+      this.img = img;
+    } else if(width == img.getWidth(null) && height == img.getHeight(null)) {
+      this.img = img;
+    } else {
+      this.img = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+    }
+    this.width = this.img.getWidth(null);
+    this.height = this.img.getHeight(null);
     top = Double.NaN;
   }
 
@@ -108,9 +119,11 @@ public class ImageRender extends SlideObject {
       final HorizontalSlideAlignment hAlign, final VerticalSlideAlignment vAlign)
       throws IOException {
     final String src = el.getString("src", null);
+    final int w = el.getInt("width", -1);
+    final int h = el.getInt("height", -1);
     final ResourceLoader rl = ResourceLoader.getResourceLoader();
     final BufferedImage img = ImageIO.read(rl.loadResource(src));
-    return new ImageRender(img, slide, vAlign, hAlign);
+    return new ImageRender(img, slide, vAlign, hAlign, w, h);
   }
 
 }
