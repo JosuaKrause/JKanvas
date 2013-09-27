@@ -87,7 +87,8 @@ public class Slide extends AbstractRenderpass {
     if(el.isString()) return new TextRender(this, el.string(), vAlign);
     if(!el.isObject()) throw new IllegalArgumentException("el must be a string or object");
     final HorizontalSlideAlignment hAlign;
-    final String ha = el.getString("align", "left");
+    final String ha = el.getString("align",
+        vAlign != VerticalSlideAlignment.CENTER ? "left" : "center");
     switch(ha) {
       case "left":
         hAlign = HorizontalSlideAlignment.LEFT;

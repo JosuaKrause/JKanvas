@@ -2,6 +2,7 @@ package jkanvas.json;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * Accesses the static <code>loadFromJSON</code> method from a class to create
@@ -48,8 +49,8 @@ public final class JSONLoader {
    * Constructs an object via the static <code>loadFromJSON</code> method in the
    * type given by the field <code>type</code> of the JSON element. The static
    * method must accept the JSON element as first argument and the other
-   * arguments in the given order. The result of the method must be of the type
-   * given by the field.
+   * arguments in the given order. The result of the method must be of the
+   * result type.
    * 
    * @param <T> The type of the resulting object.
    * @param el The JSON element to construct the object.
@@ -60,14 +61,14 @@ public final class JSONLoader {
   public static <T> T fromJSONloader(final JSONElement el,
       final Class<T> result, final Object[] argValues) {
     el.expectObject();
-    final String type = el.getString("type", "");
+    final String type = Objects.requireNonNull(el.getString("type", null));
     final Object[] args = prepareArgValues(el, argValues);
     try {
       final Class<?> clz = Class.forName(type);
       if(!result.isAssignableFrom(clz)) throw new IllegalArgumentException(
           "class " + type + " must be a " + result.getName());
       final Method m = clz.getDeclaredMethod("loadFromJSON", argTypes(args));
-      if(!clz.isAssignableFrom(m.getReturnType())) throw new IllegalArgumentException(
+      if(!result.isAssignableFrom(m.getReturnType())) throw new IllegalArgumentException(
           "return type of method must be a " + clz.getName());
       return (T) m.invoke(null, args);
     } catch(final ClassNotFoundException | NoSuchMethodException | SecurityException

@@ -15,7 +15,7 @@ public class JSONSlideMetrics extends SlideMetrics {
    * @param json The JSON element.
    * @param base The default values for the metrics.
    */
-  public JSONSlideMetrics(final JSONElement json, final SlideMetrics base) {
+  JSONSlideMetrics(final JSONElement json, final SlideMetrics base) {
     json.expectObject();
     width = json.getDouble("width", base.slideWidth());
     height = json.getDouble("height", base.slideHeight());

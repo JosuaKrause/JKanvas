@@ -3,6 +3,8 @@ package jkanvas.present;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import jkanvas.json.JSONElement;
+
 /**
  * Metrics for slides.
  * 
@@ -230,6 +232,18 @@ public abstract class SlideMetrics {
       final VerticalSlideAlignment vAlign) {
     return new Point2D.Double(getHorizontalOffsetFor(indents, width, hAlign),
         getVerticalOffsetFor(vOff, ownHeight, totalHeight, vAlign));
+  }
+
+  /**
+   * Creates a slide metric from the given JSON element.
+   * 
+   * @param el The JSON element.
+   * @param base The default values.
+   * @return The slide metric.
+   */
+  public static SlideMetrics loadFromJSON(
+      final JSONElement el, final SlideMetrics base) {
+    return new JSONSlideMetrics(el, base);
   }
 
 }

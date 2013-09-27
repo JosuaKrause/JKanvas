@@ -144,13 +144,13 @@ public class Presentation extends LinearGroup<Slide> {
     json.expectObject();
     final SlideMetrics metric;
     if(json.hasValue("metric")) {
-      metric = new JSONSlideMetrics(json.getValue("metric"), base);
+      metric = SlideMetrics.loadFromJSON(json.getValue("metric"), base);
     } else {
       metric = base;
     }
     final AnimationTiming timing;
     if(json.hasValue("timing")) {
-      timing = AnimationTiming.loadFromJSON(json);
+      timing = AnimationTiming.loadFromJSON(json.getValue("timing"));
     } else {
       timing = AnimationTiming.NO_ANIMATION;
     }
