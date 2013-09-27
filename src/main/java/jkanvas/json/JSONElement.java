@@ -369,10 +369,22 @@ public class JSONElement implements Iterable<JSONElement> {
    * 
    * @param name The name of the value.
    * @param defaultValue The default value.
-   * @return The double value of the given child.
+   * @return The integer value of the given child.
    */
   public int getInt(final String name, final int defaultValue) {
     if(hasValue(name)) return Integer.parseInt(getValue(name).string());
+    return defaultValue;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @param defaultValue The default value.
+   * @return The long value of the given child.
+   */
+  public long getLong(final String name, final long defaultValue) {
+    if(hasValue(name)) return Long.parseLong(getValue(name).string());
     return defaultValue;
   }
 

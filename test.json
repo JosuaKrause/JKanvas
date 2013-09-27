@@ -30,5 +30,6 @@
         "test test test test"
       ]
     },
-  ]
+  ],
+  "timing": "smooth"
 }

@@ -148,9 +148,13 @@ public class Presentation extends LinearGroup<Slide> {
     } else {
       metric = base;
     }
-    // TODO parse animation timing
-    final Presentation res = new Presentation(c,
-        metric.slideSpaceHor(), AnimationTiming.NO_ANIMATION);
+    final AnimationTiming timing;
+    if(json.hasValue("timing")) {
+      timing = AnimationTiming.loadFromJSON(json);
+    } else {
+      timing = AnimationTiming.NO_ANIMATION;
+    }
+    final Presentation res = new Presentation(c, metric.slideSpaceHor(), timing);
     if(json.hasValue("slides")) {
       final JSONElement slides = json.getValue("slides");
       slides.expectArray();
