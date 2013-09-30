@@ -83,12 +83,12 @@ public class ViewConfiguration {
    * 
    * @param gfx The graphics context.
    */
-  public void paint(final Graphics2D gfx) {
+  public void paint(final Graphics2D gfx, final double w, final double h) {
     final Graphics2D g = (Graphics2D) gfx.create();
     zui.transform(g);
-    painter.draw(g, getContext());
+    painter.draw(g, getContext(w, h));
     g.dispose();
-    painter.drawHUD(gfx, getHUDContext());
+    painter.drawHUD(gfx, getHUDContext(w, h));
   }
 
   /**
@@ -98,8 +98,8 @@ public class ViewConfiguration {
    * 
    * @return The current canvas context.
    */
-  public ViewContext getContext() {
-    return new ViewContext(zui, true, 0, 0);
+  public KanvasContext getContext(final double width, final double height) {
+    return new ViewContext(zui, true, 0, 0, width, height);
   }
 
   /**
@@ -109,8 +109,8 @@ public class ViewConfiguration {
    * 
    * @return The current head-up display context.
    */
-  public ViewContext getHUDContext() {
-    return new ViewContext(zui, false, 0, 0);
+  public KanvasContext getHUDContext(final double width, final double height) {
+    return new ViewContext(zui, false, 0, 0, width, height);
   }
 
   /**
@@ -124,17 +124,18 @@ public class ViewConfiguration {
    *           can be restricted only with the constructor.
    * @see #isRestricted()
    */
-  public void setRestriction(final Rectangle2D restriction,
-      final AnimationTiming timing, final double margin) {
+  public void setRestriction(final Canvas canvas,
+      final RestrictedArea area, final AnimationTiming timing) {
     if(!isRestricted()) throw new IllegalStateException("not restricted");
-    this.restriction = null;
-    if(restriction != null) {
-      final Rectangle2D rest = jkanvas.util.PaintUtil.addPadding(restriction, margin);
+    restriction = null;
+    final Rectangle2D rest = area.getTopLevelBounds();
+    if(rest != null) {
       zui.toView(rest, timing, new AnimationAction() {
 
         @Override
         public void animationFinished() {
           if(!zui.inAnimation()) {
+            area.beforeEntering(canvas);
             setRestrictionDirectly(rest);
           }
         }
@@ -173,6 +174,10 @@ public class ViewConfiguration {
     /** The ZUI camera. */
     private final CameraZUI zui;
 
+    private final double width;
+
+    private final double height;
+
     /**
      * Creates a context for this configuration.
      * 
@@ -183,15 +188,17 @@ public class ViewConfiguration {
      * @param offY The y offset in canvas coordinates.
      */
     public ViewContext(final CameraZUI zui, final boolean inCanvasSpace,
-        final double offX, final double offY) {
+        final double offX, final double offY, final double width, final double height) {
       super(inCanvasSpace, offX, offY);
+      this.width = width;
+      this.height = height;
       this.zui = Objects.requireNonNull(zui);
     }
 
     @Override
     protected KanvasContext create(final boolean inCanvasSpace,
         final double offX, final double offY) {
-      return new ViewContext(zui, inCanvasSpace, offX, offY);
+      return new ViewContext(zui, inCanvasSpace, offX, offY, width, height);
     }
 
     @Override
@@ -223,7 +230,7 @@ public class ViewConfiguration {
 
     @Override
     protected Rectangle2D createVisibleComponent() {
-      return zui.getVisibleRect();
+      return new Rectangle2D.Double(0, 0, width, height);
     }
 
     @Override

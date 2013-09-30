@@ -1,13 +1,14 @@
 package jkanvas.present;
 
-import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import jkanvas.Canvas;
+import jkanvas.RestrictedArea;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.groups.LinearGroup;
 import jkanvas.json.JSONElement;
 import jkanvas.json.JSONKeyBindings;
-import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
 
 /**
@@ -22,6 +23,8 @@ public class Presentation extends LinearGroup<Slide> {
   /** The animation timing. */
   private final AnimationTiming timing;
 
+  private final List<RestrictedArea> areas;
+
   /**
    * Creates a presentation.
    * 
@@ -34,6 +37,7 @@ public class Presentation extends LinearGroup<Slide> {
     super(canvas.getAnimator(), true, hSpace, AnimationTiming.NO_ANIMATION);
     this.canvas = canvas;
     this.timing = timing;
+    areas = new ArrayList<>();
   }
 
   @Override
@@ -75,7 +79,7 @@ public class Presentation extends LinearGroup<Slide> {
         setSlide(curSlide);
       }
     } else {
-      canvas.setRestriction(null, AnimationTiming.NO_ANIMATION);
+      canvas.setRestriction((RestrictedArea) null, AnimationTiming.NO_ANIMATION);
     }
   }
 
@@ -119,6 +123,10 @@ public class Presentation extends LinearGroup<Slide> {
     setSlide(no, timing);
   }
 
+  public int slideCount() {
+    return areas.size();
+  }
+
   /**
    * Setter.
    * 
@@ -126,11 +134,24 @@ public class Presentation extends LinearGroup<Slide> {
    * @param timing The animation timing.
    */
   private void setSlide(final int no, final AnimationTiming timing) {
-    curSlide = Math.min(Math.max(0, no), renderpassCount() - 1);
+    final int oldSlide = curSlide;
+    curSlide = Math.min(Math.max(0, no), slideCount() - 1);
     if(!inPresentationMode()) return;
-    final Slide slide = getRenderpass(curSlide);
-    final Rectangle2D box = RenderpassPainter.getTopLevelBounds(slide);
-    canvas.setRestriction(box, timing);
+    if(oldSlide >= 0 && oldSlide != curSlide) {
+      areas.get(oldSlide).beforeLeaving(canvas);
+    }
+    final RestrictedArea area = areas.get(curSlide);
+    canvas.setRestriction(area, timing);
+  }
+
+  @Override
+  protected void addedRenderpass(final RenderpassPosition<Slide> rp) {
+    super.addedRenderpass(rp);
+    addArea(rp.pass);
+  }
+
+  public void addArea(final RestrictedArea area) {
+    areas.add(area);
   }
 
   /**

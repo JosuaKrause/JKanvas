@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import jkanvas.Canvas;
 import jkanvas.KanvasContext;
+import jkanvas.RestrictedArea;
 import jkanvas.json.JSONElement;
 import jkanvas.json.JSONLoader;
 import jkanvas.painter.AbstractRenderpass;
+import jkanvas.painter.RenderpassPainter;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 
@@ -20,7 +23,7 @@ import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class Slide extends AbstractRenderpass {
+public class Slide extends AbstractRenderpass implements RestrictedArea {
 
   /** The metrics for the slide. */
   private final SlideMetrics metric;
@@ -200,6 +203,21 @@ public class Slide extends AbstractRenderpass {
   @Override
   public Rectangle2D getBoundingBox() {
     return metric.getBoundingBox();
+  }
+
+  @Override
+  public Rectangle2D getTopLevelBounds() {
+    return RenderpassPainter.getTopLevelBounds(this);
+  }
+
+  @Override
+  public void beforeEntering(final Canvas canvas) {
+    // nothing to do
+  }
+
+  @Override
+  public void beforeLeaving(final Canvas canvas) {
+    // nothing to do
   }
 
 }

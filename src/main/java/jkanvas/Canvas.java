@@ -448,10 +448,10 @@ public class Canvas extends JComponent implements Refreshable {
     g.clip(getVisibleRect());
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     if(barrier == null) {
-      cfg.paint(g);
+      cfg.paint(g, getWidth(), getHeight());
     } else {
       try (CloseBlock b = barrier.openDrawBlock()) {
-        cfg.paint(g);
+        cfg.paint(g, getWidth(), getHeight());
       }
     }
     if(mft) {
@@ -470,7 +470,7 @@ public class Canvas extends JComponent implements Refreshable {
    * @return The current canvas context.
    */
   public KanvasContext getContext() {
-    return cfg.getContext();
+    return cfg.getContext(getWidth(), getHeight());
   }
 
   /**
@@ -481,7 +481,7 @@ public class Canvas extends JComponent implements Refreshable {
    * @return The current head-up display context.
    */
   public KanvasContext getHUDContext() {
-    return cfg.getHUDContext();
+    return cfg.getHUDContext(getWidth(), getHeight());
   }
 
   /** The animator. */
@@ -723,7 +723,28 @@ public class Canvas extends JComponent implements Refreshable {
    * @see #isRestricted()
    */
   public void setRestriction(final Rectangle2D restriction, final AnimationTiming timing) {
-    cfg.setRestriction(restriction, timing, getMargin());
+    setRestriction(new RestrictedArea() {
+
+      @Override
+      public Rectangle2D getTopLevelBounds() {
+        return jkanvas.util.PaintUtil.addPadding(restriction, getMargin());
+      }
+
+      @Override
+      public void beforeLeaving(final Canvas canvas) {
+        // nothing to do
+      }
+
+      @Override
+      public void beforeEntering(final Canvas canvas) {
+        // nothing to do
+      }
+
+    }, timing);
+  }
+
+  public void setRestriction(final RestrictedArea area, final AnimationTiming timing) {
+    cfg.setRestriction(this, area, timing);
   }
 
   /**
