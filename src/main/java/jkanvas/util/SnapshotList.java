@@ -54,6 +54,23 @@ public final class SnapshotList<T> {
   }
 
   /**
+   * Checks whether the object is already in the list. Note that this operation
+   * is very expensive, since a snapshot is created. The check is done by
+   * reference equality.
+   * 
+   * @param elem The object.
+   * @return Whether it is already in the list.
+   */
+  public boolean contains(final T elem) {
+    try (Snapshot<T> s = getSnapshot()) {
+      for(final T el : s) {
+        if(el == elem) return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * A snapshot of the given list. Getter methods may return <code>null</code>
    * pointers to indicate that the element in question has been removed from
    * memory recently. The snapshot is best used as a resource:

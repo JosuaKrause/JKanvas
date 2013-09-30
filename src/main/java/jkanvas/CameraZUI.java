@@ -37,10 +37,10 @@ class CameraZUI implements ZoomableView, Camera, Animated {
    * called by the constructor of the canvas.
    * 
    * @param canvas The canvas.
-   * @param restricted Whether the canvas is restricted.
+   * @param restriction The restriction.
    */
-  CameraZUI(final Canvas canvas, final boolean restricted) {
-    zui = new ZoomableUI(canvas, restricted ? canvas : null);
+  CameraZUI(final Canvas canvas, final RestrictedCanvas restriction) {
+    zui = new ZoomableUI(canvas, restriction);
     this.canvas = canvas;
   }
 
@@ -65,6 +65,15 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   private void stopAnimation() {
     if(view == null) return;
     view.clearAnimation();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The size of the canvas in component coordinates.
+   */
+  public Rectangle2D getVisibleRect() {
+    return canvas.getVisibleRect();
   }
 
   @Override
