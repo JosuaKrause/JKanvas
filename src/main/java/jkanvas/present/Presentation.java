@@ -6,7 +6,9 @@ import jkanvas.Canvas;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.groups.LinearGroup;
 import jkanvas.json.JSONElement;
+import jkanvas.json.JSONKeyBindings;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.painter.SimpleTextHUD;
 
 /**
  * A presentation containing slides.
@@ -135,11 +137,12 @@ public class Presentation extends LinearGroup<Slide> {
    * Creates a presentation from the given JSON element.
    * 
    * @param c The canvas.
+   * @param info An optional info HUD. May be <code>null</code>.
    * @param json The JSON element.
    * @param base The default slide metrics.
    * @return The presentation.
    */
-  public static final Presentation fromJSON(final Canvas c,
+  public static final Presentation fromJSON(final Canvas c, final SimpleTextHUD info,
       final JSONElement json, final SlideMetrics base) {
     json.expectObject();
     final SlideMetrics metric;
@@ -155,6 +158,10 @@ public class Presentation extends LinearGroup<Slide> {
       timing = AnimationTiming.NO_ANIMATION;
     }
     final Presentation res = new Presentation(c, metric.slideSpaceHor(), timing);
+    if(json.hasValue("id")) {
+      res.setIds(json.getString("id", null));
+    }
+    JSONKeyBindings.load(json, c, info);
     if(json.hasValue("slides")) {
       final JSONElement slides = json.getValue("slides");
       slides.expectArray();

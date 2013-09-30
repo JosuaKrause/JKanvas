@@ -1,6 +1,5 @@
 package jkanvas.examples;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,16 +37,8 @@ public final class PresentationMain {
     final JSONElement el = new JSONReader(new InputStreamReader(json, "UTF-8")).get();
     final SlideMetrics m = new DefaultSlideMetrics();
 
-    final Presentation present = Presentation.fromJSON(c, el, m);
-    present.setIds("presentation");
-
+    final Presentation present = Presentation.fromJSON(c, info, el, m);
     p.addPass(present);
-    c.addMessageAction(KeyEvent.VK_LEFT, "presentation#slide:prev");
-    c.addMessageAction(KeyEvent.VK_RIGHT, "presentation#slide:next");
-    c.addMessageAction(KeyEvent.VK_S, "presentation#present:toggle");
-    info.addLine("S: Toggle presentation mode");
-    info.addLine("LEFT: Previous slide");
-    info.addLine("RIGHT: Next slide");
     present.setPresentationMode(true);
   }
 

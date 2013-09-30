@@ -1,4 +1,10 @@
 {
+  "id": "presentation",
+  "keys": [
+    { "key": "left", "msg": "presentation#slide:prev", "help": "Previous slide" },
+    { "key": "right", "msg": "presentation#slide:next", "help": "Next slide" },
+    { "key": "s", "msg": "presentation#present:toggle", "help": "Toggle presentation mode" },
+  ],
   "metric": {"lineHeight": "7%"},
   "slides": [
     {
