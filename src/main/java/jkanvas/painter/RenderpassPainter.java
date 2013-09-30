@@ -548,4 +548,11 @@ public class RenderpassPainter extends PainterAdapter {
     return res;
   }
 
+  @Override
+  public void dispose() {
+    super.dispose();
+    front.clear();
+    back.clear();
+  }
+
 }
