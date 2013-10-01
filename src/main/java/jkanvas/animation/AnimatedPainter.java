@@ -88,6 +88,10 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     }
   }
 
+  public void setFramerate(final long framerate) {
+    animator.setFramerate(framerate);
+  }
+
   @Override
   public void addPass(final Renderpass r) {
     super.addPass(r);
