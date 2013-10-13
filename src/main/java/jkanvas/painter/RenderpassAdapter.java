@@ -3,7 +3,6 @@ package jkanvas.painter;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.Canvas;
@@ -85,12 +84,6 @@ public abstract class RenderpassAdapter implements Renderpass {
   @Override
   public double getOffsetY() {
     return 0;
-  }
-
-  @Override
-  public Rectangle2D getBoundingBox() {
-    // no bbox by default
-    return null;
   }
 
   @Override

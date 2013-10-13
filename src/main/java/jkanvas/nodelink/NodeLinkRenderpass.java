@@ -12,24 +12,31 @@ import java.util.Set;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationList;
+import jkanvas.nodelink.layout.LayoutedView;
 import jkanvas.painter.AbstractRenderpass;
 
 /**
  * Paints a layouted node-link diagram.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of nodes.
  */
 public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRenderpass {
+
+  /** The bounding box. */
+  private final Rectangle2D bbox;
+
+  /** The layout view if any. */
+  private final LayoutedView<T> layout;
+
+  /** The view on the graph. */
+  protected final NodeLinkView<T> view;
 
   /** The node realizer. */
   private NodeRealizer<T> nodeRealizer;
 
   /** The edge realizer. */
   private EdgeRealizer<T> edgeRealizer;
-
-  /** The view on the graph. */
-  protected final NodeLinkView<T> view;
 
   /** The animation list. */
   private AnimationList list;
@@ -39,8 +46,22 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
    * 
    * @param view The view on the graph.
    */
-  public NodeLinkRenderpass(final NodeLinkView<T> view) {
-    this.view = view;
+  public NodeLinkRenderpass(final LayoutedView<T> view) {
+    this.view = Objects.requireNonNull(view);
+    layout = view;
+    bbox = null;
+  }
+
+  /**
+   * Creates a node-link painter.
+   * 
+   * @param view The view on the graph.
+   * @param bbox The bounding box of the render pass.
+   */
+  public NodeLinkRenderpass(final NodeLinkView<T> view, final Rectangle2D bbox) {
+    this.view = Objects.requireNonNull(view);
+    this.bbox = Objects.requireNonNull(bbox);
+    layout = null;
   }
 
   /**
@@ -188,6 +209,11 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
       if(node.inAnimation()) return true;
     }
     return false;
+  }
+
+  @Override
+  public Rectangle2D getBoundingBox() {
+    return layout == null ? bbox : layout.getBoundingBox();
   }
 
 }

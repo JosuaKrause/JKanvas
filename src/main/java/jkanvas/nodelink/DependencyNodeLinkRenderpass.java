@@ -30,8 +30,8 @@ public class DependencyNodeLinkRenderpass extends NodeLinkRenderpass<IndexedPosi
    * @param base The base object.
    * @param allowdPkgs Allowed packages.
    */
-  public DependencyNodeLinkRenderpass(
-      final Canvas canvas, final Object base, final String[] allowdPkgs) {
+  public DependencyNodeLinkRenderpass(final Canvas canvas,
+      final Object base, final String[] allowdPkgs) {
     this(new DependencyNodeLinkView(canvas, base, new ObjectDependencies(allowdPkgs)));
   }
 

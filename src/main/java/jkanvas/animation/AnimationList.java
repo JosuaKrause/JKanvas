@@ -31,23 +31,13 @@ public final class AnimationList implements AnimationToken {
   // ### managing animatable objects ###
 
   /**
-   * Adds an animatable object.
+   * Adds an animatable object. Elements are guaranteed to appear only once in
+   * the list.
    * 
    * @param animate The object.
    */
   public void addAnimated(final Animated animate) {
     animated.add(animate);
-  }
-
-  /**
-   * Checks whether the object is already in the list. Note that this operation
-   * is very expensive.
-   * 
-   * @param animate The animated object.
-   * @return Whether it is already in the list.
-   */
-  public boolean containsAnimated(final Animated animate) {
-    return animated.contains(animate);
   }
 
   // ### performing the animation ###

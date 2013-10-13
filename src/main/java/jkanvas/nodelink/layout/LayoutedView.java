@@ -1,5 +1,7 @@
 package jkanvas.nodelink.layout;
 
+import java.awt.geom.Rectangle2D;
+
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.nodelink.NodeLinkView;
 
@@ -24,5 +26,12 @@ public interface LayoutedView<T extends AnimatedPosition> extends NodeLinkView<T
    * @return The current layouter.
    */
   AbstractLayouter<T> getLayouter();
+
+  /**
+   * Getter.
+   * 
+   * @return The bounding box of the layout.
+   */
+  Rectangle2D getBoundingBox();
 
 }

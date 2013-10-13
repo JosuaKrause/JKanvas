@@ -51,7 +51,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
    * @param view The view on the graph.
    */
   public NodeLinkMain(final SimpleLayoutedView<AnimatedPosition> view) {
-    super(view);
+    super(view, new Rectangle2D.Double(0, 0, 800, 600));
     simpleView = view;
     setIds("nl");
   }
@@ -159,7 +159,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       final Shape shape = n.createNodeShape(p, x, y);
       final Rectangle2D b = shape.getBounds2D();
       if(bbox == null) {
-        bbox = b;
+        bbox = new Rectangle2D.Double();
+        bbox.setFrame(b);
       } else {
         bbox.add(b);
       }

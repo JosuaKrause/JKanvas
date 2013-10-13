@@ -3,7 +3,6 @@ package jkanvas.painter;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import javax.swing.SwingUtilities;
 
@@ -15,7 +14,7 @@ import jkanvas.KanvasPainter;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class PainterAdapter implements KanvasPainter {
+public abstract class PainterAdapter implements KanvasPainter {
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
@@ -108,11 +107,6 @@ public class PainterAdapter implements KanvasPainter {
   public boolean moveMouse(final Point2D cur) {
     // nothing to do
     return false;
-  }
-
-  @Override
-  public Rectangle2D getBoundingBox() {
-    return null;
   }
 
   @Override

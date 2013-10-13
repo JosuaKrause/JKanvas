@@ -58,7 +58,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
      */
     public RenderpassPosition(final T pass, final AnimationList list) {
       super(new Point2D.Double(pass.getOffsetX(), pass.getOffsetY()));
-      bbox = pass.getBoundingBox();
+      bbox = Objects.requireNonNull(pass.getBoundingBox());
       this.pass = pass;
       list.addAnimated(this);
       pass.setAnimationList(list);
@@ -100,7 +100,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     public boolean checkBBoxChange() {
       final Rectangle2D oldBBox = bbox;
       bbox = RenderpassPainter.getPassBoundingBox(pass);
-      if(bbox == null || oldBBox == null) return bbox != oldBBox;
       return bbox.getWidth() != oldBBox.getWidth()
           || bbox.getHeight() != oldBBox.getHeight();
     }
@@ -124,7 +123,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
      */
     public Rectangle2D getPredictBBox() {
       final Rectangle2D rect = pass.getBoundingBox();
-      if(rect == null) return null;
       final Point2D pred = getPredict();
       return new Rectangle2D.Double(rect.getX() + pred.getX(),
           rect.getY() + pred.getY(), rect.getWidth(), rect.getHeight());
@@ -564,13 +562,11 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
         changed = true;
       }
       final Rectangle2D bbox = p.getPassBBox();
-      if(bbox != null && !view.intersects(bbox)) {
+      if(!view.intersects(bbox)) {
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
-      if(bbox != null) {
-        g.setClip(bbox);
-      }
+      g.clip(bbox);
       final double dx = r.getOffsetX();
       final double dy = r.getOffsetY();
       g.translate(dx, dy);
@@ -594,7 +590,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
           changed = true;
         }
         final Rectangle2D bbox = rp.getPassBBox();
-        if(bbox == null || !view.intersects(bbox)) {
+        if(!view.intersects(bbox)) {
           continue;
         }
         g.fill(bbox);
@@ -626,7 +622,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       if(r.click(pos, e)) return true;
@@ -644,7 +640,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       if(r.doubleClick(pos, e)) return true;
@@ -663,7 +659,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       final String tooltip = r.getTooltip(pos);
@@ -703,7 +699,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       return r;
@@ -732,7 +728,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     if(!r.isVisible()) return false;
     final Rectangle2D bbox = r.getBoundingBox();
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(r, position);
-    if(bbox != null && !bbox.contains(pos)) return false;
+    if(!bbox.contains(pos)) return false;
     if(!r.acceptDrag(pos, e)) return false;
     start = pos;
     dragging = r;
@@ -776,12 +772,16 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   public Rectangle2D getBoundingBox() {
     ensureLayout();
     boolean change = false;
-    Rectangle2D res = RenderpassPainter.getBoundingBox(nlFront);
+    final Rectangle2D res = new Rectangle2D.Double();
+    final Rectangle2D front = RenderpassPainter.getBoundingBox(nlFront);
     final Rectangle2D other = RenderpassPainter.getBoundingBox(nlBack);
-    if(res == null) {
-      res = other;
+    if(front != null) {
+      res.setFrame(front);
+      if(other != null) {
+        res.add(other);
+      }
     } else if(other != null) {
-      res.add(other);
+      res.setFrame(other);
     }
     for(final RenderpassPosition<T> p : members) {
       if(!p.pass.isVisible()) {
@@ -790,21 +790,17 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       if(p.checkBBoxChange()) {
         change = true;
       }
-      final Rectangle2D bbox = p.getPassBBox();
-      if(bbox == null) {
-        continue;
-      }
-      if(res == null) {
-        res = new Rectangle2D.Double(bbox.getX(), bbox.getY(),
-            bbox.getWidth(), bbox.getHeight());
+      final Rectangle2D b = p.getPassBBox();
+      if(res.isEmpty()) {
+        res.setFrame(b);
       } else {
-        res.add(bbox);
+        res.add(b);
       }
     }
     if(change) {
       invalidate();
     }
-    return res == null ? new Rectangle2D.Double() : res;
+    return res;
   }
 
   @Override

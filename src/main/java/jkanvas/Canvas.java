@@ -55,6 +55,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /** Disables render pass caching. */
   public static boolean DISABLE_CACHING;
+
   /** The current view configuration for the canvas. */
   protected ViewConfiguration cfg;
 
@@ -509,9 +510,7 @@ public class Canvas extends JComponent implements Refreshable {
     if(animator != null) {
       final AnimationList al = animator.getAnimationList();
       final CameraZUI zui = cfg.getZUI();
-      if(!al.containsAnimated(zui)) {
-        al.addAnimated(zui);
-      }
+      al.addAnimated(zui);
       barrier = new AnimationBarrier(this);
       animator.setAnimationBarrier(barrier, this);
     }
@@ -573,9 +572,7 @@ public class Canvas extends JComponent implements Refreshable {
     if(animator != null) {
       final AnimationList al = animator.getAnimationList();
       final CameraZUI zui = cfg.getZUI();
-      if(!al.containsAnimated(zui)) {
-        al.addAnimated(zui);
-      }
+      al.addAnimated(zui);
     }
   }
 
@@ -588,25 +585,13 @@ public class Canvas extends JComponent implements Refreshable {
     return cfg;
   }
 
-  /**
-   * Resets the viewport to a scaling of <code>1.0</code> and
-   * <code>(0, 0)</code> being in the center of the component when
-   * {@link KanvasPainter#getBoundingBox()} returns <code>null</code> and zooms
-   * to fit the bounding box if {@link KanvasPainter#getBoundingBox()} returns a
-   * proper bounding box.
-   */
+  /** Zooms to fit the bounding box. */
   public void reset() {
-    final Rectangle2D bbox = cfg.getPainter().getBoundingBox();
-    if(bbox == null) {
-      cfg.getZUI().resetView(getVisibleRect());
-    } else {
-      reset(bbox);
-    }
+    reset(cfg.getPainter().getBoundingBox());
   }
 
   /**
-   * Resets the viewport to fit the bounding box if
-   * {@link KanvasPainter#getBoundingBox()} returns a proper bounding box.
+   * Resets the viewport to fit the bounding box.
    * 
    * @param timing The timing.
    * @param onFinish The action to perform when the viewport was set or when the
@@ -616,10 +601,6 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public boolean reset(final AnimationTiming timing, final AnimationAction onFinish) {
     final Rectangle2D bbox = cfg.getPainter().getBoundingBox();
-    if(bbox == null) {
-      scheduleAction(onFinish, timing);
-      return false;
-    }
     cfg.getZUI().toView(bbox, timing, onFinish, true);
     return true;
   }
@@ -663,12 +644,9 @@ public class Canvas extends JComponent implements Refreshable {
    * @param margin The margin.
    */
   public void reset(final RectangularShape bbox, final double margin) {
-    if(bbox == null) {
-      reset();
-    } else {
-      final Rectangle2D rect = getVisibleRect();
-      cfg.getZUI().showRectangle(bbox, rect, margin, true);
-    }
+    Objects.requireNonNull(bbox);
+    final Rectangle2D rect = getVisibleRect();
+    cfg.getZUI().showRectangle(bbox, rect, margin, true);
   }
 
   /**

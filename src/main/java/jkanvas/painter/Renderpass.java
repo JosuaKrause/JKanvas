@@ -38,7 +38,7 @@ public interface Renderpass extends KanvasInteraction {
    * Getter.
    * 
    * @return An optional bounding box in canvas coordinates. This method does
-   *         <em>not</em> have to account for the offset.
+   *         <em>not</em> account for the offset.
    */
   @Override
   Rectangle2D getBoundingBox();

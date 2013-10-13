@@ -86,7 +86,7 @@ public abstract class CachedRenderpass extends RenderpassAdapter {
     cc.doTranslate(-bbox.getX(), -bbox.getY());
     g.scale(s, s);
     cc.doScale(s);
-    g.setClip(bbox);
+    g.clip(bbox);
     doDraw(g, cc);
     g.dispose();
     cache = img;

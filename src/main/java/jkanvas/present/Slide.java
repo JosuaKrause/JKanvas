@@ -175,7 +175,7 @@ public class Slide extends AbstractRenderpass {
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
-      g.setClip(bbox);
+      g.clip(bbox);
       final double dx = off.getX();
       final double dy = off.getY();
       g.translate(dx, dy);

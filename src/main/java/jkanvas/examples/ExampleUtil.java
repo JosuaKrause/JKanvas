@@ -13,6 +13,7 @@ import javax.swing.WindowConstants;
 import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
+import jkanvas.animation.AnimationAction;
 import jkanvas.painter.FrameRateHUD;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
@@ -152,7 +153,14 @@ public final class ExampleUtil {
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
     if(reset) {
-      c.reset();
+      c.scheduleAction(new AnimationAction() {
+
+        @Override
+        public void animationFinished() {
+          c.reset();
+        }
+
+      }, 0);
     }
     return info;
   }

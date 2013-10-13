@@ -90,6 +90,11 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     }
   }
 
+  /**
+   * Setter.
+   * 
+   * @param framerate Sets the framerate of the animator.
+   */
   public void setFramerate(final long framerate) {
     animator.setFramerate(framerate);
   }

@@ -42,7 +42,7 @@ public final class SnapshotList<T> {
   private int snapshots;
 
   /**
-   * Adds an object.
+   * Adds an object. Elements are guaranteed to appear only once in the list.
    * 
    * @param elem The object. Must be non-<code>null</code>.
    */
@@ -51,23 +51,6 @@ public final class SnapshotList<T> {
     synchronized(toBeAdded) {
       toBeAdded.add(elem);
     }
-  }
-
-  /**
-   * Checks whether the object is already in the list. Note that this operation
-   * is very expensive, since a snapshot is created. The check is done by
-   * reference equality.
-   * 
-   * @param elem The object.
-   * @return Whether it is already in the list.
-   */
-  public boolean contains(final T elem) {
-    try (Snapshot<T> s = getSnapshot()) {
-      for(final T el : s) {
-        if(el == elem) return true;
-      }
-    }
-    return false;
   }
 
   /**

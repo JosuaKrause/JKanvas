@@ -91,13 +91,11 @@ public class RenderpassPainter extends PainterAdapter {
         continue;
       }
       final Rectangle2D bbox = getPassBoundingBox(r);
-      if(bbox != null && !view.intersects(bbox)) {
+      if(!view.intersects(bbox)) {
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
-      if(bbox != null) {
-        g.setClip(bbox);
-      }
+      g.clip(bbox);
       final double dx = r.getOffsetX();
       final double dy = r.getOffsetY();
       g.translate(dx, dy);
@@ -113,7 +111,7 @@ public class RenderpassPainter extends PainterAdapter {
           continue;
         }
         final Rectangle2D bbox = getPassBoundingBox(r);
-        if(bbox == null || !view.intersects(bbox)) {
+        if(!view.intersects(bbox)) {
           continue;
         }
         g.fill(bbox);
@@ -144,7 +142,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, p);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       if(r.click(pos, e)) return true;
@@ -174,7 +172,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, p);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       if(r.doubleClick(pos, e)) return true;
@@ -203,7 +201,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, p);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       final String tooltip = r.getTooltip(pos);
@@ -253,7 +251,7 @@ public class RenderpassPainter extends PainterAdapter {
       }
       final Rectangle2D bbox = r.getBoundingBox();
       final Point2D pos = getPositionFromCanvas(r, p);
-      if(bbox != null && !bbox.contains(pos)) {
+      if(!bbox.contains(pos)) {
         continue;
       }
       if(r.acceptDrag(pos, e)) {
@@ -409,7 +407,6 @@ public class RenderpassPainter extends PainterAdapter {
    */
   public static final Rectangle2D getPassBoundingBox(final Renderpass r) {
     final Rectangle2D rect = r.getBoundingBox();
-    if(rect == null) return null;
     return new Rectangle2D.Double(rect.getX() + r.getOffsetX(),
         rect.getY() + r.getOffsetY(), rect.getWidth(), rect.getHeight());
   }
@@ -418,8 +415,8 @@ public class RenderpassPainter extends PainterAdapter {
    * Calculates the joined bounding boxes of the given render passes.
    * 
    * @param passes The render passes.
-   * @return The joined bounding box or <code>null</code> if no bounding box was
-   *         present.
+   * @return The joined bounding box or <code>null</code> if no render pass was
+   *         in the iterator.
    * @see #getBoundingBox()
    */
   public static final Rectangle2D getBoundingBox(final Iterable<Renderpass> passes) {
@@ -429,11 +426,9 @@ public class RenderpassPainter extends PainterAdapter {
         continue;
       }
       final Rectangle2D b = getPassBoundingBox(r);
-      if(b == null) {
-        continue;
-      }
       if(bbox == null) {
-        bbox = b;
+        bbox = new Rectangle2D.Double();
+        bbox.setFrame(b);
       } else {
         bbox.add(b);
       }
@@ -443,7 +438,8 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final Rectangle2D getBoundingBox() {
-    return getBoundingBox(back);
+    final Rectangle2D box = getBoundingBox(back);
+    return box != null ? box : new Rectangle2D.Double();
   }
 
   @Override
@@ -504,9 +500,7 @@ public class RenderpassPainter extends PainterAdapter {
    *         coordinates.
    */
   public static final Rectangle2D getTopLevelBounds(final Renderpass pass) {
-    final Rectangle2D rect = pass.getBoundingBox();
-    if(rect == null) return null;
-    return getTopLevelBounds(pass, rect);
+    return getTopLevelBounds(pass, pass.getBoundingBox());
   }
 
   /**
