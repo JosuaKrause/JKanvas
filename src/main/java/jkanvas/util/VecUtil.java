@@ -104,10 +104,16 @@ public final class VecUtil {
    */
   public static Point2D interpolateBezier(
       final Point2D a, final Point2D b, final Point2D c, final double t) {
-    // TODO optimize more
-    final Point2D a1 = interpolate(a, b, t);
-    final Point2D b1 = interpolate(b, c, t);
-    return interpolate(a1, b1, t);
+    // (a - 2b + c) t^2 + (-a + b) 2t + a
+    final double tsq = t * t;
+    final double t2 = 2 * t;
+    final double a0 = a.getX();
+    final double b0 = b.getX();
+    final double x = tsq * (a0 - 2 * b0 + c.getX()) + t2 * (b0 - a0) + a0;
+    final double a1 = a.getY();
+    final double b1 = b.getY();
+    final double y = tsq * (a1 - 2 * b1 + c.getY()) + t2 * (b1 - a1) + a1;
+    return new Point2D.Double(x, y);
   }
 
   /**
