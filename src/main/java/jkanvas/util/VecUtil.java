@@ -93,6 +93,24 @@ public final class VecUtil {
   }
 
   /**
+   * Interpolates between three points defining a Bézier curve.
+   * 
+   * @param a The start point.
+   * @param b The control point.
+   * @param c The end point.
+   * @param t The interpolation progress starting at 0 and going to 1.
+   * @return The interpolated point. Note that the movement speed of the point
+   *         is not uniform.
+   */
+  public static Point2D interpolateBezier(
+      final Point2D a, final Point2D b, final Point2D c, final double t) {
+    // TODO optimize more
+    final Point2D a1 = interpolate(a, b, t);
+    final Point2D b1 = interpolate(b, c, t);
+    return interpolate(a1, b1, t);
+  }
+
+  /**
    * Generates a vector that forms an angle of {@code -90} degrees with the
    * given vector. A straight vector in positive x direction will lead to a
    * straight vector pointing in positive y direction. Note that positive y
