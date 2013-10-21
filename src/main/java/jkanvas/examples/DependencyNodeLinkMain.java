@@ -27,7 +27,7 @@ public final class DependencyNodeLinkMain {
     // configure Canvas
     final AnimatedPainter p = new AnimatedPainter();
     final Canvas c = new Canvas(p, w, h);
-    ExampleUtil.setupCanvas("Node-Link", c, p, true, true, false);
+    ExampleUtil.setupCanvas("Node-Link", c, p, true, true, false, false);
     final DependencyNodeLinkRenderpass pass =
         new DependencyNodeLinkRenderpass(c, start == null ? c : start, pkgs);
     p.addPass(pass);

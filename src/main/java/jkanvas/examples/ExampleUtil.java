@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -42,20 +43,13 @@ public final class ExampleUtil {
    * @param pause Whether to give the option to pause animations. This is only
    *          possible when the render pass painter can animation.
    * @param reset Whether to give the option to reset the view.
+   * @param frameScreenshot Whether to take screenshots from the frame or the
+   *          canvas.
    * @return The info HUD to enable more actions.
    */
   public static SimpleTextHUD setupCanvas(final String name, final Canvas c,
-      final RenderpassPainter p, final boolean fps, final boolean pause,
-      final boolean reset) {
-    c.setBackground(Color.WHITE);
-    if(p instanceof AnimatedPainter) {
-      final AnimatedPainter ap = (AnimatedPainter) p;
-      ap.addRefreshable(c);
-      c.setAnimator(ap);
-    }
-    if(fps) {
-      c.setFrameRateDisplayer(new FrameRateHUD());
-    }
+      final RenderpassPainter p, final boolean fps,
+      final boolean pause, final boolean reset, final boolean frameScreenshot) {
     final JFrame frame = new JFrame(name) {
 
       @Override
@@ -65,6 +59,36 @@ public final class ExampleUtil {
       }
 
     };
+    return setupCanvas(frame, c, p, fps, pause, reset, frameScreenshot);
+  }
+
+  /**
+   * Sets up the canvas with standard actions.
+   * 
+   * @param frame The frame for the canvas.
+   * @param c The canvas.
+   * @param p The render pass painter.
+   * @param fps Whether to give the option to show fps.
+   * @param pause Whether to give the option to pause animations. This is only
+   *          possible when the render pass painter can animation.
+   * @param reset Whether to give the option to reset the view.
+   * @param frameScreenshot Whether to take screenshots from the frame or the
+   *          canvas.
+   * @return The info HUD to enable more actions.
+   */
+  public static SimpleTextHUD setupCanvas(final JFrame frame, final Canvas c,
+      final RenderpassPainter p, final boolean fps,
+      final boolean pause, final boolean reset, final boolean frameScreenshot) {
+    Objects.requireNonNull(frame);
+    c.setBackground(Color.WHITE);
+    if(p instanceof AnimatedPainter) {
+      final AnimatedPainter ap = (AnimatedPainter) p;
+      ap.addRefreshable(c);
+      c.setAnimator(ap);
+    }
+    if(fps) {
+      c.setFrameRateDisplayer(new FrameRateHUD());
+    }
     // add actions
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {
 
@@ -88,11 +112,15 @@ public final class ExampleUtil {
 
       });
     }
+    final AnimatedPainter ap;
+    if(p instanceof AnimatedPainter) {
+      ap = (AnimatedPainter) p;
+    } else {
+      ap = null;
+    }
     if(pause) {
       final SimpleTextHUD pauseHUD = new SimpleTextHUD(TextHUD.LEFT, TextHUD.TOP);
-      if(!(p instanceof AnimatedPainter)) throw new AssertionError(
-          "Need animated painter to stop animation!");
-      final AnimatedPainter ap = (AnimatedPainter) p;
+      if(ap == null) throw new AssertionError("Need animated painter to stop animation!");
       pauseHUD.addLine("paused");
       pauseHUD.setVisible(false);
       p.addHUDPass(pauseHUD);
@@ -112,8 +140,19 @@ public final class ExampleUtil {
       @Override
       public void actionPerformed(final ActionEvent ae) {
         try {
-          final File png = Screenshot.savePNG(new File("pics"), "nodelink", c);
+          final boolean before;
+          if(ap != null) {
+            before = ap.isStopped();
+            ap.setStopped(true);
+          } else {
+            before = false;
+          }
+          final File png = Screenshot.savePNG(new File("pics"), "nodelink",
+              frameScreenshot ? frame.getRootPane() : c);
           System.out.println("Saved screenshot in " + png);
+          if(ap != null) {
+            ap.setStopped(before);
+          }
         } catch(final IOException e) {
           e.printStackTrace();
         }

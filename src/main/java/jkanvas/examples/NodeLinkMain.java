@@ -228,7 +228,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     p.addPass(r);
     // configure Canvas
     final SimpleTextHUD info = ExampleUtil.setupCanvas("Node-Link", c, p,
-        true, true, true);
+        true, true, true, false);
     c.addMessageAction(KeyEvent.VK_1, "nl#random");
     c.addMessageAction(KeyEvent.VK_2, "nl#circle");
     c.addMessageAction(KeyEvent.VK_3, "nl#force");

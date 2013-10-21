@@ -31,7 +31,7 @@ public final class PresentationMain {
     final AnimatedPainter p = new AnimatedPainter();
     final Canvas c = new Canvas(p, true, 1024, 768);
     final SimpleTextHUD info = ExampleUtil.setupCanvas("Presentation", c, p,
-        true, true, true);
+        true, true, true, false);
 
     final InputStream json = ResourceLoader.getResourceLoader().loadResource("test.json");
     final JSONElement el = new JSONReader(new InputStreamReader(json, "UTF-8")).get();

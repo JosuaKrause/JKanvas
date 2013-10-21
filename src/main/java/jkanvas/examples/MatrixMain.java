@@ -198,7 +198,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     manager.addRefreshable(c);
     // configure the Canvas
     // c.setMargin(40);
-    ExampleUtil.setupCanvas("Matrix", c, p, true, false, true);
+    ExampleUtil.setupCanvas("Matrix", c, p, true, false, true, false);
     c.setRestriction(p.getBoundingBox(), AnimationTiming.NO_ANIMATION);
   }
 
