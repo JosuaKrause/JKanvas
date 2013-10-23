@@ -15,14 +15,14 @@ import java.util.Set;
  * present in this snapshot. It is advised to only use one snapshot at a time.
  * Elements can not be explicitly removed but will cease to exist when not
  * referenced by some other source. In turn getting elements may result in
- * <code>null</code> pointers to indicate that this element no longer exists. To
- * reduce the number of <code>null</code> pointers garbage collection is
- * performed when needed.
+ * <code>null</code> pointers to indicate that this element no longer exists or
+ * is invalid. To reduce the number of <code>null</code> pointers garbage
+ * collection is performed when needed.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The element type.
  */
-public final class SnapshotList<T> {
+public class SnapshotList<T> {
 
   /** All registered objects. */
   private final List<WeakReference<T>> list = new ArrayList<>();
@@ -46,11 +46,23 @@ public final class SnapshotList<T> {
    * 
    * @param elem The object. Must be non-<code>null</code>.
    */
-  public void add(final T elem) {
+  public final void add(final T elem) {
     Objects.requireNonNull(elem);
     synchronized(toBeAdded) {
       toBeAdded.add(elem);
     }
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param el The element to check or <code>null</code> if it does not exist
+   *          anymore.
+   * @return Whether the element is still valid. If the element was
+   *         <code>null</code> it is not valid anymore.
+   */
+  protected boolean isValid(final T el) {
+    return el != null;
   }
 
   /**
@@ -89,7 +101,7 @@ public final class SnapshotList<T> {
     }
 
     /** Ensures that the snapshot is still open. */
-    private void ensureOpen() {
+    protected void ensureOpen() {
       if(list == null) throw new IllegalStateException("snapshot already closed");
     }
 
@@ -103,11 +115,14 @@ public final class SnapshotList<T> {
      */
     public T get(final int index) {
       ensureOpen();
-      final T res = content.get(index).get();
-      if(res == null) {
-        hasNull = true;
+      final WeakReference<T> ref = content.get(index);
+      final T res = ref.get();
+      if(list.isValid(res)) return res;
+      hasNull = true;
+      if(res != null) {
+        ref.clear();
       }
-      return res;
+      return null;
     }
 
     /**
@@ -124,6 +139,7 @@ public final class SnapshotList<T> {
     public Iterator<T> iterator() {
       ensureOpen();
       final List<WeakReference<T>> content = this.content;
+      final SnapshotList<T> list = this.list;
       return new Iterator<T>() {
 
         private int pos;
@@ -135,12 +151,16 @@ public final class SnapshotList<T> {
 
         @Override
         public T next() {
+          ensureOpen();
           if(!hasNext()) throw new NoSuchElementException();
-          final T res = content.get(pos++).get();
-          if(res == null) {
-            hasNull = true;
+          final WeakReference<T> ref = content.get(pos++);
+          final T res = ref.get();
+          if(list.isValid(res)) return res;
+          hasNull = true;
+          if(res != null) {
+            ref.clear();
           }
-          return res;
+          return null;
         }
 
         @Override
@@ -165,7 +185,7 @@ public final class SnapshotList<T> {
    * 
    * @param gc Whether to also remove all <code>null</code> pointers.
    */
-  private void addAll(final boolean gc) {
+  private final void addAll(final boolean gc) {
     // must be in synchronization
     if(gc) {
       int i = 0;
@@ -204,7 +224,7 @@ public final class SnapshotList<T> {
   }
 
   /** Starts a snapshot. */
-  protected void startSnapshot() {
+  protected final void startSnapshot() {
     synchronized(toBeAdded) {
       if(snapshots <= 0) {
         addAll(false);
@@ -219,7 +239,7 @@ public final class SnapshotList<T> {
    * @param gc Whether to remove all <code>null</code> pointers when this
    *          snapshot was the last.
    */
-  protected void endSnapshot(final boolean gc) {
+  protected final void endSnapshot(final boolean gc) {
     synchronized(toBeAdded) {
       --snapshots;
       if(snapshots > 0) return;
@@ -240,7 +260,7 @@ public final class SnapshotList<T> {
    * 
    * @return Creates a snapshot.
    */
-  public Snapshot<T> getSnapshot() {
+  public final Snapshot<T> getSnapshot() {
     return new Snapshot<>(this, list);
   }
 
@@ -249,7 +269,7 @@ public final class SnapshotList<T> {
    * 
    * @return The number of currently active snapshots.
    */
-  public int activeSnapshots() {
+  public final int activeSnapshots() {
     return snapshots;
   }
 
