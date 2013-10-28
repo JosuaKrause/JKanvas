@@ -1,8 +1,6 @@
 package jkanvas.examples;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
@@ -12,7 +10,7 @@ import jkanvas.painter.SimpleTextHUD;
 import jkanvas.present.DefaultSlideMetrics;
 import jkanvas.present.Presentation;
 import jkanvas.present.SlideMetrics;
-import jkanvas.util.ResourceLoader;
+import jkanvas.util.Resource;
 
 /**
  * A short example showing the presentation capabilities of Kanvas.
@@ -33,8 +31,7 @@ public final class PresentationMain {
     final SimpleTextHUD info = ExampleUtil.setupCanvas("Presentation", c, p,
         true, true, true, false);
 
-    final InputStream json = ResourceLoader.getResourceLoader().loadResource("test.json");
-    final JSONElement el = new JSONReader(new InputStreamReader(json, "UTF-8")).get();
+    final JSONElement el = new JSONReader(new Resource("test.json").reader()).get();
     final SlideMetrics m = new DefaultSlideMetrics();
 
     final Presentation present = Presentation.fromJSON(c, info, el, m);

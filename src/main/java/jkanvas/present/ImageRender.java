@@ -12,7 +12,7 @@ import jkanvas.KanvasContext;
 import jkanvas.json.JSONElement;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
-import jkanvas.util.ResourceLoader;
+import jkanvas.util.Resource;
 
 /**
  * An image slide object.
@@ -121,8 +121,8 @@ public class ImageRender extends SlideObject {
     final String src = el.getString("src", null);
     final int w = el.getInt("width", -1);
     final int h = el.getInt("height", -1);
-    final ResourceLoader rl = ResourceLoader.getResourceLoader();
-    final BufferedImage img = ImageIO.read(rl.loadResource(src));
+    final Resource r = Resource.getFor(src);
+    final BufferedImage img = ImageIO.read(r.stream());
     return new ImageRender(img, slide, vAlign, hAlign, w, h);
   }
 
