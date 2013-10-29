@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
-import jkanvas.json.JSONElement;
-import jkanvas.json.JSONLoader;
+import jkanvas.io.json.JSONElement;
+import jkanvas.io.json.JSONLoader;
 import jkanvas.painter.AbstractRenderpass;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;

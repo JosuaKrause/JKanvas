@@ -1,4 +1,4 @@
-package jkanvas.json;
+package jkanvas.io.json;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package jkanvas.json;
+package jkanvas.io.json;
 
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;

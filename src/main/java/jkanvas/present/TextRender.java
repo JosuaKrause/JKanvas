@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
-import jkanvas.json.JSONElement;
+import jkanvas.io.json.JSONElement;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 

@@ -5,8 +5,8 @@ import java.awt.geom.Rectangle2D;
 import jkanvas.Canvas;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.groups.LinearGroup;
-import jkanvas.json.JSONElement;
-import jkanvas.json.JSONKeyBindings;
+import jkanvas.io.json.JSONElement;
+import jkanvas.io.json.JSONKeyBindings;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
 

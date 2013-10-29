@@ -3,7 +3,7 @@ package jkanvas.present;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import jkanvas.json.JSONElement;
+import jkanvas.io.json.JSONElement;
 
 /**
  * Metrics for slides.

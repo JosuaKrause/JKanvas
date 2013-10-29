@@ -1,6 +1,6 @@
 package jkanvas.present;
 
-import jkanvas.json.JSONElement;
+import jkanvas.io.json.JSONElement;
 
 /**
  * JSON specified slide metrics.

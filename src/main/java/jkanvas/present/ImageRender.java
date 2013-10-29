@@ -9,7 +9,7 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 
 import jkanvas.KanvasContext;
-import jkanvas.json.JSONElement;
+import jkanvas.io.json.JSONElement;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 import jkanvas.util.Resource;

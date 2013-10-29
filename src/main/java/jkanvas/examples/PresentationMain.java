@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
-import jkanvas.json.JSONElement;
-import jkanvas.json.JSONReader;
+import jkanvas.io.json.JSONElement;
+import jkanvas.io.json.JSONReader;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.present.DefaultSlideMetrics;
 import jkanvas.present.Presentation;

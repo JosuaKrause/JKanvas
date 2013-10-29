@@ -1,4 +1,4 @@
-package jkanvas.json;
+package jkanvas.io.json;
 
 import java.util.ArrayList;
 import java.util.HashMap;

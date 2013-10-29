@@ -1,4 +1,4 @@
-package jkanvas.json;
+package jkanvas.io.json;
 
 import java.io.IOException;
 import java.io.PushbackReader;
@@ -297,4 +297,5 @@ public class JSONReader {
     System.out.println("idempotence:");
     System.out.println(new JSONReader(new StringReader(out)).get());
   }
+
 }

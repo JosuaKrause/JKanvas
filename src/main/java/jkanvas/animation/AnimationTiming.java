@@ -2,7 +2,7 @@ package jkanvas.animation;
 
 import java.util.Objects;
 
-import jkanvas.json.JSONElement;
+import jkanvas.io.json.JSONElement;
 import jkanvas.util.Interpolator;
 
 /**
