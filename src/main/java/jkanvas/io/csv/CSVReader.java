@@ -37,6 +37,9 @@ public class CSVReader {
     /** Whether row names are stored. */
     private final boolean hasRowNames;
 
+    /** Whether to trim fields. */
+    private final boolean trim;
+
     /** The current column. */
     private int col;
 
@@ -51,13 +54,25 @@ public class CSVReader {
      * 
      * @param hasColNames Whether column names are present.
      * @param hasRowNames Whether row names are present.
+     * @param trimFields Whether to trim fields.
      */
-    public Context(final boolean hasColNames, final boolean hasRowNames) {
+    public Context(final boolean hasColNames, final boolean hasRowNames,
+        final boolean trimFields) {
       this.hasRowNames = hasRowNames;
+      trim = trimFields;
       colNames = hasColNames ? new LinkedList<String>() : null;
       rowName = null;
       row = hasColNames ? -1 : 0;
       col = hasRowNames ? -1 : 0;
+    }
+
+    /**
+     * Getter.
+     * 
+     * @return Whether to trim fields.
+     */
+    public boolean trimFields() {
+      return trim;
     }
 
     /**
@@ -121,7 +136,7 @@ public class CSVReader {
           + colName() + ")";
     }
 
-  }
+  } // Context
 
   /** The CSV delimiter. */
   private final char delimiter;
@@ -134,6 +149,9 @@ public class CSVReader {
 
   /** Whether row titles are used. */
   private boolean rowTitle;
+
+  /** Whether fields are trimmed. */
+  private boolean trimFields;
 
   /** The currently installed handler. */
   private CSVHandler handler;
@@ -167,8 +185,24 @@ public class CSVReader {
    */
   public CSVReader(final char delimiter, final char string,
       final boolean columnTitles, final boolean rowTitles) {
+    this(delimiter, string, columnTitles, rowTitles, false);
+  }
+
+  /**
+   * Creates a csv reader.
+   * 
+   * @param delimiter The cell delimiter.
+   * @param string The string delimiter.
+   * @param columnTitles Whether to interpret the first row as column titles.
+   * @param rowTitles Wheter to interpret the first column of each row as row
+   *          title.
+   * @param trimFields Whether fields are trimmed.
+   */
+  public CSVReader(final char delimiter, final char string,
+      final boolean columnTitles, final boolean rowTitles, final boolean trimFields) {
     this.delimiter = delimiter;
     this.string = string;
+    this.trimFields = trimFields;
     rowTitle = rowTitles;
     colTitle = columnTitles;
     handler = null;
@@ -332,7 +366,7 @@ public class CSVReader {
     if(handler == null) throw new IllegalStateException(
         "handler needs to be set first");
     final CSVHandler hnd = handler;
-    final Context ctx = new Context(colTitle, rowTitle);
+    final Context ctx = new Context(colTitle, rowTitle, trimFields);
     hnd.start(ctx);
     char ignore = 0x0;
     char line = 0x0;
@@ -407,13 +441,19 @@ public class CSVReader {
    * @param ctx The context.
    */
   private static void handle(final CSVHandler hnd, final String content, final Context ctx) {
+    final String dat;
+    if(ctx.trimFields()) {
+      dat = content != null ? content.trim() : null;
+    } else {
+      dat = content;
+    }
     switch(ctx.col()) {
       case -1:
         if(ctx.row() < 0) {
           break;
         }
-        ctx.setRowName(content);
-        hnd.rowTitle(ctx, content);
+        ctx.setRowName(dat);
+        hnd.rowTitle(ctx, dat);
         break;
       case 0:
         if(ctx.row() >= 0) {
@@ -423,11 +463,11 @@ public class CSVReader {
         //$FALL-THROUGH$
       default:
         if(ctx.row() < 0) {
-          ctx.addColName(content);
-          hnd.colTitle(ctx, content);
+          ctx.addColName(dat);
+          hnd.colTitle(ctx, dat);
           break;
         }
-        hnd.cell(ctx, content);
+        hnd.cell(ctx, dat);
         break;
     }
     ctx.nextCell();
@@ -485,6 +525,24 @@ public class CSVReader {
    */
   public boolean readRowTitles() {
     return rowTitle;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param trimFields Whether to trim fields.
+   */
+  public void setTrimFields(final boolean trimFields) {
+    this.trimFields = trimFields;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether to trim fields.
+   */
+  public boolean trimFields() {
+    return trimFields;
   }
 
 }

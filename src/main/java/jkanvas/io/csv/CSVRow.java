@@ -1,7 +1,9 @@
 package jkanvas.io.csv;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A CSV row.
@@ -98,6 +100,15 @@ public final class CSVRow {
    */
   public String get(final String name) {
     return map.get(name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return A set of available names.
+   */
+  public Set<String> names() {
+    return Collections.unmodifiableSet(map.keySet());
   }
 
 }
