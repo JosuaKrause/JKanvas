@@ -305,6 +305,7 @@ public class CSVReader {
             try {
               reader.setHandler(h);
               reader.read(r);
+              r.close();
             } catch(final IOException e) {
               e.printStackTrace();
             } finally {
@@ -332,6 +333,7 @@ public class CSVReader {
             }
           } catch(final InterruptedException e) {
             Thread.currentThread().interrupt();
+            return;
           }
         }
       }

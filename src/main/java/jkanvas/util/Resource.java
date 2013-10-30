@@ -2,10 +2,12 @@ package jkanvas.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
@@ -321,6 +323,17 @@ public class Resource {
     if(!hasContent()) return null;
     final URL url = getURL();
     return charsetReader(url.openStream());
+  }
+
+  /**
+   * Creates an output stream if possible.
+   * 
+   * @return output stream or <code>null</code> if not possible.
+   * @throws FileNotFoundException I/O Exception.
+   */
+  public OutputStream outStream() throws FileNotFoundException {
+    if(!hasDirectFile()) return null;
+    return new FileOutputStream(directFile());
   }
 
   /**
