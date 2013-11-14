@@ -73,6 +73,17 @@ public class Resource {
   }
 
   /**
+   * Creates a resource for the given file.
+   * 
+   * @param file The file.
+   * @return The resource as direct file.
+   * @throws IOException I/O Exception.
+   */
+  public static Resource getFor(final File file) throws IOException {
+    return new Resource(null, file.getCanonicalPath(), UTF8, null);
+  }
+
+  /**
    * Creates a system resource (located in the jar).
    * 
    * @param name The name of the system resource.
