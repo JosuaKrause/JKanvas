@@ -20,6 +20,8 @@ public abstract class GenericPaintList<T extends Shape> {
   private final Color[][] colors;
   /** The active elements. */
   private final BitSet actives;
+  /** The visible elements. An element can only be visible when it is active. */
+  private final BitSet visibles;
 
   /**
    * Creates an empty list.
@@ -36,6 +38,7 @@ public abstract class GenericPaintList<T extends Shape> {
     cur = new double[numberOfDimensions][is];
     colors = new Color[numberOfColors][is];
     actives = new BitSet();
+    visibles = new BitSet();
   }
 
   /** Reduces the capacity of the arrays to the highest active index. */
@@ -80,6 +83,7 @@ public abstract class GenericPaintList<T extends Shape> {
     synchronized(actives) {
       nextIndex = actives.nextClearBit(0);
       actives.set(nextIndex);
+      visibles.set(nextIndex);
       if(nextIndex >= capacity()) {
         enlarge();
       }
@@ -104,6 +108,7 @@ public abstract class GenericPaintList<T extends Shape> {
   public void removeIndex(final int index) {
     synchronized(actives) {
       actives.set(index, false);
+      visibles.set(index, false);
     }
   }
 
@@ -116,6 +121,7 @@ public abstract class GenericPaintList<T extends Shape> {
   public void removeRange(final int fromIndex, final int toIndex) {
     synchronized(actives) {
       actives.set(fromIndex, toIndex, false);
+      visibles.set(fromIndex, toIndex, false);
     }
   }
 
@@ -130,6 +136,15 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
+   * Ensures that the given index is active.
+   * 
+   * @param index The index.
+   */
+  private void ensureActive(final int index) {
+    if(!isActive(index)) throw new IllegalArgumentException(index + " not active");
+  }
+
+  /**
    * Getter.
    * 
    * @param dim The dimension.
@@ -137,6 +152,7 @@ public abstract class GenericPaintList<T extends Shape> {
    * @return The value at the given index for the dimension.
    */
   protected double get(final int dim, final int index) {
+    ensureActive(index);
     return cur[dim][index];
   }
 
@@ -148,6 +164,7 @@ public abstract class GenericPaintList<T extends Shape> {
    * @param val The value at the given index for the dimension.
    */
   protected void set(final int dim, final int index, final double val) {
+    ensureActive(index);
     cur[dim][index] = val;
   }
 
@@ -159,6 +176,7 @@ public abstract class GenericPaintList<T extends Shape> {
    * @return The color of the given index in the column.
    */
   protected Color getColor(final int col, final int index) {
+    ensureActive(index);
     return colors[col][index];
   }
 
@@ -170,7 +188,31 @@ public abstract class GenericPaintList<T extends Shape> {
    * @param color The color of the given index in the column.
    */
   protected void setColor(final int col, final int index, final Color color) {
+    ensureActive(index);
     colors[col][index] = color;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param index The index.
+   * @return Whether the index is visible.
+   */
+  public boolean isVisible(final int index) {
+    // no need to ensure being active here since it can only be visible when
+    // active
+    return visibles.get(index);
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param index The index.
+   * @param isVisible Whether the index is visible.
+   */
+  public void setVisible(final int index, final boolean isVisible) {
+    ensureActive(index);
+    visibles.set(index, isVisible);
   }
 
   /**
@@ -181,13 +223,13 @@ public abstract class GenericPaintList<T extends Shape> {
   protected abstract T createDrawObject();
 
   /**
-   * Paints all objects.
+   * Paints all visible objects.
    * 
    * @param gfx The graphics context.
    */
   public void paintAll(final Graphics2D gfx) {
     final T drawObject = createDrawObject();
-    for(int i = actives.nextSetBit(0); i >= 0; i = actives.nextSetBit(i + 1)) {
+    for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
       paint(gfx, drawObject, i);
     }
   }
