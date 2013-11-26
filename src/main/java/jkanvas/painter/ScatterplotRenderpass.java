@@ -42,7 +42,12 @@ public class ScatterplotRenderpass extends CachedRenderpass {
   @Override
   public void doDraw(final Graphics2D g, final KanvasContext ctx) {
     g.setColor(Color.BLACK);
-    g.draw(getBoundingBox());
+    final Rectangle2D rect = getBoundingBox();
+    if(ctx.toCanvasLength(1) > 1) {
+      g.drawRect(0, 0, (int) rect.getWidth() - 1, (int) rect.getHeight() - 1);
+    } else {
+      g.draw(rect);
+    }
     list.paintAll(g);
   }
 
