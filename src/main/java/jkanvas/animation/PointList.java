@@ -229,6 +229,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
     final double x = get(X_COORD, index);
     final double y = get(Y_COORD, index);
     final double s = get(SIZE, index);
+    if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return;
     circle.setFrame(x - s, y - s, s * 2.0, s * 2.0);
     final Color fill = getColor(COLOR_FILL, index);
     if(fill != null || defaultColor != null) {
