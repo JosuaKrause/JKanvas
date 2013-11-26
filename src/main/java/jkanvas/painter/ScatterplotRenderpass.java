@@ -14,7 +14,7 @@ import jkanvas.animation.GenericPaintList;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class ScatterplotRenderpass extends AbstractRenderpass {
+public class ScatterplotRenderpass extends CachedRenderpass {
 
   /** The list of shapes in the scatter plot. */
   private final GenericPaintList<? extends Shape> list;
@@ -40,10 +40,25 @@ public class ScatterplotRenderpass extends AbstractRenderpass {
   }
 
   @Override
-  public void draw(final Graphics2D g, final KanvasContext ctx) {
+  public void doDraw(final Graphics2D g, final KanvasContext ctx) {
     g.setColor(Color.BLACK);
     g.draw(getBoundingBox());
     list.paintAll(g);
+  }
+
+  /** Whether the underlying data structure has been changed. */
+  private boolean hasChanged;
+
+  /** Signals that the underlying data source has changed. */
+  public void change() {
+    hasChanged = true;
+  }
+
+  @Override
+  public boolean isChanging() {
+    final boolean res = hasChanged;
+    hasChanged = false;
+    return res;
   }
 
 }
