@@ -7,7 +7,8 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 /**
- * A list of paint-able objects.
+ * A list of paint-able objects. The class is not fully guaranteed to be thread
+ * safe.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The modifiable shape object.
@@ -199,8 +200,8 @@ public abstract class GenericPaintList<T extends Shape> {
    * @return Whether the index is visible.
    */
   public boolean isVisible(final int index) {
-    // no need to ensure being active here since it can only be visible when
-    // active
+    // no need to ensure being active here since it
+    // can only be visible when active
     return visibles.get(index);
   }
 
@@ -230,7 +231,10 @@ public abstract class GenericPaintList<T extends Shape> {
   public void paintAll(final Graphics2D gfx) {
     final T drawObject = createDrawObject();
     for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
-      paint(gfx, drawObject, i);
+      final int endOfRun = visibles.nextClearBit(i);
+      do {
+        paint(gfx, drawObject, i);
+      } while(++i < endOfRun);
     }
   }
 
