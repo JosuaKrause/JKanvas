@@ -243,4 +243,14 @@ public class PointList extends GenericPaintList<Ellipse2D> {
     }
   }
 
+  @Override
+  protected boolean contains(final Point2D point, final Ellipse2D circle, final int index) {
+    final double x = get(X_COORD, index);
+    final double y = get(Y_COORD, index);
+    final double s = get(SIZE, index);
+    if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return false;
+    circle.setFrame(x - s, y - s, s * 2.0, s * 2.0);
+    return circle.contains(point);
+  }
+
 }

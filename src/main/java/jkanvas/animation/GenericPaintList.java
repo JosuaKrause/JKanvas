@@ -3,6 +3,7 @@ package jkanvas.animation;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.BitSet;
 
@@ -242,10 +243,38 @@ public abstract class GenericPaintList<T extends Shape> {
    * Paints an object.
    * 
    * @param gfx The graphics context. The context must not be altered.
-   * @param obj The draw shape.
+   * @param obj The draw shape. The shape must be set to the correct values.
    * @param index The index to draw.
    */
   protected abstract void paint(Graphics2D gfx, T obj, int index);
+
+  /**
+   * Returns the first element that contains the given point.
+   * 
+   * @param point The point.
+   * @return The index of the first element that contains the given point or
+   *         <code>-1</code> if no element is hit.
+   */
+  public int hit(final Point2D point) {
+    final T drawObject = createDrawObject();
+    for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
+      final int endOfRun = visibles.nextClearBit(i);
+      do {
+        if(contains(point, drawObject, i)) return i;
+      } while(++i < endOfRun);
+    }
+    return -1;
+  }
+
+  /**
+   * Checks whether the given point is contained in the given element.
+   * 
+   * @param point The point.
+   * @param obj The element. The shape must be set to the correct values.
+   * @param index The index of the element.
+   * @return Whether the element contains the point.
+   */
+  protected abstract boolean contains(Point2D point, T obj, int index);
 
   /**
    * Getter.
