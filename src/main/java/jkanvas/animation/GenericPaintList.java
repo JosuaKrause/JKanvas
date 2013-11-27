@@ -16,14 +16,20 @@ import java.util.BitSet;
  */
 public abstract class GenericPaintList<T extends Shape> {
 
-  /** The values. */
-  private final double[][] cur;
-  /** The colors. */
-  private final Color[][] colors;
+  /** The number of dimensions. */
+  private final int dims;
+  /** The number of colors. */
+  private final int cols;
   /** The active elements. */
   private final BitSet actives;
   /** The visible elements. An element can only be visible when it is active. */
   private final BitSet visibles;
+  /** The capacity. */
+  private int capacity;
+  /** The values. */
+  private double[] cur;
+  /** The colors. */
+  private Color[] colors;
 
   /**
    * Creates an empty list.
@@ -34,18 +40,23 @@ public abstract class GenericPaintList<T extends Shape> {
    */
   public GenericPaintList(final int numberOfDimensions,
       final int numberOfColors, final int initialSize) {
+    if(numberOfColors < 0) throw new IllegalArgumentException(
+        "must be larger or equal to 0: " + numberOfColors);
     if(numberOfDimensions <= 0) throw new IllegalArgumentException(
         "must be larger than 0: " + numberOfDimensions);
+    dims = numberOfDimensions;
+    cols = numberOfColors;
     final int is = Math.max(128, initialSize);
-    cur = new double[numberOfDimensions][is];
-    colors = new Color[numberOfColors][is];
+    capacity = is;
+    cur = new double[numberOfDimensions * is];
+    colors = new Color[numberOfColors * is];
     actives = new BitSet();
     visibles = new BitSet();
   }
 
   /** Reduces the capacity of the arrays to the highest active index. */
   public void trimToSize() {
-    setCapacity(length());
+    setCapacity(actives.length());
   }
 
   /**
@@ -56,19 +67,16 @@ public abstract class GenericPaintList<T extends Shape> {
   private void setCapacity(final int newSize) {
     if(newSize == capacity()) return;
     synchronized(actives) {
-      for(int d = 0; d < cur.length; ++d) {
-        cur[d] = Arrays.copyOf(cur[d], newSize);
-      }
-      for(int c = 0; c < colors.length; ++c) {
-        colors[c] = Arrays.copyOf(colors[c], newSize);
-      }
+      capacity = newSize;
+      cur = Arrays.copyOf(cur, newSize * dims);
+      colors = Arrays.copyOf(colors, newSize * cols);
     }
   }
 
   /** Adds more capacity. */
   protected void enlarge() {
     synchronized(actives) {
-      final int curSize = Math.max(2, actives.length());
+      final int curSize = Math.max(2, capacity);
       final int newSize = curSize + curSize / 2;
       setCapacity(newSize);
     }
@@ -99,7 +107,7 @@ public abstract class GenericPaintList<T extends Shape> {
    * @return The capacity of the arrays.
    */
   protected int capacity() {
-    return cur[0].length;
+    return capacity;
   }
 
   /**
@@ -147,6 +155,24 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
+   * Checks the dimension bounds.
+   * 
+   * @param dim The dimension.
+   */
+  private void dimBounds(final int dim) {
+    if(dim < 0 || dim >= dims) throw new IndexOutOfBoundsException("" + dim);
+  }
+
+  /**
+   * Checks the color bounds.
+   * 
+   * @param col The color.
+   */
+  private void colBounds(final int col) {
+    if(col < 0 || col >= cols) throw new IndexOutOfBoundsException("" + col);
+  }
+
+  /**
    * Getter.
    * 
    * @param dim The dimension.
@@ -155,7 +181,8 @@ public abstract class GenericPaintList<T extends Shape> {
    */
   protected double get(final int dim, final int index) {
     ensureActive(index);
-    return cur[dim][index];
+    dimBounds(dim);
+    return cur[dims * index + dim];
   }
 
   /**
@@ -167,7 +194,8 @@ public abstract class GenericPaintList<T extends Shape> {
    */
   protected void set(final int dim, final int index, final double val) {
     ensureActive(index);
-    cur[dim][index] = val;
+    dimBounds(dim);
+    cur[dims * index + dim] = val;
   }
 
   /**
@@ -179,7 +207,8 @@ public abstract class GenericPaintList<T extends Shape> {
    */
   protected Color getColor(final int col, final int index) {
     ensureActive(index);
-    return colors[col][index];
+    colBounds(col);
+    return colors[cols * index + col];
   }
 
   /**
@@ -191,7 +220,8 @@ public abstract class GenericPaintList<T extends Shape> {
    */
   protected void setColor(final int col, final int index, final Color color) {
     ensureActive(index);
-    colors[col][index] = color;
+    colBounds(col);
+    colors[cols * index + col] = color;
   }
 
   /**
