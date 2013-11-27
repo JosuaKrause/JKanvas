@@ -146,81 +146,60 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
-   * Ensures that the given index is active.
+   * Ensures that the given index is active. This check must be made before
+   * accessing elements when they are not guaranteed to be active.
    * 
    * @param index The index.
    */
-  private void ensureActive(final int index) {
+  protected void ensureActive(final int index) {
     if(!isActive(index)) throw new IllegalArgumentException(index + " not active");
   }
 
   /**
-   * Checks the dimension bounds.
-   * 
-   * @param dim The dimension.
-   */
-  private void dimBounds(final int dim) {
-    if(dim < 0 || dim >= dims) throw new IndexOutOfBoundsException("" + dim);
-  }
-
-  /**
-   * Checks the color bounds.
-   * 
-   * @param col The color.
-   */
-  private void colBounds(final int col) {
-    if(col < 0 || col >= cols) throw new IndexOutOfBoundsException("" + col);
-  }
-
-  /**
-   * Getter.
+   * Getter. This method does no checks.
    * 
    * @param dim The dimension.
    * @param index The index.
    * @return The value at the given index for the dimension.
+   * @see #ensureActive(int)
    */
   protected double get(final int dim, final int index) {
-    ensureActive(index);
-    dimBounds(dim);
     return cur[dims * index + dim];
   }
 
   /**
-   * Setter.
+   * Setter. This method does no checks.
    * 
    * @param dim The dimension.
    * @param index The index.
    * @param val The value at the given index for the dimension.
+   * @see #ensureActive(int)
    */
   protected void set(final int dim, final int index, final double val) {
-    ensureActive(index);
-    dimBounds(dim);
     cur[dims * index + dim] = val;
   }
 
   /**
-   * Getter.
+   * Getter. This method does no checks.
    * 
    * @param col The color column.
    * @param index The index.
    * @return The color of the given index in the column.
+   * @see #ensureActive(int)
    */
   protected Color getColor(final int col, final int index) {
-    ensureActive(index);
-    colBounds(col);
     return colors[cols * index + col];
   }
 
   /**
-   * Setter.
+   * Setter. This method does no checks.
    * 
    * @param col The color column.
    * @param index The index.
    * @param color The color of the given index in the column.
+   * @see #ensureActive(int)
    */
   protected void setColor(final int col, final int index, final Color color) {
-    ensureActive(index);
-    colBounds(col);
     colors[cols * index + col] = color;
   }
 
@@ -270,7 +249,8 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
-   * Paints an object.
+   * Paints an object. No bounds need to be checked and the index is guaranteed
+   * to be active.
    * 
    * @param gfx The graphics context. The context must not be altered.
    * @param obj The draw shape. The shape must be set to the correct values.
@@ -297,7 +277,8 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
-   * Checks whether the given point is contained in the given element.
+   * Checks whether the given point is contained in the given element. No bounds
+   * need to be checked and the index is guaranteed to be active.
    * 
    * @param point The point.
    * @param obj The element. The shape must be set to the correct values.

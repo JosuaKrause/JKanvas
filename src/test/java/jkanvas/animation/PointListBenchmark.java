@@ -135,13 +135,13 @@ public class PointListBenchmark {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final boolean usePointList = true;
+    final boolean usePointList = false;
     final PointListExecutor[] benchmarks = {
-        new PointListExecutor(10000, 0, -1, usePointList), // #1
-        new PointListExecutor(10000, 100, -1, usePointList), // #2
-        new PointListExecutor(10000, 0, 6000, usePointList), // #3
-        new PointListExecutor(10000, 100, 6000, usePointList), // #4
-        new PointListExecutor(10000, 3000, 6000, usePointList), // #5
+        new PointListExecutor(1000000, 0, -1, usePointList), // #1
+        new PointListExecutor(1000000, 10000, -1, usePointList), // #2
+        new PointListExecutor(1000000, 0, 600000, usePointList), // #3
+        new PointListExecutor(1000000, 10000, 600000, usePointList), // #4
+        new PointListExecutor(1000000, 300000, 600000, usePointList), // #5
     };
     final Benchmark benchmark = new Benchmark(benchmarks);
     benchmark.getResults(System.out, System.err);
@@ -156,15 +156,15 @@ public class PointListBenchmark {
    * =============================
    * no point list
    * =============================
-   * +------------------------------------------+-----------------+---------------------+
-   * | configuration                            |            mean |              stddev |
-   * +------------------------------------------+-----------------+---------------------+
-   * | array[count: 10000 gaps: 0 res: -1]      |     0.086300 ms | +/-     0.004263 ms |
-   * | array[count: 10000 gaps: 100 res: -1]    |     0.093900 ms | +/-     0.023562 ms |
-   * | array[count: 10000 gaps: 0 res: 6000]    |     0.056480 ms | +/-     0.009261 ms |
-   * | array[count: 10000 gaps: 100 res: 6000]  |     0.052980 ms | +/-     0.003159 ms |
-   * | array[count: 10000 gaps: 3000 res: 6000] |     0.038340 ms | +/-     0.000479 ms |
-   * +------------------------------------------+-----------------+---------------------+
+   * +------------------------------------------------+-----------------+---------------------+
+   * | configuration                                  |            mean |              stddev |
+   * +------------------------------------------------+-----------------+---------------------+
+   * | array[count: 1000000 gaps: 0 res: -1]          |     8.794160 ms | +/-     0.237009 ms |
+   * | array[count: 1000000 gaps: 10000 res: -1]      |     8.676320 ms | +/-     0.129667 ms |
+   * | array[count: 1000000 gaps: 0 res: 600000]      |     5.314820 ms | +/-     0.126771 ms |
+   * | array[count: 1000000 gaps: 10000 res: 600000]  |     5.187620 ms | +/-     0.142014 ms |
+   * | array[count: 1000000 gaps: 300000 res: 600000] |     3.966420 ms | +/-     0.406973 ms |
+   * +------------------------------------------------+-----------------+---------------------+
    * =============================
    * parallel arrays
    * =============================
@@ -180,15 +180,15 @@ public class PointListBenchmark {
    * =============================
    * single array
    * =============================
-   * +------------------------------------------+-----------------+---------------------+
-   * | configuration                            |            mean |              stddev |
-   * +------------------------------------------+-----------------+---------------------+
-   * | plist[count: 10000 gaps: 0 res: -1]      |     0.124220 ms | +/-     0.007533 ms |
-   * | plist[count: 10000 gaps: 100 res: -1]    |     0.137780 ms | +/-     0.013213 ms |
-   * | plist[count: 10000 gaps: 0 res: 6000]    |     0.070600 ms | +/-     0.004015 ms |
-   * | plist[count: 10000 gaps: 100 res: 6000]  |     0.079600 ms | +/-     0.009361 ms |
-   * | plist[count: 10000 gaps: 3000 res: 6000] |     0.066980 ms | +/-     0.003323 ms |
-   * +------------------------------------------+-----------------+---------------------+
+   * +------------------------------------------------+-----------------+---------------------+
+   * | configuration                                  |            mean |              stddev |
+   * +------------------------------------------------+-----------------+---------------------+
+   * | plist[count: 1000000 gaps: 0 res: -1]          |     8.574960 ms | +/-     0.132415 ms |
+   * | plist[count: 1000000 gaps: 10000 res: -1]      |     8.696240 ms | +/-     0.471550 ms |
+   * | plist[count: 1000000 gaps: 0 res: 600000]      |     5.114340 ms | +/-     0.085457 ms |
+   * | plist[count: 1000000 gaps: 10000 res: 600000]  |     5.161700 ms | +/-     0.170636 ms |
+   * | plist[count: 1000000 gaps: 300000 res: 600000] |     4.822560 ms | +/-     0.141250 ms |
+   * +------------------------------------------------+-----------------+---------------------+
    * </pre>
    */
 

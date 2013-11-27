@@ -108,6 +108,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @param size The size.
    */
   public void setPoint(final int index, final double x, final double y, final double size) {
+    ensureActive(index);
     set(X_COORD, index, x);
     set(Y_COORD, index, y);
     set(SIZE, index, size);
@@ -120,6 +121,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @return The x coordinate.
    */
   public double getX(final int index) {
+    ensureActive(index);
     return get(X_COORD, index);
   }
 
@@ -130,6 +132,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @return The y coordinate.
    */
   public double getY(final int index) {
+    ensureActive(index);
     return get(Y_COORD, index);
   }
 
@@ -140,7 +143,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @param index The index of the point.
    */
   public void getPosition(final Point2D pos, final int index) {
-    pos.setLocation(getX(index), getY(index));
+    ensureActive(index);
+    pos.setLocation(get(X_COORD, index), get(Y_COORD, index));
   }
 
   /**
@@ -151,6 +155,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @param y The y coordinate.
    */
   public void setPosition(final int index, final double x, final double y) {
+    ensureActive(index);
     set(X_COORD, index, x);
     set(Y_COORD, index, y);
   }
@@ -162,6 +167,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @return The size.
    */
   public double getRadius(final int index) {
+    ensureActive(index);
     return get(SIZE, index);
   }
 
@@ -172,6 +178,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @param radius The size.
    */
   public void setRadius(final int index, final double radius) {
+    ensureActive(index);
     set(SIZE, index, radius);
   }
 
@@ -183,6 +190,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    *          be used.
    */
   public void setColor(final int index, final Color color) {
+    ensureActive(index);
     setColor(COLOR_FILL, index, color);
   }
 
@@ -194,6 +202,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    *         be used.
    */
   public Color getColor(final int index) {
+    ensureActive(index);
     return getColor(COLOR_FILL, index);
   }
 
@@ -205,6 +214,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    *          used.
    */
   public void setBorder(final int index, final Color color) {
+    ensureActive(index);
     setColor(COLOR_BORDER, index, color);
   }
 
@@ -216,6 +226,7 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    *         used.
    */
   public Color getBorder(final int index) {
+    ensureActive(index);
     return getColor(COLOR_BORDER, index);
   }
 
