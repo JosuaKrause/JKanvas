@@ -91,11 +91,13 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public int addPoint(final double x, final double y, final double size) {
     final int index = addIndex();
-    set(X_COORD, index, x);
-    set(Y_COORD, index, y);
-    set(SIZE, index, size);
-    setColor(COLOR_FILL, index, null);
-    setColor(COLOR_BORDER, index, null);
+    final int pos = getPosition(index);
+    set(X_COORD, pos, x);
+    set(Y_COORD, pos, y);
+    set(SIZE, pos, size);
+    final int cpos = getColorPosition(index);
+    setColor(COLOR_FILL, cpos, null);
+    setColor(COLOR_BORDER, cpos, null);
     return index;
   }
 
@@ -109,9 +111,10 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public void setPoint(final int index, final double x, final double y, final double size) {
     ensureActive(index);
-    set(X_COORD, index, x);
-    set(Y_COORD, index, y);
-    set(SIZE, index, size);
+    final int pos = getPosition(index);
+    set(X_COORD, pos, x);
+    set(Y_COORD, pos, y);
+    set(SIZE, pos, size);
   }
 
   /**
@@ -122,7 +125,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public double getX(final int index) {
     ensureActive(index);
-    return get(X_COORD, index);
+    final int pos = getPosition(index);
+    return get(X_COORD, pos);
   }
 
   /**
@@ -133,18 +137,20 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public double getY(final int index) {
     ensureActive(index);
-    return get(Y_COORD, index);
+    final int pos = getPosition(index);
+    return get(Y_COORD, pos);
   }
 
   /**
    * Getter.
    * 
-   * @param pos The shape the position will be stored.
+   * @param p The shape the position will be stored.
    * @param index The index of the point.
    */
-  public void getPosition(final Point2D pos, final int index) {
+  public void getPosition(final Point2D p, final int index) {
     ensureActive(index);
-    pos.setLocation(get(X_COORD, index), get(Y_COORD, index));
+    final int pos = getPosition(index);
+    p.setLocation(get(X_COORD, pos), get(Y_COORD, pos));
   }
 
   /**
@@ -156,8 +162,9 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public void setPosition(final int index, final double x, final double y) {
     ensureActive(index);
-    set(X_COORD, index, x);
-    set(Y_COORD, index, y);
+    final int pos = getPosition(index);
+    set(X_COORD, pos, x);
+    set(Y_COORD, pos, y);
   }
 
   /**
@@ -168,7 +175,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public double getRadius(final int index) {
     ensureActive(index);
-    return get(SIZE, index);
+    final int pos = getPosition(index);
+    return get(SIZE, pos);
   }
 
   /**
@@ -179,7 +187,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public void setRadius(final int index, final double radius) {
     ensureActive(index);
-    set(SIZE, index, radius);
+    final int pos = getPosition(index);
+    set(SIZE, pos, radius);
   }
 
   /**
@@ -191,7 +200,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public void setColor(final int index, final Color color) {
     ensureActive(index);
-    setColor(COLOR_FILL, index, color);
+    final int cpos = getColorPosition(index);
+    setColor(COLOR_FILL, cpos, color);
   }
 
   /**
@@ -203,7 +213,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public Color getColor(final int index) {
     ensureActive(index);
-    return getColor(COLOR_FILL, index);
+    final int cpos = getColorPosition(index);
+    return getColor(COLOR_FILL, cpos);
   }
 
   /**
@@ -215,7 +226,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public void setBorder(final int index, final Color color) {
     ensureActive(index);
-    setColor(COLOR_BORDER, index, color);
+    final int cpos = getColorPosition(index);
+    setColor(COLOR_BORDER, cpos, color);
   }
 
   /**
@@ -227,7 +239,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    */
   public Color getBorder(final int index) {
     ensureActive(index);
-    return getColor(COLOR_BORDER, index);
+    final int cpos = getColorPosition(index);
+    return getColor(COLOR_BORDER, cpos);
   }
 
   @Override
@@ -236,18 +249,19 @@ public class PointList extends GenericPaintList<Ellipse2D> {
   }
 
   @Override
-  protected void paint(final Graphics2D gfx, final Ellipse2D circle, final int index) {
-    final double x = get(X_COORD, index);
-    final double y = get(Y_COORD, index);
-    final double s = get(SIZE, index);
+  protected void paint(final Graphics2D gfx, final Ellipse2D circle,
+      final int index, final int pos, final int cpos) {
+    final double x = get(X_COORD, pos);
+    final double y = get(Y_COORD, pos);
+    final double s = get(SIZE, pos);
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return;
     circle.setFrame(x - s, y - s, s * 2.0, s * 2.0);
-    final Color fill = getColor(COLOR_FILL, index);
+    final Color fill = getColor(COLOR_FILL, cpos);
     if(fill != null || defaultColor != null) {
       gfx.setColor(fill != null ? fill : defaultColor);
       gfx.fill(circle);
     }
-    final Color border = getColor(COLOR_BORDER, index);
+    final Color border = getColor(COLOR_BORDER, cpos);
     if(border != null || defaultBorder != null) {
       gfx.setColor(border != null ? border : defaultBorder);
       gfx.draw(circle);
@@ -255,10 +269,11 @@ public class PointList extends GenericPaintList<Ellipse2D> {
   }
 
   @Override
-  protected boolean contains(final Point2D point, final Ellipse2D circle, final int index) {
-    final double x = get(X_COORD, index);
-    final double y = get(Y_COORD, index);
-    final double s = get(SIZE, index);
+  protected boolean contains(
+      final Point2D point, final Ellipse2D circle, final int index, final int pos) {
+    final double x = get(X_COORD, pos);
+    final double y = get(Y_COORD, pos);
+    final double s = get(SIZE, pos);
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return false;
     circle.setFrame(x - s, y - s, s * 2.0, s * 2.0);
     return circle.contains(point);

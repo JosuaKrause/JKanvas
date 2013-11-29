@@ -156,51 +156,71 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
+   * Getter.
+   * 
+   * @param index The index.
+   * @return The position in the array.
+   */
+  protected int getPosition(final int index) {
+    return index * dims;
+  }
+
+  /**
    * Getter. This method does no checks.
    * 
    * @param dim The dimension.
-   * @param index The index.
+   * @param pos The position in the array. Use {@link #getPosition(int)}.
    * @return The value at the given index for the dimension.
    * @see #ensureActive(int)
    */
-  protected double get(final int dim, final int index) {
-    return cur[dims * index + dim];
+  protected double get(final int dim, final int pos) {
+    return cur[pos + dim];
   }
 
   /**
    * Setter. This method does no checks.
    * 
    * @param dim The dimension.
-   * @param index The index.
+   * @param pos The position in the array. Use {@link #getPosition(int)}.
    * @param val The value at the given index for the dimension.
    * @see #ensureActive(int)
    */
-  protected void set(final int dim, final int index, final double val) {
-    cur[dims * index + dim] = val;
+  protected void set(final int dim, final int pos, final double val) {
+    cur[pos + dim] = val;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param index The index.
+   * @return The position in the color array.
+   */
+  protected int getColorPosition(final int index) {
+    return index * cols;
   }
 
   /**
    * Getter. This method does no checks.
    * 
    * @param col The color column.
-   * @param index The index.
+   * @param pos The position in the array. Use {@link #getColorPosition(int)}.
    * @return The color of the given index in the column.
    * @see #ensureActive(int)
    */
-  protected Color getColor(final int col, final int index) {
-    return colors[cols * index + col];
+  protected Color getColor(final int col, final int pos) {
+    return colors[pos + col];
   }
 
   /**
    * Setter. This method does no checks.
    * 
    * @param col The color column.
-   * @param index The index.
+   * @param pos The position in the array. Use {@link #getColorPosition(int)}.
    * @param color The color of the given index in the column.
    * @see #ensureActive(int)
    */
-  protected void setColor(final int col, final int index, final Color color) {
-    colors[cols * index + col] = color;
+  protected void setColor(final int col, final int pos, final Color color) {
+    colors[pos + col] = color;
   }
 
   /**
@@ -241,9 +261,13 @@ public abstract class GenericPaintList<T extends Shape> {
   public void paintAll(final Graphics2D gfx) {
     final T drawObject = createDrawObject();
     for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
+      int pos = getPosition(i);
+      int cpos = getColorPosition(i);
       final int endOfRun = visibles.nextClearBit(i);
       do {
-        paint(gfx, drawObject, i);
+        paint(gfx, drawObject, i, pos, cpos);
+        pos += dims;
+        cpos += cols;
       } while(++i < endOfRun);
     }
   }
@@ -255,8 +279,10 @@ public abstract class GenericPaintList<T extends Shape> {
    * @param gfx The graphics context. The context must not be altered.
    * @param obj The draw shape. The shape must be set to the correct values.
    * @param index The index to draw.
+   * @param pos The position in the array.
+   * @param cpos The position in the color array.
    */
-  protected abstract void paint(Graphics2D gfx, T obj, int index);
+  protected abstract void paint(Graphics2D gfx, T obj, int index, int pos, int cpos);
 
   /**
    * Returns the first element that contains the given point.
@@ -268,9 +294,11 @@ public abstract class GenericPaintList<T extends Shape> {
   public int hit(final Point2D point) {
     final T drawObject = createDrawObject();
     for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
+      int pos = getPosition(i);
       final int endOfRun = visibles.nextClearBit(i);
       do {
-        if(contains(point, drawObject, i)) return i;
+        if(contains(point, drawObject, i, pos)) return i;
+        pos += dims;
       } while(++i < endOfRun);
     }
     return -1;
@@ -283,9 +311,10 @@ public abstract class GenericPaintList<T extends Shape> {
    * @param point The point.
    * @param obj The element. The shape must be set to the correct values.
    * @param index The index of the element.
+   * @param pos The position in the array.
    * @return Whether the element contains the point.
    */
-  protected abstract boolean contains(Point2D point, T obj, int index);
+  protected abstract boolean contains(Point2D point, T obj, int index, int pos);
 
   /**
    * Getter.
