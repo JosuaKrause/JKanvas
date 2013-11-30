@@ -77,18 +77,14 @@ public abstract class DataTable {
    * @return The maximum of the column.
    */
   public double getMax(final int col) {
-    double min = Double.POSITIVE_INFINITY;
     double max = Double.NEGATIVE_INFINITY;
     for(int i = 0; i < rows(); ++i) {
       final double v = getAt(i, col);
       if(max < v) {
         max = v;
       }
-      if(min > v) {
-        min = v;
-      }
     }
-    return min == max ? max + 1 : max;
+    return max;
   }
 
   /**
@@ -101,6 +97,7 @@ public abstract class DataTable {
   public double getMinMaxScaled(final int row, final int col) {
     final double min = getMin(col);
     final double max = getMax(col);
+    if(min == max) return 0;
     return (getAt(row, col) - min) / (max - min);
   }
 
