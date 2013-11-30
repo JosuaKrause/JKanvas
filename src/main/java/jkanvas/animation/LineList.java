@@ -5,20 +5,33 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
+/**
+ * A list of lines.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class LineList extends GenericPaintList<Line2D> {
 
+  /** The The index for the first x coordinate. */
   protected static final int X_COORD_0 = 0;
-
+  /** The The index for the first y coordinate. */
   protected static final int Y_COORD_0 = 1;
-
+  /** The The index for the second x coordinate. */
   protected static final int X_COORD_1 = 2;
-
+  /** The The index for the second y coordinate. */
   protected static final int Y_COORD_1 = 3;
-
+  /** The The index for the color. */
   protected static final int COLOR = 0;
   /** The default color. */
   private Color defaultColor;
 
+  /**
+   * Creates a line list.
+   * 
+   * @param initialSize The initial size.
+   * @param defaultColor The default color or <code>null</code> if lines should
+   *          be transparent by default.
+   */
   public LineList(final int initialSize, final Color defaultColor) {
     super(4, 1, initialSize);
     this.defaultColor = defaultColor;
@@ -44,6 +57,15 @@ public class LineList extends GenericPaintList<Line2D> {
     return defaultColor;
   }
 
+  /**
+   * Adds a new line.
+   * 
+   * @param x1 The first x coordinate.
+   * @param y1 The first y coordinate.
+   * @param x2 The second x coordinate.
+   * @param y2 The second y coordinate.
+   * @return The index of the newly created line.
+   */
   public int addLine(final double x1, final double y1, final double x2, final double y2) {
     final int index = addIndex();
     final int pos = getPosition(index);
@@ -56,6 +78,15 @@ public class LineList extends GenericPaintList<Line2D> {
     return index;
   }
 
+  /**
+   * Sets the line at the given index.
+   * 
+   * @param index The index of the line.
+   * @param x1 The first x coordinate.
+   * @param y1 The first y coordinate.
+   * @param x2 The second x coordinate.
+   * @param y2 The second y coordinate.
+   */
   public void setLine(final int index, final double x1, final double y1,
       final double x2, final double y2) {
     ensureActive(index);
@@ -66,6 +97,12 @@ public class LineList extends GenericPaintList<Line2D> {
     set(Y_COORD_1, pos, y2);
   }
 
+  /**
+   * Stores the line at the given index in the provided object.
+   * 
+   * @param line The line to store the information in.
+   * @param index The index of the line.
+   */
   public void getLine(final Line2D line, final int index) {
     ensureActive(index);
     final int pos = getPosition(index);

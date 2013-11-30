@@ -13,10 +13,27 @@ import jkanvas.groups.LinearGroup;
 import jkanvas.table.CachedTable;
 import jkanvas.table.DataTable;
 
+/**
+ * Parallel coordinates.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class ParallelCoordinates {
 
+  /** The group of render passes. */
   private final LinearGroup<AbstractRenderpass> group;
 
+  /**
+   * Creates parallel coordinates for the given table. Note that the data is not
+   * connected to the parallel coordinates after creating.
+   * 
+   * @param animator The animator.
+   * @param table The table.
+   * @param features The features that should be used or <code>null</code> if
+   *          all features should be used.
+   * @param width The width of one cell.
+   * @param height The height of the cells.
+   */
   public ParallelCoordinates(final Animator animator, final DataTable table,
       final int[] features, final double width, final double height) {
     Objects.requireNonNull(table);

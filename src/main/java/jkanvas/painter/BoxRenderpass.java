@@ -6,24 +6,49 @@ import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
 
+/**
+ * A simple box render pass.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class BoxRenderpass extends AbstractRenderpass {
 
+  /** The box. */
   private Rectangle2D rect;
-
+  /** The border color or <code>null</code> if the border is not drawn. */
   private Color border;
-
+  /** The fill color or <code>null</code> if the filling is not drawn. */
   private Color fill;
 
+  /**
+   * Creates a box render pass.
+   * 
+   * @param rect The rectangle.
+   */
   public BoxRenderpass(final Rectangle2D rect) {
     this(rect, null, null);
   }
 
+  /**
+   * Creates a box render pass.
+   * 
+   * @param rect The rectangle.
+   * @param fill The filling color or <code>null</code> if the filling is not
+   *          drawn.
+   * @param border The border color or <code>null</code> if the border is not
+   *          drawn.
+   */
   public BoxRenderpass(final Rectangle2D rect, final Color fill, final Color border) {
     setBoundingBox(rect);
     this.fill = fill;
     this.border = border;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param rect The bounding box.
+   */
   public void setBoundingBox(final Rectangle2D rect) {
     this.rect = new Rectangle2D.Double(
         rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
@@ -35,18 +60,40 @@ public class BoxRenderpass extends AbstractRenderpass {
         rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
   }
 
+  /**
+   * Setter.
+   * 
+   * @param fill The filling color or <code>null</code> if the filling is not
+   *          drawn.
+   */
   public void setFill(final Color fill) {
     this.fill = fill;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The filling color or <code>null</code> if the filling is not drawn.
+   */
   public Color getFill() {
     return fill;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param border The border color or <code>null</code> if the border is not
+   *          drawn.
+   */
   public void setBorder(final Color border) {
     this.border = border;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The border color or <code>null</code> if the border is not drawn.
+   */
   public Color getBorder() {
     return border;
   }
