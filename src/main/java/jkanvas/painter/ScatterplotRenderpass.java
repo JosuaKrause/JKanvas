@@ -8,6 +8,8 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.GenericPaintList;
+import jkanvas.animation.PointList;
+import jkanvas.table.CachedTable;
 
 /**
  * A render pass for a scatter plot.
@@ -20,6 +22,43 @@ public class ScatterplotRenderpass extends CachedRenderpass {
   private final GenericPaintList<? extends Shape> list;
   /** The size of the scatter plot. */
   private final double size;
+
+  /**
+   * Creates a point list for the given features.
+   * 
+   * @param table The table.
+   * @param f1 The first feature.
+   * @param f2 The second feature.
+   * @param size The size of the scatter plot.
+   * @param pointSize The point size.
+   * @return The point list.
+   */
+  private static PointList createPoints(final CachedTable table,
+      final int f1, final int f2, final double size, final double pointSize) {
+    final int rows = table.rows();
+    final PointList pl = new PointList(rows, Color.BLACK, null);
+    for(int el = 0; el < rows; ++el) {
+      final int i = pl.addPoint(table.getMinMaxScaled(el, f1) * size,
+          table.getMinMaxScaled(el, f2) * size, pointSize);
+      if(i != el) throw new IllegalStateException(
+          "unpredicted index: " + i + " != " + el);
+    }
+    return pl;
+  }
+
+  /**
+   * Creates a scatter plot render pass.
+   * 
+   * @param table The table.
+   * @param f1 The first feature.
+   * @param f2 The second feature.
+   * @param size The size of the scatter plot.
+   * @param pointSize The point size.
+   */
+  public ScatterplotRenderpass(final CachedTable table,
+      final int f1, final int f2, final double pointSize, final double size) {
+    this(createPoints(table, f1, f2, size, pointSize), size);
+  }
 
   /**
    * Creates a scatter plot render pass.
