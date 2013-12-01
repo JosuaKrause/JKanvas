@@ -29,6 +29,24 @@ public class Feature {
   /**
    * Getter.
    * 
+   * @return The column this feature represents.
+   */
+  public int getColumn() {
+    return col;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The table of this feature.
+   */
+  public DataTable getTable() {
+    return table;
+  }
+
+  /**
+   * Getter.
+   * 
    * @param row The row.
    * @return The element in the given row.
    */
@@ -52,6 +70,24 @@ public class Feature {
    */
   public double getMax() {
     return table.getMax(col);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The standard deviation of this feature.
+   */
+  public double getStdDeviation() {
+    return table.getStdDeviation(col);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The mean value of this feature.
+   */
+  public double getMean() {
+    return table.getMean(col);
   }
 
   /**
@@ -84,6 +120,20 @@ public class Feature {
       for(int r = 0; r < rows; ++r) {
         sum += dist(a.getElement(r), b.getElement(r), a, b);
       }
+      return endSum(sum, a, b);
+    }
+
+    /**
+     * The operation after the sum is computed.
+     * 
+     * @param sum The sum.
+     * @param fa The first feature.
+     * @param fb The second feature.
+     * @return The result.
+     */
+    protected double endSum(final double sum,
+        @SuppressWarnings("unused") final Feature fa,
+        @SuppressWarnings("unused") final Feature fb) {
       return Math.sqrt(sum);
     }
 
@@ -126,5 +176,25 @@ public class Feature {
     }
 
   }; // SCALED
+
+  /**
+   * A metric based on the Pearson coefficient. It is modified so that a perfect
+   * correlation (-1 or 1) is 0 distance and no correlation (0) is the maximum
+   * distance of 1.
+   */
+  public static final Metric<Feature> PEARSON = new FeatureMetric() {
+
+    @Override
+    protected double dist(final double a, final double b,
+        final Feature fa, final Feature fb) {
+      return (a - fa.getMean()) * (b - fb.getMean());
+    }
+
+    @Override
+    protected double endSum(final double sum, final Feature fa, final Feature fb) {
+      return 1 - Math.abs(sum / fa.getStdDeviation() / fb.getStdDeviation() / fa.rows());
+    }
+
+  };
 
 }

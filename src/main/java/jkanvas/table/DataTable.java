@@ -56,6 +56,15 @@ public abstract class DataTable {
   /**
    * Getter.
    * 
+   * @return A transposed version of this table.
+   */
+  public DataTable transposed() {
+    return new TransposedTable(this);
+  }
+
+  /**
+   * Getter.
+   * 
    * @param col The column.
    * @return The minimum of the column.
    */

@@ -12,6 +12,7 @@ import jkanvas.animation.Animator;
 import jkanvas.groups.LinearGroup;
 import jkanvas.table.CachedTable;
 import jkanvas.table.DataTable;
+import jkanvas.table.LineMapper;
 
 /**
  * Parallel coordinates.
@@ -71,8 +72,8 @@ public class ParallelCoordinates {
         if(f < 0) {
           group.addRenderpass(new BoxRenderpass(box));
         } else {
-          final ParallelRenderpass pr =
-              new ParallelRenderpass(t, lastFeature, f, width, height, alpha);
+          final LineMapper lm = new LineMapper(t, lastFeature, f, width, height);
+          final ParallelRenderpass pr = new ParallelRenderpass(lm, alpha);
           pr.getList().setDefaultColor(new Color(0x9EBCDA));
           group.addRenderpass(pr);
         }

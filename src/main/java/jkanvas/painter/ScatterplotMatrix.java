@@ -8,6 +8,7 @@ import jkanvas.animation.Animator;
 import jkanvas.groups.LinearGroup;
 import jkanvas.table.CachedTable;
 import jkanvas.table.DataTable;
+import jkanvas.table.PointMapper;
 
 /**
  * A scatter plot matrix.
@@ -46,7 +47,8 @@ public class ScatterplotMatrix {
     for(int row = 0; row < t.cols(); ++row) {
       final int off = indexOfRow(t, row) - row;
       for(int col = row; col < t.cols(); ++col) {
-        sr[off + col] = new ScatterplotRenderpass(t, row, col, size, pointSize);
+        final PointMapper pm = new PointMapper(t, row, col, size, pointSize);
+        sr[off + col] = new ScatterplotRenderpass(pm);
       }
     }
     final BitSet already = new BitSet();

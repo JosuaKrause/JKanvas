@@ -1,13 +1,12 @@
 package jkanvas.painter;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.LineList;
-import jkanvas.table.CachedTable;
+import jkanvas.table.LineMapper;
 import jkanvas.util.PaintUtil;
 
 /**
@@ -27,41 +26,13 @@ public class ParallelRenderpass extends CachedRenderpass {
   private final double alpha;
 
   /**
-   * Creates lines from a table.
-   * 
-   * @param table The table.
-   * @param f1 The feature of the left side.
-   * @param f2 The feature of the right side.
-   * @param width The width of the cell.
-   * @param height The height of the cell.
-   * @return The line list.
-   */
-  private static LineList createLines(final CachedTable table,
-      final int f1, final int f2, final double width, final double height) {
-    final int rows = table.rows();
-    final LineList pl = new LineList(rows, Color.BLACK);
-    for(int el = 0; el < rows; ++el) {
-      final int i = pl.addLine(0, (1 - table.getMinMaxScaled(el, f1)) * height,
-          width, (1 - table.getMinMaxScaled(el, f2)) * height);
-      if(i != el) throw new IllegalStateException(
-          "unpredicted index: " + i + " != " + el);
-    }
-    return pl;
-  }
-
-  /**
    * Creates a parallel coordinates cell from a table.
    * 
-   * @param table The table.
-   * @param f1 The left feature.
-   * @param f2 The right feature.
-   * @param width The width of the cell.
-   * @param height The height of the cell.
+   * @param map The line map.
    * @param alpha The transparency of the lines.
    */
-  public ParallelRenderpass(final CachedTable table, final int f1, final int f2,
-      final double width, final double height, final double alpha) {
-    this(createLines(table, f1, f2, width, height), width, height, alpha);
+  public ParallelRenderpass(final LineMapper map, final double alpha) {
+    this(map.getList(), map.getWidth(), map.getHeight(), alpha);
   }
 
   /**
