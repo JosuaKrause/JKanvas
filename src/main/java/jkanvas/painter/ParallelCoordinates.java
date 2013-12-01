@@ -33,9 +33,10 @@ public class ParallelCoordinates {
    *          all features should be used.
    * @param width The width of one cell.
    * @param height The height of the cells.
+   * @param alpha The transparency of the lines.
    */
   public ParallelCoordinates(final Animator animator, final DataTable table,
-      final int[] features, final double width, final double height) {
+      final int[] features, final double width, final double height, final double alpha) {
     Objects.requireNonNull(table);
     final CachedTable t;
     if(table instanceof CachedTable) {
@@ -70,7 +71,10 @@ public class ParallelCoordinates {
         if(f < 0) {
           group.addRenderpass(new BoxRenderpass(box));
         } else {
-          group.addRenderpass(new ParallelRenderpass(t, lastFeature, f, width, height));
+          final ParallelRenderpass pr =
+              new ParallelRenderpass(t, lastFeature, f, width, height, alpha);
+          pr.getList().setDefaultColor(new Color(0x9EBCDA));
+          group.addRenderpass(pr);
         }
       }
       lastFeature = f;

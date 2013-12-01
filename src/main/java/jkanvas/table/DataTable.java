@@ -101,4 +101,35 @@ public abstract class DataTable {
     return (getAt(row, col) - min) / (max - min);
   }
 
+  /**
+   * Computes the mean value of the column.
+   * 
+   * @param col The column.
+   * @return The mean.
+   */
+  public double getMean(final int col) {
+    double sum = 0;
+    for(int i = 0; i < rows(); ++i) {
+      final double v = getAt(i, col);
+      sum += v;
+    }
+    return sum / rows();
+  }
+
+  /**
+   * Computes the standard deviation of the column.
+   * 
+   * @param col The column.
+   * @return The standard deviation.
+   */
+  public double getStdDeviation(final int col) {
+    final double mean = getMean(col);
+    double sum = 0;
+    for(int i = 0; i < rows(); ++i) {
+      final double v = getAt(i, col);
+      sum += (v - mean) * (v - mean);
+    }
+    return Math.sqrt(sum / rows());
+  }
+
 }

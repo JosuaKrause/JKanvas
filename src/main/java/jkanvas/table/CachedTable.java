@@ -36,6 +36,10 @@ public class CachedTable extends DataTable {
     Arrays.fill(mins, Double.NaN);
     maxs = new double[cols];
     Arrays.fill(maxs, Double.NaN);
+    means = new double[cols];
+    Arrays.fill(means, Double.NaN);
+    stddevs = new double[cols];
+    Arrays.fill(stddevs, Double.NaN);
   }
 
   @Override
@@ -93,6 +97,28 @@ public class CachedTable extends DataTable {
       maxs[col] = super.getMax(col);
     }
     return maxs[col];
+  }
+
+  /** The cache for the mean values. */
+  private final double[] means;
+
+  @Override
+  public double getMean(final int col) {
+    if(Double.isNaN(means[col])) {
+      means[col] = super.getMean(col);
+    }
+    return means[col];
+  }
+
+  /** The cache for the standard deviation values. */
+  private final double[] stddevs;
+
+  @Override
+  public double getStdDeviation(final int col) {
+    if(Double.isNaN(stddevs[col])) {
+      stddevs[col] = super.getStdDeviation(col);
+    }
+    return stddevs[col];
   }
 
 }

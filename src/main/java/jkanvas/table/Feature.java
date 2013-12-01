@@ -2,8 +2,6 @@ package jkanvas.table;
 
 import java.util.Objects;
 
-import jkanvas.table.Metric;
-
 /**
  * A feature is a column of a {@link DataTable}.
  * 

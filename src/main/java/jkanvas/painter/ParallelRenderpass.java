@@ -8,6 +8,7 @@ import java.util.Objects;
 import jkanvas.KanvasContext;
 import jkanvas.animation.LineList;
 import jkanvas.table.CachedTable;
+import jkanvas.util.PaintUtil;
 
 /**
  * A render pass for one parallel coordinates cell.
@@ -22,6 +23,8 @@ public class ParallelRenderpass extends CachedRenderpass {
   private final double height;
   /** The list of lines. */
   private final LineList list;
+  /** The transparency of the lines. */
+  private final double alpha;
 
   /**
    * Creates lines from a table.
@@ -54,10 +57,11 @@ public class ParallelRenderpass extends CachedRenderpass {
    * @param f2 The right feature.
    * @param width The width of the cell.
    * @param height The height of the cell.
+   * @param alpha The transparency of the lines.
    */
   public ParallelRenderpass(final CachedTable table, final int f1, final int f2,
-      final double width, final double height) {
-    this(createLines(table, f1, f2, width, height), width, height);
+      final double width, final double height, final double alpha) {
+    this(createLines(table, f1, f2, width, height), width, height, alpha);
   }
 
   /**
@@ -66,13 +70,17 @@ public class ParallelRenderpass extends CachedRenderpass {
    * @param list The line list.
    * @param width The width of the cell.
    * @param height The height of the cell.
+   * @param alpha The transparency of the lines.
    */
-  public ParallelRenderpass(final LineList list, final double width, final double height) {
+  public ParallelRenderpass(final LineList list,
+      final double width, final double height, final double alpha) {
     if(width <= 0.0) throw new IllegalArgumentException("" + width);
     if(height <= 0.0) throw new IllegalArgumentException("" + height);
+    if(alpha <= 0 || alpha > 1) throw new IllegalArgumentException("" + alpha);
     this.list = Objects.requireNonNull(list);
     this.width = width;
     this.height = height;
+    this.alpha = alpha;
   }
 
   @Override
@@ -80,8 +88,20 @@ public class ParallelRenderpass extends CachedRenderpass {
     return new Rectangle2D.Double(0, 0, width, height);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The lines.
+   */
+  public LineList getList() {
+    return list;
+  }
+
   @Override
   protected void doDraw(final Graphics2D g, final KanvasContext ctx) {
+    if(alpha < 1) {
+      PaintUtil.setAlpha(g, alpha);
+    }
     list.paintAll(g);
   }
 
