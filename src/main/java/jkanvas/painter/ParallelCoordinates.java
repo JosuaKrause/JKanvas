@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -23,35 +24,33 @@ public class ParallelCoordinates {
 
   /** The group of render passes. */
   private final LinearGroup<AbstractRenderpass> group;
+  /** The size of a cell. */
+  private final Rectangle2D box;
+  /** The table. */
+  private final CachedTable table;
+  /** The alpha value for the lines. */
+  private final double alpha;
 
   /**
-   * Creates parallel coordinates for the given table. Note that the data is not
-   * connected to the parallel coordinates after creating.
+   * Creates parallel coordinates for the given table.
    * 
    * @param animator The animator.
    * @param table The table.
-   * @param features The features that should be used or <code>null</code> if
-   *          all features should be used.
    * @param width The width of one cell.
    * @param height The height of the cells.
    * @param alpha The transparency of the lines.
    */
   public ParallelCoordinates(final Animator animator, final DataTable table,
-      final int[] features, final double width, final double height, final double alpha) {
+      final double width, final double height, final double alpha) {
     Objects.requireNonNull(table);
-    final CachedTable t;
     if(table instanceof CachedTable) {
-      t = (CachedTable) table;
+      this.table = (CachedTable) table;
     } else {
-      t = new CachedTable(table);
+      this.table = new CachedTable(table);
     }
-    final int[] fs = features != null ? features : new int[t.cols()];
-    if(features == null) {
-      for(int i = 0; i < fs.length; ++i) {
-        fs[i] = i;
-      }
-    }
-    group = new LinearGroup<AbstractRenderpass>(animator, true, 0, AnimationTiming.FAST) {
+    this.alpha = alpha;
+    group = new LinearGroup<AbstractRenderpass>(
+        animator, true, 0, AnimationTiming.NO_ANIMATION) {
 
       @Override
       protected void drawBetween(final Graphics2D gfx, final KanvasContext ctx,
@@ -65,14 +64,44 @@ public class ParallelCoordinates {
       }
 
     };
-    final Rectangle2D box = new Rectangle2D.Double(0, 0, width, height);
+    box = new Rectangle2D.Double(0, 0, width, height);
+  }
+
+  /**
+   * Shows the given features.
+   * 
+   * @param features The features that should be used.
+   */
+  public void showFeatures(final List<Integer> features) {
+    final int[] fs = new int[features.size()];
+    for(int i = 0; i < fs.length; ++i) {
+      fs[i] = features.get(i);
+    }
+    showFeatures(fs);
+  }
+
+  /**
+   * Shows the given features.
+   * 
+   * @param features The features that should be used or <code>null</code> if
+   *          all features should be used.
+   */
+  public void showFeatures(final int[] features) {
+    group.clearRenderpasses();
+    final int[] fs = features != null ? features : new int[table.cols()];
+    if(features == null) {
+      for(int i = 0; i < fs.length; ++i) {
+        fs[i] = i;
+      }
+    }
     int lastFeature = -1;
     for(final int f : fs) {
       if(lastFeature >= 0) {
         if(f < 0) {
           group.addRenderpass(new BoxRenderpass(box));
         } else {
-          final LineMapper lm = new LineMapper(t, lastFeature, f, width, height);
+          final LineMapper lm = new LineMapper(table, lastFeature, f,
+              box.getWidth(), box.getHeight());
           final ParallelRenderpass pr = new ParallelRenderpass(lm, alpha);
           pr.getList().setDefaultColor(new Color(0x9EBCDA));
           group.addRenderpass(pr);

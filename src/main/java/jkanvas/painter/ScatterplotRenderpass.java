@@ -17,10 +17,12 @@ import jkanvas.table.PointMapper;
  */
 public class ScatterplotRenderpass extends CachedRenderpass {
 
-  /** The list of shapes in the scatter plot. */
-  private final GenericPaintList<? extends Shape> list;
   /** The size of the scatter plot. */
   private final double size;
+  /** The list of shapes in the scatter plot. */
+  protected final GenericPaintList<? extends Shape> list;
+  /** The map if any. */
+  protected final PointMapper pm;
 
   /**
    * Creates a scatter plot render pass.
@@ -28,7 +30,7 @@ public class ScatterplotRenderpass extends CachedRenderpass {
    * @param pm The point map.
    */
   public ScatterplotRenderpass(final PointMapper pm) {
-    this(pm.getList(), pm.getSize());
+    this(pm, pm.getList(), pm.getSize());
   }
 
   /**
@@ -37,11 +39,24 @@ public class ScatterplotRenderpass extends CachedRenderpass {
    * @param list The content list.
    * @param size The size of the render pass.
    */
-  public ScatterplotRenderpass(
+  public ScatterplotRenderpass(final GenericPaintList<? extends Shape> list,
+      final double size) {
+    this(null, list, size);
+  }
+
+  /**
+   * Creates a scatter plot render pass.
+   * 
+   * @param pm The point map if any.
+   * @param list The content list.
+   * @param size The size of the render pass.
+   */
+  private ScatterplotRenderpass(final PointMapper pm,
       final GenericPaintList<? extends Shape> list, final double size) {
     if(size <= 0.0) throw new IllegalArgumentException("" + size);
     this.list = Objects.requireNonNull(list);
     this.size = size;
+    this.pm = pm;
   }
 
   @Override

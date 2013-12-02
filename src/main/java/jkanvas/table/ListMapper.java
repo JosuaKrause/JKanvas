@@ -91,4 +91,14 @@ public abstract class ListMapper<T extends GenericPaintList<?>> {
     return row;
   }
 
+  /**
+   * Getter.
+   * 
+   * @param index The index of the shape.
+   * @return The row in the table.
+   */
+  public int getRowForIndex(final int index) {
+    return index;
+  }
+
 }
