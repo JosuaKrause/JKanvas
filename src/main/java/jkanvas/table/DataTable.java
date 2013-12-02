@@ -53,13 +53,19 @@ public abstract class DataTable {
     return res;
   }
 
+  /** The cached transposed table. */
+  protected DataTable transposed;
+
   /**
    * Getter.
    * 
    * @return A transposed version of this table.
    */
   public DataTable transposed() {
-    return new TransposedTable(this);
+    if(transposed == null) {
+      transposed = new TransposedTable(this);
+    }
+    return transposed;
   }
 
   /**

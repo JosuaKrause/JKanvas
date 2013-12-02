@@ -14,6 +14,7 @@ class TransposedTable extends WrappedTable {
    */
   public TransposedTable(final DataTable table) {
     super(table);
+    transposed = table;
   }
 
   @Override
@@ -29,11 +30,6 @@ class TransposedTable extends WrappedTable {
   @Override
   public double getAt(final int row, final int col) {
     return table.getAt(col, row);
-  }
-
-  @Override
-  public DataTable transposed() {
-    return table;
   }
 
 }

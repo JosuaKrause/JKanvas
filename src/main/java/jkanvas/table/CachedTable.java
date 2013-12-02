@@ -166,15 +166,4 @@ public class CachedTable extends DataTable {
     return stddevs[col];
   }
 
-  /** The transposed table. */
-  private DataTable transposed;
-
-  @Override
-  public DataTable transposed() {
-    if(transposed == null) {
-      transposed = super.transposed();
-    }
-    return transposed;
-  }
-
 }
