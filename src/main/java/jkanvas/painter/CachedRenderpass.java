@@ -17,8 +17,7 @@ import jkanvas.KanvasContext;
  * returns <code>true</code>. The render pass can also not work with the current
  * zoom level as it may be altered to create the cache. However visibility
  * checks against the visible canvas do work, even though the visible canvas is
- * assumed to be the cached render pass. The method {@link #getBoundingBox()}
- * must also return a non-<code>null</code> value.
+ * assumed to be the cached render pass.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
@@ -41,15 +40,14 @@ public abstract class CachedRenderpass extends AbstractRenderpass {
 
   @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
-    final Rectangle2D vis = ctx.getVisibleCanvas();
     final Rectangle2D bbox = getBoundingBox();
-    if(!vis.intersects(bbox)) return;
     final boolean chg = isChanging();
     final boolean noCache = chg || lastChanging;
     lastChanging = chg;
     final Rectangle2D comp = ctx.toComponentCoordinates(bbox);
-    if((!isForceCaching() && (noCache || (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE)))
-        || jkanvas.Canvas.DISABLE_CACHING) {
+    final boolean drawSelf = noCache ||
+        (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE);
+    if((!isForceCaching() && drawSelf) || jkanvas.Canvas.DISABLE_CACHING) {
       invalidateCache();
       doDraw(g, ctx);
       return;

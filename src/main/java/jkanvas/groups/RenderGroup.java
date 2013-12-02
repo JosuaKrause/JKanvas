@@ -65,7 +65,9 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     }
 
     @Override
-    protected AnimationAction beforeAnimation(final AnimationAction onFinish) {
+    protected AnimationAction beforeAnimation(
+        final AnimationTiming timing, final AnimationAction onFinish) {
+      if(timing.duration <= 0) return onFinish;
       pass.setForceCache(true);
       return new AnimationAction() {
 
