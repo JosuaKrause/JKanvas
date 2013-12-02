@@ -293,13 +293,17 @@ public abstract class GenericPaintList<T extends Shape> {
    */
   public int hit(final Point2D point) {
     final T drawObject = createDrawObject();
-    for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
+    for(int i = visibles.length() - 1; i >= 0; i = visibles.previousSetBit(i - 1)) {
       int pos = getPosition(i);
-      final int endOfRun = visibles.nextClearBit(i);
+      // we know the current index is set, so we can start looking one below
+      final int endOfRun = visibles.previousClearBit(i - 1);
       do {
         if(contains(point, drawObject, i, pos)) return i;
-        pos += dims;
-      } while(++i < endOfRun);
+        pos -= dims;
+      } while(--i > endOfRun);
+      if(i < 1) {
+        break;
+      }
     }
     return -1;
   }

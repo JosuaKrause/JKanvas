@@ -92,6 +92,10 @@ public class PointListBenchmark {
         }
         if(expected >= 0) {
           array[expected].setFrame(1.0, 1.0, 2.0, 2.0);
+          // this one should not be picked
+          if(expected > 0) {
+            array[expected - 1].setFrame(1.0, 1.0, 2.0, 2.0);
+          }
         }
       }
     }
@@ -110,7 +114,8 @@ public class PointListBenchmark {
         index = list.hit(point);
       } else {
         int res = -1;
-        for(int i = 0; i < array.length; ++i) {
+        // emulate correct hit order
+        for(int i = array.length - 1; i >= 0; --i) {
           if(array[i] == null) {
             continue;
           }
@@ -139,9 +144,9 @@ public class PointListBenchmark {
     final PointListExecutor[] benchmarks = {
         new PointListExecutor(1000000, 0, -1, usePointList), // #1
         new PointListExecutor(1000000, 10000, -1, usePointList), // #2
-        new PointListExecutor(1000000, 0, 600000, usePointList), // #3
-        new PointListExecutor(1000000, 10000, 600000, usePointList), // #4
-        new PointListExecutor(1000000, 300000, 600000, usePointList), // #5
+        new PointListExecutor(1000000, 0, 200000, usePointList), // #3
+        new PointListExecutor(1000000, 10000, 200000, usePointList), // #4
+        new PointListExecutor(1000000, 300000, 200000, usePointList), // #5
     };
     final Benchmark benchmark = new Benchmark(benchmarks);
     benchmark.getResults(System.out, System.err);
