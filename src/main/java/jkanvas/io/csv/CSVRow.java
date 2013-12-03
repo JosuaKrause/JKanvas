@@ -1,5 +1,6 @@
 package jkanvas.io.csv;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,6 +110,11 @@ public final class CSVRow {
    */
   public Set<String> names() {
     return Collections.unmodifiableSet(map.keySet());
+  }
+
+  @Override
+  public String toString() {
+    return Arrays.toString(indexed);
   }
 
 }
