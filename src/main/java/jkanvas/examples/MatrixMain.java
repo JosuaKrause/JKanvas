@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
+import jkanvas.Camera;
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
@@ -65,7 +66,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
   }
 
   @Override
-  public boolean click(final Point2D p, final MouseEvent e) {
+  public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
     if(!SwingUtilities.isRightMouseButton(e) || e.isShiftDown()) return false;
     final MatrixPosition pos = pick(p);
     if(pos == null) return false;

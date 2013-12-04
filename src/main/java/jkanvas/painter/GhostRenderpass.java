@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
+import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
 
@@ -45,13 +46,13 @@ public class GhostRenderpass<T extends Renderpass> extends AbstractRenderpass {
   }
 
   @Override
-  public boolean click(final Point2D p, final MouseEvent e) {
-    return entity.click(p, e);
+  public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
+    return entity.click(cam, p, e);
   }
 
   @Override
-  public boolean doubleClick(final Point2D p, final MouseEvent e) {
-    return entity.doubleClick(p, e);
+  public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
+    return entity.doubleClick(cam, p, e);
   }
 
   @Override
