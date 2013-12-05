@@ -263,7 +263,8 @@ public abstract class GenericPaintList<T extends Shape> {
     for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
       int pos = getPosition(i);
       int cpos = getColorPosition(i);
-      final int endOfRun = visibles.nextClearBit(i);
+      // we know the current index is set so we can start at the next position
+      final int endOfRun = visibles.nextClearBit(i + 1);
       do {
         paint(gfx, drawObject, i, pos, cpos);
         pos += dims;
