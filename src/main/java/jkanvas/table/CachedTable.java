@@ -33,33 +33,20 @@ public class CachedTable extends DataTable {
       }
     }
     if(table.hasCachedFeatures()) {
-      features = table.getFeatures();
+      features = table.features();
     }
     for(final ColumnAggregation agg : ColumnAggregation.values()) {
       final double[] arr = getCachedArray(table, agg);
       if(arr == null) {
         continue;
       }
-      switch(agg) {
-        case MINIMUM:
-          mins = arr;
-          break;
-        case MAXIMUM:
-          maxs = arr;
-          break;
-        case MEAN:
-          means = arr;
-          break;
-        case STD_DEVIATION:
-          stddevs = arr;
-          break;
-      }
+      setCachedArray(agg, arr);
     }
     if(table.transposed != null && table.transposed.isCaching()) {
       transposed = table.transposed;
       // overwrite back-link when we are the better alternative
-      final DataTable t2 = table.transposed.transposed;
-      if(t2 == null || !t2.isCaching()) {
+      final DataTable tt = transposed.transposed;
+      if(tt == null || !tt.isCaching()) {
         table.transposed.transposed = this;
       }
     }
@@ -111,11 +98,11 @@ public class CachedTable extends DataTable {
 
   @Override
   public Feature getFeature(final int col) {
-    return getFeatures()[col];
+    return features()[col];
   }
 
   @Override
-  public Feature[] getFeatures() {
+  protected Feature[] features() {
     if(features == null) {
       final Feature[] res = new Feature[cols()];
       for(int i = 0; i < res.length; ++i) {
@@ -131,81 +118,50 @@ public class CachedTable extends DataTable {
     return features != null;
   }
 
-  /** The cache for minimums. */
-  private double[] mins;
+  /** The cache for aggregated values. */
+  private double[][] aggs;
 
-  @Override
-  public double getMin(final int col) {
-    if(mins == null) {
-      mins = new double[cols];
-      Arrays.fill(mins, Double.NaN);
+  /**
+   * Setter.
+   * 
+   * @param agg The column aggregation function.
+   * @param arr The array.
+   */
+  private void setCachedArray(final ColumnAggregation agg, final double[] arr) {
+    if(aggs == null) {
+      aggs = new double[ColumnAggregation.values().length][];
     }
-    if(Double.isNaN(mins[col])) {
-      mins[col] = super.getMin(col);
-    }
-    return mins[col];
+    aggs[agg.ordinal()] = arr;
   }
 
-  /** The cache for maximums. */
-  private double[] maxs;
-
-  @Override
-  public double getMax(final int col) {
-    if(maxs == null) {
-      maxs = new double[cols];
-      Arrays.fill(maxs, Double.NaN);
+  /**
+   * Getter.
+   * 
+   * @param agg The column aggregation function.
+   * @return The array.
+   */
+  private double[] getCacheArray(final ColumnAggregation agg) {
+    if(aggs != null) {
+      final double[] res = aggs[agg.ordinal()];
+      if(res != null) return res;
     }
-    if(Double.isNaN(maxs[col])) {
-      maxs[col] = super.getMax(col);
-    }
-    return maxs[col];
-  }
-
-  /** The cache for the mean values. */
-  private double[] means;
-
-  @Override
-  public double getMean(final int col) {
-    if(means == null) {
-      means = new double[cols];
-      Arrays.fill(means, Double.NaN);
-    }
-    if(Double.isNaN(means[col])) {
-      means[col] = super.getMean(col);
-    }
-    return means[col];
-  }
-
-  /** The cache for the standard deviation values. */
-  private double[] stddevs;
-
-  @Override
-  public double getStdDeviation(final int col) {
-    if(stddevs == null) {
-      stddevs = new double[cols];
-      Arrays.fill(stddevs, Double.NaN);
-    }
-    if(Double.isNaN(stddevs[col])) {
-      stddevs[col] = super.getStdDeviation(col);
-    }
-    return stddevs[col];
+    final double[] arr = new double[cols];
+    Arrays.fill(arr, Double.NaN);
+    setCachedArray(agg, arr);
+    return arr;
   }
 
   @Override
-  public boolean hasCachedValue(final ColumnAggregation agg, final int col) {
-    switch(agg) {
-      case MINIMUM:
-        return mins != null && !Double.isNaN(mins[col]);
-      case MAXIMUM:
-        return maxs != null && !Double.isNaN(maxs[col]);
-      case MEAN:
-        return means != null && !Double.isNaN(means[col]);
-      case STD_DEVIATION:
-        return stddevs != null && !Double.isNaN(stddevs[col]);
-      default:
-        Objects.requireNonNull(agg);
-        throw new AssertionError();
-    }
+  protected double getCachedValue(final ColumnAggregation agg, final int col) {
+    if(aggs == null) return Double.NaN;
+    final double[] arr = aggs[agg.ordinal()];
+    if(arr == null) return Double.NaN;
+    return arr[col];
+  }
+
+  @Override
+  protected void setCachedValue(final ColumnAggregation agg, final int col, final double v) {
+    getCacheArray(agg)[col] = v;
   }
 
 }

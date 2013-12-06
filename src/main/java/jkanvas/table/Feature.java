@@ -1,5 +1,7 @@
 package jkanvas.table;
 
+import static jkanvas.table.DataTable.ColumnAggregation.*;
+
 import java.util.Objects;
 
 import jkanvas.table.DataTable.ColumnAggregation;
@@ -59,37 +61,10 @@ public class Feature {
   /**
    * Getter.
    * 
-   * @return The minimum of this feature.
+   * @return The number of rows.
    */
-  public double getMin() {
-    return table.getMin(col);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The maximum of this feature.
-   */
-  public double getMax() {
-    return table.getMax(col);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The standard deviation of this feature.
-   */
-  public double getStdDeviation() {
-    return table.getStdDeviation(col);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @return The mean value of this feature.
-   */
-  public double getMean() {
-    return table.getMean(col);
+  public int rows() {
+    return table.rows();
   }
 
   /**
@@ -98,17 +73,28 @@ public class Feature {
    * @param agg The aggregation function.
    * @return The aggregated value.
    */
-  public double getAggregation(final ColumnAggregation agg) {
-    return agg.getValue(this);
+  public double aggregate(final ColumnAggregation agg) {
+    return agg.getValue(getTable(), getColumn());
   }
 
   /**
    * Getter.
    * 
-   * @return The number of rows.
+   * @param agg The aggregation function.
+   * @return The cached value.
    */
-  public int rows() {
-    return table.rows();
+  double getCachedValue(final ColumnAggregation agg) {
+    return getTable().getCachedValue(agg, getColumn());
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param agg The aggregation function.
+   * @param v The cached value.
+   */
+  void setCachedValue(final ColumnAggregation agg, final double v) {
+    getTable().setCachedValue(agg, getColumn(), v);
   }
 
   /**
@@ -179,11 +165,11 @@ public class Feature {
     @Override
     protected double dist(final double a, final double b,
         final Feature fa, final Feature fb) {
-      final double ra = fa.getMax() - fa.getMin();
-      final double rb = fb.getMax() - fb.getMin();
+      final double ra = fa.aggregate(MAXIMUM) - fa.aggregate(MINIMUM);
+      final double rb = fb.aggregate(MAXIMUM) - fb.aggregate(MINIMUM);
       if(ra == 0 || rb == 0) return Double.POSITIVE_INFINITY;
-      final double sa = (a - fa.getMin()) / ra;
-      final double sb = (b - fb.getMin()) / rb;
+      final double sa = (a - fa.aggregate(MINIMUM)) / ra;
+      final double sb = (b - fb.aggregate(MINIMUM)) / rb;
       return (sa - sb) * (sa - sb);
     }
 
@@ -199,12 +185,13 @@ public class Feature {
     @Override
     protected double dist(final double a, final double b,
         final Feature fa, final Feature fb) {
-      return (a - fa.getMean()) * (b - fb.getMean());
+      return (a - fa.aggregate(MEAN)) * (b - fb.aggregate(MEAN));
     }
 
     @Override
     protected double endSum(final double sum, final Feature fa, final Feature fb) {
-      return 1 - Math.abs(sum / fa.getStdDeviation() / fb.getStdDeviation() / fa.rows());
+      return 1 - Math.abs(
+          sum / fa.aggregate(STD_DEVIATION) / fb.aggregate(STD_DEVIATION) / fa.rows());
     }
 
   };

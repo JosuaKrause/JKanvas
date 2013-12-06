@@ -1,7 +1,6 @@
 package jkanvas.table;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Access to tabular data. The size of the table must not change. The contents
@@ -50,12 +49,23 @@ public abstract class DataTable {
    * 
    * @return All features.
    */
-  public Feature[] getFeatures() {
+  protected Feature[] features() {
     final Feature[] res = new Feature[cols()];
     for(int i = 0; i < res.length; ++i) {
       res[i] = getFeature(i);
     }
     return res;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return All features.
+   */
+  public final Feature[] getFeatures() {
+    final Feature[] fs = features();
+    if(hasCachedFeatures()) return Arrays.copyOf(fs, fs.length);
+    return fs;
   }
 
   /**
@@ -95,7 +105,7 @@ public abstract class DataTable {
   /**
    * Getter.
    * 
-   * @return Returns a cached verison of the current snapshot of the table.
+   * @return Returns a cached version of the current snapshot of the table.
    *         Aggregations in cached tables are lazily cached.
    */
   public DataTable cached() {
@@ -109,25 +119,79 @@ public abstract class DataTable {
    */
   public enum ColumnAggregation {
     /** The minimum of the column. */
-    MINIMUM,
+    MINIMUM {
+
+      @Override
+      protected double aggregate(final DataTable table, final int col) {
+        double min = Double.POSITIVE_INFINITY;
+        for(int i = 0; i < table.rows(); ++i) {
+          final double v = table.getAt(i, col);
+          if(min > v) {
+            min = v;
+          }
+        }
+        return min;
+      }
+
+    },
     /** The maximum of the column. */
-    MAXIMUM,
+    MAXIMUM {
+
+      @Override
+      protected double aggregate(final DataTable table, final int col) {
+        double max = Double.NEGATIVE_INFINITY;
+        for(int i = 0; i < table.rows(); ++i) {
+          final double v = table.getAt(i, col);
+          if(max < v) {
+            max = v;
+          }
+        }
+        return max;
+      }
+
+    },
     /** The mean value of the column. */
-    MEAN,
+    MEAN {
+
+      @Override
+      protected double aggregate(final DataTable table, final int col) {
+        final int rows = table.rows();
+        double sum = 0;
+        for(int i = 0; i < rows; ++i) {
+          final double v = table.getAt(i, col);
+          sum += v;
+        }
+        return sum / rows;
+      }
+
+    },
     /** The standard deviation. */
-    STD_DEVIATION,
-    // EOD
-    ;
+    STD_DEVIATION {
+
+      @Override
+      protected double aggregate(final DataTable table, final int col) {
+        final double mean = MEAN.getValue(table, col);
+        final int rows = table.rows();
+        double sum = 0;
+        for(int i = 0; i < rows; ++i) {
+          final double v = table.getAt(i, col);
+          sum += (v - mean) * (v - mean);
+        }
+        return Math.sqrt(sum / rows);
+      }
+
+    },
+
+    ; // EOD
 
     /**
-     * Computes the aggregation for the given feature.
+     * Computes the actual aggregation.
      * 
-     * @param f The feature.
-     * @return The value.
+     * @param table The table.
+     * @param col The column.
+     * @return The aggregated value.
      */
-    public double getValue(final Feature f) {
-      return f.getTable().getAggregated(this, f.getColumn());
-    }
+    protected abstract double aggregate(DataTable table, int col);
 
     /**
      * Computes the aggregation for the given column.
@@ -137,7 +201,11 @@ public abstract class DataTable {
      * @return The value.
      */
     public double getValue(final DataTable table, final int col) {
-      return table.getAggregated(this, col);
+      final double c = table.getCachedValue(this, col);
+      if(!Double.isNaN(c)) return c;
+      final double v = aggregate(table, col);
+      table.setCachedValue(this, col, v);
+      return v;
     }
 
   } // ColumnAggregation
@@ -149,20 +217,8 @@ public abstract class DataTable {
    * @param col The column.
    * @return The value.
    */
-  public double getAggregated(final ColumnAggregation agg, final int col) {
-    switch(agg) {
-      case MINIMUM:
-        return getMin(col);
-      case MAXIMUM:
-        return getMax(col);
-      case MEAN:
-        return getMean(col);
-      case STD_DEVIATION:
-        return getStdDeviation(col);
-      default:
-        Objects.requireNonNull(agg);
-        throw new AssertionError();
-    }
+  public double aggregated(final ColumnAggregation agg, final int col) {
+    return agg.getValue(this, col);
   }
 
   /**
@@ -170,46 +226,28 @@ public abstract class DataTable {
    * 
    * @param agg The aggregation function.
    * @param col The column.
-   * @return Whether there is a cached value for this aggregation.
+   * @return The cached aggregated value. {@link Double#NaN} signals a not yet
+   *         cached value. This method does not compute aggregations.
    */
-  public boolean hasCachedValue(
+  protected double getCachedValue(
       @SuppressWarnings("unused") final ColumnAggregation agg,
       @SuppressWarnings("unused") final int col) {
-    return false;
+    return Double.NaN;
   }
 
   /**
-   * Getter.
+   * Setter.
    * 
+   * @param agg The aggregation function.
    * @param col The column.
-   * @return The minimum of the column.
+   * @param v The value. This method is a no-op if {@link #isCaching()} returns
+   *          <code>false</code>.
    */
-  public double getMin(final int col) {
-    double min = Double.POSITIVE_INFINITY;
-    for(int i = 0; i < rows(); ++i) {
-      final double v = getAt(i, col);
-      if(min > v) {
-        min = v;
-      }
-    }
-    return min;
-  }
-
-  /**
-   * Getter.
-   * 
-   * @param col The column.
-   * @return The maximum of the column.
-   */
-  public double getMax(final int col) {
-    double max = Double.NEGATIVE_INFINITY;
-    for(int i = 0; i < rows(); ++i) {
-      final double v = getAt(i, col);
-      if(max < v) {
-        max = v;
-      }
-    }
-    return max;
+  protected void setCachedValue(
+      @SuppressWarnings("unused") final ColumnAggregation agg,
+      @SuppressWarnings("unused") final int col,
+      @SuppressWarnings("unused") final double v) {
+    // nothing to do
   }
 
   /**
@@ -221,41 +259,10 @@ public abstract class DataTable {
    */
   public double getMinMaxScaled(final int row, final int col) {
     if(!isCaching()) throw new IllegalStateException("must be caching");
-    final double min = getMin(col);
-    final double max = getMax(col);
+    final double min = ColumnAggregation.MINIMUM.getValue(this, col);
+    final double max = ColumnAggregation.MAXIMUM.getValue(this, col);
     if(min == max) return 0;
     return (getAt(row, col) - min) / (max - min);
-  }
-
-  /**
-   * Computes the mean value of the column.
-   * 
-   * @param col The column.
-   * @return The mean.
-   */
-  public double getMean(final int col) {
-    double sum = 0;
-    for(int i = 0; i < rows(); ++i) {
-      final double v = getAt(i, col);
-      sum += v;
-    }
-    return sum / rows();
-  }
-
-  /**
-   * Computes the standard deviation of the column.
-   * 
-   * @param col The column.
-   * @return The standard deviation.
-   */
-  public double getStdDeviation(final int col) {
-    final double mean = getMean(col);
-    double sum = 0;
-    for(int i = 0; i < rows(); ++i) {
-      final double v = getAt(i, col);
-      sum += (v - mean) * (v - mean);
-    }
-    return Math.sqrt(sum / rows());
   }
 
   /**
@@ -280,14 +287,15 @@ public abstract class DataTable {
     double[] res = null;
     final int cols = table.cols();
     for(int c = 0; c < cols; ++c) {
-      if(!table.hasCachedValue(agg, c)) {
+      final double v = table.getCachedValue(agg, c);
+      if(Double.isNaN(v)) {
         continue;
       }
       if(res == null) {
         res = new double[cols];
         Arrays.fill(res, Double.NaN);
       }
-      res[c] = table.getAggregated(agg, c);
+      res[c] = v;
     }
     return res;
   }

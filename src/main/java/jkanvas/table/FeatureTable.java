@@ -66,17 +66,12 @@ public class FeatureTable extends DataTable {
   }
 
   @Override
-  public double getAggregated(final ColumnAggregation agg, final int col) {
-    return agg.getValue(features[col]);
-  }
-
-  @Override
   public Feature getFeature(final int col) {
     return features[col];
   }
 
   @Override
-  public Feature[] getFeatures() {
+  protected Feature[] features() {
     return features;
   }
 
@@ -86,9 +81,13 @@ public class FeatureTable extends DataTable {
   }
 
   @Override
-  public boolean hasCachedValue(final ColumnAggregation agg, final int col) {
-    final Feature f = features[col];
-    return f.getTable().hasCachedValue(agg, f.getColumn());
+  protected double getCachedValue(final ColumnAggregation agg, final int col) {
+    return features[col].getCachedValue(agg);
+  }
+
+  @Override
+  protected void setCachedValue(final ColumnAggregation agg, final int col, final double v) {
+    features[col].setCachedValue(agg, v);
   }
 
 }
