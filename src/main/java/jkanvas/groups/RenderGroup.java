@@ -648,7 +648,9 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       }
       if(r.doubleClick(cam, pos, e)) return true;
     }
-    return RenderpassPainter.doubleClick(nlBack, cam, position, e);
+    if(RenderpassPainter.doubleClick(nlBack, cam, position, e)) return true;
+    cam.toView(this, AnimationTiming.SMOOTH, null, true);
+    return true;
   }
 
   @Override

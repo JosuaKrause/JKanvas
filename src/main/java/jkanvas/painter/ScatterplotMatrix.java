@@ -6,7 +6,6 @@ import java.util.Objects;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.groups.LinearGroup;
-import jkanvas.table.CachedTable;
 import jkanvas.table.DataTable;
 import jkanvas.table.PointMapper;
 
@@ -33,12 +32,7 @@ public class ScatterplotMatrix {
   public ScatterplotMatrix(final Animator animator, final DataTable table,
       final double size, final double space, final double pointSize) {
     Objects.requireNonNull(table);
-    final CachedTable t;
-    if(table instanceof CachedTable) {
-      t = (CachedTable) table;
-    } else {
-      t = new CachedTable(table);
-    }
+    final DataTable t = table.cached();
     group = new LinearGroup<>(
         animator, true, space, AnimationTiming.FAST);
     group.setBreakPoint((size + space) * t.cols() - space);

@@ -11,7 +11,6 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.groups.LinearGroup;
-import jkanvas.table.CachedTable;
 import jkanvas.table.DataTable;
 import jkanvas.table.LineMapper;
 
@@ -27,7 +26,7 @@ public class ParallelCoordinates {
   /** The size of a cell. */
   private final Rectangle2D box;
   /** The table. */
-  private final CachedTable table;
+  private final DataTable table;
   /** The alpha value for the lines. */
   private final double alpha;
 
@@ -43,11 +42,7 @@ public class ParallelCoordinates {
   public ParallelCoordinates(final Animator animator, final DataTable table,
       final double width, final double height, final double alpha) {
     Objects.requireNonNull(table);
-    if(table instanceof CachedTable) {
-      this.table = (CachedTable) table;
-    } else {
-      this.table = new CachedTable(table);
-    }
+    this.table = table.cached();
     this.alpha = alpha;
     group = new LinearGroup<AbstractRenderpass>(
         animator, true, 0, AnimationTiming.NO_ANIMATION) {

@@ -22,21 +22,8 @@ public class CachedTable extends DataTable {
    * 
    * @param table The table.
    */
-  public CachedTable(final DataTable table) {
+  CachedTable(final DataTable table) {
     Objects.requireNonNull(table);
-    if(table instanceof CachedTable) {
-      final CachedTable c = (CachedTable) table;
-      rows = c.rows;
-      cols = c.cols;
-      content = c.content;
-      features = c.features;
-      mins = c.mins;
-      maxs = c.maxs;
-      means = c.means;
-      stddevs = c.stddevs;
-      transposed = c.transposed;
-      return;
-    }
     rows = table.rows();
     cols = table.cols();
     content = new double[rows][cols];
@@ -45,8 +32,36 @@ public class CachedTable extends DataTable {
         content[r][c] = table.getAt(r, c);
       }
     }
-    if(table instanceof TransposedTable) {
-      transposed = table.transposed();
+    if(table.hasCachedFeatures()) {
+      features = table.getFeatures();
+    }
+    for(final ColumnAggregation agg : ColumnAggregation.values()) {
+      final double[] arr = getCachedArray(table, agg);
+      if(arr == null) {
+        continue;
+      }
+      switch(agg) {
+        case MINIMUM:
+          mins = arr;
+          break;
+        case MAXIMUM:
+          maxs = arr;
+          break;
+        case MEAN:
+          means = arr;
+          break;
+        case STD_DEVIATION:
+          stddevs = arr;
+          break;
+      }
+    }
+    if(table.transposed != null && table.transposed.isCaching()) {
+      transposed = table.transposed;
+      // overwrite back-link when we are the better alternative
+      final DataTable t2 = table.transposed.transposed;
+      if(t2 == null || !t2.isCaching()) {
+        table.transposed.transposed = this;
+      }
     }
   }
 
@@ -55,7 +70,7 @@ public class CachedTable extends DataTable {
    * 
    * @param table The table with <code>table[row][col]</code>.
    */
-  public CachedTable(final double[][] table) {
+  CachedTable(final double[][] table) {
     Objects.requireNonNull(table);
     content = new double[table.length][];
     int cols = -1;
@@ -86,6 +101,11 @@ public class CachedTable extends DataTable {
     return content[row][col];
   }
 
+  @Override
+  public boolean isCaching() {
+    return true;
+  }
+
   /** The feature cache. This value is computed lazily. */
   private Feature[] features;
 
@@ -104,6 +124,11 @@ public class CachedTable extends DataTable {
       features = res;
     }
     return features;
+  }
+
+  @Override
+  public boolean hasCachedFeatures() {
+    return features != null;
   }
 
   /** The cache for minimums. */
@@ -164,6 +189,23 @@ public class CachedTable extends DataTable {
       stddevs[col] = super.getStdDeviation(col);
     }
     return stddevs[col];
+  }
+
+  @Override
+  public boolean hasCachedValue(final ColumnAggregation agg, final int col) {
+    switch(agg) {
+      case MINIMUM:
+        return mins != null && !Double.isNaN(mins[col]);
+      case MAXIMUM:
+        return maxs != null && !Double.isNaN(maxs[col]);
+      case MEAN:
+        return means != null && !Double.isNaN(means[col]);
+      case STD_DEVIATION:
+        return stddevs != null && !Double.isNaN(stddevs[col]);
+      default:
+        Objects.requireNonNull(agg);
+        throw new AssertionError();
+    }
   }
 
 }

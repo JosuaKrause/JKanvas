@@ -1,7 +1,12 @@
 package jkanvas.table;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
- * Access to tabular data. The contents must not change.
+ * Access to tabular data. The size of the table must not change. The contents
+ * of the table may change. Use {@link #cached()} for a non-mutable
+ * representation of the current snapshot of the table.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
@@ -53,6 +58,15 @@ public abstract class DataTable {
     return res;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether feature objects are cached.
+   */
+  public boolean hasCachedFeatures() {
+    return false;
+  }
+
   /** The cached transposed table. */
   protected DataTable transposed;
 
@@ -66,6 +80,102 @@ public abstract class DataTable {
       transposed = new TransposedTable(this);
     }
     return transposed;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the content of this table is cached. This also applies to
+   *         aggregation functions.
+   */
+  public boolean isCaching() {
+    return false;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Returns a cached verison of the current snapshot of the table.
+   *         Aggregations in cached tables are lazily cached.
+   */
+  public DataTable cached() {
+    return new CachedTable(this);
+  }
+
+  /**
+   * An enumeration of aggregation functions.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
+  public enum ColumnAggregation {
+    /** The minimum of the column. */
+    MINIMUM,
+    /** The maximum of the column. */
+    MAXIMUM,
+    /** The mean value of the column. */
+    MEAN,
+    /** The standard deviation. */
+    STD_DEVIATION,
+    // EOD
+    ;
+
+    /**
+     * Computes the aggregation for the given feature.
+     * 
+     * @param f The feature.
+     * @return The value.
+     */
+    public double getValue(final Feature f) {
+      return f.getTable().getAggregated(this, f.getColumn());
+    }
+
+    /**
+     * Computes the aggregation for the given column.
+     * 
+     * @param table The table.
+     * @param col The column.
+     * @return The value.
+     */
+    public double getValue(final DataTable table, final int col) {
+      return table.getAggregated(this, col);
+    }
+
+  } // ColumnAggregation
+
+  /**
+   * Computes the aggregated value for the given column.
+   * 
+   * @param agg The aggregation function.
+   * @param col The column.
+   * @return The value.
+   */
+  public double getAggregated(final ColumnAggregation agg, final int col) {
+    switch(agg) {
+      case MINIMUM:
+        return getMin(col);
+      case MAXIMUM:
+        return getMax(col);
+      case MEAN:
+        return getMean(col);
+      case STD_DEVIATION:
+        return getStdDeviation(col);
+      default:
+        Objects.requireNonNull(agg);
+        throw new AssertionError();
+    }
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param agg The aggregation function.
+   * @param col The column.
+   * @return Whether there is a cached value for this aggregation.
+   */
+  public boolean hasCachedValue(
+      @SuppressWarnings("unused") final ColumnAggregation agg,
+      @SuppressWarnings("unused") final int col) {
+    return false;
   }
 
   /**
@@ -110,6 +220,7 @@ public abstract class DataTable {
    * @return The value at the given position normalized for the column.
    */
   public double getMinMaxScaled(final int row, final int col) {
+    if(!isCaching()) throw new IllegalStateException("must be caching");
     final double min = getMin(col);
     final double max = getMax(col);
     if(min == max) return 0;
@@ -145,6 +256,40 @@ public abstract class DataTable {
       sum += (v - mean) * (v - mean);
     }
     return Math.sqrt(sum / rows());
+  }
+
+  /**
+   * Creates a data table from the given array.
+   * 
+   * @param table The table with <code>table[row][col]</code>.
+   * @return The data table.
+   */
+  public static final DataTable fromArray(final double[][] table) {
+    return new CachedTable(table);
+  }
+
+  /**
+   * Computes an array of cached values for the given aggregation function.
+   * 
+   * @param table The table.
+   * @param agg The aggregation function.
+   * @return The array or <code>null</code> if no value was cached.
+   */
+  protected static final double[] getCachedArray(
+      final DataTable table, final ColumnAggregation agg) {
+    double[] res = null;
+    final int cols = table.cols();
+    for(int c = 0; c < cols; ++c) {
+      if(!table.hasCachedValue(agg, c)) {
+        continue;
+      }
+      if(res == null) {
+        res = new double[cols];
+        Arrays.fill(res, Double.NaN);
+      }
+      res[c] = table.getAggregated(agg, c);
+    }
+    return res;
   }
 
 }

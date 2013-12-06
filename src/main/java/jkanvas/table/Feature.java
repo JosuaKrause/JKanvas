@@ -2,6 +2,8 @@ package jkanvas.table;
 
 import java.util.Objects;
 
+import jkanvas.table.DataTable.ColumnAggregation;
+
 /**
  * A feature is a column of a {@link DataTable}.
  * 
@@ -88,6 +90,16 @@ public class Feature {
    */
   public double getMean() {
     return table.getMean(col);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param agg The aggregation function.
+   * @return The aggregated value.
+   */
+  public double getAggregation(final ColumnAggregation agg) {
+    return agg.getValue(this);
   }
 
   /**
