@@ -1,10 +1,8 @@
 package jkanvas.table;
 
-import static jkanvas.table.DataTable.ColumnAggregation.*;
+import static jkanvas.table.ColumnAggregation.*;
 
 import java.util.Objects;
-
-import jkanvas.table.DataTable.ColumnAggregation;
 
 /**
  * A feature is a column of a {@link DataTable}.
