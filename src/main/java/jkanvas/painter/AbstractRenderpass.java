@@ -60,7 +60,7 @@ public abstract class AbstractRenderpass extends RenderpassAdapter {
    * Setter.
    * 
    * @param parent Sets the parent of this render pass. Parents can not be
-   *          directly switched.
+   *          switched directly.
    */
   public void setParent(final Renderpass parent) {
     if(parent != null && this.parent != null) throw new IllegalStateException(
