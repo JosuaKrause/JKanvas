@@ -163,8 +163,6 @@ public abstract class DataTable {
    * @return The value at the given position normalized for the column.
    */
   public double getMinMaxScaled(final int row, final int col) {
-    if(FORCE_CACHE_ON_AGGREGATES && !isCaching()) throw new IllegalStateException(
-        "must be caching");
     final double min = ColumnAggregation.MINIMUM.getValue(this, col);
     final double max = ColumnAggregation.MAXIMUM.getValue(this, col);
     if(min == max) return 0;
