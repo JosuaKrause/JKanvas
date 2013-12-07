@@ -248,11 +248,12 @@ public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
    * Sets the given shape for the point.
    * 
    * @param shape The shape.
+   * @param index The index.
    * @param x The x coordinate.
    * @param y The y coordinate.
    * @param s The size.
    */
-  protected abstract void setShape(T shape, double x, double y, double s);
+  protected abstract void setShape(T shape, int index, double x, double y, double s);
 
   @Override
   protected void paint(final Graphics2D gfx, final T shape,
@@ -261,7 +262,7 @@ public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
     final double y = get(Y_COORD, pos);
     final double s = get(SIZE, pos);
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return;
-    setShape(shape, x, y, s);
+    setShape(shape, index, x, y, s);
     final Color fill = getColor(COLOR_FILL, cpos);
     if(fill != null || defaultColor != null) {
       gfx.setColor(fill != null ? fill : defaultColor);
@@ -281,7 +282,7 @@ public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
     final double y = get(Y_COORD, pos);
     final double s = get(SIZE, pos);
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return false;
-    setShape(shape, x, y, s);
+    setShape(shape, index, x, y, s);
     return shape.contains(point);
   }
 

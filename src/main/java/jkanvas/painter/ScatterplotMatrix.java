@@ -5,8 +5,10 @@ import java.util.Objects;
 
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
+import jkanvas.animation.CircleList;
 import jkanvas.groups.LinearGroup;
 import jkanvas.table.DataTable;
+import jkanvas.table.PointListFactory;
 import jkanvas.table.PointMapper;
 
 /**
@@ -28,9 +30,12 @@ public class ScatterplotMatrix {
    * @param size The size of the scatter plots.
    * @param space The space between scatter plots.
    * @param pointSize The size of the points.
+   * @param factory The point list factory or <code>null</code> if
+   *          {@link CircleList circle lists} should be used.
    */
   public ScatterplotMatrix(final Animator animator, final DataTable table,
-      final double size, final double space, final double pointSize) {
+      final double size, final double space, final double pointSize,
+      final PointListFactory factory) {
     Objects.requireNonNull(table);
     final DataTable t = table.cached();
     group = new LinearGroup<>(
@@ -42,6 +47,9 @@ public class ScatterplotMatrix {
       final int off = indexOfRow(t, row) - row;
       for(int col = row; col < t.cols(); ++col) {
         final PointMapper pm = new PointMapper(t, row, col, size, pointSize);
+        if(factory != null) {
+          pm.setPointListFactory(factory);
+        }
         sr[off + col] = new ScatterplotRenderpass(pm);
       }
     }

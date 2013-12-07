@@ -77,10 +77,10 @@ public class CSVTable extends DataTable {
 
   @Override
   public double getAt(final int row, final int col) {
-    known.set(col);
     final CSVRow r = rows.get(row);
     final String str = r.get(col);
     if(missing.equals(str)) return Double.NaN;
+    known.set(col);
     final List<String> v = values.get(col);
     if(v != null) {
       // expect string
@@ -127,7 +127,10 @@ public class CSVTable extends DataTable {
   @Override
   public boolean isCategorical(final int col) {
     if(!known.get(col)) {
-      getAt(0, col);
+      int row = 0;
+      do {
+        getAt(row++, col);
+      } while(!known.get(col) && row < rows());
     }
     return !numerical.get(col);
   }

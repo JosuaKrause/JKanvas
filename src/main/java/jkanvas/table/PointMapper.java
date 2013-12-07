@@ -1,15 +1,17 @@
 package jkanvas.table;
 
 import java.awt.Color;
+import java.awt.Shape;
 
 import jkanvas.animation.CircleList;
+import jkanvas.animation.PointList;
 
 /**
  * Maps points to rows in a table.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class PointMapper extends ListMapper<CircleList> {
+public class PointMapper extends ListMapper<PointList<? extends Shape>> {
 
   /** The first feature. */
   private final int f1;
@@ -38,13 +40,29 @@ public class PointMapper extends ListMapper<CircleList> {
     this.pointSize = pointSize;
   }
 
-  @Override
-  protected CircleList createList() {
-    return new CircleList(getTable().rows(), Color.BLACK, null);
+  /** The point list factory if any. */
+  private PointListFactory factory;
+
+  /**
+   * Setter.
+   * 
+   * @param factory The point list factory or <code>null</code> if a circle list
+   *          should be created.
+   */
+  public void setPointListFactory(final PointListFactory factory) {
+    this.factory = factory;
   }
 
   @Override
-  protected int createForRow(final CircleList pl, final int r) {
+  protected PointList<? extends Shape> createList() {
+    final DataTable table = getTable();
+    final int rows = table.rows();
+    if(factory == null) return new CircleList(rows, Color.BLACK, null);
+    return factory.createPointList(table, rows, Color.BLACK, null);
+  }
+
+  @Override
+  protected int createForRow(final PointList<? extends Shape> pl, final int r) {
     final DataTable table = getTable();
     return pl.addPoint(table.getMinMaxScaled(r, f1) * size,
         table.getMinMaxScaled(r, f2) * size, pointSize);

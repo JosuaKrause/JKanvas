@@ -28,8 +28,8 @@ public class CircleList extends PointList<Ellipse2D> {
   }
 
   @Override
-  protected void setShape(final Ellipse2D circle, final double x, final double y,
-      final double s) {
+  protected void setShape(final Ellipse2D circle, final int index,
+      final double x, final double y, final double s) {
     circle.setFrame(x - s, y - s, s * 2.0, s * 2.0);
   }
 
