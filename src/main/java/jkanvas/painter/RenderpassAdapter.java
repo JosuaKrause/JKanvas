@@ -14,11 +14,12 @@ import jkanvas.animation.AnimationList;
 import jkanvas.animation.AnimationTiming;
 
 /**
- * An adapter for render passes.
+ * An adapter for render passes. Use {@link AbstractRenderpass} as base class
+ * for implementing own render passes.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class RenderpassAdapter implements Renderpass {
+abstract class RenderpassAdapter implements Renderpass {
 
   /** Whether to use the double click default action. */
   public static boolean USE_DOUBLE_CLICK_DEFAULT = true;

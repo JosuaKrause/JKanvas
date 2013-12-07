@@ -2,6 +2,8 @@ package jkanvas.table;
 
 import static jkanvas.table.ColumnAggregation.*;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Objects;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class Feature {
+public class Feature implements Iterable<Double> {
 
   /** The table. */
   private final DataTable table;
@@ -111,6 +113,51 @@ public class Feature {
    */
   void setCachedValue(final ColumnAggregation agg, final double v) {
     table.setCachedValue(agg, col, v);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the feature is caching.
+   */
+  public boolean isCaching() {
+    return table.isCaching();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return A caching version of the feature.
+   */
+  public Feature cached() {
+    if(isCaching()) return this;
+    return table.cached().getFeature(col);
+  }
+
+  @Override
+  public Iterator<Double> iterator() {
+    return new Iterator<Double>() {
+
+      /** The current row. */
+      private int row = 0;
+
+      @Override
+      public boolean hasNext() {
+        return row < rows();
+      }
+
+      @Override
+      public Double next() {
+        if(!hasNext()) throw new NoSuchElementException();
+        return getElement(row++);
+      }
+
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+
+    };
   }
 
   /**
