@@ -2,15 +2,16 @@ package jkanvas.animation;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 
 /**
  * A list of circular shaped points with filling and border color.
  * 
  * @author Joschi <josua.krause@googlemail.com>
+ * @param <T> The point shape type.
  */
-public class PointList extends GenericPaintList<Ellipse2D> {
+public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
 
   /** The index for the x coordinate. */
   protected static final int X_COORD = 0;
@@ -34,8 +35,8 @@ public class PointList extends GenericPaintList<Ellipse2D> {
    * @param defaultColor The default filling color.
    * @param defaultBorder The default border color.
    */
-  public PointList(final int initialSize, final Color defaultColor,
-      final Color defaultBorder) {
+  public PointList(final int initialSize,
+      final Color defaultColor, final Color defaultBorder) {
     super(3, 2, initialSize);
     this.defaultColor = defaultColor;
     this.defaultBorder = defaultBorder;
@@ -243,40 +244,45 @@ public class PointList extends GenericPaintList<Ellipse2D> {
     return getColor(COLOR_BORDER, cpos);
   }
 
-  @Override
-  protected Ellipse2D createDrawObject() {
-    return new Ellipse2D.Double();
-  }
+  /**
+   * Sets the given shape for the point.
+   * 
+   * @param shape The shape.
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @param s The size.
+   */
+  protected abstract void setShape(T shape, double x, double y, double s);
 
   @Override
-  protected void paint(final Graphics2D gfx, final Ellipse2D circle,
+  protected void paint(final Graphics2D gfx, final T shape,
       final int index, final int pos, final int cpos) {
     final double x = get(X_COORD, pos);
     final double y = get(Y_COORD, pos);
     final double s = get(SIZE, pos);
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return;
-    circle.setFrame(x - s, y - s, s * 2.0, s * 2.0);
+    setShape(shape, x, y, s);
     final Color fill = getColor(COLOR_FILL, cpos);
     if(fill != null || defaultColor != null) {
       gfx.setColor(fill != null ? fill : defaultColor);
-      gfx.fill(circle);
+      gfx.fill(shape);
     }
     final Color border = getColor(COLOR_BORDER, cpos);
     if(border != null || defaultBorder != null) {
       gfx.setColor(border != null ? border : defaultBorder);
-      gfx.draw(circle);
+      gfx.draw(shape);
     }
   }
 
   @Override
   protected boolean contains(
-      final Point2D point, final Ellipse2D circle, final int index, final int pos) {
+      final Point2D point, final T shape, final int index, final int pos) {
     final double x = get(X_COORD, pos);
     final double y = get(Y_COORD, pos);
     final double s = get(SIZE, pos);
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return false;
-    circle.setFrame(x - s, y - s, s * 2.0, s * 2.0);
-    return circle.contains(point);
+    setShape(shape, x, y, s);
+    return shape.contains(point);
   }
 
 }

@@ -12,7 +12,7 @@ import jkanvas.util.Benchmark.BenchmarkExecutor;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class PointListBenchmark {
+public class CircleListBenchmark {
 
   /**
    * An point list benchmark task.
@@ -24,7 +24,7 @@ public class PointListBenchmark {
     /** Whether to use a point list or an array. */
     private final boolean usePointList;
     /** The point list. */
-    private final PointList list;
+    private final CircleList list;
     /** The array */
     private final Ellipse2D[] array;
     /** The number of items. */
@@ -55,7 +55,7 @@ public class PointListBenchmark {
       this.usePointList = usePointList;
       if(usePointList) {
         array = null;
-        list = new PointList(numberOfItems, null, null);
+        list = new CircleList(numberOfItems, null, null);
         // elements will not contain the point (2.0, 2.0)
         for(int i = 0; i < numberOfItems; ++i) {
           final double x = rnd.nextDouble();

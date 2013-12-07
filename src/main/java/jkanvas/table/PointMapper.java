@@ -2,14 +2,14 @@ package jkanvas.table;
 
 import java.awt.Color;
 
-import jkanvas.animation.PointList;
+import jkanvas.animation.CircleList;
 
 /**
  * Maps points to rows in a table.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class PointMapper extends ListMapper<PointList> {
+public class PointMapper extends ListMapper<CircleList> {
 
   /** The first feature. */
   private final int f1;
@@ -39,12 +39,12 @@ public class PointMapper extends ListMapper<PointList> {
   }
 
   @Override
-  protected PointList createList() {
-    return new PointList(getTable().rows(), Color.BLACK, null);
+  protected CircleList createList() {
+    return new CircleList(getTable().rows(), Color.BLACK, null);
   }
 
   @Override
-  protected int createForRow(final PointList pl, final int r) {
+  protected int createForRow(final CircleList pl, final int r) {
     final DataTable table = getTable();
     return pl.addPoint(table.getMinMaxScaled(r, f1) * size,
         table.getMinMaxScaled(r, f2) * size, pointSize);
