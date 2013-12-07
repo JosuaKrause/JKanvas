@@ -5,7 +5,7 @@ package jkanvas.table;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-class TransposedTable extends WrappedTable {
+final class TransposedTable extends WrappedTable {
 
   /**
    * Creates a transposed view on the given table.
@@ -15,6 +15,17 @@ class TransposedTable extends WrappedTable {
   public TransposedTable(final DataTable table) {
     super(table);
     transposed = table;
+  }
+
+  @Override
+  public boolean isCategorical(final int col) {
+    // rows can be a mixture of categorical and numerical data
+    return false;
+  }
+
+  @Override
+  public String getName(final int col) {
+    return "" + col;
   }
 
   @Override

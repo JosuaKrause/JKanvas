@@ -41,6 +41,22 @@ public abstract class DataTable {
    * Getter.
    * 
    * @param col The column.
+   * @return Whether the column is categorical.
+   */
+  public abstract boolean isCategorical(int col);
+
+  /**
+   * Getter.
+   * 
+   * @param col The column.
+   * @return The name of the column.
+   */
+  public abstract String getName(int col);
+
+  /**
+   * Getter.
+   * 
+   * @param col The column.
    * @return The feature for the given column.
    */
   public Feature getFeature(final int col) {

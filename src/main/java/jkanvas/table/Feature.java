@@ -31,6 +31,24 @@ public class Feature {
   /**
    * Getter.
    * 
+   * @return The name of the column.
+   */
+  public String getName() {
+    return table.getName(col);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the column has categorical values.
+   */
+  public boolean isCategorical() {
+    return table.isCategorical(col);
+  }
+
+  /**
+   * Getter.
+   * 
    * @return The column this feature represents.
    */
   public int getColumn() {
@@ -72,7 +90,7 @@ public class Feature {
    * @return The aggregated value.
    */
   public double aggregate(final ColumnAggregation agg) {
-    return agg.getValue(getTable(), getColumn());
+    return agg.getValue(table, col);
   }
 
   /**
@@ -82,7 +100,7 @@ public class Feature {
    * @return The cached value.
    */
   double getCachedValue(final ColumnAggregation agg) {
-    return getTable().getCachedValue(agg, getColumn());
+    return table.getCachedValue(agg, col);
   }
 
   /**
@@ -92,7 +110,7 @@ public class Feature {
    * @param v The cached value.
    */
   void setCachedValue(final ColumnAggregation agg, final double v) {
-    getTable().setCachedValue(agg, getColumn(), v);
+    table.setCachedValue(agg, col, v);
   }
 
   /**
@@ -192,6 +210,6 @@ public class Feature {
           sum / fa.aggregate(STD_DEVIATION) / fb.aggregate(STD_DEVIATION) / fa.rows());
     }
 
-  };
+  }; // PEARSON
 
 }

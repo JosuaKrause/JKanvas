@@ -56,6 +56,16 @@ public class FeatureTable extends DataTable {
   }
 
   @Override
+  public String getName(final int col) {
+    return features[col].getName();
+  }
+
+  @Override
+  public boolean isCategorical(final int col) {
+    return features[col].isCategorical();
+  }
+
+  @Override
   public boolean isCaching() {
     return caching;
   }

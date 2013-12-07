@@ -23,8 +23,14 @@ public class CSVTable extends DataTable {
   private final Map<Integer, List<String>> values;
   /** All numerical columns. */
   private final BitSet numerical;
+  /** Identified columns. */
+  private final BitSet known;
   /** The string indicating a missing value. */
   private final String missing;
+  /** The names of the columns. */
+  private final String[] names;
+  /** First row. */
+  private final CSVRow first;
 
   /**
    * Creates a CSV reader table.
@@ -49,8 +55,14 @@ public class CSVTable extends DataTable {
           "varying cols: " + (cols + 1) + " got " + (row.highestIndex() + 1));
     }
     if(rows.isEmpty()) throw new IllegalArgumentException("no rows");
+    first = rows.get(0);
     values = new HashMap<>();
     numerical = new BitSet();
+    names = new String[cols + 1];
+    for(int c = 0; c < names.length; ++c) {
+      names[c] = first.getTitle(c);
+    }
+    known = new BitSet(names.length);
   }
 
   @Override
@@ -60,11 +72,12 @@ public class CSVTable extends DataTable {
 
   @Override
   public int cols() {
-    return rows.get(0).highestIndex() + 1;
+    return first.highestIndex() + 1;
   }
 
   @Override
   public double getAt(final int row, final int col) {
+    known.set(col);
     final CSVRow r = rows.get(row);
     final String str = r.get(col);
     if(missing.equals(str)) return Double.NaN;
@@ -104,6 +117,19 @@ public class CSVTable extends DataTable {
       values.put(col, vals);
       return 0;
     }
+  }
+
+  @Override
+  public String getName(final int col) {
+    return names[col];
+  }
+
+  @Override
+  public boolean isCategorical(final int col) {
+    if(!known.get(col)) {
+      getAt(0, col);
+    }
+    return !numerical.get(col);
   }
 
 }

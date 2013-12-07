@@ -1,6 +1,7 @@
 package jkanvas.table;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 
 /**
@@ -16,6 +17,13 @@ public class CachedTable extends DataTable {
   private final int cols;
   /** The content. */
   private final double[][] content;
+  /** The names. */
+  private final String[] names;
+  /**
+   * A bit set of categorical columns or <code>null</code> if no column is
+   * categorical.
+   */
+  private final BitSet categorical;
 
   /**
    * Creates a cached version of the given table.
@@ -30,6 +38,17 @@ public class CachedTable extends DataTable {
     for(int r = 0; r < rows; ++r) {
       for(int c = 0; c < cols; ++c) {
         content[r][c] = table.getAt(r, c);
+      }
+    }
+    if(table instanceof CachedTable) {
+      final CachedTable ct = (CachedTable) table;
+      categorical = ct.categorical;
+      names = ct.names;
+    } else {
+      categorical = categoricalBitSet(table);
+      names = new String[cols];
+      for(int c = 0; c < cols; ++c) {
+        names[c] = table.getName(c);
       }
     }
     if(table.hasCachedFeatures()) {
@@ -59,6 +78,7 @@ public class CachedTable extends DataTable {
    */
   CachedTable(final double[][] table) {
     Objects.requireNonNull(table);
+    categorical = null;
     content = new double[table.length][];
     int cols = -1;
     for(int r = 0; r < table.length; ++r) {
@@ -71,6 +91,10 @@ public class CachedTable extends DataTable {
     }
     this.cols = cols >= 0 ? cols : 0;
     rows = content.length;
+    names = new String[cols];
+    for(int c = 0; c < cols; ++c) {
+      names[c] = "" + c;
+    }
   }
 
   @Override
@@ -86,6 +110,16 @@ public class CachedTable extends DataTable {
   @Override
   public double getAt(final int row, final int col) {
     return content[row][col];
+  }
+
+  @Override
+  public String getName(final int col) {
+    return names[col];
+  }
+
+  @Override
+  public boolean isCategorical(final int col) {
+    return categorical != null && categorical.get(col);
   }
 
   @Override
@@ -162,6 +196,22 @@ public class CachedTable extends DataTable {
   @Override
   protected void setCachedValue(final ColumnAggregation agg, final int col, final double v) {
     getCacheArray(agg)[col] = v;
+  }
+
+  /**
+   * Creates a bit set from the given table.
+   * 
+   * @param table The table.
+   * @return The bit set representing all categorical columns or
+   *         <code>null</code> if no column is categorical.
+   */
+  private static BitSet categoricalBitSet(final DataTable table) {
+    final int cols = table.cols();
+    final BitSet set = new BitSet();
+    for(int c = 0; c < cols; ++c) {
+      set.set(c, table.isCategorical(c));
+    }
+    return set.isEmpty() ? null : set;
   }
 
 }
