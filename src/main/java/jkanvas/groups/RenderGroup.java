@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.swing.SwingUtilities;
+
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedPosition;
@@ -649,6 +651,8 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       if(r.doubleClick(cam, pos, e)) return true;
     }
     if(RenderpassPainter.doubleClick(nlBack, cam, position, e)) return true;
+    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
     cam.toView(this, AnimationTiming.SMOOTH, null, true);
     return true;
   }

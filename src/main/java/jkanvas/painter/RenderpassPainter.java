@@ -9,8 +9,11 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
+import jkanvas.animation.AnimationTiming;
 import jkanvas.util.PaintUtil;
 
 /**
@@ -154,7 +157,12 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
-    return doubleClick(back, cam, p, e);
+    if(doubleClick(back, cam, p, e)) return true;
+    if(!RenderpassAdapter.USE_DOUBLE_CLICK_DEFAULT) return false;
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
+    final Rectangle2D box = getBoundingBox(back);
+    cam.toView(box, AnimationTiming.SMOOTH, null, true);
+    return true;
   }
 
   /**

@@ -11,6 +11,9 @@ import java.util.Arrays;
  */
 public abstract class DataTable {
 
+  /** Whether to force the use of caching in aggregation functions. */
+  public static boolean FORCE_CACHE_ON_AGGREGATES = true;
+
   /**
    * Getter.
    * 
@@ -149,7 +152,7 @@ public abstract class DataTable {
       @SuppressWarnings("unused") final ColumnAggregation agg,
       @SuppressWarnings("unused") final int col,
       @SuppressWarnings("unused") final double v) {
-    // nothing to do
+    if(FORCE_CACHE_ON_AGGREGATES) throw new IllegalStateException("must be caching");
   }
 
   /**
@@ -160,7 +163,8 @@ public abstract class DataTable {
    * @return The value at the given position normalized for the column.
    */
   public double getMinMaxScaled(final int row, final int col) {
-    if(!isCaching()) throw new IllegalStateException("must be caching");
+    if(FORCE_CACHE_ON_AGGREGATES && !isCaching()) throw new IllegalStateException(
+        "must be caching");
     final double min = ColumnAggregation.MINIMUM.getValue(this, col);
     final double max = ColumnAggregation.MAXIMUM.getValue(this, col);
     if(min == max) return 0;
