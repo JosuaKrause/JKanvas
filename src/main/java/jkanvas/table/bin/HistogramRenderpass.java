@@ -104,52 +104,36 @@ public class HistogramRenderpass extends AbstractRenderpass {
     return new Rectangle2D.Double(0, 0, width, height);
   }
 
-  /**
-   * Draws the given rectangle.
-   * 
-   * @param g The graphics context.
-   * @param rect The rectangle to draw.
-   * @param small If the rectangle will be small on screen.
-   */
-  private static void draw(final Graphics2D g, final Rectangle2D rect, final boolean small) {
-    if(small) {
-      g.drawRect((int) Math.floor(rect.getX()), (int) Math.floor(rect.getY()),
-          (int) Math.ceil(rect.getWidth()) - 1, (int) Math.ceil(rect.getHeight()) - 1);
-    } else {
-      g.draw(rect);
-    }
-  }
-
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
     if(border == null && color == null) return;
-    final boolean small = ctx.toCanvasLength(1) > 1;
-    final Rectangle2D rect = getBoundingBox();
+    if(binner != null) {
+      final Rectangle2D rect = new Rectangle2D.Double();
+      final int bins = binner.bins();
+      final double binWidth = binner.getTotalWidth();
+      final double binHeight = binner.getMaxCount();
+      double curMin = binner.getMinValueOf(0);
+      double x = 0.0;
+      for(int b = 0; b < bins; ++b) {
+        final double curMax = binner.getMinValueOf(b + 1);
+        final double w = (curMax - curMin) * width / binWidth;
+        final double h = binner.getCountOf(b) * height / binHeight;
+        rect.setFrame(x, height - h, w, h);
+        if(color != null) {
+          g.setColor(color);
+          g.fill(rect);
+        }
+        if(border != null) {
+          g.setColor(border);
+          g.draw(rect);
+        }
+        x += w;
+        curMin = curMax;
+      }
+    }
     if(border != null) {
       g.setColor(border);
-      draw(g, rect, small);
-    }
-    if(binner == null) return;
-    final int bins = binner.bins();
-    final double binWidth = binner.getTotalWidth();
-    final double binHeight = binner.getMaxCount();
-    double curMin = binner.getMinValueOf(0);
-    for(int b = 0; b < bins; ++b) {
-      final double curMax = binner.getMinValueOf(b + 1);
-      final double w = (curMax - curMin) * width / binWidth;
-      final double h = binner.getCountOf(b) * height / binHeight;
-      rect.setFrame(0, height - h, w, h);
-      if(border != null) {
-        g.setColor(border);
-        draw(g, rect, small);
-      }
-      if(color != null) {
-        g.setColor(color);
-        g.fill(rect);
-      }
-      g.translate(w, 0.0);
-      curMin = curMax;
+      g.draw(getBoundingBox());
     }
   }
-
 }
