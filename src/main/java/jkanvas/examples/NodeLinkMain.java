@@ -162,6 +162,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   @Override
   public void getBoundingBox(final Rectangle2D bbox) {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
+    bbox.setFrame(0, 0, 0, 0);
     for(final AnimatedPosition p : view.nodes()) {
       final double x = p.getX();
       final double y = p.getY();

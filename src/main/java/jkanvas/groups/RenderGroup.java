@@ -108,11 +108,11 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     /**
      * Getter.
      * 
-     * @param rect Where the render pass bounding box will be stored. The value
-     *          is refreshed by calling {@link #checkBBoxChange()}.
+     * @return The bounding box of the pass. The box must not be changed. The
+     *         value is refreshed by calling {@link #checkBBoxChange()}.
      */
-    public void getPassBBox(final Rectangle2D rect) {
-      rect.setFrame(bbox);
+    Rectangle2D getPassBBox() {
+      return bbox;
     }
 
     /**
@@ -544,7 +544,6 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     final Rectangle2D view = ctx.getVisibleCanvas();
     boolean changed = false;
     T last = null;
-    final Rectangle2D bbox = new Rectangle2D.Double();
     for(final RenderpassPosition<T> p : members) {
       final T r = p.pass;
       if(!r.isVisible()) {
@@ -553,7 +552,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       if(p.checkBBoxChange()) {
         changed = true;
       }
-      p.getPassBBox(bbox);
+      final Rectangle2D bbox = p.getPassBBox();
       if(!view.intersects(bbox)) {
         continue;
       }
@@ -581,7 +580,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
         if(rp.checkBBoxChange()) {
           changed = true;
         }
-        rp.getPassBBox(bbox);
+        final Rectangle2D bbox = rp.getPassBBox();
         if(!view.intersects(bbox)) {
           continue;
         }
@@ -772,12 +771,10 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     RenderpassPainter.getBoundingBox(bbox, nlFront);
     final Rectangle2D rect = new Rectangle2D.Double();
     RenderpassPainter.getBoundingBox(rect, nlBack);
-    if(!rect.isEmpty()) {
-      if(bbox.isEmpty()) {
-        bbox.setFrame(rect);
-      } else {
-        bbox.add(rect);
-      }
+    if(bbox.isEmpty()) {
+      bbox.setFrame(rect);
+    } else if(!rect.isEmpty()) {
+      bbox.add(rect);
     }
     for(final RenderpassPosition<T> p : members) {
       if(!p.pass.isVisible()) {
@@ -786,13 +783,11 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       if(p.checkBBoxChange()) {
         change = true;
       }
-      p.getPassBBox(rect);
-      if(!rect.isEmpty()) {
-        if(bbox.isEmpty()) {
-          bbox.setFrame(rect);
-        } else {
-          bbox.add(rect);
-        }
+      final Rectangle2D box = p.getPassBBox();
+      if(bbox.isEmpty()) {
+        bbox.setFrame(box);
+      } else if(!box.isEmpty()) {
+        bbox.add(box);
       }
     }
     if(change) {

@@ -452,7 +452,7 @@ public class RenderpassPainter implements KanvasPainter {
       getPassBoundingBox(bbox, r);
       if(rect.isEmpty()) {
         rect.setFrame(bbox);
-      } else {
+      } else if(!bbox.isEmpty()) {
         rect.add(bbox);
       }
     }
