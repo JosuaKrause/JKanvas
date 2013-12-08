@@ -95,8 +95,9 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   @Override
   public boolean toView(final Renderpass pass, final AnimationTiming timing,
       final AnimationAction onFinish, final boolean useMargin) {
-    final Rectangle2D box = jkanvas.painter.RenderpassPainter.getTopLevelBounds(pass);
-    if(box == null) {
+    final Rectangle2D box = new Rectangle2D.Double();
+    jkanvas.painter.RenderpassPainter.getTopLevelBounds(box, pass);
+    if(box.isEmpty()) {
       canvas.scheduleAction(onFinish, timing);
       return false;
     }

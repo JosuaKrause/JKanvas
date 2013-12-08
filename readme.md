@@ -10,7 +10,7 @@ in other Maven projects (see [below] (#maven-integration)).
 In order to create a ZUI component you can use the following snippet:
 
 ```
-Renderpass renderpass = new RenderpassAdapter() {
+Renderpass renderpass = new AbstractRenderpass() {
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
@@ -24,8 +24,8 @@ Renderpass renderpass = new RenderpassAdapter() {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    // optionally return a bounding-box
+  public void getBoundingBox(Rectangle2D bbox) {
+    // set bounding box for the render pass
   }
 
 };

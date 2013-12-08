@@ -191,9 +191,9 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
+  public void getBoundingBox(final Rectangle2D bbox) {
     // FIXME should have bounding box
-    return null;
+    bbox.setFrame(0, 0, 0, 0);
   }
 
 }

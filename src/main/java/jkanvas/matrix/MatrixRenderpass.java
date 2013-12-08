@@ -157,15 +157,14 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRend
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
+  public void getBoundingBox(final Rectangle2D bbox) {
     double w = 0;
     double h = 0;
     for(int i = 0; i < matrix.size(); ++i) {
       w += matrix.getWidth(i);
       h += matrix.getHeight(i);
     }
-    if(w <= 0 || h <= 0) return null;
-    return new Rectangle2D.Double(0, 0, w, h);
+    bbox.setFrame(0, 0, w, h);
   }
 
   /**

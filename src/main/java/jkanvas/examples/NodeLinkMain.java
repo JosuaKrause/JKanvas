@@ -160,16 +160,15 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
+  public void getBoundingBox(final Rectangle2D bbox) {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
-    Rectangle2D bbox = null;
     for(final AnimatedPosition p : view.nodes()) {
       final double x = p.getX();
       final double y = p.getY();
       final Shape shape = n.createNodeShape(p, x, y);
       final Rectangle2D b = shape.getBounds2D();
-      if(bbox == null) {
-        bbox = b;
+      if(bbox.isEmpty()) {
+        bbox.setFrame(b);
       } else {
         bbox.add(b);
       }
@@ -181,7 +180,6 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
         bbox.add(endShape.getBounds2D());
       }
     }
-    return bbox;
   }
 
   /**

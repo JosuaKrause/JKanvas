@@ -35,13 +35,17 @@ public interface Renderpass extends KanvasInteraction {
   double getOffsetY();
 
   /**
-   * Getter.
+   * Calculates the bounding box of the render pass. The method does
+   * <em>not</em> account for the offset. To get information about the offset of
+   * the render pass use {@link #getOffsetX()} and {@link #getOffsetY()}
+   * respectively.
    * 
-   * @return An optional bounding box in canvas coordinates. This method does
-   *         <em>not</em> have to account for the offset.
+   * @param bbox The rectangle where the bounding box is stored.
+   * @see #getOffsetX()
+   * @see #getOffsetY()
    */
   @Override
-  Rectangle2D getBoundingBox();
+  void getBoundingBox(Rectangle2D bbox);
 
   /**
    * Setter.
@@ -58,9 +62,9 @@ public interface Renderpass extends KanvasInteraction {
    * @return The parent of this render pass. The parent is used to calculate
    *         correct top level canvas positions when render passes are combined
    *         in groups.
-   * @see jkanvas.painter.RenderpassPainter#getTopLevelBounds(Renderpass)
-   * @see jkanvas.painter.RenderpassPainter#getTopLevelBounds(Renderpass,
-   *      Rectangle2D)
+   * @see jkanvas.painter.RenderpassPainter#getTopLevelBounds(Rectangle2D,Renderpass)
+   * @see jkanvas.painter.RenderpassPainter#convertToTopLevelBounds(Rectangle2D,
+   *      Renderpass)
    */
   Renderpass getParent();
 

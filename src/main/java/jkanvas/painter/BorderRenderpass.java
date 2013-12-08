@@ -49,15 +49,13 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
   @Override
   public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
     final AffineTransform at = ctx.toComponentTransformation();
+    final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Entry<Renderpass, String> e : borders.entrySet()) {
       final Renderpass r = e.getKey();
       if(!RenderpassPainter.isTopLevelVisible(r)) {
         continue;
       }
-      final Rectangle2D bbox = RenderpassPainter.getTopLevelBounds(r);
-      if(bbox == null) {
-        continue;
-      }
+      RenderpassPainter.getTopLevelBounds(bbox, r);
       final Double d = widths.get(r);
       g.setStroke(new BasicStroke((float) ctx.toComponentLength(d != null ? d : 2)));
       g.setColor(border);

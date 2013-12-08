@@ -622,13 +622,15 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /**
    * Resets the viewport to a scaling of <code>1.0</code> and
    * <code>(0, 0)</code> being in the center of the component when
-   * {@link KanvasPainter#getBoundingBox()} returns <code>null</code> and zooms
-   * to fit the bounding box if {@link KanvasPainter#getBoundingBox()} returns a
-   * proper bounding box.
+   * {@link KanvasPainter#getBoundingBox(Rectangle2D)} returns an invalid
+   * bounding box or zooms to fit the bounding box if
+   * {@link KanvasPainter#getBoundingBox(Rectangle2D)} returns a proper bounding
+   * box.
    */
   public void reset() {
-    final Rectangle2D bbox = painter.getBoundingBox();
-    if(bbox == null) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    painter.getBoundingBox(bbox);
+    if(bbox.isEmpty()) {
       zui.resetView(getVisibleRect());
     } else {
       reset(bbox);
@@ -637,7 +639,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
 
   /**
    * Resets the viewport to fit the bounding box if
-   * {@link KanvasPainter#getBoundingBox()} returns a proper bounding box.
+   * {@link KanvasPainter#getBoundingBox(Rectangle2D)} returns a proper bounding
+   * box.
    * 
    * @param timing The timing.
    * @param onFinish The action to perform when the viewport was set or when the
@@ -646,8 +649,9 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @return Whether the viewport is set.
    */
   public boolean reset(final AnimationTiming timing, final AnimationAction onFinish) {
-    final Rectangle2D bbox = painter.getBoundingBox();
-    if(bbox == null) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    painter.getBoundingBox(bbox);
+    if(bbox.isEmpty()) {
       scheduleAction(onFinish, timing);
       return false;
     }

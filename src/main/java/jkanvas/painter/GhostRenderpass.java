@@ -82,8 +82,8 @@ public class GhostRenderpass<T extends Renderpass> extends AbstractRenderpass {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return entity.getBoundingBox();
+  public void getBoundingBox(final Rectangle2D bbox) {
+    entity.getBoundingBox(bbox);
   }
 
   @Override

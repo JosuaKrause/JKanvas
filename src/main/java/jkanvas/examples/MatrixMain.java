@@ -114,8 +114,9 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return PaintUtil.addPadding(super.getBoundingBox(), 60);
+  public void getBoundingBox(final Rectangle2D bbox) {
+    super.getBoundingBox(bbox);
+    PaintUtil.addPaddingInplace(bbox, 60);
   }
 
   /**
@@ -261,7 +262,9 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    c.setRestriction(p.getBoundingBox(), AnimationTiming.NO_ANIMATION);
+    final Rectangle2D rect = new Rectangle2D.Double();
+    p.getBoundingBox(rect);
+    c.setRestriction(rect, AnimationTiming.NO_ANIMATION);
     frame.setVisible(true);
   }
 
