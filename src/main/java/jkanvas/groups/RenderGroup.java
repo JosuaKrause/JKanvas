@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.swing.SwingUtilities;
+
+import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationAction;
@@ -65,7 +68,9 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
     }
 
     @Override
-    protected AnimationAction beforeAnimation(final AnimationAction onFinish) {
+    protected AnimationAction beforeAnimation(
+        final AnimationTiming timing, final AnimationAction onFinish) {
+      if(timing.duration <= 0) return onFinish;
       pass.setForceCache(true);
       return new AnimationAction() {
 
@@ -613,8 +618,8 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   }
 
   @Override
-  public boolean click(final Point2D position, final MouseEvent e) {
-    if(RenderpassPainter.click(nlFront, position, e)) return true;
+  public boolean click(final Camera cam, final Point2D position, final MouseEvent e) {
+    if(RenderpassPainter.click(nlFront, cam, position, e)) return true;
     for(final RenderpassPosition<T> p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
@@ -625,14 +630,14 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       if(!bbox.contains(pos)) {
         continue;
       }
-      if(r.click(pos, e)) return true;
+      if(r.click(cam, pos, e)) return true;
     }
-    return RenderpassPainter.click(nlBack, position, e);
+    return RenderpassPainter.click(nlBack, cam, position, e);
   }
 
   @Override
-  public boolean doubleClick(final Point2D position, final MouseEvent e) {
-    if(RenderpassPainter.doubleClick(nlFront, position, e)) return true;
+  public boolean doubleClick(final Camera cam, final Point2D position, final MouseEvent e) {
+    if(RenderpassPainter.doubleClick(nlFront, cam, position, e)) return true;
     for(final RenderpassPosition<T> p : reverseArray(members())) {
       final Renderpass r = p.pass;
       if(!r.isVisible()) {
@@ -643,9 +648,13 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
       if(!bbox.contains(pos)) {
         continue;
       }
-      if(r.doubleClick(pos, e)) return true;
+      if(r.doubleClick(cam, pos, e)) return true;
     }
-    return RenderpassPainter.doubleClick(nlBack, position, e);
+    if(RenderpassPainter.doubleClick(nlBack, cam, position, e)) return true;
+    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
+    cam.toView(this, AnimationTiming.SMOOTH, null, true);
+    return true;
   }
 
   @Override

@@ -5,9 +5,13 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.Objects;
 
+import javax.swing.SwingUtilities;
+
+import jkanvas.Camera;
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
+import jkanvas.animation.AnimationTiming;
 
 /**
  * An abstract implementation of a {@link Renderpass}.
@@ -15,6 +19,9 @@ import jkanvas.animation.AnimationList;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public abstract class AbstractRenderpass implements Renderpass {
+
+  /** Whether to use the double click default action. */
+  public static boolean USE_DOUBLE_CLICK_DEFAULT = true;
 
   /** Whether caching is forced. */
   private boolean forceCache;
@@ -27,6 +34,14 @@ public abstract class AbstractRenderpass implements Renderpass {
   @Override
   public boolean isForceCaching() {
     return forceCache;
+  }
+
+  @Override
+  public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
+    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
+    cam.toView(this, AnimationTiming.SMOOTH, null, true);
+    return true;
   }
 
   /** Whether the pass is visible. */
@@ -82,7 +97,7 @@ public abstract class AbstractRenderpass implements Renderpass {
    * Setter.
    * 
    * @param parent Sets the parent of this render pass. Parents can not be
-   *          directly switched.
+   *          switched directly.
    */
   public void setParent(final Renderpass parent) {
     if(parent != null && this.parent != null) throw new IllegalStateException(
@@ -149,14 +164,8 @@ public abstract class AbstractRenderpass implements Renderpass {
   }
 
   @Override
-  public boolean click(final Point2D p, final MouseEvent e) {
+  public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
     // do nothing when clicking
-    return false;
-  }
-
-  @Override
-  public boolean doubleClick(final Point2D p, final MouseEvent e) {
-    // do nothing when double clicking
     return false;
   }
 

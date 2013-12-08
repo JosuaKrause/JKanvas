@@ -93,10 +93,11 @@ public class Canvas extends JComponent implements Refreshable {
       @Override
       public void mousePressed(final MouseEvent e) {
         getFocusComponent().grabFocus();
+        final Camera cam = getCamera();
         final KanvasPainter painter = cfg.getPainter();
         final Point2D p = e.getPoint();
         try {
-          if(painter.clickHUD(p, e)) {
+          if(painter.clickHUD(cam, p, e)) {
             refresh();
             return;
           }
@@ -116,7 +117,7 @@ public class Canvas extends JComponent implements Refreshable {
         final CameraZUI zui = cfg.getZUI();
         final Point2D c = zui.getForScreen(p);
         try {
-          if(painter.click(c, e)) {
+          if(painter.click(cam, c, e)) {
             refresh();
             return;
           }
@@ -141,11 +142,12 @@ public class Canvas extends JComponent implements Refreshable {
       @Override
       public void mouseClicked(final MouseEvent e) {
         if(e.getClickCount() < 2) return;
+        final Camera cam = getCamera();
         getFocusComponent().grabFocus();
         final KanvasPainter painter = cfg.getPainter();
         final Point2D p = e.getPoint();
         try {
-          if(painter.doubleClickHUD(p, e)) {
+          if(painter.doubleClickHUD(cam, p, e)) {
             refresh();
             return;
           }
@@ -155,7 +157,7 @@ public class Canvas extends JComponent implements Refreshable {
         final CameraZUI zui = cfg.getZUI();
         final Point2D c = zui.getForScreen(p);
         try {
-          if(painter.doubleClick(c, e)) {
+          if(painter.doubleClick(cam, c, e)) {
             refresh();
             return;
           }
@@ -251,17 +253,17 @@ public class Canvas extends JComponent implements Refreshable {
    * that when an earlier peer consumes the interaction this method will not be
    * called. The difference to consuming an interaction is that other
    * interaction types are still called afterwards. So when a
-   * {@link KanvasInteraction#click(Point2D, MouseEvent)} interaction calls this
-   * method for example
+   * {@link KanvasInteraction#click(Camera, Point2D, MouseEvent)} interaction
+   * calls this method for example
    * {@link KanvasInteraction#acceptDrag(Point2D, MouseEvent)} will still be
    * called.
    * 
-   * @see HUDInteraction#clickHUD(Point2D, MouseEvent)
+   * @see HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)
    * @see HUDInteraction#acceptDragHUD(Point2D, MouseEvent)
-   * @see KanvasInteraction#click(Point2D, MouseEvent)
+   * @see KanvasInteraction#click(Camera, Point2D, MouseEvent)
    * @see KanvasInteraction#acceptDrag(Point2D, MouseEvent)
-   * @see HUDInteraction#doubleClickHUD(Point2D, MouseEvent)
-   * @see KanvasInteraction#doubleClick(Point2D, MouseEvent)
+   * @see HUDInteraction#doubleClickHUD(Camera, Point2D, MouseEvent)
+   * @see KanvasInteraction#doubleClick(Camera, Point2D, MouseEvent)
    * @see KanvasInteraction#moveMouse(Point2D)
    */
   public static final void preventPeerInteraction() {
