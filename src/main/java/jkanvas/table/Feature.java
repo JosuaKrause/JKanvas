@@ -160,6 +160,24 @@ public class Feature implements Iterable<Double> {
     };
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + col;
+    result = prime * result + table.hashCode();
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if(this == obj) return true;
+    if(!(obj instanceof Feature)) return false;
+    final Feature other = (Feature) obj;
+    if(col != other.col) return false;
+    return table.equals(other.table);
+  }
+
   /**
    * An abstract metric of features.
    * 
