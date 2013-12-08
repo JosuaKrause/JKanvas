@@ -190,4 +190,10 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
     return false;
   }
 
+  @Override
+  public Rectangle2D getBoundingBox() {
+    // FIXME should have bounding box
+    return null;
+  }
+
 }
