@@ -157,6 +157,28 @@ public abstract class ColumnBinner {
     return highestCount;
   }
 
+  /** The cache for the entropy. */
+  private double entropyCache = Double.NaN;
+
+  /**
+   * Getter.
+   * 
+   * @return The entropy in nat
+   *         (http://en.wikipedia.org/wiki/Nat_%28information%29).
+   */
+  public double entropy() {
+    if(Double.isNaN(entropyCache)) {
+      final double totalCount = feature.rows();
+      double e = 0;
+      for(final int c : getBinCount()) {
+        final double p = c / totalCount;
+        e += p * Math.log(p);
+      }
+      entropyCache = -e;
+    }
+    return entropyCache;
+  }
+
   /**
    * Getter.
    * 
