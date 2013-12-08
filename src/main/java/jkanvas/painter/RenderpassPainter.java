@@ -112,7 +112,7 @@ public class RenderpassPainter implements KanvasPainter {
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
-      g.setClip(bbox);
+      g.clip(bbox);
       final double dx = r.getOffsetX();
       final double dy = r.getOffsetY();
       g.translate(dx, dy);
@@ -158,8 +158,8 @@ public class RenderpassPainter implements KanvasPainter {
       if(!r.isVisible()) {
         continue;
       }
-      final Point2D pos = getPositionFromCanvas(r, p);
       r.getBoundingBox(bbox);
+      final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
       }
@@ -189,8 +189,8 @@ public class RenderpassPainter implements KanvasPainter {
       if(!r.isVisible()) {
         continue;
       }
-      final Point2D pos = getPositionFromCanvas(r, p);
       r.getBoundingBox(bbox);
+      final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
       }
@@ -219,8 +219,8 @@ public class RenderpassPainter implements KanvasPainter {
       if(!r.isVisible()) {
         continue;
       }
-      final Point2D pos = getPositionFromCanvas(r, p);
       r.getBoundingBox(bbox);
+      final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
       }
@@ -270,8 +270,8 @@ public class RenderpassPainter implements KanvasPainter {
       if(!r.isVisible()) {
         continue;
       }
-      final Point2D pos = getPositionFromCanvas(r, p);
       r.getBoundingBox(bbox);
+      final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
       }
@@ -516,7 +516,7 @@ public class RenderpassPainter implements KanvasPainter {
    * Computes the top level bounding box position of the given render pass in
    * canvas coordinates.
    * 
-   * @param bbox The rectangle where the result will be stored.
+   * @param bbox The rectangle in which the result will be stored.
    * @param pass The render pass.
    */
   public static final void getTopLevelBounds(final Rectangle2D bbox, final Renderpass pass) {

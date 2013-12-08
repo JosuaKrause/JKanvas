@@ -1,5 +1,6 @@
 package jkanvas.nodelink;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.IdentityHashMap;
@@ -269,6 +270,12 @@ public class DependencyNodeLinkView implements LayoutedView<IndexedPosition>, An
   @Override
   public AbstractLayouter<IndexedPosition> getLayouter() {
     return layouter;
+  }
+
+  @Override
+  public void getBoundingBox(final Rectangle2D bbox) {
+    Objects.requireNonNull(layouter);
+    layouter.getBoundingBox(bbox);
   }
 
 }

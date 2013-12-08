@@ -31,7 +31,8 @@ public final class AnimationList implements AnimationToken {
   // ### managing animatable objects ###
 
   /**
-   * Adds an animatable object.
+   * Adds an animatable object. Elements are guaranteed to appear only once in
+   * the list.
    * 
    * @param animate The object.
    */

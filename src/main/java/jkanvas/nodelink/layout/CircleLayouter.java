@@ -18,7 +18,8 @@ public class CircleLayouter<T extends AnimatedPosition> extends AbstractLayouter
   @Override
   protected boolean doLayout(final NodeLinkView<T> view) {
     boolean chg = false;
-    final Rectangle2D rect = getRectangle();
+    final Rectangle2D rect = new Rectangle2D.Double();
+    getBoundingBox(rect);
     final double w = rect.getWidth();
     final double h = rect.getHeight();
     final double r = Math.min(w, h) / 2 - DefaultNodeRealizer.RADIUS;

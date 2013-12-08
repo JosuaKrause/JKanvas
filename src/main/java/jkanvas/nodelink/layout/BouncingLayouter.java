@@ -60,7 +60,8 @@ public class BouncingLayouter<T extends AnimatedPosition> extends AbstractLayout
 
   @Override
   protected boolean doLayout(final NodeLinkView<T> view) {
-    final Rectangle2D rect = getRectangle();
+    final Rectangle2D rect = new Rectangle2D.Double();
+    getBoundingBox(rect);
     for(int i = 0; i < view.nodeCount(); ++i) {
       final T node = view.getNode(i);
       if(!movements.containsKey(i)) {

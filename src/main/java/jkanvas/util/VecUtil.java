@@ -93,6 +93,30 @@ public final class VecUtil {
   }
 
   /**
+   * Interpolates between three points defining a Bézier curve.
+   * 
+   * @param a The start point.
+   * @param b The control point.
+   * @param c The end point.
+   * @param t The interpolation progress starting at 0 and going to 1.
+   * @return The interpolated point. Note that the movement speed of the point
+   *         is not uniform.
+   */
+  public static Point2D interpolateBezier(
+      final Point2D a, final Point2D b, final Point2D c, final double t) {
+    // (a - 2b + c) t^2 + (-a + b) 2t + a
+    final double tsq = t * t;
+    final double t2 = 2 * t;
+    final double a0 = a.getX();
+    final double b0 = b.getX();
+    final double x = tsq * (a0 - 2 * b0 + c.getX()) + t2 * (b0 - a0) + a0;
+    final double a1 = a.getY();
+    final double b1 = b.getY();
+    final double y = tsq * (a1 - 2 * b1 + c.getY()) + t2 * (b1 - a1) + a1;
+    return new Point2D.Double(x, y);
+  }
+
+  /**
    * Generates a vector that forms an angle of {@code -90} degrees with the
    * given vector. A straight vector in positive x direction will lead to a
    * straight vector pointing in positive y direction. Note that positive y

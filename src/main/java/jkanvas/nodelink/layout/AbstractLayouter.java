@@ -69,8 +69,8 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
   /** Deregisters a layouter. */
   public void deregister() {
     if(view == null) throw new IllegalStateException("no view to deregister");
-    view = null;
     canvas = null;
+    view = null;
   }
 
   /** The precision of coordinate equivalence. */
@@ -163,11 +163,11 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
   /**
    * Getter.
    * 
-   * @return The rectangle to bound the layout. If this value is
-   *         <code>null</code> the current viewport is used.
+   * @param bbox The rectangle in which the bounding box of the layout will be
+   *          stored.
    */
-  public Rectangle2D getRectangle() {
-    return rect == null ? canvas.getVisibleCanvas() : rect;
+  public void getBoundingBox(final Rectangle2D bbox) {
+    bbox.setFrame(rect == null ? canvas.getVisibleCanvas() : rect);
   }
 
 }

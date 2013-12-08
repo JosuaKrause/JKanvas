@@ -40,7 +40,7 @@ public interface Renderpass extends KanvasInteraction {
    * the render pass use {@link #getOffsetX()} and {@link #getOffsetY()}
    * respectively.
    * 
-   * @param bbox The rectangle where the bounding box is stored.
+   * @param bbox The rectangle in which the bounding box is stored.
    * @see #getOffsetX()
    * @see #getOffsetY()
    */

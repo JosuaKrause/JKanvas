@@ -116,7 +116,7 @@ public interface KanvasInteraction {
   boolean moveMouse(Point2D cur);
 
   /**
-   * Calculates the bounding box of the object.
+   * Calculates the bounding box of the canvas.
    * 
    * @param bbox The rectangle where the bounding box is stored.
    */

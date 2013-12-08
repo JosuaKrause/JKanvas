@@ -59,4 +59,11 @@ public interface Camera {
    */
   Rectangle2D getPredictView();
 
+  /**
+   * Getter.
+   * 
+   * @return Whether the camera is in animation.
+   */
+  boolean inAnimation();
+
 }

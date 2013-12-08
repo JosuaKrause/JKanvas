@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
@@ -28,6 +27,7 @@ import javax.swing.KeyStroke;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationBarrier;
 import jkanvas.animation.AnimationBarrier.CloseBlock;
+import jkanvas.animation.AnimationList;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.util.Stopwatch;
@@ -38,7 +38,7 @@ import jkanvas.util.Stopwatch;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class Canvas extends JComponent implements Refreshable, RestrictedCanvas {
+public class Canvas extends JComponent implements Refreshable {
 
   /**
    * A debug flag to activate bounding box rendering. This flag is optional for
@@ -56,11 +56,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /** Disables render pass caching. */
   public static boolean DISABLE_CACHING;
 
-  /** The underlying zoom-able user interface. */
-  protected final CameraZUI zui;
-
-  /** The painter. */
-  protected KanvasPainter painter;
+  /** The current view configuration for the canvas. */
+  protected ViewConfiguration cfg;
 
   /** The focused component. */
   private JComponent focus;
@@ -87,8 +84,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   public Canvas(final KanvasPainter p, final boolean restricted,
       final int width, final int height) {
     setPreferredSize(new Dimension(width, height));
-    painter = Objects.requireNonNull(p);
-    zui = new CameraZUI(this, restricted);
+    cfg = new ViewConfiguration(this, p, restricted);
     final MouseAdapter mouse = new MouseInteraction() {
 
       /** Whether the drag is on the HUD. */
@@ -97,6 +93,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       @Override
       public void mousePressed(final MouseEvent e) {
         getFocusComponent().grabFocus();
+        final KanvasPainter painter = cfg.getPainter();
         final Point2D p = e.getPoint();
         try {
           if(painter.clickHUD(p, e)) {
@@ -116,6 +113,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
+        final CameraZUI zui = cfg.getZUI();
         final Point2D c = zui.getForScreen(p);
         try {
           if(painter.click(c, e)) {
@@ -144,6 +142,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       public void mouseClicked(final MouseEvent e) {
         if(e.getClickCount() < 2) return;
         getFocusComponent().grabFocus();
+        final KanvasPainter painter = cfg.getPainter();
         final Point2D p = e.getPoint();
         try {
           if(painter.doubleClickHUD(p, e)) {
@@ -153,6 +152,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
+        final CameraZUI zui = cfg.getZUI();
         final Point2D c = zui.getForScreen(p);
         try {
           if(painter.doubleClick(c, e)) {
@@ -171,11 +171,13 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
           move(e.getX(), e.getY());
           return;
         }
+        final KanvasPainter painter = cfg.getPainter();
         final Point2D start = getStartPoint();
         final Point2D p = e.getPoint();
         if(hudDrag) {
           painter.dragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
         } else {
+          final CameraZUI zui = cfg.getZUI();
           final Point2D cur = zui.getForScreen(p);
           painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
         }
@@ -190,11 +192,13 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
           stopDragging();
           return;
         }
+        final KanvasPainter painter = cfg.getPainter();
         final Point2D p = e.getPoint();
         final Point2D start = stopPointDrag();
         if(hudDrag) {
           painter.endDragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
         } else {
+          final CameraZUI zui = cfg.getZUI();
           final Point2D c = zui.getForScreen(p);
           painter.endDrag(start, c, c.getX() - start.getX(), c.getY() - start.getY());
         }
@@ -208,17 +212,19 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
        * @param y The mouse y position.
        */
       protected void move(final int x, final int y) {
-        zui.setOffset(getMoveX(x), getMoveY(y));
+        cfg.getZUI().setOffset(getMoveX(x), getMoveY(y));
       }
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
         if(isDragging() || !isMoveable()) return;
-        zui.zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
+        cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
       }
 
       @Override
       public void mouseMoved(final MouseEvent e) {
+        final KanvasPainter painter = cfg.getPainter();
+        final CameraZUI zui = cfg.getZUI();
         try {
           if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
         } catch(final IgnoreInteractionException i) {
@@ -287,15 +293,16 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @return The position of the event on the canvas.
    */
   public Point2D getPositionOnCanvas(final MouseEvent e) {
-    return zui.getForScreen(e.getPoint());
+    return cfg.getZUI().getForScreen(e.getPoint());
   }
 
   @Override
   public String getToolTipText(final MouseEvent e) {
+    final KanvasPainter painter = cfg.getPainter();
     final Point2D p = e.getPoint();
     String strHUD;
     if((strHUD = painter.getTooltipHUD(p)) != null) return strHUD;
-    final Point2D c = zui.getForScreen(p);
+    final Point2D c = cfg.getZUI().getForScreen(p);
     String str;
     return ((str = painter.getTooltip(c)) != null) ? str : null;
   }
@@ -329,31 +336,56 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @param message The message that is posted.
    */
   public void addMessageAction(final int key, final String message) {
-    if(messageDispatcher == null) {
-      final Map<String, List<String>> msgActions = messageActions;
-      messageDispatcher = new AbstractAction() {
+    // almost all printable keys
+    final boolean printKey = (key >= 0x2C && key <= 0x39) || (key >= 0x41 && key <= 0x5A);
+    final String cmd;
+    if(printKey) {
+      cmd = "" + (char) key;
+    } else {
+      cmd = "undef:" + key;
+    }
+    addMessage(cmd, message);
+    if(!printKey) {
+      addAction(key, new AbstractAction() {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-          final String cmd = e.getActionCommand();
-          final List<String> msgs = msgActions.get(cmd);
-          if(msgs == null) throw new IllegalStateException("cmd must have list: " + cmd);
-          for(final String m : msgs) {
-            postMessage(m);
-          }
-          refresh();
+          processForActionCommand(cmd);
         }
 
-      };
+      });
+    } else {
+      final String lc = cmd.toLowerCase();
+      if(!lc.equals(cmd)) {
+        addMessage(lc, message);
+      }
+      if(messageDispatcher == null) {
+        messageDispatcher = new AbstractAction() {
+
+          @Override
+          public void actionPerformed(final ActionEvent e) {
+            final String cmd = e.getActionCommand();
+            processForActionCommand(cmd);
+          }
+
+        };
+      }
+      addAction(key, messageDispatcher);
     }
-    final KeyStroke stroke = KeyStroke.getKeyStroke(key, 0);
-    final String cmd = "" + (char) stroke.getKeyCode();
-    addMessage(cmd, message);
-    final String lc = cmd.toLowerCase();
-    if(!lc.equals(cmd)) {
-      addMessage(lc, message);
+  }
+
+  /**
+   * Processes messages for an action command.
+   * 
+   * @param cmd The action command.
+   */
+  void processForActionCommand(final String cmd) {
+    final List<String> msgs = messageActions.get(cmd);
+    if(msgs == null) throw new IllegalStateException("cmd must have list: " + cmd);
+    for(final String m : msgs) {
+      postMessage(m);
     }
-    addAction(key, messageDispatcher);
+    refresh();
   }
 
   /**
@@ -368,75 +400,6 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     }
     messageActions.get(cmd).add(message);
   }
-
-  /**
-   * A context for this canvas.
-   * 
-   * @author Joschi <josua.krause@googlemail.com>
-   */
-  private final class CanvasContext extends AbstractKanvasContext {
-
-    /**
-     * Creates a context for this canvas.
-     * 
-     * @param inCanvasSpace Whether the normal
-     *          {@link KanvasPainter#draw(Graphics2D, KanvasContext)} is called.
-     * @param offX The x offset in canvas coordinates.
-     * @param offY The y offset in canvas coordinates.
-     */
-    public CanvasContext(final boolean inCanvasSpace, final double offX, final double offY) {
-      super(inCanvasSpace, offX, offY);
-    }
-
-    @Override
-    protected KanvasContext create(final boolean inCanvasSpace, final double offX,
-        final double offY) {
-      return new CanvasContext(inCanvasSpace, offX, offY);
-    }
-
-    @Override
-    public Rectangle2D toCanvasCoordinates(final RectangularShape r) {
-      return zui.toCanvas(r);
-    }
-
-    @Override
-    public Point2D toCanvasCoordinates(final Point2D p) {
-      final Point2D pos = zui.getForScreen(p);
-      return new Point2D.Double(pos.getX() + getOffsetX(), pos.getY() + getOffsetY());
-    }
-
-    @Override
-    public double toCanvasLength(final double length) {
-      return zui.inReal(length);
-    }
-
-    @Override
-    public Point2D toComponentCoordinates(final Point2D p) {
-      return new Point2D.Double(zui.getXFromCanvas(p.getX() + getOffsetX()),
-          zui.getYFromCanvas(p.getY() + getOffsetY()));
-    }
-
-    @Override
-    public double toComponentLength(final double length) {
-      return zui.fromReal(length);
-    }
-
-    @Override
-    protected Rectangle2D createVisibleComponent() {
-      return getVisibleRect();
-    }
-
-    @Override
-    protected void transform(final AffineTransform at) {
-      zui.transform(at);
-    }
-
-    @Override
-    protected void transformBack(final AffineTransform at) {
-      zui.transformBack(at);
-    }
-
-  } // CanvasContext
 
   /** The frame rate displayer. */
   private FrameRateDisplayer frameRateDisplayer;
@@ -486,10 +449,10 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     g.clip(getVisibleRect());
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     if(barrier == null) {
-      doPaint(g);
+      cfg.paint(g);
     } else {
       try (CloseBlock b = barrier.openDrawBlock()) {
-        doPaint(g);
+        cfg.paint(g);
       }
     }
     if(mft) {
@@ -507,8 +470,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * 
    * @return The current canvas context.
    */
-  public CanvasContext getContext() {
-    return new CanvasContext(true, 0, 0);
+  public KanvasContext getContext() {
+    return cfg.getContext();
   }
 
   /**
@@ -518,21 +481,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * 
    * @return The current head-up display context.
    */
-  public CanvasContext getHUDContext() {
-    return new CanvasContext(false, 0, 0);
-  }
-
-  /**
-   * Does the actual painting.
-   * 
-   * @param gfx The graphics context.
-   */
-  private void doPaint(final Graphics2D gfx) {
-    final Graphics2D g = (Graphics2D) gfx.create();
-    zui.transform(g);
-    painter.draw(g, getContext());
-    g.dispose();
-    painter.drawHUD(gfx, getHUDContext());
+  public KanvasContext getHUDContext() {
+    return cfg.getHUDContext();
   }
 
   /** The animator. */
@@ -558,7 +508,9 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
     }
     this.animator = animator;
     if(animator != null) {
-      animator.getAnimationList().addAnimated(zui);
+      final AnimationList al = animator.getAnimationList();
+      final CameraZUI zui = cfg.getZUI();
+      al.addAnimated(zui);
       barrier = new AnimationBarrier(this);
       animator.setAnimationBarrier(barrier, this);
     }
@@ -604,59 +556,60 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
   /**
    * Getter.
    * 
-   * @return THe associated camera.
+   * @return The associated camera.
    */
   public Camera getCamera() {
-    return zui;
+    return cfg.getCamera();
   }
 
   /**
-   * Sets the painter.
+   * Setter.
    * 
-   * @param p The new painter.
+   * @param cfg Sets the active view configuration.
    */
-  public void setPainter(final KanvasPainter p) {
-    painter = Objects.requireNonNull(p);
+  public void setViewConfiguration(final ViewConfiguration cfg) {
+    this.cfg = Objects.requireNonNull(cfg);
+    if(animator != null) {
+      final AnimationList al = animator.getAnimationList();
+      final CameraZUI zui = cfg.getZUI();
+      al.addAnimated(zui);
+    }
   }
 
   /**
-   * Resets the viewport to a scaling of <code>1.0</code> and
-   * <code>(0, 0)</code> being in the center of the component when
-   * {@link KanvasPainter#getBoundingBox(Rectangle2D)} returns an invalid
-   * bounding box or zooms to fit the bounding box if
-   * {@link KanvasPainter#getBoundingBox(Rectangle2D)} returns a proper bounding
-   * box.
+   * Getter.
+   * 
+   * @return The active view configuration.
+   */
+  public ViewConfiguration getViewConfiguration() {
+    return cfg;
+  }
+
+  /**
+   * Zooms to fit the bounding box. If the bounding box is empty this is a
+   * no-op.
    */
   public void reset() {
     final Rectangle2D bbox = new Rectangle2D.Double();
-    painter.getBoundingBox(bbox);
-    if(bbox.isEmpty()) {
-      zui.resetView(getVisibleRect());
-    } else {
+    cfg.getPainter().getBoundingBox(bbox);
+    if(!bbox.isEmpty()) {
       reset(bbox);
     }
   }
 
   /**
-   * Resets the viewport to fit the bounding box if
-   * {@link KanvasPainter#getBoundingBox(Rectangle2D)} returns a proper bounding
-   * box.
+   * Resets the viewport to fit the bounding box. If the bounding box is empty
+   * the viewport will not be changed.
    * 
    * @param timing The timing.
    * @param onFinish The action to perform when the viewport was set or when the
    *          method returns <code>false</code>. This method may be
    *          <code>null</code> when no action needs to be performed.
-   * @return Whether the viewport is set.
    */
-  public boolean reset(final AnimationTiming timing, final AnimationAction onFinish) {
+  public void reset(final AnimationTiming timing, final AnimationAction onFinish) {
     final Rectangle2D bbox = new Rectangle2D.Double();
-    painter.getBoundingBox(bbox);
-    if(bbox.isEmpty()) {
-      scheduleAction(onFinish, timing);
-      return false;
-    }
-    zui.toView(bbox, timing, onFinish, true);
-    return true;
+    cfg.getPainter().getBoundingBox(bbox);
+    cfg.getZUI().toView(bbox, timing, onFinish, true);
   }
 
   /** The margin for the viewport reset. The default is <code>10.0</code>. */
@@ -698,12 +651,9 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @param margin The margin.
    */
   public void reset(final RectangularShape bbox, final double margin) {
-    if(bbox == null) {
-      reset();
-    } else {
-      final Rectangle2D rect = getVisibleRect();
-      zui.showRectangle(bbox, rect, margin, true);
-    }
+    Objects.requireNonNull(bbox);
+    final Rectangle2D rect = getVisibleRect();
+    cfg.getZUI().showRectangle(bbox, rect, margin, true);
   }
 
   /**
@@ -714,7 +664,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    */
   public void showOnly(final RectangularShape bbox) {
     Objects.requireNonNull(bbox);
-    zui.showRectangle(bbox, getVisibleRect(), getMargin(), false);
+    cfg.getZUI().showRectangle(bbox, getVisibleRect(), getMargin(), false);
   }
 
   /** Whether the canvas is moveable, ie it can be panned and zoomed. */
@@ -744,11 +694,8 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @return The currently visible portion of the canvas.
    */
   public Rectangle2D getVisibleCanvas() {
-    return zui.toCanvas(getVisibleRect());
+    return cfg.getZUI().toCanvas(getVisibleRect());
   }
-
-  /** The restriction rectangle. */
-  private Rectangle2D restriction;
 
   /**
    * Setter.
@@ -761,19 +708,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @see #isRestricted()
    */
   public void setRestriction(final Rectangle2D restriction, final AnimationTiming timing) {
-    if(!isRestricted()) throw new IllegalStateException("canvas is not restricted");
-    this.restriction = restriction;
-    zui.toView(restriction, timing, null, true);
-  }
-
-  @Override
-  public Rectangle2D getBoundingRect() {
-    return restriction;
-  }
-
-  @Override
-  public Rectangle2D getComponentView() {
-    return getVisibleRect();
+    cfg.setRestriction(restriction, timing, getMargin());
   }
 
   /**
@@ -782,7 +717,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @return Whether the canvas is restricted.
    */
   public boolean isRestricted() {
-    return zui.isRestricted();
+    return cfg.isRestricted();
   }
 
   /**
@@ -792,7 +727,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    *         restrictions are made.
    */
   public double getMinZoom() {
-    return zui.getMinZoom();
+    return cfg.getZUI().getMinZoom();
   }
 
   /**
@@ -801,7 +736,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @return Whether zoom has a minimum.
    */
   public boolean hasMinZoom() {
-    return zui.hasMinZoom();
+    return cfg.getZUI().hasMinZoom();
   }
 
   /**
@@ -811,6 +746,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    *          restriction.
    */
   public void setMinZoom(final double zoom) {
+    final CameraZUI zui = cfg.getZUI();
     zui.setMinZoom(zoom);
     zui.zoom(1, getVisibleCanvas());
   }
@@ -822,7 +758,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    *         restrictions are made.
    */
   public double getMaxZoom() {
-    return zui.getMaxZoom();
+    return cfg.getZUI().getMaxZoom();
   }
 
   /**
@@ -831,7 +767,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    * @return Whether zoom has a maximum.
    */
   public boolean hasMaxZoom() {
-    return zui.hasMaxZoom();
+    return cfg.getZUI().hasMaxZoom();
   }
 
   /**
@@ -841,6 +777,7 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
    *          restriction.
    */
   public void setMaxZoom(final double zoom) {
+    final CameraZUI zui = cfg.getZUI();
     zui.setMaxZoom(zoom);
     zui.zoom(1, getVisibleCanvas());
   }
@@ -880,12 +817,12 @@ public class Canvas extends JComponent implements Refreshable, RestrictedCanvas 
       realIds = ids;
     }
     final String m = msg.substring(idEnd + 1);
-    painter.processMessage(realIds, m);
+    cfg.getPainter().processMessage(realIds, m);
   }
 
   /** Disposes the painter. */
   public void dispose() {
-    painter.dispose();
+    cfg.getPainter().dispose();
     setAnimator(null);
   }
 

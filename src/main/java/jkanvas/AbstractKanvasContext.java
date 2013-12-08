@@ -27,8 +27,8 @@ public abstract class AbstractKanvasContext implements KanvasContext {
    * @param offX The x offset in canvas coordinates.
    * @param offY The y offset in canvas coordinates.
    */
-  public AbstractKanvasContext(final boolean inCanvasSpace, final double offX,
-      final double offY) {
+  public AbstractKanvasContext(final boolean inCanvasSpace,
+      final double offX, final double offY) {
     this.inCanvasSpace = inCanvasSpace;
     this.offX = offX;
     this.offY = offY;

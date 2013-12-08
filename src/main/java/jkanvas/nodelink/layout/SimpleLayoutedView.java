@@ -1,5 +1,6 @@
 package jkanvas.nodelink.layout;
 
+import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.Canvas;
@@ -55,6 +56,12 @@ public class SimpleLayoutedView<T extends AnimatedPosition> extends SimpleNodeLi
   @Override
   public AbstractLayouter<T> getLayouter() {
     return layouter;
+  }
+
+  @Override
+  public void getBoundingBox(final Rectangle2D bbox) {
+    Objects.requireNonNull(layouter);
+    layouter.getBoundingBox(bbox);
   }
 
 }

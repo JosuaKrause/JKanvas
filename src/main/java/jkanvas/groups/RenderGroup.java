@@ -201,6 +201,16 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
   }
 
   /**
+   * This method is called before a render pass is added. It can be used to
+   * prepare the render pass to be added.
+   * 
+   * @param pass The render pass that will be added.
+   */
+  protected void beforeAdding(@SuppressWarnings("unused") final T pass) {
+    // nothing to do
+  }
+
+  /**
    * Converts a render pass to a render pass position.
    * 
    * @param pass The render pass.
@@ -208,7 +218,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
    */
   private RenderpassPosition<T> convert(final T pass) {
     if(this == pass) throw new IllegalArgumentException("cannot add itself");
-    Objects.requireNonNull(pass);
+    beforeAdding(Objects.requireNonNull(pass));
     return new RenderpassPosition<T>(pass, animator.getAnimationList());
   }
 
@@ -557,7 +567,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
-      g.setClip(bbox);
+      g.clip(bbox);
       final double dx = r.getOffsetX();
       final double dy = r.getOffsetY();
       g.translate(dx, dy);
