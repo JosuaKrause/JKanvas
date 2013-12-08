@@ -17,12 +17,11 @@ import jkanvas.KanvasContext;
  * returns <code>true</code>. The render pass can also not work with the current
  * zoom level as it may be altered to create the cache. However visibility
  * checks against the visible canvas do work, even though the visible canvas is
- * assumed to be the cached render pass. The method {@link #getBoundingBox()}
- * must also return a non-<code>null</code> value.
+ * assumed to be the cached render pass.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public abstract class CachedRenderpass extends RenderpassAdapter {
+public abstract class CachedRenderpass extends AbstractRenderpass {
 
   /** The visible size at which the caching comes into effect. */
   private static final int CACHE_VISIBLE = 256;
