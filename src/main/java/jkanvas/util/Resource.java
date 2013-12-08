@@ -325,15 +325,33 @@ public class Resource {
   }
 
   /**
-   * Creates a {@link Reader}.
+   * Creates a {@link BufferedReader}.
    * 
    * @return reader or <code>null</code> if not found.
    * @throws IOException I/O exception
    */
-  public Reader reader() throws IOException {
+  public BufferedReader reader() throws IOException {
     if(!hasContent()) return null;
     final URL url = getURL();
     return charsetReader(url.openStream());
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Returns the whole content as {@link String}.
+   * @throws IOException I/O Exception.
+   */
+  public String asString() throws IOException {
+    try (final Reader r = reader()) {
+      final char[] buff = new char[1024];
+      final StringBuilder sb = new StringBuilder();
+      for(;;) {
+        final int read = r.read(buff, 0, buff.length);
+        if(read < 0) return sb.toString();
+        sb.append(buff, 0, read);
+      }
+    }
   }
 
   /**

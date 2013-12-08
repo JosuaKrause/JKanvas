@@ -1,5 +1,6 @@
 package jkanvas.io.csv;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +15,10 @@ public final class CSVRow {
 
   /** The title map. */
   private final Map<String, String> map = new HashMap<String, String>();
-
   /** The index map. */
   private String[] indexed;
-
+  /** The column titles. */
+  private String[] titles;
   /** The current max index. */
   private int maxIndex;
 
@@ -29,6 +30,7 @@ public final class CSVRow {
    */
   public CSVRow(final int numCols) {
     indexed = new String[numCols];
+    titles = new String[numCols];
   }
 
   /**
@@ -39,16 +41,15 @@ public final class CSVRow {
    * @param value The content of the cell.
    */
   protected void addCell(final int index, final String name, final String value) {
+    final String n = name != null ? name : "" + index;
     if(index >= indexed.length) {
-      final String[] tmp = indexed;
-      indexed = new String[index + 1];
-      System.arraycopy(tmp, 0, indexed, 0, tmp.length);
+      indexed = Arrays.copyOf(indexed, index + 1);
+      titles = Arrays.copyOf(titles, index + 1);
     }
     maxIndex = Math.max(index, maxIndex);
     indexed[index] = value;
-    if(name != null) {
-      map.put(name, value);
-    }
+    titles[index] = n;
+    map.put(n, value);
   }
 
   /**
@@ -105,10 +106,25 @@ public final class CSVRow {
   /**
    * Getter.
    * 
+   * @param index The index.
+   * @return The title of the given index.
+   */
+  public String getTitle(final int index) {
+    return titles[index];
+  }
+
+  /**
+   * Getter.
+   * 
    * @return A set of available names.
    */
   public Set<String> names() {
     return Collections.unmodifiableSet(map.keySet());
+  }
+
+  @Override
+  public String toString() {
+    return Arrays.toString(indexed);
   }
 
 }

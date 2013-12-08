@@ -11,14 +11,16 @@ import org.junit.Test;
 /**
  * Tests {@link GenericAnimated}. Especially the correct behavior of
  * {@link AnimationAction animation actions} and
- * {@link GenericAnimated#beforeAnimation(AnimationAction)} is tested.
+ * {@link GenericAnimated#beforeAnimation(AnimationTiming, AnimationAction)} is
+ * tested.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class GenericAnimatedTest {
 
   /**
-   * An implementation to test {@link #beforeAnimation(AnimationAction)}.
+   * An implementation to test
+   * {@link #beforeAnimation(AnimationTiming, AnimationAction)}.
    * 
    * @author Joschi <josua.krause@gmail.com>
    */
@@ -29,7 +31,10 @@ public class GenericAnimatedTest {
       super(0.0);
     }
 
-    /** The number of calls to {@link #beforeAnimation(AnimationAction)}. */
+    /**
+     * The number of calls to
+     * {@link #beforeAnimation(AnimationTiming, AnimationAction)}.
+     */
     private int count;
 
     @Override
@@ -38,15 +43,17 @@ public class GenericAnimatedTest {
     }
 
     @Override
-    protected AnimationAction beforeAnimation(final AnimationAction onFinish) {
+    protected AnimationAction beforeAnimation(
+        final AnimationTiming timing, final AnimationAction onFinish) {
       ++count;
-      return super.beforeAnimation(onFinish);
+      return super.beforeAnimation(timing, onFinish);
     }
 
     /**
      * Getter.
      * 
-     * @return The number of calls to {@link #beforeAnimation(AnimationAction)}.
+     * @return The number of calls to
+     *         {@link #beforeAnimation(AnimationTiming, AnimationAction)}.
      */
     public int getCount() {
       return count;
@@ -60,7 +67,8 @@ public class GenericAnimatedTest {
    * @param a The generic animated object.
    * @param e The number of finished actions.
    * @param count The expected number of calls to
-   *          {@link GenericAnimated#beforeAnimation(AnimationAction)}.
+   *          {@link GenericAnimated#beforeAnimation(AnimationTiming, AnimationAction)}
+   *          .
    * @param value The expected current value.
    * @param eCount The expected number of finished actions.
    */
@@ -73,7 +81,7 @@ public class GenericAnimatedTest {
 
   /**
    * Tests the correct behavior of finishing actions and calls to
-   * {@link GenericAnimated#beforeAnimation(AnimationAction)}.
+   * {@link GenericAnimated#beforeAnimation(AnimationTiming, AnimationAction)}.
    */
   @Test
   public void testAnimationActions() {

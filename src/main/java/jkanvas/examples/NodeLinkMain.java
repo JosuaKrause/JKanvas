@@ -10,6 +10,7 @@ import java.util.Random;
 
 import javax.swing.SwingUtilities;
 
+import jkanvas.Camera;
 import jkanvas.Canvas;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
@@ -97,7 +98,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   private AnimatedPosition secSel;
 
   @Override
-  public boolean click(final Point2D pos, final MouseEvent e) {
+  public boolean click(final Camera cam, final Point2D pos, final MouseEvent e) {
     if(!SwingUtilities.isRightMouseButton(e)) return false;
     final AnimatedPosition n = pick(pos);
     if(n == null) {

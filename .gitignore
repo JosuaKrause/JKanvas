@@ -1,5 +1,4 @@
 *.log
-bin
 /java.hprof.txt
-target
+/target/
 /pics/
