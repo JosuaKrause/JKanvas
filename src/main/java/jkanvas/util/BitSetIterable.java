@@ -20,6 +20,8 @@ public final class BitSetIterable implements Iterable<Integer> {
 
     /** The current edge position. */
     private int pos;
+    /** The current run. */
+    private int currentRun;
 
     /**
      * Creates a bit set iterator.
@@ -28,6 +30,9 @@ public final class BitSetIterable implements Iterable<Integer> {
      */
     public BitSetIterator(final int start) {
       pos = set.nextSetBit(start);
+      if(pos >= 0) {
+        currentRun = set.nextClearBit(pos);
+      }
     }
 
     @Override
@@ -39,7 +44,12 @@ public final class BitSetIterable implements Iterable<Integer> {
     public Integer next() {
       if(!hasNext()) throw new NoSuchElementException();
       final int ret = pos;
-      pos = set.nextSetBit(pos + 1);
+      if(++pos >= currentRun) {
+        pos = set.nextSetBit(pos + 1);
+        if(pos >= 0) {
+          currentRun = set.nextClearBit(pos);
+        }
+      }
       return ret;
     }
 

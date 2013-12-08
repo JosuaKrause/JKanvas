@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.Objects;
 
+import jkanvas.Camera;
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
 
@@ -38,13 +39,13 @@ public class HUDRenderpassAdapter implements HUDRenderpass {
   }
 
   @Override
-  public boolean clickHUD(final Point2D p, final MouseEvent e) {
+  public boolean clickHUD(final Camera cam, final Point2D p, final MouseEvent e) {
     // ignore clicks
     return false;
   }
 
   @Override
-  public boolean doubleClickHUD(final Point2D p, final MouseEvent e) {
+  public boolean doubleClickHUD(final Camera cam, final Point2D p, final MouseEvent e) {
     // ignore double clicks
     return false;
   }

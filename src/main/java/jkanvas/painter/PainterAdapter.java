@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 
 import javax.swing.SwingUtilities;
 
+import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.KanvasPainter;
 
@@ -27,25 +28,25 @@ public abstract class PainterAdapter implements KanvasPainter {
   }
 
   @Override
-  public boolean click(final Point2D p, final MouseEvent e) {
+  public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
     // the event is not consumed
     return false;
   }
 
   @Override
-  public boolean doubleClick(final Point2D p, final MouseEvent e) {
+  public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
     // the event is not consumed
     return false;
   }
 
   @Override
-  public boolean clickHUD(final Point2D p, final MouseEvent e) {
+  public boolean clickHUD(final Camera cam, final Point2D p, final MouseEvent e) {
     // the event is not consumed
     return false;
   }
 
   @Override
-  public boolean doubleClickHUD(final Point2D p, final MouseEvent e) {
+  public boolean doubleClickHUD(final Camera cam, final Point2D p, final MouseEvent e) {
     // the event is not consumed
     return false;
   }

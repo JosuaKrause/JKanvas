@@ -29,11 +29,12 @@ public interface HUDInteraction {
    * by calling {@link Canvas#preventPeerInteraction()}. In contrast to
    * returning <code>true</code> other interaction types still get processed.
    * 
+   * @param cam The camera on which the interaction happened.
    * @param p The click position in component coordinates.
    * @param e The mouse event.
    * @return Whether the click was consumed.
    */
-  boolean clickHUD(Point2D p, MouseEvent e);
+  boolean clickHUD(Camera cam, Point2D p, MouseEvent e);
 
   /**
    * Is called when the user performs a double click at the component. The
@@ -45,11 +46,12 @@ public interface HUDInteraction {
    * contrast to returning <code>true</code> other interaction types still get
    * processed.
    * 
+   * @param cam The camera on which the interaction happened.
    * @param p The double click position in component coordinates.
    * @param e The mouse event.
    * @return Whether the double click was consumed.
    */
-  boolean doubleClickHUD(Point2D p, MouseEvent e);
+  boolean doubleClickHUD(Camera cam, Point2D p, MouseEvent e);
 
   /**
    * Is called when the user moves the mouse over the component. This method
