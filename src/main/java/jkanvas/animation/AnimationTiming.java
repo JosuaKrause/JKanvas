@@ -2,6 +2,7 @@ package jkanvas.animation;
 
 import java.util.Objects;
 
+import jkanvas.io.json.JSONElement;
 import jkanvas.util.Interpolator;
 
 /**
@@ -58,5 +59,53 @@ public class AnimationTiming {
   /** Smooth animation with normal duration. */
   public static final AnimationTiming SMOOTH = new AnimationTiming(
       Interpolator.QUAD_IN_OUT, TIME_NORMAL);
+
+  /**
+   * Loads an animation timing from a JSON element.
+   * 
+   * @param el The JSON element.
+   * @return The animation timing.
+   */
+  public static final AnimationTiming loadFromJSON(final JSONElement el) {
+    if(el.isString()) {
+      switch(el.string()) {
+        case "no":
+        case "none":
+        case "no_animation":
+          return NO_ANIMATION;
+        case "slow":
+          return SLOW;
+        case "fast":
+          return FAST;
+        case "linear":
+          return LINEAR;
+        case "smooth":
+          return SMOOTH;
+        default:
+          throw new IllegalArgumentException("unknown timing: " + el.string());
+      }
+    }
+    el.expectObject();
+    final String pol = el.getString("interpolator", "linear");
+    final Interpolator i;
+    switch(pol) {
+      case "slow":
+        i = Interpolator.SLOW_IN_OUT;
+        break;
+      case "smooth":
+        i = Interpolator.SMOOTH;
+        break;
+      case "linear":
+        i = Interpolator.LINEAR;
+        break;
+      case "quad":
+        i = Interpolator.QUAD_IN_OUT;
+        break;
+      default:
+        throw new IllegalArgumentException("unknown interpolator: " + pol);
+    }
+    final long timing = el.getLong("duration", TIME_NORMAL);
+    return new AnimationTiming(i, timing);
+  }
 
 }

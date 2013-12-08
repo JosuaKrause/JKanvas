@@ -37,10 +37,8 @@ public interface Camera {
    * @param onFinish The action that is executed after the animation has
    *          finished.
    * @param useMargin Whether to add the canvas margin.
-   * @return Whether an actual transition has been started depending on whether
-   *         the render pass had a bounding box.
    */
-  boolean toView(Renderpass pass, AnimationTiming timing,
+  void toView(Renderpass pass, AnimationTiming timing,
       AnimationAction onFinish, boolean useMargin);
 
   /**
@@ -58,5 +56,12 @@ public interface Camera {
    *         same as {@link #getView()}.
    */
   Rectangle2D getPredictView();
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the camera is in animation.
+   */
+  boolean inAnimation();
 
 }

@@ -17,7 +17,7 @@ public class RandomLayouter<T extends AnimatedPosition> extends AbstractLayouter
   @Override
   protected boolean doLayout(final NodeLinkView<T> view) {
     boolean chg = false;
-    final Rectangle2D rect = getRectangle();
+    final Rectangle2D rect = getBoundingBox();
     final double w = rect.getWidth();
     final double h = rect.getHeight();
     for(final T node : view.nodes()) {

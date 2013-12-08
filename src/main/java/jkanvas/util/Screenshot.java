@@ -19,7 +19,7 @@ import javax.swing.JComponent;
 public final class Screenshot {
 
   /** The scaling factor for raster screen-shots. */
-  private static final int SCALE = 3;
+  public static int SCALE = 3;
 
   /** No constructor. */
   private Screenshot() {

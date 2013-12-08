@@ -55,9 +55,6 @@ public class BorderRenderpass extends HUDRenderpassAdapter {
         continue;
       }
       final Rectangle2D bbox = RenderpassPainter.getTopLevelBounds(r);
-      if(bbox == null) {
-        continue;
-      }
       final Double d = widths.get(r);
       g.setStroke(new BasicStroke((float) ctx.toComponentLength(d != null ? d : 2)));
       g.setColor(border);
