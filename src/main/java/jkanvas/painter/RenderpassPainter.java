@@ -78,14 +78,6 @@ public class RenderpassPainter implements KanvasPainter {
   }
 
   @Override
-  public void dispose() {
-    front.clear();
-    back.clear();
-    dragging = null;
-    draggingHUD = null;
-  }
-
-  @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
     g.setColor(java.awt.Color.GRAY);
     draw(back, g, ctx);
@@ -413,8 +405,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @param pos The position in components coordinates.
    * @return The position in render pass coordinates.
    */
-  public static final Point2D getPositionFromComponent(final Renderpass r,
-      final KanvasContext ctx, final Point2D pos) {
+  public static final Point2D getPositionFromComponent(
+      final Renderpass r, final KanvasContext ctx, final Point2D pos) {
     return getPositionFromCanvas(r, ctx.toCanvasCoordinates(pos));
   }
 
@@ -568,6 +560,14 @@ public class RenderpassPainter implements KanvasPainter {
       p = p.getParent();
     } while(p != null);
     return res;
+  }
+
+  @Override
+  public void dispose() {
+    front.clear();
+    back.clear();
+    dragging = null;
+    draggingHUD = null;
   }
 
 }

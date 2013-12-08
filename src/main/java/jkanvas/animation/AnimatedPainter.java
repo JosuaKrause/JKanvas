@@ -50,8 +50,8 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
    * 
    * @return Returns the current time. This method can be overwritten to gain
    *         full control over animation timing. This method is called exactly
-   *         once every step, when the {@link #setStopped(boolean)} is called,
-   *         and once during initialization.
+   *         once every step, once when the {@link #setStopped(boolean)} is
+   *         called, and once during initialization.
    */
   protected long getTime() {
     return System.currentTimeMillis();

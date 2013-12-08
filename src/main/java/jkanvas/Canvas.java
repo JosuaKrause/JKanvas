@@ -253,17 +253,17 @@ public class Canvas extends JComponent implements Refreshable {
    * that when an earlier peer consumes the interaction this method will not be
    * called. The difference to consuming an interaction is that other
    * interaction types are still called afterwards. So when a
-   * {@link KanvasInteraction#click(Camera,Point2D, MouseEvent)} interaction
+   * {@link KanvasInteraction#click(Camera, Point2D, MouseEvent)} interaction
    * calls this method for example
    * {@link KanvasInteraction#acceptDrag(Point2D, MouseEvent)} will still be
    * called.
    * 
-   * @see HUDInteraction#clickHUD(Camera,Point2D, MouseEvent)
+   * @see HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)
    * @see HUDInteraction#acceptDragHUD(Point2D, MouseEvent)
-   * @see KanvasInteraction#click(Camera,Point2D, MouseEvent)
+   * @see KanvasInteraction#click(Camera, Point2D, MouseEvent)
    * @see KanvasInteraction#acceptDrag(Point2D, MouseEvent)
-   * @see HUDInteraction#doubleClickHUD(Camera,Point2D, MouseEvent)
-   * @see KanvasInteraction#doubleClick(Camera,Point2D, MouseEvent)
+   * @see HUDInteraction#doubleClickHUD(Camera, Point2D, MouseEvent)
+   * @see KanvasInteraction#doubleClick(Camera, Point2D, MouseEvent)
    * @see KanvasInteraction#moveMouse(Point2D)
    */
   public static final void preventPeerInteraction() {

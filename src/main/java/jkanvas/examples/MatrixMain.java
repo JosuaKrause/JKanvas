@@ -180,7 +180,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
 
     };
     final RefreshManager manager = new SimpleRefreshManager();
-    // FIXME animated painter because of initial reset
+    // FIXME animated painter because of initial reset -- fix in ExampleUtil #28
     final RenderpassPainter p = new AnimatedPainter();
     final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
     p.addPass(matrixMain);
