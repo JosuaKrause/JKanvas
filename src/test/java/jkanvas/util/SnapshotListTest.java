@@ -120,6 +120,24 @@ public class SnapshotListTest {
     }
   }
 
+  /** Needs failure when snapshots closes during iteration. */
+  @Test
+  public void prematureClose() {
+    final String a = "a";
+    final SnapshotList<String> sl = new SnapshotList<>();
+    sl.add(a);
+    final Snapshot<String> s = sl.getSnapshot();
+    final Iterator<String> it = s.iterator();
+    assertTrue(it.hasNext());
+    s.close();
+    try {
+      it.next();
+      fail();
+    } catch(final IllegalStateException e) {
+      // expected behavior
+    }
+  }
+
   /**
    * Tests whether automatic removal via garbage collection works fine.
    * 

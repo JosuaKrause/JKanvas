@@ -39,7 +39,7 @@ public class AnimatedPosition extends Position2D implements Animated {
   } // Point2DAnimated
 
   /** The actual animated position. */
-  private final Point2DAnimated position;
+  private final GenericAnimated<Point2D> position;
 
   /**
    * Creates an animated position.
@@ -49,7 +49,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    */
   public AnimatedPosition(final double x, final double y) {
     super(Double.NaN, Double.NaN);
-    position = new Point2DAnimated(copy(x, y));
+    position = createAnimated(copy(x, y));
   }
 
   /**
@@ -60,6 +60,18 @@ public class AnimatedPosition extends Position2D implements Animated {
   public AnimatedPosition(final Point2D pos) {
     // this ensures copying the position
     this(pos.getX(), pos.getY());
+  }
+
+  /**
+   * Creates an animated point. Implementations must not use the state of this
+   * {@link AnimatedPosition} since this method is called during initialization
+   * of the object.
+   * 
+   * @param pos The initial position.
+   * @return The generic animated point for the given position.
+   */
+  protected GenericAnimated<Point2D> createAnimated(final Point2D pos) {
+    return new Point2DAnimated(pos);
   }
 
   /**

@@ -2,22 +2,15 @@ package jkanvas.examples;
 
 import java.awt.Color;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
 import java.util.Random;
 
-import javax.swing.AbstractAction;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 import jkanvas.Canvas;
-import jkanvas.FrameRateDisplayer;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationTiming;
@@ -31,10 +24,7 @@ import jkanvas.nodelink.layout.CircleLayouter;
 import jkanvas.nodelink.layout.ForceDirectedLayouter;
 import jkanvas.nodelink.layout.RandomLayouter;
 import jkanvas.nodelink.layout.SimpleLayoutedView;
-import jkanvas.painter.FrameRateHUD;
 import jkanvas.painter.SimpleTextHUD;
-import jkanvas.painter.TextHUD;
-import jkanvas.util.Screenshot;
 
 /**
  * A small node-link example application.
@@ -61,7 +51,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
    * @param view The view on the graph.
    */
   public NodeLinkMain(final SimpleLayoutedView<AnimatedPosition> view) {
-    super(view);
+    super(view, new Rectangle2D.Double(0, 0, 800, 600));
     simpleView = view;
     setIds("nl");
   }
@@ -169,7 +159,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       final Shape shape = n.createNodeShape(p, x, y);
       final Rectangle2D b = shape.getBounds2D();
       if(bbox == null) {
-        bbox = b;
+        bbox = new Rectangle2D.Double();
+        bbox.setFrame(b);
       } else {
         bbox.add(b);
       }
@@ -236,92 +227,16 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     });
     p.addPass(r);
     // configure Canvas
-    c.setBackground(Color.WHITE);
-    c.setFrameRateDisplayer(new FrameRateHUD());
-    p.addRefreshable(c);
-    c.setAnimator(p);
-    final JFrame frame = new JFrame("Node-Link") {
-
-      @Override
-      public void dispose() {
-        // The Canvas also disposes the animator,
-        // which terminates the animation daemon
-        c.dispose();
-        super.dispose();
-      }
-
-    };
-    // add actions
-    c.addAction(KeyEvent.VK_Q, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        frame.dispose();
-      }
-
-    });
-    c.addAction(KeyEvent.VK_F, new AbstractAction() {
-
-      private FrameRateDisplayer frd;
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        final FrameRateDisplayer tmp = frd;
-        frd = c.getFrameRateDisplayer();
-        c.setFrameRateDisplayer(tmp);
-      }
-
-    });
-    final SimpleTextHUD pause = new SimpleTextHUD(TextHUD.LEFT, TextHUD.TOP);
-    pause.addLine("paused");
-    pause.setVisible(false);
-    p.addHUDPass(pause);
-    c.addAction(KeyEvent.VK_T, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        final boolean b = !p.isStopped();
-        pause.setVisible(b);
-        p.setStopped(b);
-      }
-
-    });
+    final SimpleTextHUD info = ExampleUtil.setupCanvas("Node-Link", c, p,
+        true, true, true, false);
     c.addMessageAction(KeyEvent.VK_1, "nl#random");
     c.addMessageAction(KeyEvent.VK_2, "nl#circle");
     c.addMessageAction(KeyEvent.VK_3, "nl#force");
     c.addMessageAction(KeyEvent.VK_4, "nl#bounce");
-    c.addAction(KeyEvent.VK_P, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent ae) {
-        try {
-          final File png = Screenshot.savePNG(new File("pics"), "nodelink", c);
-          System.out.println("Saved screenshot in " + png);
-        } catch(final IOException e) {
-          e.printStackTrace();
-        }
-      }
-
-    });
-    final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
-    info.setIds("info");
-    c.addMessageAction(KeyEvent.VK_H, "info#visible:toggle");
-    info.addLine("T: Pause animation");
-    info.addLine("F: Toggle Framerate Display");
-    info.addLine("P: Take Photo");
-    info.addLine("H: Toggle Help");
     info.addLine("1: Lay out nodes randomly once");
     info.addLine("2: Lay out nodes in a circle");
     info.addLine("3: Force directed layout");
     info.addLine("4: Bounce layout");
-    info.addLine("Q/ESC: Quit");
-    p.addHUDPass(info);
-    // pack and show window
-    frame.add(c);
-    frame.pack();
-    frame.setLocationRelativeTo(null);
-    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    frame.setVisible(true);
     // TODO start with MDS layout #24
     final RandomLayouter<AnimatedPosition> rl = new RandomLayouter<>();
     rl.setTiming(AnimationTiming.NO_ANIMATION);

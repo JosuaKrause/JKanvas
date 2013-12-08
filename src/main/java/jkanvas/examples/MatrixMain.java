@@ -3,20 +3,13 @@ package jkanvas.examples;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
@@ -31,13 +24,10 @@ import jkanvas.matrix.MatrixRenderpass;
 import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
 import jkanvas.painter.RenderpassPainter;
-import jkanvas.painter.SimpleTextHUD;
-import jkanvas.painter.TextHUD;
 import jkanvas.selection.AbstractSelector;
 import jkanvas.selection.RectangleSelection;
 import jkanvas.selection.SelectableRenderpass;
 import jkanvas.util.PaintUtil;
-import jkanvas.util.Screenshot;
 import jkanvas.util.StringDrawer;
 import jkanvas.util.StringDrawer.Orientation;
 
@@ -208,61 +198,8 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     manager.addRefreshable(c);
     // configure the Canvas
     // c.setMargin(40);
-    c.setBackground(Color.WHITE);
-    final JFrame frame = new JFrame("Matrix") {
-
-      @Override
-      public void dispose() {
-        c.dispose();
-        super.dispose();
-      }
-
-    };
-    // add actions to the Canvas
-    c.addAction(KeyEvent.VK_Q, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        frame.dispose();
-      }
-
-    });
-    c.addAction(KeyEvent.VK_R, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent e) {
-        c.reset();
-      }
-
-    });
-    c.addAction(KeyEvent.VK_P, new AbstractAction() {
-
-      @Override
-      public void actionPerformed(final ActionEvent ae) {
-        try {
-          final File png = Screenshot.savePNG(new File("pics"), "matrix", c);
-          System.out.println("Saved screenshot in " + png);
-        } catch(final IOException e) {
-          e.printStackTrace();
-        }
-      }
-
-    });
-    final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
-    info.setIds("info");
-    c.addMessageAction(KeyEvent.VK_H, "info#visible:toggle");
-    info.addLine("P: Take Photo");
-    info.addLine("H: Toggle Help");
-    info.addLine("R: Reset View");
-    info.addLine("Q/ESC: Quit");
-    p.addHUDPass(info);
-    // pack and show window
-    frame.add(c);
-    frame.pack();
-    frame.setLocationRelativeTo(null);
-    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    ExampleUtil.setupCanvas("Matrix", c, p, true, false, true, false);
     c.setRestriction(p.getBoundingBox(), AnimationTiming.NO_ANIMATION);
-    frame.setVisible(true);
   }
 
 }

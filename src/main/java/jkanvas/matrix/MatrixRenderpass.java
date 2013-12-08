@@ -164,7 +164,7 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRend
       w += matrix.getWidth(i);
       h += matrix.getHeight(i);
     }
-    if(w <= 0 || h <= 0) return null;
+    if(w <= 0 || h <= 0) throw new IllegalStateException("matrix too small");
     return new Rectangle2D.Double(0, 0, w, h);
   }
 

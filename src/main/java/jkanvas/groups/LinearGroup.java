@@ -126,7 +126,6 @@ public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
     for(final RenderpassPosition<T> p : members) {
       final Renderpass pass = p.pass;
       final Rectangle2D bbox = pass.getBoundingBox();
-      if(bbox == null) throw new IllegalStateException("bbox must not be null");
       bboxes.add(bbox);
       if(!pass.isVisible()) {
         continue;

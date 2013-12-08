@@ -1,0 +1,41 @@
+{
+  "id": "presentation",
+  "keys": [
+    { "key": "left", "msg": "presentation#slide:prev", "help": "Previous slide" },
+    { "key": "right", "msg": "presentation#slide:next", "help": "Next slide" },
+    { "key": "s", "msg": "presentation#present:toggle", "help": "Toggle presentation mode" },
+  ],
+  "metric": {"lineHeight": "7%"},
+  "slides": [
+    {
+      "top": [
+        "Hello World!",
+        {
+          "type": "jkanvas.present.ImageRender",
+          "src": "test.png",
+          "align": "center",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "top": [
+        "The quick brown fox jumped over the lazy dog!",
+        "Second text"
+      ]
+    },
+    {
+      "center": [
+        "The quick brown fox jumped over the lazy dog!",
+        {
+          "type": "jkanvas.present.TextRender",
+          "align": "center",
+          "text": "centered text",
+          "font": "times"
+        },
+        "test test test test"
+      ]
+    },
+  ],
+  "timing": "fast"
+}
