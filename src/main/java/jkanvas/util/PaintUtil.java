@@ -62,11 +62,23 @@ public final class PaintUtil {
    * 
    * @param rect The rectangle.
    * @param padding The padding.
-   * @return The new rectangle.
+   * @return The rectangle with the padding.
    */
   public static Rectangle2D addPadding(final RectangularShape rect, final double padding) {
     final double p2 = padding * 2;
     return new Rectangle2D.Double(rect.getX() - padding, rect.getY() - padding,
+        rect.getWidth() + p2, rect.getHeight() + p2);
+  }
+
+  /**
+   * Adds padding to a rectangle.
+   * 
+   * @param rect The rectangle. The result will also be stored in the rectangle.
+   * @param padding The padding.
+   */
+  public static void addPaddingInplace(final RectangularShape rect, final double padding) {
+    final double p2 = padding * 2;
+    rect.setFrame(rect.getX() - padding, rect.getY() - padding,
         rect.getWidth() + p2, rect.getHeight() + p2);
   }
 

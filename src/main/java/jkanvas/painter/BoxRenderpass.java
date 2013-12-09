@@ -14,7 +14,7 @@ import jkanvas.KanvasContext;
 public class BoxRenderpass extends AbstractRenderpass {
 
   /** The box. */
-  private Rectangle2D rect;
+  private final Rectangle2D rect;
   /** The border color or <code>null</code> if the border is not drawn. */
   private Color border;
   /** The fill color or <code>null</code> if the filling is not drawn. */
@@ -39,9 +39,10 @@ public class BoxRenderpass extends AbstractRenderpass {
    *          drawn.
    */
   public BoxRenderpass(final Rectangle2D rect, final Color fill, final Color border) {
-    setBoundingBox(rect);
+    this.rect = new Rectangle2D.Double();
     this.fill = fill;
     this.border = border;
+    setBoundingBox(rect);
   }
 
   /**
@@ -50,14 +51,12 @@ public class BoxRenderpass extends AbstractRenderpass {
    * @param rect The bounding box.
    */
   public void setBoundingBox(final Rectangle2D rect) {
-    this.rect = new Rectangle2D.Double(
-        rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+    this.rect.setFrame(rect);
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return new Rectangle2D.Double(
-        rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+  public void getBoundingBox(final Rectangle2D bbox) {
+    bbox.setFrame(rect);
   }
 
   /**

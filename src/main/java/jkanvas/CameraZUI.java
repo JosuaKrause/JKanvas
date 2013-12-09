@@ -93,14 +93,16 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
-  public void toView(final Rectangle2D rect,
-      final AnimationTiming timing, final AnimationAction onFinish,
-      final boolean useMargin) {
+  public void toView(final Rectangle2D rect, final AnimationTiming timing,
+      final AnimationAction onFinish, final boolean useMargin) {
     Objects.requireNonNull(rect);
     Objects.requireNonNull(timing);
     final Rectangle2D r =
         useMargin ? jkanvas.util.PaintUtil.addPadding(rect, canvas.getMargin()) : rect;
-    if(r.isEmpty()) return;
+    if(r.isEmpty()) {
+      canvas.scheduleAction(onFinish, timing);
+      return;
+    }
     ensureView();
     view.set(getView());
     view.startAnimationTo(r, timing, onFinish);
@@ -109,7 +111,8 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   @Override
   public void toView(final Renderpass pass, final AnimationTiming timing,
       final AnimationAction onFinish, final boolean useMargin) {
-    final Rectangle2D box = jkanvas.painter.RenderpassPainter.getTopLevelBounds(pass);
+    final Rectangle2D box = new Rectangle2D.Double();
+    jkanvas.painter.RenderpassPainter.getTopLevelBounds(box, pass);
     toView(box, timing, onFinish, useMargin);
   }
 

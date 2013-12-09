@@ -30,8 +30,8 @@ public interface LayoutedView<T extends AnimatedPosition> extends NodeLinkView<T
   /**
    * Getter.
    * 
-   * @return The bounding box of the layout.
+   * @param bbox The rectangle in which the bounding box will be stored.
    */
-  Rectangle2D getBoundingBox();
+  void getBoundingBox(Rectangle2D bbox);
 
 }

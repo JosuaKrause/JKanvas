@@ -125,7 +125,8 @@ public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
     double maxV = 0;
     for(final RenderpassPosition<T> p : members) {
       final Renderpass pass = p.pass;
-      final Rectangle2D bbox = pass.getBoundingBox();
+      final Rectangle2D bbox = new Rectangle2D.Double();
+      pass.getBoundingBox(bbox);
       bboxes.add(bbox);
       if(!pass.isVisible()) {
         continue;

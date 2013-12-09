@@ -161,21 +161,22 @@ public class Slide extends AbstractRenderpass {
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D view = ctx.getVisibleCanvas();
-    final Rectangle2D outer = getBoundingBox();
-    if(!view.intersects(outer)) return;
+    final Rectangle2D rect = new Rectangle2D.Double();
+    getBoundingBox(rect);
+    if(!view.intersects(rect)) return;
     gfx.setColor(Color.BLACK);
-    gfx.draw(outer);
+    gfx.draw(rect);
     for(final SlideObject obj : content) {
       obj.beforeDraw(gfx, metric);
     }
     for(final SlideObject obj : content) {
       final Point2D off = obj.getOffset(metric);
-      final Rectangle2D bbox = getBoundingBox(obj, off);
-      if(!view.intersects(bbox)) {
+      getBoundingBox(rect, obj, off);
+      if(!view.intersects(rect)) {
         continue;
       }
       final Graphics2D g = (Graphics2D) gfx.create();
-      g.clip(bbox);
+      g.clip(rect);
       final double dx = off.getX();
       final double dy = off.getY();
       g.translate(dx, dy);
@@ -188,18 +189,20 @@ public class Slide extends AbstractRenderpass {
   /**
    * Getter.
    * 
+   * @param bbox The rectangle in which the bounding box of the given object
+   *          with correct offset is stored.
    * @param obj The object.
    * @param off The offset.
-   * @return The bounding box of the given object with correct offset.
    */
-  private static Rectangle2D getBoundingBox(final SlideObject obj, final Point2D off) {
-    final Rectangle2D box = obj.getBoundingBox();
-    return new Rectangle2D.Double(off.getX(), off.getY(), box.getWidth(), box.getHeight());
+  private static void getBoundingBox(final Rectangle2D bbox,
+      final SlideObject obj, final Point2D off) {
+    obj.getBoundingBox(bbox);
+    bbox.setFrame(off.getX(), off.getY(), bbox.getWidth(), bbox.getHeight());
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return metric.getBoundingBox();
+  public void getBoundingBox(final Rectangle2D bbox) {
+    metric.getBoundingBox(bbox);
   }
 
 }

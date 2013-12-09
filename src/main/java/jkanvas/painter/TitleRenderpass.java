@@ -73,7 +73,8 @@ public class TitleRenderpass extends AbstractRenderpass {
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
-    final Rectangle2D box = getBoundingBox();
+    final Rectangle2D box = new Rectangle2D.Double();
+    getBoundingBox(box);
     box.setFrame(box.getX(), box.getY(), box.getWidth(), textHeight);
     g.setColor(Color.BLACK);
     StringDrawer.drawInto(g, title, box);
@@ -81,11 +82,10 @@ public class TitleRenderpass extends AbstractRenderpass {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    final Rectangle2D box = pass.getBoundingBox();
-    box.setFrame(box.getX(), box.getY(),
-        box.getWidth(), box.getHeight() + space + textHeight);
-    return box;
+  public void getBoundingBox(final Rectangle2D bbox) {
+    pass.getBoundingBox(bbox);
+    bbox.setFrame(bbox.getX(), bbox.getY(),
+        bbox.getWidth(), bbox.getHeight() + space + textHeight);
   }
 
   @Override
@@ -118,7 +118,8 @@ public class TitleRenderpass extends AbstractRenderpass {
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, position);
-    final Rectangle2D bbox = pass.getBoundingBox();
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    pass.getBoundingBox(bbox);
     if(!bbox.contains(pos)) return false;
     if(!pass.acceptDrag(pos, e)) return false;
     start = pos;

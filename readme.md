@@ -24,8 +24,8 @@ Renderpass renderpass = new AbstractRenderpass() {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    // return a bounding-box
+  public void getBoundingBox(Rectangle2D bbox) {
+    // set bounding box for the render pass
   }
 
 };

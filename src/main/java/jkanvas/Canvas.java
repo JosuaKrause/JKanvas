@@ -587,24 +587,31 @@ public class Canvas extends JComponent implements Refreshable {
     return cfg;
   }
 
-  /** Zooms to fit the bounding box. */
+  /**
+   * Zooms to fit the bounding box. If the bounding box is empty this is a
+   * no-op.
+   */
   public void reset() {
-    reset(cfg.getPainter().getBoundingBox());
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    cfg.getPainter().getBoundingBox(bbox);
+    if(!bbox.isEmpty()) {
+      reset(bbox);
+    }
   }
 
   /**
-   * Resets the viewport to fit the bounding box.
+   * Resets the viewport to fit the bounding box. If the bounding box is empty
+   * the viewport will not be changed.
    * 
    * @param timing The timing.
    * @param onFinish The action to perform when the viewport was set or when the
    *          method returns <code>false</code>. This method may be
    *          <code>null</code> when no action needs to be performed.
-   * @return Whether the viewport is set.
    */
-  public boolean reset(final AnimationTiming timing, final AnimationAction onFinish) {
-    final Rectangle2D bbox = cfg.getPainter().getBoundingBox();
+  public void reset(final AnimationTiming timing, final AnimationAction onFinish) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    cfg.getPainter().getBoundingBox(bbox);
     cfg.getZUI().toView(bbox, timing, onFinish, true);
-    return true;
   }
 
   /** The margin for the viewport reset. The default is <code>10.0</code>. */

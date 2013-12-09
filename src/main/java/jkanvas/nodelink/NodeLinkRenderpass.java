@@ -212,8 +212,12 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRend
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return layout == null ? bbox : layout.getBoundingBox();
+  public void getBoundingBox(final Rectangle2D rect) {
+    if(layout == null) {
+      rect.setFrame(bbox);
+    } else {
+      layout.getBoundingBox(rect);
+    }
   }
 
 }

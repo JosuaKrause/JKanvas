@@ -55,8 +55,8 @@ public class ParallelRenderpass extends CachedRenderpass {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return new Rectangle2D.Double(0, 0, width, height);
+  public void getBoundingBox(final Rectangle2D bbox) {
+    bbox.setFrame(0, 0, width, height);
   }
 
   /**

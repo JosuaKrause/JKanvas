@@ -51,8 +51,14 @@ public class ParallelCoordinates {
       protected void drawBetween(final Graphics2D gfx, final KanvasContext ctx,
           final AbstractRenderpass left, final AbstractRenderpass right) {
         if(left == right && left == null) return;
-        final double x = left != null ? left.getOffsetX()
-            + left.getBoundingBox().getWidth() : right.getOffsetX();
+        final double x;
+        if(left != null) {
+          final Rectangle2D leftBox = new Rectangle2D.Double();
+          left.getBoundingBox(leftBox);
+          x = left.getOffsetX() + leftBox.getWidth();
+        } else {
+          x = right.getOffsetX();
+        }
         final Line2D line = new Line2D.Double(x, 0, x, height);
         gfx.setColor(Color.BLACK);
         gfx.draw(line);

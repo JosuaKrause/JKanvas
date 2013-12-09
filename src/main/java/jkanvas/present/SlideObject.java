@@ -122,11 +122,12 @@ public abstract class SlideObject {
   /**
    * Getter.
    * 
-   * @return The bounding box of the object without the offset.
+   * @param bbox The rectangle in which the bounding box of the object without
+   *          the offset is stored.
    * @throws IllegalStateException When the object has not been drawn yet.
    */
-  public Rectangle2D getBoundingBox() throws IllegalStateException {
-    return new Rectangle2D.Double(0, 0, getWidth(), getHeight());
+  public void getBoundingBox(final Rectangle2D bbox) throws IllegalStateException {
+    bbox.setFrame(0, 0, getWidth(), getHeight());
   }
 
   /**

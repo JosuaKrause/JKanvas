@@ -40,7 +40,8 @@ public abstract class CachedRenderpass extends AbstractRenderpass {
 
   @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
-    final Rectangle2D bbox = getBoundingBox();
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    getBoundingBox(bbox);
     final boolean chg = isChanging();
     final boolean noCache = chg || lastChanging;
     lastChanging = chg;

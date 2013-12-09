@@ -120,9 +120,9 @@ public interface KanvasInteraction {
   /**
    * Calculates the bounding box of the canvas.
    * 
-   * @return The bounding box.
+   * @param bbox The rectangle where the bounding box is stored.
    */
-  Rectangle2D getBoundingBox();
+  void getBoundingBox(Rectangle2D bbox);
 
   /**
    * Processes a message handed in via the {@link Canvas#postMessage(String)}
