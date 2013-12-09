@@ -171,6 +171,9 @@ public abstract class ColumnBinner {
       final double totalCount = feature.rows();
       double e = 0;
       for(final int c : getBinCount()) {
+        if(c == 0) {
+          continue;
+        }
         final double p = c / totalCount;
         e += p * Math.log(p);
       }

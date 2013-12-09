@@ -212,6 +212,7 @@ public final class PaintUtil {
    * @return The interpolated color.
    */
   public static Color interpolate(final Color from, final Color to, final double t) {
+    if(Double.isNaN(t)) throw new IllegalArgumentException("NaN");
     final float[] fromRGBA = new float[4];
     final float[] toRGBA = new float[4];
     from.getRGBComponents(fromRGBA);
