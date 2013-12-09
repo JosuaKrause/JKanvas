@@ -161,10 +161,10 @@ public abstract class SlideMetrics {
   /**
    * Getter.
    * 
-   * @return The bounding box of the slide.
+   * @param bbox The rectangle in which the bounding box of the slide is stored.
    */
-  public Rectangle2D getBoundingBox() {
-    return new Rectangle2D.Double(0, 0, slideWidth(), slideHeight());
+  public void getBoundingBox(final Rectangle2D bbox) {
+    bbox.setFrame(0, 0, slideWidth(), slideHeight());
   }
 
   /**

@@ -273,9 +273,9 @@ public class DependencyNodeLinkView implements LayoutedView<IndexedPosition>, An
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
+  public void getBoundingBox(final Rectangle2D bbox) {
     Objects.requireNonNull(layouter);
-    return layouter.getBoundingBox();
+    layouter.getBoundingBox(bbox);
   }
 
 }

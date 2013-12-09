@@ -129,7 +129,8 @@ public class Presentation extends LinearGroup<Slide> {
     curSlide = Math.min(Math.max(0, no), renderpassCount() - 1);
     if(!inPresentationMode()) return;
     final Slide slide = getRenderpass(curSlide);
-    final Rectangle2D box = RenderpassPainter.getTopLevelBounds(slide);
+    final Rectangle2D box = new Rectangle2D.Double();
+    RenderpassPainter.getTopLevelBounds(box, slide);
     canvas.setRestriction(box, timing);
   }
 

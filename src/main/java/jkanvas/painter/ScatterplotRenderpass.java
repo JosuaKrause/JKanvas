@@ -60,14 +60,15 @@ public class ScatterplotRenderpass extends CachedRenderpass {
   }
 
   @Override
-  public Rectangle2D getBoundingBox() {
-    return new Rectangle2D.Double(0, 0, size, size);
+  public void getBoundingBox(final Rectangle2D bbox) {
+    bbox.setFrame(0, 0, size, size);
   }
 
   @Override
   public void doDraw(final Graphics2D g, final KanvasContext ctx) {
     g.setColor(Color.BLACK);
-    final Rectangle2D rect = getBoundingBox();
+    final Rectangle2D rect = new Rectangle2D.Double();
+    getBoundingBox(rect);
     if(ctx.toCanvasLength(1) > 1) {
       g.drawRect(0, 0, (int) rect.getWidth() - 1, (int) rect.getHeight() - 1);
     } else {

@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
+import jkanvas.KanvasPainter;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.util.PaintUtil;
 
@@ -21,7 +22,7 @@ import jkanvas.util.PaintUtil;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class RenderpassPainter extends PainterAdapter {
+public class RenderpassPainter implements KanvasPainter {
 
   /** The HUD render passes. */
   private final List<HUDRenderpass> front;
@@ -33,6 +34,11 @@ public class RenderpassPainter extends PainterAdapter {
   public RenderpassPainter() {
     front = new ArrayList<>();
     back = new ArrayList<>();
+  }
+
+  @Override
+  public boolean isAllowingPan(final Point2D p, final MouseEvent e) {
+    return SwingUtilities.isLeftMouseButton(e);
   }
 
   /**
@@ -90,11 +96,12 @@ public class RenderpassPainter extends PainterAdapter {
   public static final void draw(
       final List<Renderpass> passes, final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D view = ctx.getVisibleCanvas();
+    final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : passes) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = getPassBoundingBox(r);
+      getPassBoundingBox(bbox, r);
       if(!view.intersects(bbox)) {
         continue;
       }
@@ -114,7 +121,7 @@ public class RenderpassPainter extends PainterAdapter {
         if(!r.isVisible()) {
           continue;
         }
-        final Rectangle2D bbox = getPassBoundingBox(r);
+        getPassBoundingBox(bbox, r);
         if(!view.intersects(bbox)) {
           continue;
         }
@@ -141,11 +148,12 @@ public class RenderpassPainter extends PainterAdapter {
    */
   public static final boolean click(
       final List<Renderpass> passes, final Camera cam, final Point2D p, final MouseEvent e) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
+      r.getBoundingBox(bbox);
       final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
@@ -160,7 +168,8 @@ public class RenderpassPainter extends PainterAdapter {
     if(doubleClick(back, cam, p, e)) return true;
     if(!AbstractRenderpass.USE_DOUBLE_CLICK_DEFAULT) return false;
     if(!SwingUtilities.isLeftMouseButton(e)) return false;
-    final Rectangle2D box = getBoundingBox(back);
+    final Rectangle2D box = new Rectangle2D.Double();
+    getBoundingBox(box, back);
     cam.toView(box, AnimationTiming.SMOOTH, null, true);
     return true;
   }
@@ -177,11 +186,12 @@ public class RenderpassPainter extends PainterAdapter {
    */
   public static final boolean doubleClick(
       final List<Renderpass> passes, final Camera cam, final Point2D p, final MouseEvent e) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
+      r.getBoundingBox(bbox);
       final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
@@ -206,11 +216,12 @@ public class RenderpassPainter extends PainterAdapter {
    * @see #getTooltip(Point2D)
    */
   public static final String getTooltip(final List<Renderpass> passes, final Point2D p) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
+      r.getBoundingBox(bbox);
       final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
@@ -256,11 +267,12 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public final boolean acceptDrag(final Point2D p, final MouseEvent e) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : reverseList(back)) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D bbox = r.getBoundingBox();
+      r.getBoundingBox(bbox);
       final Point2D pos = getPositionFromCanvas(r, p);
       if(!bbox.contains(pos)) {
         continue;
@@ -414,44 +426,44 @@ public class RenderpassPainter extends PainterAdapter {
   /**
    * Getter.
    * 
+   * @param rect The rectangle in which the bounding box of the render pass in
+   *          canvas coordinates is stored.
    * @param r The render pass.
-   * @return The bounding box of the render pass in canvas coordinates.
    */
-  public static final Rectangle2D getPassBoundingBox(final Renderpass r) {
-    final Rectangle2D rect = r.getBoundingBox();
-    return new Rectangle2D.Double(rect.getX() + r.getOffsetX(),
+  public static final void getPassBoundingBox(final Rectangle2D rect, final Renderpass r) {
+    r.getBoundingBox(rect);
+    rect.setFrame(rect.getX() + r.getOffsetX(),
         rect.getY() + r.getOffsetY(), rect.getWidth(), rect.getHeight());
   }
 
   /**
    * Calculates the joined bounding boxes of the given render passes.
    * 
+   * @param rect The rectangle where the result is stored. Note that the result
+   *          may be empty.
    * @param passes The render passes.
-   * @return The joined bounding box or <code>null</code> if no render pass was
-   *         in the iterator.
-   * @see #getBoundingBox()
    */
-  public static final Rectangle2D getBoundingBox(final Iterable<Renderpass> passes) {
-    Rectangle2D bbox = null;
+  public static final void getBoundingBox(
+      final Rectangle2D rect, final Iterable<Renderpass> passes) {
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    // clear rect
+    rect.setFrame(bbox);
     for(final Renderpass r : passes) {
       if(!r.isVisible()) {
         continue;
       }
-      final Rectangle2D b = getPassBoundingBox(r);
-      if(bbox == null) {
-        bbox = new Rectangle2D.Double();
-        bbox.setFrame(b);
-      } else {
-        bbox.add(b);
+      getPassBoundingBox(bbox, r);
+      if(rect.isEmpty()) {
+        rect.setFrame(bbox);
+      } else if(!bbox.isEmpty()) {
+        rect.add(bbox);
       }
     }
-    return bbox;
   }
 
   @Override
-  public final Rectangle2D getBoundingBox() {
-    final Rectangle2D box = getBoundingBox(back);
-    return box != null ? box : new Rectangle2D.Double();
+  public final void getBoundingBox(final Rectangle2D bbox) {
+    getBoundingBox(bbox, back);
   }
 
   @Override
@@ -504,37 +516,32 @@ public class RenderpassPainter extends PainterAdapter {
   }
 
   /**
-   * Computes the top level bounding box position in canvas coordinates of the
-   * given render pass.
+   * Computes the top level bounding box position of the given render pass in
+   * canvas coordinates.
    * 
+   * @param bbox The rectangle in which the result will be stored.
    * @param pass The render pass.
-   * @return The bounding box of the render pass in top level canvas
-   *         coordinates.
    */
-  public static final Rectangle2D getTopLevelBounds(final Renderpass pass) {
-    return getTopLevelBounds(pass, pass.getBoundingBox());
+  public static final void getTopLevelBounds(final Rectangle2D bbox, final Renderpass pass) {
+    pass.getBoundingBox(bbox);
+    convertToTopLevelBounds(bbox, pass);
   }
 
   /**
    * Converts a rectangle in render pass local coordinates into top level canvas
    * coordinates.
    * 
+   * @param rect The rectangle to transform.
    * @param pass The render pass.
-   * @param rect The rectangle in local render pass canvas coordinates.
-   * @return The rectangle in top level canvas coordinates.
    */
-  public static final Rectangle2D getTopLevelBounds(
-      final Renderpass pass, final Rectangle2D rect) {
+  public static final void convertToTopLevelBounds(
+      final Rectangle2D rect, final Renderpass pass) {
     Renderpass p = pass;
-    final Rectangle2D box = new Rectangle2D.Double();
-    box.setFrame(rect);
     do {
-      box.setRect(box.getX() + p.getOffsetX(),
-          box.getY() + p.getOffsetY(),
-          box.getWidth(), box.getHeight());
+      rect.setFrame(rect.getX() + p.getOffsetX(), rect.getY() + p.getOffsetY(),
+          rect.getWidth(), rect.getHeight());
       p = p.getParent();
     } while(p != null);
-    return box;
   }
 
   /**
@@ -556,9 +563,10 @@ public class RenderpassPainter extends PainterAdapter {
 
   @Override
   public void dispose() {
-    super.dispose();
     front.clear();
     back.clear();
+    dragging = null;
+    draggingHUD = null;
   }
 
 }

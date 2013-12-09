@@ -163,10 +163,11 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
   /**
    * Getter.
    * 
-   * @return The rectangle to bound the layout.
+   * @param bbox The rectangle in which the bounding box of the layout will be
+   *          stored.
    */
-  public Rectangle2D getBoundingBox() {
-    return rect == null ? canvas.getVisibleCanvas() : rect;
+  public void getBoundingBox(final Rectangle2D bbox) {
+    bbox.setFrame(rect == null ? canvas.getVisibleCanvas() : rect);
   }
 
 }

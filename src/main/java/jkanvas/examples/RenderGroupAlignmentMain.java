@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 
@@ -73,7 +74,9 @@ public class RenderGroupAlignmentMain extends MatrixMain {
           public void draw(final Graphics2D g, final KanvasContext ctx) {
             super.draw(g, ctx);
             g.setColor(Color.GRAY);
-            g.draw(getBoundingBox());
+            final Rectangle2D rect = new Rectangle2D.Double();
+            getBoundingBox(rect);
+            g.draw(rect);
           }
 
         };
@@ -111,7 +114,9 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
       @Override
       public void animationFinished() {
-        c.setRestriction(p.getBoundingBox(), AnimationTiming.SMOOTH);
+        final Rectangle2D rect = new Rectangle2D.Double();
+        p.getBoundingBox(rect);
+        c.setRestriction(rect, AnimationTiming.SMOOTH);
         group.setOnFinish(null);
       }
 
