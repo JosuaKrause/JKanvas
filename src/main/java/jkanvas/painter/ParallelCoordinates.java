@@ -5,13 +5,13 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
-import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.groups.LinearGroup;
 import jkanvas.table.DataTable;
+import jkanvas.table.Feature;
 import jkanvas.table.LineMapper;
 
 /**
@@ -25,8 +25,6 @@ public class ParallelCoordinates {
   private final LinearGroup<AbstractRenderpass> group;
   /** The size of a cell. */
   private final Rectangle2D box;
-  /** The table. */
-  private final DataTable table;
   /** The alpha value for the lines. */
   private final double alpha;
 
@@ -34,15 +32,12 @@ public class ParallelCoordinates {
    * Creates parallel coordinates for the given table.
    * 
    * @param animator The animator.
-   * @param table The table.
    * @param width The width of one cell.
    * @param height The height of the cells.
    * @param alpha The transparency of the lines.
    */
-  public ParallelCoordinates(final Animator animator, final DataTable table,
+  public ParallelCoordinates(final Animator animator,
       final double width, final double height, final double alpha) {
-    Objects.requireNonNull(table);
-    this.table = table.cached();
     this.alpha = alpha;
     group = new LinearGroup<AbstractRenderpass>(
         animator, true, 0, AnimationTiming.NO_ANIMATION) {
@@ -73,22 +68,30 @@ public class ParallelCoordinates {
    * 
    * @param features The features that should be used.
    */
-  public void showFeatures(final List<Integer> features) {
+  public void showFeatures(final List<Feature> features) {
+    DataTable table = null;
     final int[] fs = new int[features.size()];
     for(int i = 0; i < fs.length; ++i) {
-      fs[i] = features.get(i);
+      final Feature f = features.get(i);
+      if(table == null) {
+        table = f.getTable();
+      } else if(table != f.getTable()) throw new IllegalArgumentException(
+          "features must be from same table: " + table + " != " + f.getTable());
+      fs[i] = f.getColumn();
     }
-    showFeatures(fs);
+    showFeatures(table, fs);
   }
 
   /**
    * Shows the given features.
    * 
+   * @param table The data table.
    * @param features The features that should be used or <code>null</code> if
    *          all features should be used.
    */
-  public void showFeatures(final int[] features) {
+  public void showFeatures(final DataTable table, final int[] features) {
     group.clearRenderpasses();
+    if(table == null) return;
     final int[] fs = features != null ? features : new int[table.cols()];
     if(features == null) {
       for(int i = 0; i < fs.length; ++i) {
