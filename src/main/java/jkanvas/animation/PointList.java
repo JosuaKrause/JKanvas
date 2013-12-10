@@ -1,6 +1,7 @@
 package jkanvas.animation;
 
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
@@ -257,7 +258,7 @@ public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
 
   @Override
   protected void paint(final Graphics2D gfx, final T shape,
-      final int index, final int pos, final int cpos) {
+      final int index, final int pos, final int cpos, final Composite defaultComposite) {
     final double x = get(X_COORD, pos);
     final double y = get(Y_COORD, pos);
     final double s = get(SIZE, pos);

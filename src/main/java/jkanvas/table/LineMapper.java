@@ -20,6 +20,8 @@ public class LineMapper extends ListMapper<LineList> {
   private final double w;
   /** The height of the cell. */
   private final double h;
+  /** The alpha value of the lines. */
+  private final double alpha;
 
   /**
    * Creates a line map.
@@ -29,14 +31,17 @@ public class LineMapper extends ListMapper<LineList> {
    * @param f2 The second feature.
    * @param w The width of the cell.
    * @param h The height of the cell.
+   * @param alpha The alpha value of the lines.
    */
-  public LineMapper(final DataTable table,
-      final int f1, final int f2, final double w, final double h) {
+  public LineMapper(final DataTable table, final int f1, final int f2,
+      final double w, final double h, final double alpha) {
     super(table);
+    if(alpha < 0 || alpha > 1) throw new IllegalArgumentException("" + alpha);
     this.f1 = f1;
     this.f2 = f2;
     this.w = w;
     this.h = h;
+    this.alpha = alpha;
   }
 
   @Override
@@ -48,7 +53,7 @@ public class LineMapper extends ListMapper<LineList> {
   protected int createForRow(final LineList ll, final int r) {
     final DataTable table = getTable();
     return ll.addLine(0, (1 - table.getMinMaxScaled(r, f1)) * h,
-        w, (1 - table.getMinMaxScaled(r, f2)) * h);
+        w, (1 - table.getMinMaxScaled(r, f2)) * h, alpha);
   }
 
   /**

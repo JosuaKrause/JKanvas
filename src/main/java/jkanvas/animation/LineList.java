@@ -1,6 +1,8 @@
 package jkanvas.animation;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -20,6 +22,8 @@ public class LineList extends GenericPaintList<Line2D> {
   protected static final int X_COORD_1 = 2;
   /** The The index for the second y coordinate. */
   protected static final int Y_COORD_1 = 3;
+  /** The The index for the alpha value. */
+  protected static final int ALPHA = 4;
   /** The The index for the color. */
   protected static final int COLOR = 0;
   /** The default color. */
@@ -33,7 +37,7 @@ public class LineList extends GenericPaintList<Line2D> {
    *          be transparent by default.
    */
   public LineList(final int initialSize, final Color defaultColor) {
-    super(4, 1, initialSize);
+    super(5, 1, initialSize);
     this.defaultColor = defaultColor;
   }
 
@@ -67,15 +71,57 @@ public class LineList extends GenericPaintList<Line2D> {
    * @return The index of the newly created line.
    */
   public int addLine(final double x1, final double y1, final double x2, final double y2) {
+    return addLine(x1, y1, x2, y2, 1.0);
+  }
+
+  /**
+   * Adds a new line.
+   * 
+   * @param x1 The first x coordinate.
+   * @param y1 The first y coordinate.
+   * @param x2 The second x coordinate.
+   * @param y2 The second y coordinate.
+   * @param alpha The alpha value of the line.
+   * @return The index of the newly created line.
+   */
+  public int addLine(final double x1, final double y1,
+      final double x2, final double y2, final double alpha) {
+    if(alpha < 0 || alpha > 1) throw new IllegalArgumentException("" + alpha);
     final int index = addIndex();
     final int pos = getPosition(index);
     set(X_COORD_0, pos, x1);
     set(Y_COORD_0, pos, y1);
     set(X_COORD_1, pos, x2);
     set(Y_COORD_1, pos, y2);
+    set(ALPHA, pos, alpha);
     final int cpos = getColorPosition(index);
     setColor(COLOR, cpos, null);
     return index;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param index The index of the line.
+   * @param alpha The alpha value of the line.
+   */
+  public void setAlpha(final int index, final double alpha) {
+    ensureActive(index);
+    if(alpha < 0 || alpha > 1) throw new IllegalArgumentException("" + alpha);
+    final int pos = getPosition(index);
+    set(ALPHA, pos, alpha);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param index The index of the line.
+   * @return The alpha value of the line.
+   */
+  public double getAlpha(final int index) {
+    ensureActive(index);
+    final int pos = getPosition(index);
+    return get(ALPHA, pos);
   }
 
   /**
@@ -144,19 +190,35 @@ public class LineList extends GenericPaintList<Line2D> {
 
   @Override
   protected void paint(final Graphics2D gfx, final Line2D line, final int index,
-      final int pos, final int cpos) {
+      final int pos, final int cpos, final Composite defaultComposite) {
     final double x1 = get(X_COORD_0, pos);
     final double y1 = get(Y_COORD_0, pos);
     final double x2 = get(X_COORD_1, pos);
     final double y2 = get(Y_COORD_1, pos);
     if(Double.isNaN(x1) || Double.isNaN(y1) ||
         Double.isNaN(x2) || Double.isNaN(y2)) return;
+    final double alpha = get(ALPHA, pos);
+    if(alpha <= 0) return;
     final Color color = getColor(COLOR, cpos);
     if(color != null || defaultColor != null) {
       gfx.setColor(color != null ? color : defaultColor);
       line.setLine(x1, y1, x2, y2);
+      if(alpha >= 1) {
+        gfx.setComposite(defaultComposite);
+      } else {
+        gfx.setComposite(AlphaComposite.getInstance(
+            AlphaComposite.SRC_OVER, (float) alpha));
+      }
       gfx.draw(line);
     }
+  }
+
+  /**
+   * Reduces the number of lines by identifying similar lines and adding the
+   * alpha values together.
+   */
+  public void optimize() {
+    // TODO do the optimization
   }
 
   @Override

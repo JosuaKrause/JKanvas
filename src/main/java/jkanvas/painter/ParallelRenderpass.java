@@ -7,7 +7,6 @@ import java.util.Objects;
 import jkanvas.KanvasContext;
 import jkanvas.animation.LineList;
 import jkanvas.table.LineMapper;
-import jkanvas.util.PaintUtil;
 
 /**
  * A render pass for one parallel coordinates cell.
@@ -22,17 +21,14 @@ public class ParallelRenderpass extends CachedRenderpass {
   private final double height;
   /** The list of lines. */
   private final LineList list;
-  /** The transparency of the lines. */
-  private final double alpha;
 
   /**
    * Creates a parallel coordinates cell from a table.
    * 
    * @param map The line map.
-   * @param alpha The transparency of the lines.
    */
-  public ParallelRenderpass(final LineMapper map, final double alpha) {
-    this(map.getList(), map.getWidth(), map.getHeight(), alpha);
+  public ParallelRenderpass(final LineMapper map) {
+    this(map.getList(), map.getWidth(), map.getHeight());
   }
 
   /**
@@ -41,17 +37,15 @@ public class ParallelRenderpass extends CachedRenderpass {
    * @param list The line list.
    * @param width The width of the cell.
    * @param height The height of the cell.
-   * @param alpha The transparency of the lines.
    */
   public ParallelRenderpass(final LineList list,
-      final double width, final double height, final double alpha) {
+      final double width, final double height) {
     if(width <= 0.0) throw new IllegalArgumentException("" + width);
     if(height <= 0.0) throw new IllegalArgumentException("" + height);
-    if(alpha <= 0 || alpha > 1) throw new IllegalArgumentException("" + alpha);
     this.list = Objects.requireNonNull(list);
+    list.optimize();
     this.width = width;
     this.height = height;
-    this.alpha = alpha;
   }
 
   @Override
@@ -70,9 +64,6 @@ public class ParallelRenderpass extends CachedRenderpass {
 
   @Override
   protected void doDraw(final Graphics2D g, final KanvasContext ctx) {
-    if(alpha < 1) {
-      PaintUtil.setAlpha(g, alpha);
-    }
     list.paintAll(g);
   }
 

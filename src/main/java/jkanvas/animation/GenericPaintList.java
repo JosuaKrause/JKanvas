@@ -1,6 +1,7 @@
 package jkanvas.animation;
 
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
@@ -259,6 +260,7 @@ public abstract class GenericPaintList<T extends Shape> {
    * @param gfx The graphics context.
    */
   public void paintAll(final Graphics2D gfx) {
+    final Composite defaultComposite = gfx.getComposite();
     final T drawObject = createDrawObject();
     for(int i = visibles.nextSetBit(0); i >= 0; i = visibles.nextSetBit(i + 1)) {
       int pos = getPosition(i);
@@ -266,7 +268,7 @@ public abstract class GenericPaintList<T extends Shape> {
       // we know the current index is set so we can start at the next position
       final int endOfRun = visibles.nextClearBit(i + 1);
       do {
-        paint(gfx, drawObject, i, pos, cpos);
+        paint(gfx, drawObject, i, pos, cpos, defaultComposite);
         pos += dims;
         cpos += cols;
       } while(++i < endOfRun);
@@ -282,8 +284,12 @@ public abstract class GenericPaintList<T extends Shape> {
    * @param index The index to draw.
    * @param pos The position in the array.
    * @param cpos The position in the color array.
+   * @param defaultComposite The initial composite. When wanting to use alpha
+   *          blending this composite can be used to reset the state of the
+   *          graphics context.
    */
-  protected abstract void paint(Graphics2D gfx, T obj, int index, int pos, int cpos);
+  protected abstract void paint(Graphics2D gfx, T obj, int index,
+      int pos, int cpos, Composite defaultComposite);
 
   /**
    * Returns the first element that contains the given point.

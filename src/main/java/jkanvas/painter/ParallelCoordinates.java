@@ -104,9 +104,9 @@ public class ParallelCoordinates {
         if(f < 0) {
           group.addRenderpass(new BoxRenderpass(box));
         } else {
-          final LineMapper lm = new LineMapper(table, lastFeature, f,
-              box.getWidth(), box.getHeight());
-          final ParallelRenderpass pr = new ParallelRenderpass(lm, alpha);
+          final LineMapper lm = new LineMapper(table, lastFeature,
+              f, box.getWidth(), box.getHeight(), alpha);
+          final ParallelRenderpass pr = new ParallelRenderpass(lm);
           pr.getList().setDefaultColor(new Color(0x9EBCDA));
           group.addRenderpass(pr);
         }
