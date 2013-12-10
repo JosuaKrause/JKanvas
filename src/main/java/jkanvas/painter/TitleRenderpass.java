@@ -172,23 +172,58 @@ public class TitleRenderpass extends Renderpass {
     return orientation;
   }
 
+  /**
+   * Computes the inner bounding box ignoring all other title render passes.
+   * 
+   * @param bbox The bounding box in which can be drawn.
+   */
+  private void getInnerBoundingBox(final Rectangle2D bbox) {
+    double x = 0;
+    double y = 0;
+    Renderpass p = pass;
+    while(p instanceof TitleRenderpass) {
+      final TitleRenderpass t = (TitleRenderpass) p;
+      x += t.getOffsetX();
+      y += t.getOffsetY();
+      p = t.pass;
+    }
+    p.getBoundingBox(bbox);
+    x += p.getOffsetX() - pass.getOffsetX();
+    y += p.getOffsetY() - pass.getOffsetY();
+    final double add = textHeight + space;
+    switch(pos) {
+      case LEFT:
+      case RIGHT:
+        bbox.setFrame(bbox.getX() + x, bbox.getY() + y,
+            bbox.getWidth() + add, bbox.getHeight());
+        break;
+      case BELOW:
+      case ABOVE:
+        bbox.setFrame(bbox.getX() + x, bbox.getY() + y,
+            bbox.getWidth(), bbox.getHeight() + add);
+        break;
+      default:
+        throw new AssertionError();
+    }
+  }
+
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
     final boolean hor;
     final Rectangle2D box = new Rectangle2D.Double();
-    getBoundingBox(box);
+    getInnerBoundingBox(box);
     switch(pos) {
       case LEFT:
         box.setFrame(box.getX(), box.getY(), textHeight, box.getHeight());
         hor = false;
         break;
       case RIGHT:
-        box.setFrame(box.getWidth() - textHeight, box.getY(),
+        box.setFrame(box.getX() + box.getWidth() - textHeight, box.getY(),
             textHeight, box.getHeight());
         hor = false;
         break;
       case BELOW:
-        box.setFrame(box.getX(), box.getHeight() - textHeight,
+        box.setFrame(box.getX(), box.getY() + box.getHeight() - textHeight,
             box.getWidth(), textHeight);
         hor = true;
         break;

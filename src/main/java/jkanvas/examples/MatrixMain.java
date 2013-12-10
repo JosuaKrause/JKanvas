@@ -157,7 +157,14 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     final TitleRenderpass left = new TitleRenderpass("", top, 40, 5);
     left.setPosition(Position.LEFT);
     left.setTitles(names);
-    p.addPass(left);
+    final TitleRenderpass right = new TitleRenderpass("", left, 40, 5);
+    right.setPosition(Position.RIGHT);
+    right.setTitles(names);
+    final TitleRenderpass bottom = new TitleRenderpass("", right, 40, 5);
+    bottom.setPosition(Position.BELOW);
+    bottom.setOrientation(Orientation.VERTICAL);
+    bottom.setTitles(names);
+    p.addPass(bottom);
     final Canvas c = new Canvas(p, true, 500, 500);
     // add arbitrary shape selection
     final AbstractSelector sel = new RectangleSelection(c,
