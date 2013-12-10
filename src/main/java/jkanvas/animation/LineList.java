@@ -6,6 +6,12 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Comparator;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import jkanvas.table.LineMapper;
 
 /**
  * A list of lines.
@@ -214,18 +220,82 @@ public class LineList extends GenericPaintList<Line2D> {
   }
 
   /**
-   * Reduces the number of lines by identifying similar lines and adding the
-   * alpha values together.
+   * {@inheritDoc}
+   * <p>
+   * If this method returns a different value than <code>false</code> optimizing
+   * via {@link #optimize()} will result in wrong results for
+   * {@link #hit(Point2D)} when using a {@link LineMapper}.
    */
-  public void optimize() {
-    // TODO do the optimization
+  @Override
+  protected boolean contains(final Point2D point, final Line2D obj,
+      final int index, final int pos) {
+    return false;
   }
 
-  @Override
-  protected boolean contains(final Point2D point, final Line2D obj, final int index,
-      final int pos) {
-    // FIXME lines are infinitesimal thin
-    return false;
+  /**
+   * Reduces the number of lines by identifying similar lines and adding the
+   * alpha values together.
+   * <p>
+   * Note that {@link #contains(Point2D, Line2D, int, int)} and
+   * {@link #hit(Point2D)} can no longer be used with a {@link LineMapper} after
+   * optimizing.
+   */
+  public void optimize() {
+    final Comparator<Line2D> lineOrder = new Comparator<Line2D>() {
+
+      @Override
+      public int compare(final Line2D a, final Line2D b) {
+        // TODO don't care for order of points
+        final int cmpY1 = Double.compare(a.getY1(), b.getY1());
+        if(cmpY1 != 0) return cmpY1;
+        final int cmpY2 = Double.compare(a.getY2(), b.getY2());
+        if(cmpY2 != 0) return cmpY2;
+        final int cmpX1 = Double.compare(a.getX1(), b.getX1());
+        if(cmpX1 != 0) return cmpX1;
+        return Double.compare(a.getX2(), b.getX2());
+      }
+
+    };
+    final int count = cardinality();
+    if(visibleCardinality() != count) throw new IllegalStateException(
+        "all lines must be visible");
+    final SortedMap<Line2D, Double> lines = new TreeMap<>(lineOrder);
+    for(final int i : actives()) {
+      final Line2D line = new Line2D.Double() {
+
+        @Override
+        public boolean equals(final Object obj) {
+          if(this == obj) return true;
+          if(!(obj instanceof Line2D)) return false;
+          return lineOrder.compare(this, (Line2D) obj) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+          int res = 1;
+          res += 31 * ((java.lang.Double) getY1()).hashCode();
+          res += 31 * ((java.lang.Double) getY2()).hashCode();
+          res += 31 * ((java.lang.Double) getX1()).hashCode();
+          res += 31 * ((java.lang.Double) getX2()).hashCode();
+          return res;
+        }
+
+      };
+      getLine(line, i);
+      Double alpha = lines.get(line);
+      if(alpha == null) {
+        alpha = 0.0;
+      }
+      lines.put(line, Math.min(alpha + getAlpha(i), 1));
+    }
+    if(count == lines.size()) return; // no need to change
+    // System.out.println("before: " + count + " after: " + lines.size());
+    clear();
+    for(final Entry<Line2D, Double> e : lines.entrySet()) {
+      final Line2D l = e.getKey();
+      addLine(l.getX1(), l.getY1(), l.getX2(), l.getY2(), e.getValue());
+    }
+    trimToSize();
   }
 
 }

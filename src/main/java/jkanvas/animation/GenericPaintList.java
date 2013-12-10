@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.BitSet;
 
+import jkanvas.util.BitSetIterable;
+
 /**
  * A list of paint-able objects. The class is not fully guaranteed to be thread
  * safe.
@@ -136,6 +138,14 @@ public abstract class GenericPaintList<T extends Shape> {
     }
   }
 
+  /** Removes all active indices. */
+  public void clear() {
+    synchronized(actives) {
+      actives.clear();
+      visibles.clear();
+    }
+  }
+
   /**
    * Whether the object at the given index is active.
    * 
@@ -248,6 +258,24 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
+   * Getter.
+   * 
+   * @return An iteration over all active indices.
+   */
+  public Iterable<Integer> actives() {
+    return new BitSetIterable(actives);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return An iteration over all visible indices.
+   */
+  public Iterable<Integer> visibles() {
+    return new BitSetIterable(visibles);
+  }
+
+  /**
    * Creates the modifiable shape.
    * 
    * @return The modifiable shape.
@@ -332,8 +360,26 @@ public abstract class GenericPaintList<T extends Shape> {
    * 
    * @return The number of active objects.
    */
-  public int length() {
+  public int cardinality() {
     return actives.cardinality();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The number of visible objects.
+   */
+  public int visibleCardinality() {
+    return visibles.cardinality();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The highest active index plus one.
+   */
+  public int length() {
+    return actives.length();
   }
 
 }
