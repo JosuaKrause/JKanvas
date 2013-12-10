@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
-import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
 
 /**
@@ -20,7 +19,7 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of layouted render passes.
  */
-public class LinearGroup<T extends AbstractRenderpass> extends RenderGroup<T> {
+public class LinearGroup<T extends Renderpass> extends RenderGroup<T> {
 
   /** The on finish action to use when layouting. */
   private final AtomicReference<AnimationAction> curOnFinish;

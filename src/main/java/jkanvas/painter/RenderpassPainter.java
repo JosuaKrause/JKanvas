@@ -147,7 +147,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @see #click(Camera, Point2D, MouseEvent)
    */
   public static final boolean click(
-      final List<Renderpass> passes, final Camera cam, final Point2D p, final MouseEvent e) {
+      final List<Renderpass> passes, final Camera cam, final Point2D p,
+      final MouseEvent e) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
@@ -166,7 +167,7 @@ public class RenderpassPainter implements KanvasPainter {
   @Override
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
     if(doubleClick(back, cam, p, e)) return true;
-    if(!AbstractRenderpass.USE_DOUBLE_CLICK_DEFAULT) return false;
+    if(!Renderpass.USE_DOUBLE_CLICK_DEFAULT) return false;
     if(!SwingUtilities.isLeftMouseButton(e)) return false;
     final Rectangle2D box = new Rectangle2D.Double();
     getBoundingBox(box, back);
@@ -185,7 +186,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @see #doubleClick(Camera, Point2D, MouseEvent)
    */
   public static final boolean doubleClick(
-      final List<Renderpass> passes, final Camera cam, final Point2D p, final MouseEvent e) {
+      final List<Renderpass> passes, final Camera cam, final Point2D p,
+      final MouseEvent e) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
@@ -215,7 +217,8 @@ public class RenderpassPainter implements KanvasPainter {
    *         pass.
    * @see #getTooltip(Point2D)
    */
-  public static final String getTooltip(final List<Renderpass> passes, final Point2D p) {
+  public static final String getTooltip(final List<Renderpass> passes,
+      final Point2D p) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
@@ -245,7 +248,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @return Whether any render pass has been affected by the mouse move.
    * @see #moveMouse(Point2D)
    */
-  public static final boolean moveMouse(final List<Renderpass> passes, final Point2D cur) {
+  public static final boolean moveMouse(final List<Renderpass> passes,
+      final Point2D cur) {
     boolean moved = false;
     for(final Renderpass r : reverseList(passes)) {
       if(!r.isVisible()) {
@@ -392,7 +396,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @param pos The position in canvas coordinates.
    * @return The position in render pass coordinates.
    */
-  public static final Point2D getPositionFromCanvas(final Renderpass r, final Point2D pos) {
+  public static final Point2D getPositionFromCanvas(final Renderpass r,
+      final Point2D pos) {
     return new Point2D.Double(pos.getX() - r.getOffsetX(), pos.getY() - r.getOffsetY());
   }
 
@@ -430,7 +435,8 @@ public class RenderpassPainter implements KanvasPainter {
    *          canvas coordinates is stored.
    * @param r The render pass.
    */
-  public static final void getPassBoundingBox(final Rectangle2D rect, final Renderpass r) {
+  public static final void getPassBoundingBox(final Rectangle2D rect,
+      final Renderpass r) {
     r.getBoundingBox(rect);
     rect.setFrame(rect.getX() + r.getOffsetX(),
         rect.getY() + r.getOffsetY(), rect.getWidth(), rect.getHeight());
@@ -522,7 +528,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @param bbox The rectangle in which the result will be stored.
    * @param pass The render pass.
    */
-  public static final void getTopLevelBounds(final Rectangle2D bbox, final Renderpass pass) {
+  public static final void getTopLevelBounds(final Rectangle2D bbox,
+      final Renderpass pass) {
     pass.getBoundingBox(bbox);
     convertToTopLevelBounds(bbox, pass);
   }

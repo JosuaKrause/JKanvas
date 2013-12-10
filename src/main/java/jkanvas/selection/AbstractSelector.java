@@ -39,7 +39,7 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
   private final Canvas canvas;
 
   /** The list of selectable render passes. */
-  private final List<SelectableRenderpass> selects = new ArrayList<>();
+  private final List<Selectable> selects = new ArrayList<>();
 
   /**
    * Creates an abstract selector.
@@ -139,7 +139,7 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
    * 
    * @param selectable The render pass.
    */
-  public void addSelectable(final SelectableRenderpass selectable) {
+  public void addSelectable(final Selectable selectable) {
     if(selects.contains(selectable)) return;
     selects.add(selectable);
   }
@@ -150,7 +150,7 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
    * 
    * @param selectable The render pass.
    */
-  public void removeSelectable(final SelectableRenderpass selectable) {
+  public void removeSelectable(final Selectable selectable) {
     selects.remove(selectable);
   }
 
@@ -164,8 +164,8 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
   protected void doSelection(final Shape s, final boolean preview) {
     selection = s;
     final KanvasContext ctx = canvas.getHUDContext();
-    for(final SelectableRenderpass r : selects) {
-      final KanvasContext c = RenderpassPainter.getContextFor(r, ctx);
+    for(final Selectable r : selects) {
+      final KanvasContext c = RenderpassPainter.getContextFor(r.getRenderpass(), ctx);
       final AffineTransform at = c.toCanvasTransformation();
       final Shape selection = at.createTransformedShape(s);
       r.select(selection, preview);

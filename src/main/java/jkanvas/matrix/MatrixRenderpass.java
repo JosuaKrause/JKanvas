@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
-import jkanvas.painter.AbstractRenderpass;
+import jkanvas.painter.Renderpass;
 
 /**
  * Paints a matrix.
@@ -15,7 +15,7 @@ import jkanvas.painter.AbstractRenderpass;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The matrix type.
  */
-public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends AbstractRenderpass {
+public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {
 
   /** The refresh manager. */
   private final RefreshManager manager;
