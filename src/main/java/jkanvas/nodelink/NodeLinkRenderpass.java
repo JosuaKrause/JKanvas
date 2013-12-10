@@ -13,7 +13,7 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationList;
 import jkanvas.nodelink.layout.LayoutedView;
-import jkanvas.painter.AbstractRenderpass;
+import jkanvas.painter.Renderpass;
 
 /**
  * Paints a layouted node-link diagram.
@@ -21,7 +21,7 @@ import jkanvas.painter.AbstractRenderpass;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of nodes.
  */
-public class NodeLinkRenderpass<T extends AnimatedPosition> extends AbstractRenderpass {
+public class NodeLinkRenderpass<T extends AnimatedPosition> extends Renderpass {
 
   /** The bounding box. */
   private final Rectangle2D bbox;

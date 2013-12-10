@@ -25,10 +25,11 @@ import jkanvas.matrix.MatrixPosition;
 import jkanvas.matrix.MatrixRenderpass;
 import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
+import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.selection.AbstractSelector;
 import jkanvas.selection.RectangleSelection;
-import jkanvas.selection.SelectableRenderpass;
+import jkanvas.selection.Selectable;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.StringDrawer;
 import jkanvas.util.StringDrawer.Orientation;
@@ -40,7 +41,7 @@ import jkanvas.util.StringDrawer.Orientation;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
-    implements SelectableRenderpass {
+    implements Selectable {
 
   /**
    * Creates a matrix painter.
@@ -103,6 +104,11 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
         }
       }
     }
+  }
+
+  @Override
+  public Renderpass getRenderpass() {
+    return this;
   }
 
   @Override

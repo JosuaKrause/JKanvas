@@ -11,13 +11,13 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
 
 /**
- * A ghost render pass is an {@link AbstractRenderpass} that mimics the behavior
+ * A ghost render pass is an {@link Renderpass} that mimics the behavior
  * of another {@link Renderpass} but at a different location.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of entity to mimic.
  */
-public class GhostRenderpass<T extends Renderpass> extends AbstractRenderpass {
+public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   /** The entity to be ghosted. */
   private final T entity;

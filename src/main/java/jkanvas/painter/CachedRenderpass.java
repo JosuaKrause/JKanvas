@@ -21,7 +21,7 @@ import jkanvas.KanvasContext;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public abstract class CachedRenderpass extends AbstractRenderpass {
+public abstract class CachedRenderpass extends Renderpass {
 
   /** The visible size at which the caching comes into effect. */
   public static int CACHE_VISIBLE = 256;
