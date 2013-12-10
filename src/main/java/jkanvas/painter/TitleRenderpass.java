@@ -15,6 +15,7 @@ import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.util.StringDrawer;
+import jkanvas.util.StringDrawer.Orientation;
 
 /**
  * Adds a title to the given renderpass.
@@ -22,6 +23,25 @@ import jkanvas.util.StringDrawer;
  * @author Joschi <josua.krause@gmail.com>
  */
 public class TitleRenderpass extends Renderpass {
+
+  /**
+   * The position of the titles.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
+  public static enum Position {
+    /** Above the render pass. */
+    ABOVE,
+    /** Left of the render pass. */
+    LEFT,
+    /** Below the render pass. */
+    BELOW,
+    /** Right of the render pass. */
+    RIGHT,
+    // EOD
+    ;
+
+  } // Position
 
   /** The render pass in a list for easier handling. */
   private final List<Renderpass> list;
@@ -31,11 +51,15 @@ public class TitleRenderpass extends Renderpass {
   private final double textHeight;
   /** The space between render pass and text. */
   private final double space;
-  /** The title text. */
-  private String title;
+  /** The title texts. */
+  private String[] titles;
+  /** The position of the titles. */
+  private Position pos;
+  /** The orientation of the titles. */
+  private Orientation orientation;
 
   /**
-   * Creates a title for the given render pass.
+   * Creates a title at the top for the given render pass.
    * 
    * @param title The initial title.
    * @param pass The render pass.
@@ -46,8 +70,10 @@ public class TitleRenderpass extends Renderpass {
       final double textHeight, final double space) {
     this.textHeight = textHeight;
     this.space = space;
-    this.pass = Objects.requireNonNull(pass);
-    this.title = Objects.requireNonNull(title);
+    this.pass = pass;
+    titles = new String[] { Objects.requireNonNull(title)};
+    pos = Position.ABOVE;
+    orientation = Orientation.HORIZONTAL;
     list = Collections.singletonList(pass);
     pass.setParent(this);
     pass.setOffset(0, space + textHeight);
@@ -59,33 +85,165 @@ public class TitleRenderpass extends Renderpass {
    * @param title The title.
    */
   public void setTitle(final String title) {
-    this.title = Objects.requireNonNull(title);
+    titles = new String[] { Objects.requireNonNull(title)};
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param titles The titles.
+   */
+  public void setTitles(final String... titles) {
+    Objects.requireNonNull(titles);
+    if(titles.length == 0) throw new IllegalArgumentException();
+    for(final String s : titles) {
+      Objects.requireNonNull(s);
+    }
+    this.titles = titles.clone();
   }
 
   /**
    * Getter.
    * 
-   * @return The current title.
+   * @param num The index of the title.
+   * @return The title.
    */
-  public String getTitle() {
-    return title;
+  public String getTitle(final int num) {
+    return titles[num];
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The number of titles.
+   */
+  public int count() {
+    return titles.length;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param pos The position of the titles.
+   */
+  public void setPosition(final Position pos) {
+    this.pos = Objects.requireNonNull(pos);
+    final double add = textHeight + space;
+    switch(pos) {
+      case LEFT:
+        pass.setOffset(add, 0);
+        break;
+      case RIGHT:
+      case BELOW:
+        pass.setOffset(0, 0);
+        break;
+      case ABOVE:
+        pass.setOffset(0, add);
+        break;
+      default:
+        throw new AssertionError();
+    }
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The position of the titles.
+   */
+  public Position getPosition() {
+    return pos;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param orientation The orientation of the titles.
+   */
+  public void setOrientation(final Orientation orientation) {
+    this.orientation = Objects.requireNonNull(orientation);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The orientation of the titles.
+   */
+  public Orientation getOrientation() {
+    return orientation;
   }
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
+    final boolean hor;
     final Rectangle2D box = new Rectangle2D.Double();
     getBoundingBox(box);
-    box.setFrame(box.getX(), box.getY(), box.getWidth(), textHeight);
+    switch(pos) {
+      case LEFT:
+        box.setFrame(box.getX(), box.getY(), textHeight, box.getHeight());
+        hor = false;
+        break;
+      case RIGHT:
+        box.setFrame(box.getWidth() - textHeight, box.getY(),
+            textHeight, box.getHeight());
+        hor = false;
+        break;
+      case BELOW:
+        box.setFrame(box.getX(), box.getHeight() - textHeight,
+            box.getWidth(), textHeight);
+        hor = true;
+        break;
+      case ABOVE:
+        box.setFrame(box.getX(), box.getY(), box.getWidth(), textHeight);
+        hor = true;
+        break;
+      default:
+        throw new AssertionError();
+    }
     g.setColor(Color.BLACK);
-    StringDrawer.drawInto(g, title, box);
+    drawTexts(g, box, hor);
     RenderpassPainter.draw(list, g, ctx);
+  }
+
+  /**
+   * Draws the titles in the given rectangle.
+   * 
+   * @param g The graphics context.
+   * @param box The box to draw in.
+   * @param hor Whether the box is horizontally aligned.
+   */
+  private void drawTexts(final Graphics2D g, final Rectangle2D box, final boolean hor) {
+    double x = 0;
+    final double w = (hor ? box.getWidth() : box.getHeight()) / titles.length;
+    final Rectangle2D cur = new Rectangle2D.Double();
+    for(final String t : titles) {
+      if(hor) {
+        cur.setFrame(box.getX() + x, box.getY(), w, box.getHeight());
+      } else {
+        cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
+      }
+      StringDrawer.drawInto(g, t, cur, orientation);
+      x += w;
+    }
   }
 
   @Override
   public void getBoundingBox(final Rectangle2D bbox) {
     pass.getBoundingBox(bbox);
-    bbox.setFrame(bbox.getX(), bbox.getY(),
-        bbox.getWidth(), bbox.getHeight() + space + textHeight);
+    final double add = textHeight + space;
+    switch(pos) {
+      case LEFT:
+      case RIGHT:
+        bbox.setFrame(bbox.getX(), bbox.getY(),
+            bbox.getWidth() + add, bbox.getHeight());
+        break;
+      case BELOW:
+      case ABOVE:
+        bbox.setFrame(bbox.getX(), bbox.getY(),
+            bbox.getWidth(), bbox.getHeight() + add);
+        break;
+      default:
+        throw new AssertionError();
+    }
   }
 
   @Override

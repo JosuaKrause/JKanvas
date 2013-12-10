@@ -1,7 +1,6 @@
 package jkanvas.examples;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -13,7 +12,6 @@ import javax.swing.SwingUtilities;
 
 import jkanvas.Camera;
 import jkanvas.Canvas;
-import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
 import jkanvas.SimpleRefreshManager;
 import jkanvas.animation.AnimatedPainter;
@@ -27,11 +25,11 @@ import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.painter.TitleRenderpass;
+import jkanvas.painter.TitleRenderpass.Position;
 import jkanvas.selection.AbstractSelector;
 import jkanvas.selection.RectangleSelection;
 import jkanvas.selection.Selectable;
-import jkanvas.util.PaintUtil;
-import jkanvas.util.StringDrawer;
 import jkanvas.util.StringDrawer.Orientation;
 
 /**
@@ -111,12 +109,6 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     return this;
   }
 
-  @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
-    super.getBoundingBox(bbox);
-    PaintUtil.addPaddingInplace(bbox, 60);
-  }
-
   /**
    * Starts the example application.
    * 
@@ -146,37 +138,6 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     final CellRealizer<QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
-      public void drawCell(final Graphics2D g, final KanvasContext ctx,
-          final Rectangle2D rect, final QuadraticMatrix<Double> matrix, final int row,
-          final int col, final boolean isSelected, final boolean hasSelection) {
-        super.drawCell(g, ctx, rect, matrix, row, col, isSelected, hasSelection);
-        // when leftmost column draw column title
-        if(col == 0) {
-          final StringDrawer s = new StringDrawer(g, matrix.getName(row));
-          final Point2D pos = new Point2D.Double(rect.getMinX() - 10, rect.getCenterY());
-          g.setColor(Color.BLACK);
-          final int h = StringDrawer.RIGHT;
-          final int v = StringDrawer.CENTER_V;
-          s.draw(pos, h, v);
-          // g.draw(s.getBounds(pos, h, v));
-          // g.setColor(Color.RED);
-          // g.fill(pixel(pos));
-        }
-        // when topmost row draw row title
-        if(row == 0) {
-          final StringDrawer s = new StringDrawer(g, matrix.getName(col));
-          final Point2D pos = new Point2D.Double(rect.getCenterX(), rect.getMinY() - 10);
-          g.setColor(Color.BLACK);
-          final int h = StringDrawer.LEFT;
-          final int v = StringDrawer.BOTTOM;
-          s.draw(pos, h, v, Orientation.DIAGONAL);
-          // g.draw(s.getBounds(pos, h, v, Orientation.DIAGONAL));
-          // g.setColor(Color.RED);
-          // g.fill(pixel(pos));
-        }
-      }
-
-      @Override
       protected Color getColor(final Double value, final boolean isSelected) {
         final double v = value - 0.5;
         final double hue = v > 0 ? 0 : 180.0 / 360.0;
@@ -189,7 +150,14 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     // FIXME animated painter because of initial reset -- fix in ExampleUtil #28
     final RenderpassPainter p = new AnimatedPainter();
     final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
-    p.addPass(matrixMain);
+    final String[] names = matrixMain.getNames();
+    final TitleRenderpass top = new TitleRenderpass("", matrixMain, 40, 5);
+    top.setOrientation(Orientation.DIAGONAL);
+    top.setTitles(names);
+    final TitleRenderpass left = new TitleRenderpass("", top, 40, 5);
+    left.setPosition(Position.LEFT);
+    left.setTitles(names);
+    p.addPass(left);
     final Canvas c = new Canvas(p, true, 500, 500);
     // add arbitrary shape selection
     final AbstractSelector sel = new RectangleSelection(c,

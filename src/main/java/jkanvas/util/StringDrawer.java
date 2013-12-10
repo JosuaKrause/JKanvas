@@ -344,6 +344,29 @@ public class StringDrawer {
   }
 
   /**
+   * Draws text into the given rectangle. The text is scaled that it fits the
+   * rectangle.
+   * 
+   * @param gfx The graphics context.
+   * @param text The text.
+   * @param rect The rectangle.
+   * @param o The orientation of the text.
+   */
+  public static final void drawInto(final Graphics2D gfx,
+      final String text, final RectangularShape rect, final Orientation o) {
+    final Graphics2D g = (Graphics2D) gfx.create();
+    final StringDrawer sd = new StringDrawer(g, text);
+    final Rectangle2D box = sd.getBounds(ORIGIN, CENTER_H, CENTER_V, o).getBounds2D();
+    final double width = box.getWidth();
+    final Rectangle2D fit = PaintUtil.fitInto(rect, width, box.getHeight());
+    final double scale = fit.getWidth() / width;
+    g.translate(fit.getCenterX(), fit.getCenterY());
+    g.scale(scale, scale);
+    sd.draw(ORIGIN, CENTER_H, CENTER_V, o);
+    g.dispose();
+  }
+
+  /**
    * Draws text horizontal into the center of the given rectangle.
    * 
    * @param g The graphics context.

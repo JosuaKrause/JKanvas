@@ -66,6 +66,19 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {
   }
 
   /**
+   * Getter.
+   * 
+   * @return The names of the matrix rows / columns.
+   */
+  public String[] getNames() {
+    final String[] names = new String[matrix.size()];
+    for(int i = 0; i < names.length; ++i) {
+      names[i] = matrix.getName(i);
+    }
+    return names;
+  }
+
+  /**
    * Setter.
    * 
    * @param cellDrawer The cell realizer.
