@@ -20,7 +20,6 @@ import jkanvas.animation.AnimationList;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.animation.GenericAnimated;
-import jkanvas.painter.AbstractRenderpass;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.util.PaintUtil;
@@ -35,8 +34,7 @@ import jkanvas.util.VecUtil;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of layouted render passes.
  */
-public abstract class RenderGroup<T extends AbstractRenderpass>
-    extends AbstractRenderpass {
+public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * The offset of a render pass as {@link AnimatedPosition}.
@@ -44,7 +42,7 @@ public abstract class RenderGroup<T extends AbstractRenderpass>
    * @author Joschi <josua.krause@googlemail.com>
    * @param <T> The type of the render pass.
    */
-  protected static final class RenderpassPosition<T extends AbstractRenderpass>
+  protected static final class RenderpassPosition<T extends Renderpass>
       extends GenericAnimated<Point2D> {
 
     /** The render pass. */

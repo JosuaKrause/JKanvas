@@ -21,12 +21,12 @@ import jkanvas.util.StringDrawer;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class TitleRenderpass extends AbstractRenderpass {
+public class TitleRenderpass extends Renderpass {
 
   /** The render pass in a list for easier handling. */
   private final List<Renderpass> list;
   /** The decorated render pass. */
-  private final AbstractRenderpass pass;
+  private final Renderpass pass;
   /** The text height. */
   private final double textHeight;
   /** The space between render pass and text. */
@@ -42,13 +42,13 @@ public class TitleRenderpass extends AbstractRenderpass {
    * @param textHeight The text height.
    * @param space The space.
    */
-  public TitleRenderpass(final String title, final AbstractRenderpass pass,
+  public TitleRenderpass(final String title, final Renderpass pass,
       final double textHeight, final double space) {
     this.textHeight = textHeight;
     this.space = space;
     this.pass = Objects.requireNonNull(pass);
     this.title = Objects.requireNonNull(title);
-    list = Collections.singletonList((Renderpass) pass);
+    list = Collections.singletonList(pass);
     pass.setParent(this);
     pass.setOffset(0, space + textHeight);
   }

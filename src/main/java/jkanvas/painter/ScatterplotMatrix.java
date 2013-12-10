@@ -19,7 +19,7 @@ import jkanvas.table.PointMapper;
 public class ScatterplotMatrix {
 
   /** The group of render passes. */
-  private final LinearGroup<AbstractRenderpass> group;
+  private final LinearGroup<Renderpass> group;
 
   /**
    * Creates a scatter plot matrix for the given table. Note that the data is
@@ -85,7 +85,7 @@ public class ScatterplotMatrix {
    * 
    * @return The actual render pass.
    */
-  public AbstractRenderpass getRenderpass() {
+  public Renderpass getRenderpass() {
     return group;
   }
 

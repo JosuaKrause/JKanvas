@@ -11,7 +11,7 @@ import java.util.Objects;
 import jkanvas.KanvasContext;
 import jkanvas.io.json.JSONElement;
 import jkanvas.io.json.JSONLoader;
-import jkanvas.painter.AbstractRenderpass;
+import jkanvas.painter.Renderpass;
 import jkanvas.present.SlideMetrics.HorizontalSlideAlignment;
 import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 
@@ -20,7 +20,7 @@ import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class Slide extends AbstractRenderpass {
+public class Slide extends Renderpass {
 
   /** The metrics for the slide. */
   private final SlideMetrics metric;

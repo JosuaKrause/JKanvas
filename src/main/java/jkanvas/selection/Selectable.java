@@ -9,7 +9,7 @@ import jkanvas.painter.Renderpass;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public interface SelectableRenderpass extends Renderpass {
+public interface Selectable {
 
   /**
    * Selects the given shape.
@@ -18,5 +18,12 @@ public interface SelectableRenderpass extends Renderpass {
    * @param preview Whether the selection should only be a preview.
    */
   void select(Shape selection, boolean preview);
+
+  /**
+   * Getter.
+   * 
+   * @return The associated render pass.
+   */
+  Renderpass getRenderpass();
 
 }
