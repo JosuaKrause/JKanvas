@@ -34,8 +34,7 @@ import jkanvas.util.VecUtil;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The type of layouted render passes.
  */
-public abstract class RenderGroup<T extends Renderpass>
-    extends Renderpass {
+public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * The offset of a render pass as {@link AnimatedPosition}.
@@ -435,8 +434,7 @@ public abstract class RenderGroup<T extends Renderpass>
    * @param pass The render pass.
    * @param front Whether this pass is added in front of the layouted passes.
    */
-  public void addNonLayouted(final int index, final Renderpass pass,
-      final boolean front) {
+  public void addNonLayouted(final int index, final Renderpass pass, final boolean front) {
     if(front) {
       nlFront.add(index, pass);
     } else {
@@ -468,8 +466,7 @@ public abstract class RenderGroup<T extends Renderpass>
    * @param front Whether this method addresses passes in front of the layouted
    *          passes.
    */
-  public void setNonLayouted(final int index, final Renderpass pass,
-      final boolean front) {
+  public void setNonLayouted(final int index, final Renderpass pass, final boolean front) {
     if(front) {
       nlFront.set(index, pass);
     } else {
