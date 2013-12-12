@@ -150,20 +150,28 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     // FIXME animated painter because of initial reset -- fix in ExampleUtil #28
     final RenderpassPainter p = new AnimatedPainter();
     final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
-    final String[] names = matrixMain.getNames();
+    final String[] odds = matrixMain.getNames();
+    final String[] evens = matrixMain.getNames();
+    for(int i = 0; i < odds.length; ++i) {
+      if(i % 2 == 0) {
+        odds[i] = "";
+      } else {
+        evens[i] = "";
+      }
+    }
     final TitleRenderpass top = new TitleRenderpass("", matrixMain, 40, 5);
     top.setOrientation(Orientation.DIAGONAL);
-    top.setTitles(names);
+    top.setTitles(evens);
     final TitleRenderpass left = new TitleRenderpass("", top, 40, 5);
     left.setPosition(Position.LEFT);
-    left.setTitles(names);
+    left.setTitles(evens);
     final TitleRenderpass right = new TitleRenderpass("", left, 40, 5);
     right.setPosition(Position.RIGHT);
-    right.setTitles(names);
+    right.setTitles(odds);
     final TitleRenderpass bottom = new TitleRenderpass("", right, 40, 5);
     bottom.setPosition(Position.BELOW);
     bottom.setOrientation(Orientation.VERTICAL);
-    bottom.setTitles(names);
+    bottom.setTitles(odds);
     p.addPass(bottom);
     final Canvas c = new Canvas(p, true, 500, 500);
     // add arbitrary shape selection
