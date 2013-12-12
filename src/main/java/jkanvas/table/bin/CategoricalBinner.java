@@ -2,7 +2,6 @@ package jkanvas.table.bin;
 
 import java.util.Arrays;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import jkanvas.table.Feature;
 
@@ -24,10 +23,7 @@ public class CategoricalBinner extends ColumnBinner {
   public CategoricalBinner(final Feature f) {
     super(f);
     if(!feature.isCategorical()) throw new IllegalArgumentException("must be categorical");
-    final SortedSet<Double> set = new TreeSet<>();
-    for(final double v : feature) {
-      set.add(v);
-    }
+    final SortedSet<Double> set = f.distinctValues();
     sortedValues = new double[set.size()];
     int i = 0;
     for(final double v : set) {

@@ -2,9 +2,14 @@ package jkanvas.table;
 
 import static jkanvas.table.ColumnAggregation.*;
 
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import jkanvas.util.BitSetIterable;
 
 /**
  * A feature is a column of a {@link DataTable}.
@@ -158,6 +163,69 @@ public class Feature implements Iterable<Double> {
       }
 
     };
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The distinct values of this feature.
+   */
+  public SortedSet<Double> distinctValues() {
+    final SortedSet<Double> set = new TreeSet<>();
+    for(final double v : this) {
+      set.add(v);
+    }
+    return set;
+  }
+
+  /**
+   * Sets the indices of rows with the given value.
+   * 
+   * @param set The set where the rows will be set. The previous content of the
+   *          set is or'd.
+   * @param value The value to find.
+   */
+  public void rowsWith(final BitSet set, final double value) {
+    for(int r = 0; r < rows(); ++r) {
+      final double v = getElement(r);
+      if(v == value) {
+        set.set(r);
+      }
+    }
+  }
+
+  /**
+   * Iterates over all rows with the given value.
+   * 
+   * @param value The reference value.
+   * @return The row indices.
+   */
+  public Iterable<Integer> rowsWith(final double value) {
+    final BitSet set = new BitSet();
+    rowsWith(set, value);
+    return new BitSetIterable(set);
+  }
+
+  /**
+   * Creates a feature that contains only rows with the given class.
+   * 
+   * @param classes The classifying feature.
+   * @param label The label of the class. The value must be present in the
+   *          classifying feature.
+   * @return The feature.
+   * @throws IllegalArgumentException When the classes have a different number
+   *           of rows than this feature.
+   */
+  public Feature conditional(final Feature classes, final double label) {
+    if(classes.rows() != rows()) throw new IllegalArgumentException(
+        "must have same number of rows: " + classes.rows() + " != " + rows());
+    final BitSet selection = new BitSet();
+    classes.rowsWith(selection, label);
+    // TODO produce less garbage -- now a single column table is created to
+    // avoid creating copies of the whole table when caching
+    final DataTable t = new RowSelectionTable(
+        new FeatureTable(new Feature[] { this}), selection);
+    return t.getFeature(0);
   }
 
   @Override

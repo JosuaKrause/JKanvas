@@ -28,7 +28,7 @@ public class SimpleBinner extends ColumnBinner {
     super(f);
     if(bins <= 0) throw new IllegalArgumentException("" + bins);
     this.bins = bins;
-    min = f.aggregate(ColumnAggregation.MINIMUM);
+    min = feature.aggregate(ColumnAggregation.MINIMUM);
     width = (getMaxValue() - min) / bins;
     if(width <= 0) throw new IllegalArgumentException("min >= max");
   }
