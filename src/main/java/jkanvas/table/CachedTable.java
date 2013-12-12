@@ -11,14 +11,17 @@ import java.util.Objects;
  */
 public class CachedTable extends DataTable {
 
-  /** The number of rows. */
-  private final int rows;
-  /** The number of columns. */
-  private final int cols;
-  /** The content. */
-  private final double[][] content;
   /** The names. */
   private final String[] names;
+  /** The number of rows. */
+  protected final int rows;
+  /** The number of columns. */
+  protected final int cols;
+  /**
+   * The content. Classes sub-classing {@link CachedTable} may only alter the
+   * content after in the constructor.
+   */
+  protected final double[][] content;
   /**
    * A bit set of categorical columns or <code>null</code> if no column is
    * categorical.
