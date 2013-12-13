@@ -1,6 +1,7 @@
 package jkanvas.table;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Access to tabular data. The size of the table must not change. The contents
@@ -52,6 +53,32 @@ public abstract class DataTable {
    * @return The name of the column.
    */
   public abstract String getName(int col);
+
+  /**
+   * Finds the first column that has the given name.
+   * 
+   * @param name The name.
+   * @return The column or <code>-1</code> if the name is not found.
+   */
+  public int getColumn(final String name) {
+    Objects.requireNonNull(name);
+    for(int i = 0; i < cols(); ++i) {
+      if(name.equals(getName(i))) return i;
+    }
+    return -1;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The feature name.
+   * @return The feature for the given name.
+   */
+  public Feature getFeature(final String name) {
+    final int c = getColumn(name);
+    if(c < 0) throw new IllegalArgumentException(name + " not found");
+    return getFeature(c);
+  }
 
   /**
    * Getter.
@@ -128,6 +155,7 @@ public abstract class DataTable {
    *         Aggregations in cached tables are lazily cached.
    */
   public DataTable cached() {
+    if(isCaching()) return this;
     return new CachedTable(this);
   }
 

@@ -71,11 +71,6 @@ public class FeatureTable extends DataTable {
   }
 
   @Override
-  public DataTable cached() {
-    return caching ? this : super.cached();
-  }
-
-  @Override
   public Feature getFeature(final int col) {
     return features[col];
   }
