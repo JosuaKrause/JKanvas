@@ -27,10 +27,18 @@ public class SimpleBinner extends ColumnBinner {
   public SimpleBinner(final Feature f, final int bins) {
     super(f);
     if(bins <= 0) throw new IllegalArgumentException("" + bins);
+    final double min = feature.aggregate(ColumnAggregation.MINIMUM);
+    final double max = getMaxValue();
+    if(max == min) {
+      this.min = min - 1;
+      this.bins = 1;
+      width = 1;
+      return;
+    }
+    this.min = min;
     this.bins = bins;
-    min = feature.aggregate(ColumnAggregation.MINIMUM);
-    width = (getMaxValue() - min) / bins;
-    if(width <= 0) throw new IllegalArgumentException("min >= max");
+    width = (max - min) / bins;
+    if(width < 0) throw new IllegalArgumentException("min > max");
   }
 
   @Override

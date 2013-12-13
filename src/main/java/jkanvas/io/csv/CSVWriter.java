@@ -3,6 +3,7 @@ package jkanvas.io.csv;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 
 /**
  * Provides an interface to write a CSV file.
@@ -64,6 +65,43 @@ public class CSVWriter implements Closeable {
       out.print(delimiter);
     }
     out.print(sanitize(content));
+  }
+
+  /**
+   * Writes a cell in the current row.
+   * 
+   * @param content The content of the cell.
+   */
+  public void writeCell(final int content) {
+    writeCell("" + content);
+  }
+
+  /**
+   * Writes a cell in the current row.
+   * 
+   * @param content The content of the cell.
+   */
+  public void writeCell(final long content) {
+    writeCell("" + content);
+  }
+
+  /**
+   * Writes a cell in the current row.
+   * 
+   * @param content The content of the cell.
+   */
+  public void writeCell(final double content) {
+    writeCell("" + content);
+  }
+
+  /**
+   * Writes a cell in the current row.
+   * 
+   * @param content The content of the cell. If the argument is
+   *          <code>null</code> the text "null" is printed.
+   */
+  public void writeCell(final Object content) {
+    writeCell(Objects.toString(content));
   }
 
   /**

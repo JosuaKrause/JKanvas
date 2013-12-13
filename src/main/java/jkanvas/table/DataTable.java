@@ -1,6 +1,8 @@
 package jkanvas.table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -119,7 +121,7 @@ public abstract class DataTable {
    * 
    * @return Whether feature objects are cached.
    */
-  public boolean hasCachedFeatures() {
+  protected boolean hasCachedFeatures() {
     return false;
   }
 
@@ -154,7 +156,7 @@ public abstract class DataTable {
    * @return Returns a cached version of the current snapshot of the table.
    *         Aggregations in cached tables are lazily cached.
    */
-  public DataTable cached() {
+  public final DataTable cached() {
     if(isCaching()) return this;
     return new CachedTable(this);
   }
@@ -214,12 +216,80 @@ public abstract class DataTable {
   }
 
   /**
+   * Converts the given string array into a categorical column.
+   * 
+   * @param array The array that will be the column. The column is categorical
+   *          via string equality.
+   * @param name The name of the column or <code>null</code> if the name should
+   *          be empty.
+   * @return The table.
+   */
+  public static final DataTable fromArray(final String[] array, final String name) {
+    Objects.requireNonNull(array);
+    final List<String> v = new ArrayList<>();
+    final double[] values = new double[array.length];
+    for(int i = 0; i < array.length; ++i) {
+      final String s = Objects.requireNonNull(array[i]);
+      final int index = v.indexOf(s);
+      if(index >= 0) {
+        values[i] = index;
+        continue;
+      }
+      values[i] = v.size();
+      v.add(s);
+    }
+    return fromArray(values, name);
+  }
+
+  /**
+   * A thin wrapper around the given array.
+   * 
+   * @param array The array that will be the column. Changes to the array are
+   *          reflected in the table. The column is numerical.
+   * @param name The name of the column or <code>null</code> if the name should
+   *          be empty.
+   * @return The wrapper table.
+   */
+  public static final DataTable fromArray(final double[] array, final String name) {
+    Objects.requireNonNull(array);
+    final String n = name == null ? "" : name;
+    return new DataTable() {
+
+      @Override
+      public int rows() {
+        return array.length;
+      }
+
+      @Override
+      public boolean isCategorical(final int col) {
+        return false;
+      }
+
+      @Override
+      public String getName(final int col) {
+        return n;
+      }
+
+      @Override
+      public double getAt(final int row, final int col) {
+        return array[row];
+      }
+
+      @Override
+      public int cols() {
+        return 1;
+      }
+
+    };
+  }
+
+  /**
    * Creates a data table from the given array.
    * 
    * @param table The table with <code>table[row][col]</code>.
    * @return The data table.
    */
-  public static final DataTable fromArray(final double[][] table) {
+  public static final DataTable fromMatrix(final double[][] table) {
     return new CachedTable(table);
   }
 

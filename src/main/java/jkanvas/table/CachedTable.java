@@ -54,9 +54,6 @@ public class CachedTable extends DataTable {
         names[c] = table.getName(c);
       }
     }
-    if(table.hasCachedFeatures()) {
-      features = table.features();
-    }
     for(final ColumnAggregation agg : ColumnAggregation.values()) {
       final double[] arr = getCachedArray(table, agg);
       if(arr == null) {

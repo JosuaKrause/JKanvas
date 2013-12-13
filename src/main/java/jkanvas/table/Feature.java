@@ -246,6 +246,11 @@ public class Feature implements Iterable<Double> {
     return table.equals(other.table);
   }
 
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "(" + table.toString() + "[" + getName() + "])";
+  }
+
   /**
    * An abstract metric of features.
    * 
@@ -339,8 +344,10 @@ public class Feature implements Iterable<Double> {
 
     @Override
     protected double endSum(final double sum, final Feature fa, final Feature fb) {
-      return 1 - Math.abs(
-          sum / fa.aggregate(STD_DEVIATION) / fb.aggregate(STD_DEVIATION) / fa.rows());
+      final double stdA = fa.aggregate(STD_DEVIATION);
+      final double stdB = fb.aggregate(STD_DEVIATION);
+      if(stdA == 0.0 || stdB == 0.0) return (stdA == stdB) ? 1.0 : 0.0;
+      return 1 - Math.abs(sum / stdA / stdB / fa.rows());
     }
 
   }; // PEARSON

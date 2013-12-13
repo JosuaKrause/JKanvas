@@ -89,7 +89,7 @@ public class Resource {
    * @param name The name of the system resource.
    */
   public Resource(final String name) {
-    this(RESOURCES, name, UTF8, null);
+    this(RESOURCES, name, UTF8, RESOURCES);
   }
 
   /**
@@ -245,8 +245,8 @@ public class Resource {
    * @return The resource with substituted extension.
    */
   public Resource changeExtensionTo(final String ext) {
-    if(file != null) return new Resource(local, path, changeExtensionTo(file, ext), cs,
-        dump);
+    if(file != null) return new Resource(
+        local, path, changeExtensionTo(file, ext), cs, dump);
     final String p = endsWithDelim(path) ? parent(path) : path;
     return new Resource(local, changeExtensionTo(p, ext), cs, dump);
   }
@@ -288,7 +288,7 @@ public class Resource {
    * @return Converts this resource to a dump resource if possible or needed.
    */
   public Resource toDump() {
-    if(dump == null) return this;
+    if(dump == null && local == null) return this;
     return new Resource(null, dump + getResource(), cs, null);
   }
 

@@ -135,4 +135,34 @@ public class CSVTable extends DataTable {
     return !numerical.get(col);
   }
 
+  /**
+   * Writes the contents of the table to the writer.
+   * 
+   * @param table The table.
+   * @param out The writer.
+   * @param titles Whether to include titles.
+   */
+  public static final void writeTable(
+      final DataTable table, final CSVWriter out, final boolean titles) {
+    final int cols = table.cols();
+    if(titles) {
+      for(int c = 0; c < cols; ++c) {
+        out.writeCell(table.getName(c));
+      }
+    }
+    out.writeRow();
+    final int rows = table.rows();
+    for(int r = 0; r < rows; ++r) {
+      for(int c = 0; c < cols; ++c) {
+        final double v = table.getAt(r, c);
+        if(table.isCategorical(c)) {
+          out.writeCell("cat" + v);
+        } else {
+          out.writeCell(v);
+        }
+      }
+      out.writeRow();
+    }
+  }
+
 }
