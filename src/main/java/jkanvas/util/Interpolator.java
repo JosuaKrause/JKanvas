@@ -93,4 +93,21 @@ public interface Interpolator {
 
   };
 
+  /** Logarithmic interpolation. */
+  Interpolator LOG = new Interpolator() {
+
+    private final double LD = Math.log(2.0);
+
+    @Override
+    public double interpolate(final double t) {
+      return Math.log(t + 1) / LD;
+    }
+
+    @Override
+    public double inverseInterpolate(final double t) {
+      return Math.exp(t * LD) - 1.0;
+    }
+
+  };
+
 }

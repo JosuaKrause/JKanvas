@@ -34,6 +34,40 @@ public final class ArrayUtil {
   }
 
   /**
+   * Getter.
+   * 
+   * @param arr The array.
+   * @return The maximal value of the array.
+   */
+  public static int max(final int[] arr) {
+    if(arr.length == 0) throw new IllegalArgumentException("must not be empty");
+    int max = Integer.MIN_VALUE;
+    for(final int v : arr) {
+      if(v > max) {
+        max = v;
+      }
+    }
+    return max;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param arr The array.
+   * @return The minimal value of the array.
+   */
+  public static int min(final int[] arr) {
+    if(arr.length == 0) throw new IllegalArgumentException("must not be empty");
+    int min = Integer.MAX_VALUE;
+    for(final int v : arr) {
+      if(v < min) {
+        min = v;
+      }
+    }
+    return min;
+  }
+
+  /**
    * Copies the given two-dimensional {@code double} array.
    * 
    * @param arr array to copy
