@@ -1,6 +1,9 @@
 package jkanvas.table.bin;
 
+import java.util.Iterator;
+
 import jkanvas.table.ColumnAggregation;
+import jkanvas.table.DataTable;
 import jkanvas.table.Feature;
 
 /**
@@ -203,6 +206,50 @@ public abstract class ColumnBinner {
     final Feature feature = f.cached();
     if(feature.isCategorical()) return new CategoricalBinner(feature);
     return new SimpleBinner(feature, choice.numberOfBins(feature));
+  }
+
+  /**
+   * Iterates over all rows.
+   * 
+   * @param table The table.
+   * @param defaultChoice The default bin choice.
+   * @return All rows.
+   */
+  public static final Iterable<TableRow> binnedRows(
+      final DataTable table, final BinChoice defaultChoice) {
+    final DataTable t = table.cached();
+    final ColumnBinner[] bins = new ColumnBinner[t.cols()];
+    for(int c = 0; c < bins.length; ++c) {
+      bins[c] = ColumnBinner.forFeature(t.getFeature(c), defaultChoice);
+    }
+    // bins may not be altered after this point
+    return new Iterable<TableRow>() {
+
+      @Override
+      public Iterator<TableRow> iterator() {
+        return new Iterator<TableRow>() {
+
+          private int r = 0;
+
+          @Override
+          public boolean hasNext() {
+            return r < t.rows();
+          }
+
+          @Override
+          public TableRow next() {
+            return new TableRow(t, r++, bins);
+          }
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+
+        };
+      }
+
+    };
   }
 
 }
