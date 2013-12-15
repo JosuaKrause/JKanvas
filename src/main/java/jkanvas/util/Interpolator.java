@@ -110,4 +110,19 @@ public interface Interpolator {
 
   };
 
+  /** Square root interpolation. */
+  Interpolator SQRT = new Interpolator() {
+
+    @Override
+    public double interpolate(final double t) {
+      return Math.sqrt(t);
+    }
+
+    @Override
+    public double inverseInterpolate(final double t) {
+      return t * t;
+    }
+
+  };
+
 }
