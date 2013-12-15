@@ -70,14 +70,23 @@ public class FeatureTable extends DataTable {
     return caching;
   }
 
+  /** The features that are handed outwards. */
+  private Feature[] outFeatures;
+
   @Override
   public Feature getFeature(final int col) {
-    return features[col];
+    return features()[col];
   }
 
   @Override
   protected Feature[] features() {
-    return features;
+    if(outFeatures == null) {
+      outFeatures = new Feature[features.length];
+      for(int c = 0; c < outFeatures.length; ++c) {
+        outFeatures[c] = new Feature(this, c);
+      }
+    }
+    return outFeatures;
   }
 
   @Override
