@@ -2,18 +2,10 @@ package jkanvas.painter;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
-import javax.swing.SwingUtilities;
-
-import jkanvas.Camera;
 import jkanvas.KanvasContext;
-import jkanvas.animation.AnimationTiming;
 import jkanvas.util.StringDrawer;
 import jkanvas.util.StringDrawer.Orientation;
 
@@ -22,7 +14,7 @@ import jkanvas.util.StringDrawer.Orientation;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class TitleRenderpass extends Renderpass {
+public class TitleRenderpass extends ThinWrapperRenderpass {
 
   /**
    * The position of the titles.
@@ -43,10 +35,6 @@ public class TitleRenderpass extends Renderpass {
 
   } // Position
 
-  /** The render pass in a list for easier handling. */
-  private final List<Renderpass> list;
-  /** The decorated render pass. */
-  private final Renderpass pass;
   /** The text height. */
   private final double textHeight;
   /** The space between render pass and text. */
@@ -68,15 +56,13 @@ public class TitleRenderpass extends Renderpass {
    */
   public TitleRenderpass(final String title, final Renderpass pass,
       final double textHeight, final double space) {
+    super(pass);
     this.textHeight = textHeight;
     this.space = space;
-    this.pass = pass;
     titles = new String[] { Objects.requireNonNull(title)};
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
-    list = Collections.singletonList(pass);
-    pass.setParent(this);
-    pass.setOffset(0, space + textHeight);
+    setWrapOffset(0, space + textHeight);
   }
 
   /**
@@ -131,14 +117,14 @@ public class TitleRenderpass extends Renderpass {
     final double add = textHeight + space;
     switch(pos) {
       case LEFT:
-        pass.setOffset(add, 0);
+        setWrapOffset(add, 0);
         break;
       case RIGHT:
       case BELOW:
-        pass.setOffset(0, 0);
+        setWrapOffset(0, 0);
         break;
       case ABOVE:
-        pass.setOffset(0, add);
+        setWrapOffset(0, add);
         break;
       default:
         throw new AssertionError();
@@ -172,58 +158,24 @@ public class TitleRenderpass extends Renderpass {
     return orientation;
   }
 
-  /**
-   * Computes the inner bounding box ignoring all other title render passes.
-   * 
-   * @param bbox The bounding box in which can be drawn.
-   */
-  private void getInnerBoundingBox(final Rectangle2D bbox) {
-    double x = 0;
-    double y = 0;
-    Renderpass p = pass;
-    while(p instanceof TitleRenderpass) {
-      final TitleRenderpass t = (TitleRenderpass) p;
-      x += t.getOffsetX();
-      y += t.getOffsetY();
-      p = t.pass;
-    }
-    p.getBoundingBox(bbox);
-    x += p.getOffsetX() - pass.getOffsetX();
-    y += p.getOffsetY() - pass.getOffsetY();
-    final double add = textHeight + space;
-    switch(pos) {
-      case LEFT:
-      case RIGHT:
-        bbox.setFrame(bbox.getX() + x, bbox.getY() + y,
-            bbox.getWidth() + add, bbox.getHeight());
-        break;
-      case BELOW:
-      case ABOVE:
-        bbox.setFrame(bbox.getX() + x, bbox.getY() + y,
-            bbox.getWidth(), bbox.getHeight() + add);
-        break;
-      default:
-        throw new AssertionError();
-    }
-  }
-
   @Override
-  public void draw(final Graphics2D g, final KanvasContext ctx) {
+  protected void drawOwn(final Graphics2D g, final KanvasContext ctx) {
     final boolean hor;
     final Rectangle2D box = new Rectangle2D.Double();
     getInnerBoundingBox(box);
+    final double add = textHeight + space;
     switch(pos) {
       case LEFT:
         box.setFrame(box.getX(), box.getY(), textHeight, box.getHeight());
         hor = false;
         break;
       case RIGHT:
-        box.setFrame(box.getX() + box.getWidth() - textHeight, box.getY(),
+        box.setFrame(box.getX() + add + box.getWidth() - textHeight, box.getY(),
             textHeight, box.getHeight());
         hor = false;
         break;
       case BELOW:
-        box.setFrame(box.getX(), box.getY() + box.getHeight() - textHeight,
+        box.setFrame(box.getX(), box.getY() + add + box.getHeight() - textHeight,
             box.getWidth(), textHeight);
         hor = true;
         break;
@@ -236,7 +188,6 @@ public class TitleRenderpass extends Renderpass {
     }
     g.setColor(Color.BLACK);
     drawTexts(g, box, hor);
-    RenderpassPainter.draw(list, g, ctx);
   }
 
   /**
@@ -262,8 +213,7 @@ public class TitleRenderpass extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
-    pass.getBoundingBox(bbox);
+  protected void addOwnBox(final Rectangle2D bbox) {
     final double add = textHeight + space;
     switch(pos) {
       case LEFT:
@@ -279,71 +229,6 @@ public class TitleRenderpass extends Renderpass {
       default:
         throw new AssertionError();
     }
-  }
-
-  @Override
-  public boolean click(final Camera cam, final Point2D position, final MouseEvent e) {
-    return RenderpassPainter.click(list, cam, position, e);
-  }
-
-  @Override
-  public boolean doubleClick(final Camera cam, final Point2D position, final MouseEvent e) {
-    if(RenderpassPainter.doubleClick(list, cam, position, e)) return true;
-    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
-    if(!SwingUtilities.isLeftMouseButton(e)) return false;
-    cam.toView(this, AnimationTiming.SMOOTH, null, true);
-    return true;
-  }
-
-  @Override
-  public String getTooltip(final Point2D position) {
-    return RenderpassPainter.getTooltip(list, position);
-  }
-
-  @Override
-  public boolean moveMouse(final Point2D cur) {
-    return RenderpassPainter.moveMouse(list, cur);
-  }
-
-  /** The start position of the drag in the render pass coordinates. */
-  private Point2D start = null;
-
-  @Override
-  public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
-    final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, position);
-    final Rectangle2D bbox = new Rectangle2D.Double();
-    pass.getBoundingBox(bbox);
-    if(!bbox.contains(pos)) return false;
-    if(!pass.acceptDrag(pos, e)) return false;
-    start = pos;
-    return true;
-  }
-
-  @Override
-  public final void drag(final Point2D _, final Point2D cur,
-      final double dx, final double dy) {
-    // dx and dy do not change
-    final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, cur);
-    pass.drag(start, pos, dx, dy);
-  }
-
-  @Override
-  public final void endDrag(final Point2D _, final Point2D end,
-      final double dx, final double dy) {
-    // dx and dy do not change
-    final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, end);
-    pass.endDrag(start, pos, dx, dy);
-  }
-
-  @Override
-  public boolean isChanging() {
-    return pass.isChanging();
-  }
-
-  @Override
-  public void processMessage(final String[] ids, final String msg) {
-    super.processMessage(ids, msg);
-    pass.processMessage(ids, msg);
   }
 
 }
