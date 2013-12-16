@@ -159,16 +159,17 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
         evens[i] = "";
       }
     }
-    final TitleRenderpass top = new TitleRenderpass("", matrixMain, 40, 5);
+    final TitleRenderpass<MatrixMain> top =
+        new TitleRenderpass<>(matrixMain, "", 40, 5);
     top.setOrientation(Orientation.DIAGONAL);
     top.setTitles(evens);
-    final TitleRenderpass left = new TitleRenderpass("", top, 40, 5);
+    final TitleRenderpass<MatrixMain> left = new TitleRenderpass<>(top, "", 40, 5);
     left.setPosition(Position.LEFT);
     left.setTitles(evens);
-    final TitleRenderpass right = new TitleRenderpass("", left, 40, 5);
+    final TitleRenderpass<MatrixMain> right = new TitleRenderpass<>(left, "", 40, 5);
     right.setPosition(Position.RIGHT);
     right.setTitles(odds);
-    final TitleRenderpass bottom = new TitleRenderpass("", right, 40, 5);
+    final TitleRenderpass<MatrixMain> bottom = new TitleRenderpass<>(right, "", 40, 5);
     bottom.setPosition(Position.BELOW);
     bottom.setOrientation(Orientation.VERTICAL);
     bottom.setTitles(odds);

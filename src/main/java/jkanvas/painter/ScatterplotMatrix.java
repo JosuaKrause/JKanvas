@@ -65,7 +65,7 @@ public class ScatterplotMatrix {
           already.set(index);
           rp = sr[index];
         }
-        group.addRenderpass(new BorderRenderpass(rp));
+        group.addRenderpass(new BorderRenderpass<>(rp));
       }
     }
   }

@@ -19,13 +19,19 @@ import jkanvas.animation.AnimationTiming;
  * allowing to stack them on top of each other.
  * 
  * @author Joschi <josua.krause@gmail.com>
+ * @param <T> The innermost wrapped type.
  */
-public abstract class ThinWrapperRenderpass extends Renderpass {
+public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Renderpass {
 
   /** The render pass in a list for easier handling. */
   private final List<Renderpass> list;
-  /** The decorated render pass. */
-  private final Renderpass pass;
+  /**
+   * The decorated render pass or <code>null</code> if another wrapper was
+   * handed in.
+   */
+  private final T pass;
+  /** Another wrapper if render pass is <code>null</code>. */
+  private final ThinWrapperRenderpass<T> wrapper;
 
   /**
    * Creates a thin wrapper around the given render pass. You may set the offset
@@ -34,10 +40,43 @@ public abstract class ThinWrapperRenderpass extends Renderpass {
    * 
    * @param wrap The render pass to wrap.
    */
-  public ThinWrapperRenderpass(final Renderpass wrap) {
-    pass = Objects.requireNonNull(wrap);
-    list = Collections.singletonList(pass);
-    pass.setParent(this);
+  public ThinWrapperRenderpass(final T wrap) {
+    if(wrap instanceof ThinWrapperRenderpass) {
+      wrapper = (ThinWrapperRenderpass<T>) Objects.requireNonNull(wrap);
+      pass = null;
+    } else {
+      pass = Objects.requireNonNull(wrap);
+      wrapper = null;
+    }
+    list = Collections.singletonList((Renderpass) wrap);
+    list.get(0).setParent(this);
+  }
+
+  /**
+   * Creates a thin wrapper around the given render pass. You may set the offset
+   * of the render pass via {@link #setWrapOffset(double, double)} after the
+   * initialization.
+   * 
+   * @param wrap The wrapper to wrap.
+   */
+  public ThinWrapperRenderpass(final ThinWrapperRenderpass<T> wrap) {
+    wrapper = Objects.requireNonNull(wrap);
+    wrapper.setParent(this);
+    list = Collections.singletonList((Renderpass) wrapper);
+    pass = null;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Gets the innermost wrapped render pass.
+   */
+  public T getWrapRenderpass() {
+    ThinWrapperRenderpass<T> p = this;
+    while(p.wrapper != null) {
+      p = p.wrapper;
+    }
+    return p.pass;
   }
 
   /**
@@ -47,6 +86,7 @@ public abstract class ThinWrapperRenderpass extends Renderpass {
    * @param y The y offset.
    */
   protected final void setWrapOffset(final double x, final double y) {
+    final Renderpass pass = list.get(0);
     pass.setOffset(x, y);
   }
 
@@ -58,14 +98,15 @@ public abstract class ThinWrapperRenderpass extends Renderpass {
   protected final void getInnerBoundingBox(final Rectangle2D bbox) {
     double x = 0;
     double y = 0;
-    Renderpass p = pass;
-    while(p instanceof ThinWrapperRenderpass) {
-      final ThinWrapperRenderpass t = (ThinWrapperRenderpass) p;
+    ThinWrapperRenderpass<T> t = this;
+    while(t.pass == null) {
+      t = t.wrapper;
       x += t.getOffsetX();
       y += t.getOffsetY();
-      p = t.pass;
     }
+    final Renderpass p = t.list.get(0);
     p.getBoundingBox(bbox);
+    final Renderpass pass = list.get(0);
     x += p.getOffsetX() - pass.getOffsetX();
     y += p.getOffsetY() - pass.getOffsetY();
     bbox.setFrame(bbox.getX() + x, bbox.getY() + y, bbox.getWidth(), bbox.getHeight());
@@ -94,6 +135,7 @@ public abstract class ThinWrapperRenderpass extends Renderpass {
 
   @Override
   public final void getBoundingBox(final Rectangle2D bbox) {
+    final Renderpass pass = list.get(0);
     pass.getBoundingBox(bbox);
     addOwnBox(bbox);
   }
@@ -128,6 +170,7 @@ public abstract class ThinWrapperRenderpass extends Renderpass {
 
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
+    final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, position);
     final Rectangle2D bbox = new Rectangle2D.Double();
     pass.getBoundingBox(bbox);
@@ -141,6 +184,7 @@ public abstract class ThinWrapperRenderpass extends Renderpass {
   public final void drag(final Point2D _, final Point2D cur,
       final double dx, final double dy) {
     // dx and dy do not change
+    final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, cur);
     pass.drag(start, pos, dx, dy);
   }
@@ -149,18 +193,21 @@ public abstract class ThinWrapperRenderpass extends Renderpass {
   public final void endDrag(final Point2D _, final Point2D end,
       final double dx, final double dy) {
     // dx and dy do not change
+    final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, end);
     pass.endDrag(start, pos, dx, dy);
   }
 
   @Override
   public final boolean isChanging() {
+    final Renderpass pass = list.get(0);
     return pass.isChanging();
   }
 
   @Override
   public final void processMessage(final String[] ids, final String msg) {
     super.processMessage(ids, msg);
+    final Renderpass pass = list.get(0);
     pass.processMessage(ids, msg);
   }
 

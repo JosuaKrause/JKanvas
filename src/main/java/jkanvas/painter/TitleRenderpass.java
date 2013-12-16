@@ -13,8 +13,9 @@ import jkanvas.util.StringDrawer.Orientation;
  * Adds a title to the given renderpass.
  * 
  * @author Joschi <josua.krause@gmail.com>
+ * @param <T> The innermost wrapped type.
  */
-public class TitleRenderpass extends ThinWrapperRenderpass {
+public class TitleRenderpass<T extends Renderpass> extends ThinWrapperRenderpass<T> {
 
   /**
    * The position of the titles.
@@ -54,8 +55,27 @@ public class TitleRenderpass extends ThinWrapperRenderpass {
    * @param textHeight The text height.
    * @param space The space.
    */
-  public TitleRenderpass(final String title, final Renderpass pass,
+  public TitleRenderpass(final T pass, final String title,
       final double textHeight, final double space) {
+    super(pass);
+    this.textHeight = textHeight;
+    this.space = space;
+    titles = new String[] { Objects.requireNonNull(title)};
+    pos = Position.ABOVE;
+    orientation = Orientation.HORIZONTAL;
+    setWrapOffset(0, space + textHeight);
+  }
+
+  /**
+   * Creates a title at the top for the given render pass.
+   * 
+   * @param title The initial title.
+   * @param pass The render pass.
+   * @param textHeight The text height.
+   * @param space The space.
+   */
+  public TitleRenderpass(final ThinWrapperRenderpass<T> pass,
+      final String title, final double textHeight, final double space) {
     super(pass);
     this.textHeight = textHeight;
     this.space = space;
