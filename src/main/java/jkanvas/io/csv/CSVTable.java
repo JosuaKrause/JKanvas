@@ -60,7 +60,7 @@ public class CSVTable extends DataTable {
     numerical = new BitSet();
     names = new String[cols + 1];
     for(int c = 0; c < names.length; ++c) {
-      names[c] = first.getTitle(c);
+      names[c] = sanitizeName(first.getTitle(c));
     }
     known = new BitSet(names.length);
   }

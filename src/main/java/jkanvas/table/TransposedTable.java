@@ -7,6 +7,9 @@ package jkanvas.table;
  */
 final class TransposedTable extends WrappedTable {
 
+  /** The column name prefix. */
+  private final String prefix;
+
   /**
    * Creates a transposed view on the given table.
    * 
@@ -15,6 +18,7 @@ final class TransposedTable extends WrappedTable {
   public TransposedTable(final DataTable table) {
     super(table);
     transposed = table;
+    prefix = generateName();
   }
 
   @Override
@@ -25,7 +29,7 @@ final class TransposedTable extends WrappedTable {
 
   @Override
   public String getName(final int col) {
-    return "" + col;
+    return prefix + col;
   }
 
   @Override

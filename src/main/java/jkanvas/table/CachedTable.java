@@ -91,9 +91,10 @@ public class CachedTable extends DataTable {
     }
     this.cols = cols >= 0 ? cols : 0;
     rows = content.length;
+    final String prefix = generateName();
     names = new String[cols];
     for(int c = 0; c < cols; ++c) {
-      names[c] = "" + c;
+      names[c] = prefix + c;
     }
   }
 

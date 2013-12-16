@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Access to tabular data. The size of the table must not change. The contents
@@ -52,7 +53,9 @@ public abstract class DataTable {
    * Getter.
    * 
    * @param col The column.
-   * @return The name of the column.
+   * @return The name of the column. The name identifies a column. Columns are
+   *         considered equal if they have the same name and the same number of
+   *         rows.
    */
   public abstract String getName(int col);
 
@@ -247,12 +250,12 @@ public abstract class DataTable {
    * @param array The array that will be the column. Changes to the array are
    *          reflected in the table. The column is numerical.
    * @param name The name of the column or <code>null</code> if the name should
-   *          be empty.
+   *          be automatically generated.
    * @return The wrapper table.
    */
   public static final DataTable fromArray(final double[] array, final String name) {
     Objects.requireNonNull(array);
-    final String n = name == null ? "" : name;
+    final String n = name == null ? generateName() : name;
     return new DataTable() {
 
       @Override
@@ -316,6 +319,51 @@ public abstract class DataTable {
       res[c] = v;
     }
     return res;
+  }
+
+  /** The name counter. */
+  private static AtomicInteger nameCounter = new AtomicInteger();
+
+  /**
+   * Creates a unique name for a feature. This name can also be used as prefix.
+   * Note that every call to this method results in a new name.
+   * 
+   * @return The newly generated name.
+   */
+  public static final String generateName() {
+    return "$" + nameCounter.getAndIncrement() + "$";
+  }
+
+  /**
+   * Sanitizes the given column name so that it does not conflict with
+   * automatically generated names. When an automatically generated name is
+   * detected this part is changed to a new automatically generated name.
+   * 
+   * @param name The name to sanitize.
+   * @return The sanitized name.
+   */
+  public static final String sanitizeName(final String name) {
+    final String n = name.trim();
+    if(n.isEmpty()) return generateName();
+    // check for number only names
+    boolean isNumber = true;
+    for(int c = 0; c < n.length(); ++c) {
+      if("0123456789".indexOf(n.charAt(c)) < 0) {
+        isNumber = false;
+        break;
+      }
+    }
+    if(isNumber) return generateName() + n;
+    final int start = n.indexOf('$', 0);
+    if(start < 0) return n;
+    final int end = n.indexOf('$', start + 1);
+    if(end < 0) return n;
+    // automatically generated name detected
+    final String begin = n.substring(0, start);
+    final String trail = n.substring(end + 1);
+    // we have to generate a new name every time
+    // since we do not know whether begin and trail are empty sometimes
+    return begin + generateName() + trail;
   }
 
 }

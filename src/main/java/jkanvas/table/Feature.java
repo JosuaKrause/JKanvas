@@ -12,7 +12,8 @@ import java.util.TreeSet;
 import jkanvas.util.BitSetIterable;
 
 /**
- * A feature is a column of a {@link DataTable}.
+ * A feature is a column of a {@link DataTable}. Equality of columns is based on
+ * their name and number of rows.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
@@ -42,6 +43,57 @@ public class Feature implements Iterable<Double> {
    */
   public String getName() {
     return table.getName(col);
+  }
+
+  /**
+   * This method renames the current feature. When renaming multiple features
+   * make sure to create a {@link FeatureTable} and cache it to avoid
+   * unnecessary memory usage:
+   * 
+   * <pre>
+   * {@link Feature}[] renamedFeatures = ...;
+   * {@link FeatureTable} ft = new {@link FeatureTable#FeatureTable(Feature[]) FeatureTable(renamedFeatures)};
+   * {@link DataTable} table = {@link DataTable#cached() ft.cached()};
+   * // use only the features provided by table and let
+   * // renamedFeatures get out of scope as fast as possible
+   * </pre>
+   * 
+   * @param newName The new name of the feature.
+   * @return The feature with the new name.
+   */
+  public Feature renamed(final String newName) {
+    Objects.requireNonNull(newName);
+    final DataTable old = table;
+    final int column = col;
+    final DataTable t = new WrappedTable(old) {
+
+      @Override
+      public int rows() {
+        return table.rows();
+      }
+
+      @Override
+      public int cols() {
+        return table.cols();
+      }
+
+      @Override
+      public boolean isCategorical(final int col) {
+        return table.isCategorical(col);
+      }
+
+      @Override
+      public String getName(final int col) {
+        return col == column ? newName : table.getName(col);
+      }
+
+      @Override
+      public double getAt(final int row, final int col) {
+        return table.getAt(row, col);
+      }
+
+    };
+    return t.getFeature(column);
   }
 
   /**
@@ -232,8 +284,8 @@ public class Feature implements Iterable<Double> {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + col;
-    result = prime * result + table.hashCode();
+    result = prime * result + rows();
+    result = prime * result + getName().hashCode();
     return result;
   }
 
@@ -242,13 +294,14 @@ public class Feature implements Iterable<Double> {
     if(this == obj) return true;
     if(!(obj instanceof Feature)) return false;
     final Feature other = (Feature) obj;
-    if(col != other.col) return false;
-    return table.equals(other.table);
+    if(rows() != other.rows()) return false;
+    return getName().equals(other.getName());
   }
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "(" + table.toString() + "[" + getName() + "])";
+    return getClass().getSimpleName()
+        + "(" + getName() + "[" + rows() + "], " + table.toString() + ")";
   }
 
   /**
