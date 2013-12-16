@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Objects;
 
 import jkanvas.KanvasContext;
 
@@ -17,9 +16,9 @@ import jkanvas.KanvasContext;
 public class BorderRenderpass<T extends Renderpass> extends ThinWrapperRenderpass<T> {
 
   /** The stroke width. */
-  private final double width;
+  private double width;
   /** The border color. */
-  private final Color border;
+  private Color border;
 
   /**
    * Creates a border for the given render pass.
@@ -34,12 +33,12 @@ public class BorderRenderpass<T extends Renderpass> extends ThinWrapperRenderpas
    * Creates a border for the given render pass.
    * 
    * @param pass The render pass.
-   * @param border The border color.
+   * @param border The border color or <code>null</code> if transparent.
    * @param width The stroke width.
    */
   public BorderRenderpass(final T pass, final Color border, final double width) {
     super(pass);
-    this.border = Objects.requireNonNull(border);
+    this.border = border;
     this.width = width;
   }
 
@@ -47,18 +46,55 @@ public class BorderRenderpass<T extends Renderpass> extends ThinWrapperRenderpas
    * Creates a border for the given render pass.
    * 
    * @param pass The render pass.
-   * @param border The border color.
+   * @param border The border color or <code>null</code> if transparent.
    * @param width The stroke width.
    */
   public BorderRenderpass(final ThinWrapperRenderpass<T> pass,
       final Color border, final double width) {
     super(pass);
-    this.border = Objects.requireNonNull(border);
+    this.border = border;
     this.width = width;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param border The color of the border or <code>null</code> if transparent.
+   */
+  public void setColor(final Color border) {
+    this.border = border;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The color of the border or <code>null</code> if transparent.
+   */
+  public Color getColor() {
+    return border;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param width The width of the border.
+   */
+  public void setBorderWidth(final double width) {
+    this.width = width;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The width of the border.
+   */
+  public double getBorderWidth() {
+    return width;
   }
 
   @Override
   public void drawOwn(final Graphics2D g, final KanvasContext ctx) {
+    if(border == null) return;
     final Rectangle2D box = new Rectangle2D.Double();
     getInnerBoundingBox(box);
     box.setFrame(box.getX() - width * 0.5, box.getY() - width * 0.5,
