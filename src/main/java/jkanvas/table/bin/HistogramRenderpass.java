@@ -131,11 +131,5 @@ public class HistogramRenderpass extends Renderpass {
         curMin = curMax;
       }
     }
-    if(border != null) {
-      g.setColor(border);
-      final Rectangle2D bbox = new Rectangle2D.Double();
-      getBoundingBox(bbox);
-      g.draw(bbox);
-    }
   }
 }

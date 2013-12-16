@@ -3,163 +3,150 @@ package jkanvas.painter;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
+import javax.swing.SwingUtilities;
+
+import jkanvas.Camera;
 import jkanvas.KanvasContext;
-import jkanvas.util.StringDrawer;
+import jkanvas.animation.AnimationTiming;
 
 /**
- * Shows borders of render passes. Optional titles can be assigned.
+ * Shows borders of render passes.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public class BorderRenderpass extends HUDRenderpassAdapter {
+public class BorderRenderpass extends Renderpass {
 
-  /** All render passes to draw borders. */
-  private final Map<Renderpass, String> borders = new HashMap<>();
-  /** All render pass stroke widths. */
-  private final Map<Renderpass, Double> widths = new HashMap<>();
+  /** The render pass in a list for easier handling. */
+  private final List<Renderpass> list;
+  /** The render pass. */
+  private final Renderpass pass;
+  /** The stroke width. */
+  private final double width;
   /** The border color. */
   private final Color border;
-  /** The text color. */
-  private final Color text;
 
-  /** Creates a border render pass. */
-  public BorderRenderpass() {
-    this(Color.BLACK, Color.BLACK);
+  /**
+   * Creates a border for the given render pass.
+   * 
+   * @param pass The render pass.
+   */
+  public BorderRenderpass(final Renderpass pass) {
+    this(pass, Color.BLACK, 1.0);
   }
 
   /**
-   * Creates a border render pass.
+   * Creates a border for the given render pass.
    * 
+   * @param pass The render pass.
    * @param border The border color.
-   * @param text The text color.
+   * @param width The stroke width.
    */
-  public BorderRenderpass(final Color border, final Color text) {
+  public BorderRenderpass(final Renderpass pass, final Color border, final double width) {
+    this.pass = Objects.requireNonNull(pass);
     this.border = Objects.requireNonNull(border);
-    this.text = Objects.requireNonNull(text);
+    this.width = width;
+    list = Collections.singletonList(pass);
+    pass.setParent(this);
+    pass.setOffset(width * 0.5, width * 0.5);
   }
 
   @Override
-  public void drawHUD(final Graphics2D g, final KanvasContext ctx) {
-    final AffineTransform at = ctx.toComponentTransformation();
-    final Rectangle2D bbox = new Rectangle2D.Double();
-    for(final Entry<Renderpass, String> e : borders.entrySet()) {
-      final Renderpass r = e.getKey();
-      if(!RenderpassPainter.isTopLevelVisible(r)) {
-        continue;
-      }
-      RenderpassPainter.getTopLevelBounds(bbox, r);
-      final Double d = widths.get(r);
-      g.setStroke(new BasicStroke((float) ctx.toComponentLength(d != null ? d : 2)));
-      g.setColor(border);
-      final Rectangle2D box = at.createTransformedShape(bbox).getBounds2D();
-      g.draw(box);
-      final String title = e.getValue();
-      if(title == null) {
-        continue;
-      }
-      g.setColor(text);
-      StringDrawer.drawText(g, title,
-          new Point2D.Double(box.getCenterX(), box.getMaxY()),
-          StringDrawer.CENTER_H, StringDrawer.TOP);
-    }
+  public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+    final Rectangle2D box = new Rectangle2D.Double();
+    pass.getBoundingBox(box);
+    box.setFrame(box.getX(), box.getY(),
+        box.getWidth() + width, box.getHeight() + width);
+    final Graphics2D g = (Graphics2D) gfx.create();
+    g.setColor(border);
+    g.setStroke(new BasicStroke((float) width));
+    g.draw(box);
+    g.dispose();
+    RenderpassPainter.draw(list, gfx, ctx);
+    //
+    // if(ctx.toCanvasLength(1) > 1) {
+    // g.drawRect(0, 0, (int) rect.getWidth() - 1, (int) rect.getHeight() - 1);
+    // } else {
+    // g.draw(rect);
+    // }
   }
 
-  /**
-   * Adds a render pass.
-   * 
-   * @param renderpass The render pass.
-   */
-  public void add(final Renderpass renderpass) {
-    add(renderpass, null);
+  @Override
+  public void getBoundingBox(final Rectangle2D bbox) {
+    pass.getBoundingBox(bbox);
+    bbox.setFrame(bbox.getX() - width, bbox.getY() - width,
+        bbox.getWidth() + 2 * width, bbox.getHeight() + 2 * width);
   }
 
-  /**
-   * Adds a render pass with a title.
-   * 
-   * @param renderpass The render pass.
-   * @param title The title. May be <code>null</code>.
-   */
-  public void add(final Renderpass renderpass, final String title) {
-    borders.put(Objects.requireNonNull(renderpass), title);
+  @Override
+  public boolean click(final Camera cam, final Point2D position, final MouseEvent e) {
+    return RenderpassPainter.click(list, cam, position, e);
   }
 
-  /**
-   * Sets the title of a given render pass.
-   * 
-   * @param renderpass The render pass.
-   * @param title The title. May be <code>null</code>.
-   */
-  public void setTitle(final Renderpass renderpass, final String title) {
-    add(renderpass, title);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @param renderpass The render pass.
-   * @return Whether the render pass has a border from this render pass.
-   */
-  public boolean hasBorder(final Renderpass renderpass) {
-    return borders.containsKey(renderpass);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @param renderpass The render pass.
-   * @return The title of the render pass or the empty string if the render pass
-   *         has no title or has no border from this render pass.
-   * @see #hasBorder(Renderpass)
-   */
-  public String getTitle(final Renderpass renderpass) {
-    final String title = borders.get(renderpass);
-    return title != null ? title : "";
-  }
-
-  /**
-   * Sets the width of the border.
-   * 
-   * @param renderpass The render pass.
-   * @param width The width;
-   */
-  public void setWidth(final Renderpass renderpass, final double width) {
-    if(width <= 0) throw new IllegalArgumentException("" + width);
-    widths.put(renderpass, width);
-  }
-
-  /**
-   * Getter.
-   * 
-   * @param renderpass The render pass.
-   * @return The border width of the render pass. Note that this method will
-   *         always return values even when the render pass has no border from
-   *         this render pass. Then, however, the default value will be
-   *         returned.
-   * @see #hasBorder(Renderpass)
-   */
-  public double getWidth(final Renderpass renderpass) {
-    final Double res = widths.get(renderpass);
-    return res != null ? res : 2;
-  }
-
-  /**
-   * Removes a render pass.
-   * 
-   * @param renderpass The render pass.
-   * @return Whether the render pass existed.
-   */
-  public boolean remove(final Renderpass renderpass) {
-    if(!borders.containsKey(renderpass)) return false;
-    borders.remove(renderpass);
+  @Override
+  public boolean doubleClick(final Camera cam, final Point2D position, final MouseEvent e) {
+    if(RenderpassPainter.doubleClick(list, cam, position, e)) return true;
+    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
+    cam.toView(this, AnimationTiming.SMOOTH, null, true);
     return true;
+  }
+
+  @Override
+  public String getTooltip(final Point2D position) {
+    return RenderpassPainter.getTooltip(list, position);
+  }
+
+  @Override
+  public boolean moveMouse(final Point2D cur) {
+    return RenderpassPainter.moveMouse(list, cur);
+  }
+
+  /** The start position of the drag in the render pass coordinates. */
+  private Point2D start = null;
+
+  @Override
+  public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
+    final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, position);
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    pass.getBoundingBox(bbox);
+    if(!bbox.contains(pos)) return false;
+    if(!pass.acceptDrag(pos, e)) return false;
+    start = pos;
+    return true;
+  }
+
+  @Override
+  public final void drag(final Point2D _, final Point2D cur,
+      final double dx, final double dy) {
+    // dx and dy do not change
+    final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, cur);
+    pass.drag(start, pos, dx, dy);
+  }
+
+  @Override
+  public final void endDrag(final Point2D _, final Point2D end,
+      final double dx, final double dy) {
+    // dx and dy do not change
+    final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, end);
+    pass.endDrag(start, pos, dx, dy);
+  }
+
+  @Override
+  public boolean isChanging() {
+    return pass.isChanging();
+  }
+
+  @Override
+  public void processMessage(final String[] ids, final String msg) {
+    super.processMessage(ids, msg);
+    pass.processMessage(ids, msg);
   }
 
 }

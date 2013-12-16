@@ -58,12 +58,14 @@ public class ScatterplotMatrix {
       for(int col = 0; col < t.cols(); ++col) {
         final int index = indexOfRow(t, Math.min(row, col))
             - Math.min(row, col) + Math.max(row, col);
+        final Renderpass rp;
         if(already.get(index)) {
-          group.addRenderpass(new GhostRenderpass<>(sr[index]));
+          rp = new GhostRenderpass<>(sr[index]);
         } else {
           already.set(index);
-          group.addRenderpass(sr[index]);
+          rp = sr[index];
         }
+        group.addRenderpass(new BorderRenderpass(rp));
       }
     }
   }

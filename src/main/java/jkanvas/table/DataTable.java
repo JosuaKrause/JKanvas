@@ -50,12 +50,18 @@ public abstract class DataTable {
   public abstract boolean isCategorical(int col);
 
   /**
-   * Getter.
+   * The name of the column. The name identifies a column. Columns are
+   * considered equal if they have the same name and the same number of rows.
+   * <p>
+   * Try to avoid giving simple number names because of possible overlaps. When
+   * there is no unique name given you can use {@link #generateName()} to create
+   * a name or prefix. When reading names from the disk make sure to
+   * {@link #sanitizeName(String) sanitize} the names. This will keep the names
+   * human readable but will avoid false name sharing.
    * 
    * @param col The column.
-   * @return The name of the column. The name identifies a column. Columns are
-   *         considered equal if they have the same name and the same number of
-   *         rows.
+   * @return The name of the column. The name must always be the same for a
+   *         given column.
    */
   public abstract String getName(int col);
 
