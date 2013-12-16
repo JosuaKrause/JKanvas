@@ -41,7 +41,6 @@ public class BorderRenderpass<T extends Renderpass> extends ThinWrapperRenderpas
     super(pass);
     this.border = Objects.requireNonNull(border);
     this.width = width;
-    setWrapOffset(width * 0.5, width * 0.5);
   }
 
   /**
@@ -56,7 +55,6 @@ public class BorderRenderpass<T extends Renderpass> extends ThinWrapperRenderpas
     super(pass);
     this.border = Objects.requireNonNull(border);
     this.width = width;
-    setWrapOffset(width * 0.5, width * 0.5);
   }
 
   @Override

@@ -216,9 +216,7 @@ public abstract class Renderpass implements KanvasInteraction {
   }
 
   @Override
-  public void draw(final Graphics2D g, final KanvasContext ctx) {
-    // do nothing
-  }
+  public abstract void draw(final Graphics2D g, final KanvasContext ctx);
 
   @Override
   public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
