@@ -54,6 +54,23 @@ public final class ArrayUtil {
    * Getter.
    * 
    * @param arr The array.
+   * @return The maximal value of the array.
+   */
+  public static double max(final double[] arr) {
+    if(arr.length == 0) throw new IllegalArgumentException("must not be empty");
+    double max = Double.NaN;
+    for(final double v : arr) {
+      if(v > max || Double.isNaN(max)) {
+        max = v;
+      }
+    }
+    return max;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param arr The array.
    * @return The minimal value of the array.
    */
   public static int min(final int[] arr) {
@@ -61,6 +78,23 @@ public final class ArrayUtil {
     int min = Integer.MAX_VALUE;
     for(final int v : arr) {
       if(v < min) {
+        min = v;
+      }
+    }
+    return min;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param arr The array.
+   * @return The minimal value of the array.
+   */
+  public static double min(final double[] arr) {
+    if(arr.length == 0) throw new IllegalArgumentException("must not be empty");
+    double min = Double.NaN;
+    for(final double v : arr) {
+      if(v < min || Double.isNaN(min)) {
         min = v;
       }
     }
