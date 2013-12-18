@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -72,7 +73,22 @@ public final class Screenshot {
    */
   public static File savePNG(final File dir, final String prefix, final JComponent comp)
       throws IOException {
-    final File out = findFile(dir, prefix, ".png");
+    return savePNG(dir, prefix, ".png", comp);
+  }
+
+  /**
+   * Saves a screen-shot as PNG.
+   * 
+   * @param dir The directory.
+   * @param prefix The name prefix.
+   * @param postfix The name postfix. It should end with ".png".
+   * @param comp The component to draw.
+   * @return The file that was used to store the image.
+   * @throws IOException I/O Exception.
+   */
+  public static File savePNG(final File dir, final String prefix,
+      final String postfix, final JComponent comp) throws IOException {
+    final File out = findFile(dir, prefix, postfix);
     savePNG(new FileOutputStream(out), comp);
     return out;
   }
@@ -118,6 +134,31 @@ public final class Screenshot {
    */
   public static void paint(final JComponent comp, final Graphics2D g) {
     comp.paintAll(g);
+  }
+
+  /**
+   * Pads the given positive number with zeros.
+   * 
+   * @param number The number to pad.
+   * @param figures The number of figures allowed.
+   * @return The padded number.
+   */
+  public static String padNumber(final long number, final int figures) {
+    if(number < 0) throw new IllegalArgumentException("number is negative: " + number);
+    final String num = "" + number;
+    final int len = num.length();
+    if(len > figures) throw new IllegalArgumentException(
+        "number " + number + " has too many figures -- expected " + figures);
+    final char[] digits = new char[figures];
+    Arrays.fill(digits, '0');
+    for(int pos = 0; pos < figures; ++pos) {
+      final int cur = len - pos - 1;
+      if(cur < 0) {
+        break;
+      }
+      digits[figures - pos - 1] = num.charAt(cur);
+    }
+    return String.valueOf(digits);
   }
 
 }
