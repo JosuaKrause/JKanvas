@@ -86,9 +86,6 @@ public final class ExampleUtil {
       ap.addRefreshable(c);
       c.setAnimator(ap);
     }
-    if(fps) {
-      c.setFrameRateDisplayer(new FrameRateHUD());
-    }
     // add actions
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {
 
@@ -101,7 +98,7 @@ public final class ExampleUtil {
     if(fps) {
       c.addAction(KeyEvent.VK_F, new AbstractAction() {
 
-        private FrameRateDisplayer frd;
+        private FrameRateDisplayer frd = new FrameRateHUD();
 
         @Override
         public void actionPerformed(final ActionEvent e) {
