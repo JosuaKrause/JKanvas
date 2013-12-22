@@ -27,6 +27,8 @@ public class Resource {
   public static final Charset UTF8 = Charset.forName("UTF-8");
   /** Resource path. */
   public static final String RESOURCES = "src/main/resources/";
+  /** ANT resource path. */
+  public static final String ANT = "/resources/";
 
   /**
    * Ensures that the given directory exists.
@@ -163,6 +165,8 @@ public class Resource {
     if(hasDirectFile()) return new File(resource).toURI().toURL();
     final URL url = Resource.class.getResource('/' + resource);
     if(url != null) return url;
+    final URL antUrl = Resource.class.getResource(ANT + resource);
+    if(antUrl != null) return antUrl;
     final File f = new File(local, resource);
     if(!f.canRead()) throw new IOException(f.getName() + " doesn't exist");
     return f.toURI().toURL();
