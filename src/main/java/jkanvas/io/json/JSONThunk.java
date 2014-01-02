@@ -284,6 +284,18 @@ public class JSONThunk {
    * @throws IOException I/O Exception.
    */
   private void callSetters(final Object o) throws IOException {
+    callSetters(o, setters);
+  }
+
+  /**
+   * Calls setters on an object.
+   * 
+   * @param o The object.
+   * @param setters The setters.
+   * @throws IOException I/O Exception.
+   */
+  public static final void callSetters(
+      final Object o, final Map<String, JSONThunk> setters) throws IOException {
     final Class<?> type = o.getClass();
     for(final Entry<String, JSONThunk> el : setters.entrySet()) {
       try {

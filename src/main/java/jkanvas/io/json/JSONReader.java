@@ -1,10 +1,17 @@
 package jkanvas.io.json;
 
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Objects;
+
+import jkanvas.Canvas;
+import jkanvas.animation.AnimatedPainter;
+import jkanvas.animation.AnimationTiming;
+import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderpassPainter;
 
 /**
  * Reads JSON content.
@@ -296,6 +303,50 @@ public class JSONReader {
     System.out.println(out);
     System.out.println("idempotence:");
     System.out.println(new JSONReader(new StringReader(out)).get());
+  }
+
+  /**
+   * Loads a canvas from JSON.
+   * 
+   * @param el The element.
+   * @return The canvas.
+   * @throws IOException I/O Exception.
+   */
+  public static final Canvas loadCanvas(final JSONElement el) throws IOException {
+    el.expectObject();
+    final RenderpassPainter rp;
+    if(el.getBool("animated", true)) {
+      rp = new AnimatedPainter();
+    } else {
+      rp = new RenderpassPainter();
+    }
+    final Rectangle2D rest;
+    if(el.hasValue("restriction")) {
+      rest = JSONLoader.getRectFromJSON(el.getValue("restriction"));
+    } else {
+      rest = null;
+    }
+    final int width = el.getInt("width", 800);
+    final int height = el.getInt("height", 600);
+    final Canvas c = new Canvas(rp, rest != null, width, height);
+    if(rest != null) {
+      c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
+    }
+    if(el.hasValue("content")) {
+      final IdManager mng = new IdManager();
+      final JSONElement content = el.getValue("content");
+      if(content.isArray()) {
+        for(int i = 0; i < content.size(); ++i) {
+          final JSONElement cnt = content.getAt(i);
+          cnt.expectObject();
+          rp.addPass(JSONThunk.readJSON(cnt, mng).get(Renderpass.class));
+        }
+      } else {
+        content.expectObject();
+        rp.addPass(JSONThunk.readJSON(content, mng).get(Renderpass.class));
+      }
+    }
+    return c;
   }
 
 }

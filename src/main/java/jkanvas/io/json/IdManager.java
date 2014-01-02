@@ -1,5 +1,6 @@
 package jkanvas.io.json;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +41,16 @@ public class IdManager {
       setForId(id, new JSONThunk(this));
     }
     return thunks.get(id);
+  }
+
+  /**
+   * Calls all setters for the object.
+   * 
+   * @param o The object.
+   * @throws IOException I/O Exception.
+   */
+  public void fillObject(final Object o) throws IOException {
+    JSONThunk.callSetters(o, thunks);
   }
 
 }
