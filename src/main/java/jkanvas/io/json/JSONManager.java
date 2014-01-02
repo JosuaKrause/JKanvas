@@ -6,11 +6,36 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A manager for ids.
+ * A manager for ids and templates in a JSON document.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class IdManager {
+public class JSONManager {
+
+  /** The template map. */
+  private final Map<String, JSONElement> templates = new HashMap<>();
+
+  /**
+   * Adds a template.
+   * 
+   * @param name The name of the template.
+   * @param el The template object.
+   */
+  public void addTemplate(final String name, final JSONElement el) {
+    el.expectObject();
+    if(templates.put(name, el) != null) throw new IllegalArgumentException(
+        "duplicate entry: " + name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the template.
+   * @return The template object.
+   */
+  public JSONElement getTemplate(final String name) {
+    return Objects.requireNonNull(templates.get(name), name);
+  }
 
   /** The id map. */
   private final Map<String, JSONThunk> thunks = new HashMap<>();

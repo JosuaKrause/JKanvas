@@ -12,6 +12,7 @@ import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.util.Resource;
 
 /**
  * Reads JSON content.
@@ -332,8 +333,23 @@ public class JSONReader {
     if(rest != null) {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
+    final JSONManager mng = new JSONManager();
+    if(el.hasValue("templates")) {
+      final JSONElement tmpls = el.getValue("templates");
+      addTemplates(mng, tmpls);
+    }
+    if(el.hasValue("import")) {
+      final JSONElement imp = el.getValue("import");
+      imp.expectArray();
+      for(int i = 0; i < imp.size(); ++i) {
+        final JSONElement file = imp.getAt(i);
+        file.expectString();
+        final Resource r = Resource.getFor(file.string());
+        final JSONReader in = new JSONReader(r.reader());
+        addTemplates(mng, in.get());
+      }
+    }
     if(el.hasValue("content")) {
-      final IdManager mng = new IdManager();
       final JSONElement content = el.getValue("content");
       if(content.isArray()) {
         for(int i = 0; i < content.size(); ++i) {
@@ -347,6 +363,19 @@ public class JSONReader {
       }
     }
     return c;
+  }
+
+  /**
+   * Adds all elements as templates.
+   * 
+   * @param mng The manager.
+   * @param tmpls The template dictionary.
+   */
+  public static void addTemplates(final JSONManager mng, final JSONElement tmpls) {
+    tmpls.expectObject();
+    for(final String k : tmpls.getKeys()) {
+      mng.addTemplate(k, tmpls.getValue(k));
+    }
   }
 
 }

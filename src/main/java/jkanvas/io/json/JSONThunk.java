@@ -19,7 +19,7 @@ import java.util.Objects;
 public class JSONThunk {
 
   /** The id manager. */
-  private final IdManager mng;
+  private final JSONManager mng;
   /** All used setters. */
   private final Map<String, JSONThunk> setters = new HashMap<>();
   /** The thunks for the constructor arguments. */
@@ -43,7 +43,7 @@ public class JSONThunk {
    * 
    * @param mng The manager.
    */
-  public JSONThunk(final IdManager mng) {
+  public JSONThunk(final JSONManager mng) {
     this.mng = Objects.requireNonNull(mng);
   }
 
@@ -53,7 +53,7 @@ public class JSONThunk {
    * @param mng The manager.
    * @param str The creation string.
    */
-  public JSONThunk(final IdManager mng, final String str) {
+  public JSONThunk(final JSONManager mng, final String str) {
     this.str = Objects.requireNonNull(str);
     this.mng = Objects.requireNonNull(mng);
   }
@@ -87,6 +87,15 @@ public class JSONThunk {
   }
 
   /**
+   * Getter.
+   * 
+   * @return Whether the thunk has already a type.
+   */
+  public boolean hasType() {
+    return str != null || type != null;
+  }
+
+  /**
    * Sets the constructor. Arguments are split via '{@code ,}'. The empty
    * (default) constructor is implicit and must not be defined with this method.
    * The constructor can only be set once.
@@ -105,6 +114,15 @@ public class JSONThunk {
         constructorLookup.put(f, thunk);
       }
     }
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether a non default constructor is already assigned.
+   */
+  public boolean hasConstructor() {
+    return !constructor.isEmpty();
   }
 
   /**
@@ -134,6 +152,16 @@ public class JSONThunk {
           name + " already in use");
       setters.put(name, thunk);
     }
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name.
+   * @return Whether the field already exists.
+   */
+  public boolean hasField(final String name) {
+    return constructorLookup.containsKey(name) || setters.containsKey(name);
   }
 
   /**
@@ -336,11 +364,11 @@ public class JSONThunk {
    * Reads a thunk from JSON input.
    * 
    * @param el The root element.
-   * @param mng The id manager.
+   * @param mng The manager.
    * @return The thunk.
    * @throws IOException I/O Exception.
    */
-  public static final JSONThunk readJSON(final JSONElement el, final IdManager mng)
+  public static final JSONThunk readJSON(final JSONElement el, final JSONManager mng)
       throws IOException {
     if(el.isString()) return new JSONThunk(mng, el.string());
     el.expectObject();
@@ -350,19 +378,39 @@ public class JSONThunk {
     } else {
       thunk = new JSONThunk(mng);
     }
-    loop: for(final String k : el.getKeys()) {
-      switch(k) {
-        case "id":
+    JSONElement cur = el;
+    while(cur != null) {
+      JSONElement tmpl = null;
+      loop: for(final String k : cur.getKeys()) {
+        switch(k) {
+          case "id":
+            if(cur != el) throw new IOException("id in template not allowed");
+            continue loop;
+          case "type":
+            if(cur != el && thunk.hasType()) {
+              continue loop;
+            }
+            thunk.setType(cur.getString(k, null));
+            continue loop;
+          case "args":
+            if(cur != el && thunk.hasConstructor()) {
+              continue loop;
+            }
+            thunk.setConstructor(cur.getString(k, null));
+            continue loop;
+          case "template":
+            if(tmpl != null) throw new IOException("double template definition");
+            tmpl = mng.getTemplate(cur.getString(k, null));
+            continue loop;
+        }
+        if(cur != el && thunk.hasField(k)) {
           continue loop;
-        case "type":
-          thunk.setType(el.getString(k, null));
-          continue loop;
-        case "args":
-          thunk.setConstructor(el.getString(k, null));
-          continue loop;
+        }
+        final JSONElement v = cur.getValue(k);
+        thunk.addField(k, readJSON(v, mng));
       }
-      final JSONElement v = el.getValue(k);
-      thunk.addField(k, readJSON(v, mng));
+      cur = tmpl;
+      tmpl = null;
     }
     return thunk;
   }
