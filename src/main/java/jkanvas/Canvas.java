@@ -819,7 +819,46 @@ public class Canvas extends JComponent implements Refreshable {
       realIds = ids;
     }
     final String m = msg.substring(idEnd + 1);
+    if(msgHnd != null) {
+      final String canvasId = " " + msgHnd.getCanvasId() + " ";
+      for(final String id : realIds) {
+        if(canvasId.contains(id) && canvasId.contains(" " + id + " ")) {
+          msgHnd.processMessage(this, m);
+          break;
+        }
+      }
+    }
     cfg.getPainter().processMessage(realIds, m);
+  }
+
+  /** The currently installed message handler. */
+  private CanvasMessageHandler msgHnd;
+
+  /**
+   * Getter.
+   * 
+   * @return The currently installed message handler or <code>null</code>.
+   */
+  public CanvasMessageHandler getMessageHandler() {
+    return msgHnd;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param msgHnd The message handler or <code>null</code>.
+   */
+  public void setMessageHandler(final CanvasMessageHandler msgHnd) {
+    this.msgHnd = msgHnd;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The painter.
+   */
+  public KanvasPainter getPainter() {
+    return cfg.getPainter();
   }
 
   /** Disposes the painter. */
