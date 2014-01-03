@@ -1,6 +1,7 @@
 package jkanvas.io.json;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,12 +27,14 @@ public class JSONThunk {
   private final Map<String, JSONThunk> constructorLookup = new HashMap<>();
   /** The constructor arguments. */
   private final List<String> constructor = new ArrayList<>();
+  /** The creation string or <code>null</code>. */
+  private final String str;
+  /** The thunk array or <code>null</code>. */
+  private final JSONThunk[] arr;
   /** The creation type of the thunk if it is not a simple string. */
   private Class<?> type;
   /** The actual object. */
   private Object obj;
-  /** The creation string or <code>null</code>. */
-  private String str;
   /**
    * Whether the thunk is currently evaluating. This is used to detect circular
    * dependencies.
@@ -45,6 +48,8 @@ public class JSONThunk {
    */
   public JSONThunk(final JSONManager mng) {
     this.mng = Objects.requireNonNull(mng);
+    str = null;
+    arr = null;
   }
 
   /**
@@ -54,8 +59,21 @@ public class JSONThunk {
    * @param str The creation string.
    */
   public JSONThunk(final JSONManager mng, final String str) {
-    this.str = Objects.requireNonNull(str);
     this.mng = Objects.requireNonNull(mng);
+    this.str = Objects.requireNonNull(str);
+    arr = null;
+  }
+
+  /**
+   * Creates an array thunk.
+   * 
+   * @param mng The manager.
+   * @param arr The array.
+   */
+  public JSONThunk(final JSONManager mng, final JSONThunk[] arr) {
+    this.mng = Objects.requireNonNull(mng);
+    this.arr = Objects.requireNonNull(arr);
+    str = null;
   }
 
   /**
@@ -81,6 +99,7 @@ public class JSONThunk {
    */
   public void setType(final Class<?> type) {
     if(str != null) throw new IllegalStateException("cannot define type for primitives");
+    if(arr != null) throw new IllegalStateException("cannot define type for arrays");
     if(this.type != null) throw new IllegalStateException("type already defined");
     Objects.requireNonNull(type);
     this.type = type;
@@ -92,7 +111,7 @@ public class JSONThunk {
    * @return Whether the thunk has already a type.
    */
   public boolean hasType() {
-    return str != null || type != null;
+    return str != null || arr != null || type != null;
   }
 
   /**
@@ -103,6 +122,10 @@ public class JSONThunk {
    * @param construct The constructor string.
    */
   public void setConstructor(final String construct) {
+    if(str != null) throw new IllegalStateException(
+        "cannot define constructor for primitives");
+    if(arr != null) throw new IllegalStateException(
+        "cannot define constructor for arrays");
     final String[] fields = construct.split(",");
     if(fields.length == 0) throw new IllegalArgumentException(
         "default constructor is implicit");
@@ -143,6 +166,8 @@ public class JSONThunk {
    * @param thunk The thunk.
    */
   public void addField(final String name, final JSONThunk thunk) {
+    if(str != null) throw new IllegalStateException("cannot add field for primitives");
+    if(arr != null) throw new IllegalStateException("cannot add field type for arrays");
     if(constructor.contains(name)) {
       if(constructorLookup.containsKey(name)) throw new IllegalArgumentException(
           name + " already in use");
@@ -175,9 +200,9 @@ public class JSONThunk {
    */
   @SuppressWarnings("unchecked")
   private static <T> T cast(final Object o, final Class<T> type) throws IOException {
-    if(!type.isAssignableFrom(o.getClass())) throw new IOException(
-        "invalid type: " + type.getSimpleName() + " <=!= "
-            + o.getClass().getSimpleName());
+    final Class<?> oc = o.getClass();
+    if(!type.isAssignableFrom(oc)) throw new IOException(
+        "invalid type: " + type.getSimpleName() + " <=!= " + oc.getSimpleName());
     return (T) o;
   }
 
@@ -186,53 +211,52 @@ public class JSONThunk {
    * evaluated the content is returned directly.
    * 
    * @param <T> The expected type.
+   * @param <C> The component type if it is an array.
    * @param type The expected type of the content.
    * @return The content.
    * @throws IOException I/O Exception.
    */
-  public <T> T get(final Class<T> type) throws IOException {
-    if(obj != null) return cast(obj, type);
+  public <T, C> T get(final Class<T> type) throws IOException {
     if(eval) throw new IOException("cyclic dependency!");
+    if(obj != null) return cast(obj, type);
     eval = true;
-    if(str != null) {
+    if(arr != null) {
+      if(!type.isArray()) throw new IOException(
+          "expected array type: " + type.getSimpleName());
+      final Class<C> comp = (Class<C>) type.getComponentType();
+      final C[] res = (C[]) Array.newInstance(comp, arr.length);
+      for(int i = 0; i < res.length; ++i) {
+        final C cur = arr[i].get(comp);
+        res[i] = cast(cur, comp);
+      }
+      obj = res;
+    } else if(str != null) {
       try {
         if(type.isAssignableFrom(Long.class)) {
           obj = Long.parseLong(str);
-          return cast(obj, type);
-        }
-        if(type.isAssignableFrom(Integer.class)) {
+        } else if(type.isAssignableFrom(Integer.class)) {
           obj = Integer.parseInt(str);
-          return cast(obj, type);
-        }
-        if(type.isAssignableFrom(Short.class)) {
+        } else if(type.isAssignableFrom(Short.class)) {
           obj = Short.parseShort(str);
-          return cast(obj, type);
-        }
-        if(type.isAssignableFrom(Byte.class)) {
+        } else if(type.isAssignableFrom(Byte.class)) {
           obj = Byte.parseByte(str);
-          return cast(obj, type);
-        }
-        if(type.isAssignableFrom(Double.class)) {
+        } else if(type.isAssignableFrom(Double.class)) {
           obj = Double.parseDouble(str);
-          return cast(obj, type);
-        }
-        if(type.isAssignableFrom(Float.class)) {
+        } else if(type.isAssignableFrom(Float.class)) {
           obj = Float.parseFloat(str);
-          return cast(obj, type);
-        }
-        if(type.isAssignableFrom(String.class)) {
+        } else if(type.isAssignableFrom(String.class)) {
           obj = str;
-          return cast(obj, type);
+        } else {
+          // string is ID
+          obj = mng.getForId(str).get(type);
         }
       } catch(final NumberFormatException e) {
         throw new IOException(
             "could not interpret \"" + str + "\" as " + type.getName(), e);
       }
-      // string is ID
-      obj = mng.getForId(str).get(type);
-      return cast(obj, type);
+    } else {
+      obj = eval(type);
     }
-    obj = eval(type);
     eval = false;
     return cast(obj, type);
   }
@@ -371,6 +395,13 @@ public class JSONThunk {
   public static final JSONThunk readJSON(final JSONElement el, final JSONManager mng)
       throws IOException {
     if(el.isString()) return new JSONThunk(mng, el.string());
+    if(el.isArray()) {
+      final JSONThunk[] arr = new JSONThunk[el.size()];
+      for(int i = 0; i < arr.length; ++i) {
+        arr[i] = readJSON(el.getAt(i), mng);
+      }
+      return new JSONThunk(mng, arr);
+    }
     el.expectObject();
     final JSONThunk thunk;
     if(el.hasValue("id")) {
