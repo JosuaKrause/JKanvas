@@ -13,7 +13,6 @@ import javax.swing.SwingUtilities;
 import jkanvas.Camera;
 import jkanvas.Canvas;
 import jkanvas.RefreshManager;
-import jkanvas.SimpleRefreshManager;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.matrix.AbstractQuadraticMatrix;
@@ -24,7 +23,6 @@ import jkanvas.matrix.MatrixRenderpass;
 import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
 import jkanvas.painter.Renderpass;
-import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.TitleRenderpass;
 import jkanvas.painter.TitleRenderpass.Position;
 import jkanvas.selection.AbstractSelector;
@@ -146,10 +144,9 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
       }
 
     };
-    final RefreshManager manager = new SimpleRefreshManager();
     // FIXME animated painter because of initial reset -- fix in ExampleUtil #28
-    final RenderpassPainter p = new AnimatedPainter();
-    final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
+    final AnimatedPainter p = new AnimatedPainter();
+    final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, p);
     final String[] odds = matrixMain.getNames();
     final String[] evens = matrixMain.getNames();
     for(int i = 0; i < odds.length; ++i) {
@@ -188,8 +185,6 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     };
     sel.addSelectable(matrixMain);
     p.addHUDPass(sel);
-    // let RefreshManager refresh the Canvas
-    manager.addRefreshable(c);
     // configure the Canvas
     // c.setMargin(40);
     ExampleUtil.setupCanvas("Matrix", c, p, true, false, true, false);
