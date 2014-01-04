@@ -1,0 +1,9 @@
+{
+    "title": {
+        "type": "jkanvas.painter.TitleRenderpass",
+        "args": "parent,title,height,space",
+        "title": "",
+        "height": "40",
+        "space": "5",
+    },
+}

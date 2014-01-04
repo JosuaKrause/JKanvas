@@ -49,36 +49,20 @@
     "restriction": "auto",
     "content": [
         {
-            "type": "jkanvas.painter.TitleRenderpass",
-            "args": "parent,title,height,space",
-            "title": "",
-            "height": "40",
-            "space": "5",
+            "template": "title",
             "position": "jkanvas.painter.TitleRenderpass.Position.BELOW",
             "orientation": "jkanvas.util.StringDrawer.Orientation.VERTICAL",
             "titles": "#odds",
             "parent": {
-                "type": "jkanvas.painter.TitleRenderpass",
-                "args": "parent,title,height,space",
-                "title": "",
-                "height": "40",
-                "space": "5",
+                "template": "title",
                 "position": "jkanvas.painter.TitleRenderpass.Position.RIGHT",
                 "titles": "#odds",
                 "parent": {
-                    "type": "jkanvas.painter.TitleRenderpass",
-                    "args": "parent,title,height,space",
-                    "title": "",
-                    "height": "40",
-                    "space": "5",
+                    "template": "title",
                     "position": "jkanvas.painter.TitleRenderpass.Position.LEFT",
                     "titles": "#evens",
                     "parent": {
-                        "type": "jkanvas.painter.TitleRenderpass",
-                        "args": "parent,title,height,space",
-                        "title": "",
-                        "height": "40",
-                        "space": "5",
+                        "template": "title",
                         "orientation": "jkanvas.util.StringDrawer.Orientation.DIAGONAL",
                         "titles": "#evens",
                         "parent": {
@@ -97,6 +81,7 @@
     "huds": [
     ],
     "import": [
+        "std.json",
     ],
     "templates": {
     },
