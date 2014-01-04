@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import jkanvas.Canvas;
 import jkanvas.CanvasMessageHandler;
@@ -330,9 +334,12 @@ public class JSONReader {
   public static final Canvas loadCanvas(
       final JSONElement el, final JSONManager m) throws IOException {
     el.expectObject();
+    final Set<String> fields = new HashSet<>();
+    fields.add("keys");
     final JSONManager mng = m != null ? m : new JSONManager();
     final RenderpassPainter rp;
     final AnimatedPainter ap;
+    fields.add("animated");
     if(el.getBool("animated", true)) {
       ap = new AnimatedPainter();
       rp = ap;
@@ -343,6 +350,7 @@ public class JSONReader {
     mng.addRawId("painter", rp);
     final boolean autoRest;
     final Rectangle2D rest;
+    fields.add("restriction");
     if(el.hasValue("restriction")) {
       final JSONElement restr = el.getValue("restriction");
       if(restr.isString()) {
@@ -363,7 +371,9 @@ public class JSONReader {
       rest = null;
       autoRest = false;
     }
+    fields.add("width");
     final int width = el.getInt("width", 800);
+    fields.add("height");
     final int height = el.getInt("height", 600);
     final Canvas c = new Canvas(rp, rest != null, width, height);
     if(ap != null) {
@@ -373,10 +383,12 @@ public class JSONReader {
     if(rest != null && !autoRest) {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
+    fields.add("templates");
     if(el.hasValue("templates")) {
       final JSONElement tmpls = el.getValue("templates");
       addTemplates(mng, tmpls);
     }
+    fields.add("import");
     if(el.hasValue("import")) {
       final JSONElement imp = el.getValue("import");
       imp.expectArray();
@@ -389,6 +401,7 @@ public class JSONReader {
       }
     }
     final JSONThunk[] passes;
+    fields.add("content");
     if(el.hasValue("content")) {
       final JSONElement content = el.getValue("content");
       if(content.isArray()) {
@@ -407,6 +420,7 @@ public class JSONReader {
       passes = new JSONThunk[0];
     }
     final JSONThunk[] huds;
+    fields.add("huds");
     if(el.hasValue("huds")) {
       final JSONElement content = el.getValue("huds");
       if(content.isArray()) {
@@ -425,6 +439,7 @@ public class JSONReader {
       huds = new JSONThunk[0];
     }
     final JSONThunk msgHnd;
+    fields.add("handler");
     if(el.hasValue("handler")) {
       final JSONElement h = el.getValue("handler");
       h.expectObject();
@@ -433,6 +448,7 @@ public class JSONReader {
       msgHnd = null;
     }
     final JSONThunk help;
+    fields.add("help");
     if(el.hasValue("help")) {
       final JSONElement h = el.getValue("help");
       h.expectObject();
@@ -440,6 +456,48 @@ public class JSONReader {
     } else {
       help = null;
     }
+    // ### interpret remaining fields ###
+    final ObjectCreator oc = new ObjectCreator() {
+
+      private final Map<String, JSONThunk> setters = new HashMap<>();
+
+      @Override
+      public boolean hasField(final String name) {
+        return setters.containsKey(name);
+      }
+
+      @Override
+      public void addField(final String name, final JSONThunk thunk) {
+        setters.put(name, thunk);
+      }
+
+      @Override
+      public void callSetters(final Object o) throws IOException {
+        JSONThunk.callSetters(o, setters);
+      }
+
+      @Override
+      public boolean hasType() {
+        return true;
+      }
+
+      @Override
+      public boolean hasConstructor() {
+        return true;
+      }
+
+      @Override
+      public void setType(final String type) throws IOException {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public void setConstructor(final String args) {
+        throw new UnsupportedOperationException();
+      }
+
+    };
+    JSONThunk.addFields(oc, el, mng, fields);
     // ### evaluating ###
     for(final JSONThunk p : passes) {
       rp.addPass(p.get(Renderpass.class));
@@ -456,6 +514,7 @@ public class JSONReader {
     } else {
       helpHUD = null;
     }
+    oc.callSetters(c);
     // ### messages ###
     if(helpHUD != null) {
       JSONKeyBindings.load(el, c, helpHUD);

@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A lazy evaluated JSON object.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class JSONThunk {
+public class JSONThunk implements ObjectCreator {
 
   /** The id manager. */
   private final JSONManager mng;
@@ -90,13 +91,7 @@ public class JSONThunk {
     arr = null;
   }
 
-  /**
-   * Sets the creation type of the object. The type cannot be set when the
-   * creation string is present.
-   * 
-   * @param type The fully qualified type name.
-   * @throws IOException I/O Exception.
-   */
+  @Override
   public void setType(final String type) throws IOException {
     try {
       setType(findClass(type));
@@ -120,22 +115,12 @@ public class JSONThunk {
     this.type = type;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return Whether the thunk has already a type.
-   */
+  @Override
   public boolean hasType() {
     return str != null || arr != null || type != null;
   }
 
-  /**
-   * Sets the constructor. Arguments are split via '{@code ,}'. The empty
-   * (default) constructor is implicit and must not be defined with this method.
-   * The constructor can only be set once.
-   * 
-   * @param construct The constructor string.
-   */
+  @Override
   public void setConstructor(final String construct) {
     if(obj != null) throw new IllegalStateException("object already evaluated");
     if(str != null) throw new IllegalStateException(
@@ -155,11 +140,7 @@ public class JSONThunk {
     }
   }
 
-  /**
-   * Getter.
-   * 
-   * @return Whether a non default constructor is already assigned.
-   */
+  @Override
   public boolean hasConstructor() {
     return !constructor.isEmpty();
   }
@@ -175,12 +156,7 @@ public class JSONThunk {
     addField(name, thunk);
   }
 
-  /**
-   * Adds a field to the thunk.
-   * 
-   * @param name The name of the field.
-   * @param thunk The thunk.
-   */
+  @Override
   public void addField(final String name, final JSONThunk thunk) {
     if(obj != null) throw new IllegalStateException("object already evaluated");
     if(str != null) throw new IllegalStateException("cannot add field for primitives");
@@ -196,12 +172,7 @@ public class JSONThunk {
     }
   }
 
-  /**
-   * Getter.
-   * 
-   * @param name The name.
-   * @return Whether the field already exists.
-   */
+  @Override
   public boolean hasField(final String name) {
     return constructorLookup.containsKey(name) || setters.containsKey(name);
   }
@@ -419,13 +390,8 @@ public class JSONThunk {
         + ") in " + type.getSimpleName() + " for: " + name);
   }
 
-  /**
-   * Calls all setters.
-   * 
-   * @param o The object to call the setters on.
-   * @throws IOException I/O Exception.
-   */
-  private void callSetters(final Object o) throws IOException {
+  @Override
+  public void callSetters(final Object o) throws IOException {
     callSetters(o, setters);
   }
 
@@ -499,10 +465,29 @@ public class JSONThunk {
     } else {
       thunk = new JSONThunk(mng);
     }
+    addFields(thunk, el, mng, null);
+    return thunk;
+  }
+
+  /**
+   * Adds all fields from the given object to the thunk.
+   * 
+   * @param thunk The object creator.
+   * @param el The object.
+   * @param mng The manager.
+   * @param ignore The fields to ignore.
+   * @throws IOException I/O Exception.
+   */
+  public static void addFields(final ObjectCreator thunk, final JSONElement el,
+      final JSONManager mng, final Set<String> ignore) throws IOException {
     JSONElement cur = el;
     while(cur != null) {
+      cur.expectObject();
       JSONElement tmpl = null;
       loop: for(final String k : cur.getKeys()) {
+        if(ignore != null && ignore.contains(k)) {
+          continue loop;
+        }
         switch(k) {
           case "id":
             if(cur != el) throw new IOException("id in template not allowed");
@@ -533,7 +518,6 @@ public class JSONThunk {
       cur = tmpl;
       tmpl = null;
     }
-    return thunk;
   }
 
 }
