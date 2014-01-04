@@ -144,7 +144,6 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
       }
 
     };
-    // FIXME animated painter because of initial reset -- fix in ExampleUtil #28
     final AnimatedPainter p = new AnimatedPainter();
     final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, p);
     final String[] odds = matrixMain.getNames();
