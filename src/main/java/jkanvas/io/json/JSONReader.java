@@ -341,11 +341,27 @@ public class JSONReader {
       ap = null;
     }
     mng.addRawId("painter", rp);
+    final boolean autoRest;
     final Rectangle2D rest;
     if(el.hasValue("restriction")) {
-      rest = JSONLoader.getRectFromJSON(el.getValue("restriction"));
+      final JSONElement restr = el.getValue("restriction");
+      if(restr.isString()) {
+        final String s = restr.string();
+        if(s.equals("auto")) {
+          rest = new Rectangle2D.Double();
+          autoRest = true;
+        } else if(s.equals("none")) {
+          rest = null;
+          autoRest = false;
+        } else throw new IOException(
+            "expect \"auto\", \"none\", or rectangle as restriction");
+      } else {
+        rest = JSONLoader.getRectFromJSON(restr);
+        autoRest = false;
+      }
     } else {
       rest = null;
+      autoRest = false;
     }
     final int width = el.getInt("width", 800);
     final int height = el.getInt("height", 600);
@@ -354,7 +370,7 @@ public class JSONReader {
       c.setAnimator(ap);
     }
     mng.addRawId("canvas", c);
-    if(rest != null) {
+    if(rest != null && !autoRest) {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
     if(el.hasValue("templates")) {
@@ -444,6 +460,11 @@ public class JSONReader {
     if(helpHUD != null) {
       JSONKeyBindings.load(el, c, helpHUD);
       rp.addHUDPass(helpHUD);
+    }
+    // ### auto restriction ###
+    if(rest != null && autoRest) {
+      rp.getBoundingBox(rest);
+      c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
     return c;
   }

@@ -46,10 +46,7 @@
     ],
     "width": "500",
     "height": "500",
-    "restriction": {
-        "width": "630",
-        "height": "630",
-    },
+    "restriction": "auto",
     "content": [
         {
             "type": "jkanvas.painter.TitleRenderpass",
