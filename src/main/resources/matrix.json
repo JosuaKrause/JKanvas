@@ -1,13 +1,5 @@
 {
-    "help": {
-        "template": "help",
-    },
-    "handler": {
-        "ids": "canvas",
-        "type": "jkanvas.DefaultMessageHandler",
-        "args": "frame",
-        "frame": "#frame",
-    },
+    "template": "canvas",
     "keys": [
         {
             "key": "f",

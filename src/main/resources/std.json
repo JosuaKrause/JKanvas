@@ -19,4 +19,13 @@
         "hpos": "jkanvas.painter.TextHUD.RIGHT",
         "vpos": "jkanvas.painter.TextHUD.BOTTOM",
     },
+    "canvas": {
+        "background": "java.awt.Color.WHITE",
+        "help": {
+            "template": "help",
+        },
+        "handler": {
+            "template": "handler",
+        },
+    },
 }
