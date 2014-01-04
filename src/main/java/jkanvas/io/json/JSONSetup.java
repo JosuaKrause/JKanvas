@@ -157,6 +157,7 @@ public final class JSONSetup {
     mng.addRawId("canvas", c);
     if(ap != null) {
       c.setAnimator(ap);
+      ap.addRefreshable(c);
     }
     if(rest != null && !autoRest) {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);

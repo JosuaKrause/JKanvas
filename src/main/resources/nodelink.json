@@ -1,0 +1,58 @@
+{
+    "template": "canvas",
+    "keys": [
+        {
+            "key": "f",
+            "msg": "canvas#fps:toggle",
+            "help": "Toggle Framerate Display",
+        },
+        {
+            "key": "t",
+            "msg": "canvas#pause:toggle",
+            "help": "Pause Animation",
+        },
+        {
+            "key": "p",
+            "msg": "canvas#photo:window",
+            "help": "Take Photo",
+        },
+        {
+            "key": "r",
+            "msg": "canvas#reset",
+            "help": "Reset View",
+        },
+        {
+            "key": "h",
+            "msg": "info#visible:toggle",
+            "help": "Toggle Help",
+        },
+        {
+            "key": "q",
+            "msg": "canvas#quit",
+            "help": "Quit",
+        },
+        {
+            "key": "1",
+            "msg": "nl#random",
+            "help": "Lay out nodes randomly once",
+        },
+        {
+            "key": "2",
+            "msg": "nl#circle",
+            "help": "Lay out nodes in a circle",
+        },
+        {
+            "key": "3",
+            "msg": "nl#force",
+            "help": "Force directed layout",
+        },
+        {
+            "key": "4",
+            "msg": "nl#bounce",
+            "help": "Bounce layout",
+        },
+    ],
+    "import": [
+        "std.json",
+    ],
+}
