@@ -2,6 +2,7 @@ package jkanvas;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.swing.JFrame;
 
@@ -34,6 +35,7 @@ public class DefaultMessageHandler implements CanvasMessageHandler {
    */
   public DefaultMessageHandler(final JFrame frame) {
     this.frame = frame;
+    ids = " " + CANVAS_ID + " ";
   }
 
   /** The inactive frame rate displayer. */
@@ -224,9 +226,22 @@ public class DefaultMessageHandler implements CanvasMessageHandler {
     }
   }
 
+  /** The ids associated with the canvas. */
+  private String ids;
+
+  /**
+   * Setter.
+   * 
+   * @param ids The ids associated with this render pass. Multiple ids may be
+   *          separated with space '<code> </code>'.
+   */
+  public void setIds(final String ids) {
+    this.ids = " " + Objects.requireNonNull(ids).trim() + " ";
+  }
+
   @Override
-  public String getCanvasId() {
-    return CANVAS_ID;
+  public String getCanvasIds() {
+    return ids;
   }
 
 }

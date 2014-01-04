@@ -164,17 +164,17 @@ public abstract class Renderpass implements KanvasInteraction {
    * Setter.
    * 
    * @param ids The ids associated with this render pass. Multiple ids may be
-   *          separated with space '<code>&#20;</code>'.
+   *          separated with space '<code> </code>'.
    */
   public void setIds(final String ids) {
-    this.ids = " " + Objects.requireNonNull(ids) + " ";
+    this.ids = " " + Objects.requireNonNull(ids).trim() + " ";
   }
 
   /**
    * Getter.
    * 
    * @return The ids associated with this render pass. Multiple ids may be
-   *         separated with space '<code>&#20;</code>'.
+   *         separated with space '<code> </code>'.
    */
   public String getIds() {
     return ids;

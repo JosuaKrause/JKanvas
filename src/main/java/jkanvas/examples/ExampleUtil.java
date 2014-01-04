@@ -75,7 +75,7 @@ public final class ExampleUtil {
     }
     final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
     final CanvasMessageHandler cmh = new DefaultMessageHandler(frame);
-    final String canvasId = cmh.getCanvasId();
+    final String canvasId = cmh.getCanvasIds().trim();
     c.setMessageHandler(cmh);
     // add actions
     c.addMessageAction(KeyEvent.VK_Q, canvasId + "#quit");

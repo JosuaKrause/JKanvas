@@ -69,6 +69,18 @@ public class JSONManager {
   }
 
   /**
+   * Adds a raw object to the id list.
+   * 
+   * @param id The id.
+   * @param obj The raw object.
+   */
+  public void addRawId(final String id, final Object obj) {
+    Objects.requireNonNull(id);
+    if(thunks.put(id, new JSONThunk(obj, this)) != null) throw new IllegalArgumentException(
+        "id already in use: " + id);
+  }
+
+  /**
    * Calls all setters for the object.
    * 
    * @param o The object.

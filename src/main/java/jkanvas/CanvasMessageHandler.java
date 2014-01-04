@@ -10,9 +10,9 @@ public interface CanvasMessageHandler {
   /**
    * Getter.
    * 
-   * @return The id of the canvas.
+   * @return The ids of the canvas. The string must be surrounded with spaces.
    */
-  String getCanvasId();
+  String getCanvasIds();
 
   /**
    * Processes the message for the canvas.

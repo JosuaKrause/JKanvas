@@ -77,6 +77,19 @@ public class JSONThunk {
   }
 
   /**
+   * Creates an already evaluated thunk.
+   * 
+   * @param obj The evaluated object.
+   * @param mng The manager.
+   */
+  JSONThunk(final Object obj, final JSONManager mng) {
+    this.mng = Objects.requireNonNull(mng);
+    this.obj = Objects.requireNonNull(obj);
+    str = null;
+    arr = null;
+  }
+
+  /**
    * Sets the creation type of the object. The type cannot be set when the
    * creation string is present.
    * 
@@ -98,6 +111,7 @@ public class JSONThunk {
    * @param type The type.
    */
   public void setType(final Class<?> type) {
+    if(obj != null) throw new IllegalStateException("object already evaluated");
     if(str != null) throw new IllegalStateException("cannot define type for primitives");
     if(arr != null) throw new IllegalStateException("cannot define type for arrays");
     if(this.type != null) throw new IllegalStateException("type already defined");
@@ -122,6 +136,7 @@ public class JSONThunk {
    * @param construct The constructor string.
    */
   public void setConstructor(final String construct) {
+    if(obj != null) throw new IllegalStateException("object already evaluated");
     if(str != null) throw new IllegalStateException(
         "cannot define constructor for primitives");
     if(arr != null) throw new IllegalStateException(
@@ -166,6 +181,7 @@ public class JSONThunk {
    * @param thunk The thunk.
    */
   public void addField(final String name, final JSONThunk thunk) {
+    if(obj != null) throw new IllegalStateException("object already evaluated");
     if(str != null) throw new IllegalStateException("cannot add field for primitives");
     if(arr != null) throw new IllegalStateException("cannot add field type for arrays");
     if(constructor.contains(name)) {

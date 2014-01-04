@@ -820,7 +820,7 @@ public class Canvas extends JComponent implements Refreshable {
     }
     final String m = msg.substring(idEnd + 1);
     if(msgHnd != null) {
-      final String canvasId = " " + msgHnd.getCanvasId() + " ";
+      final String canvasId = msgHnd.getCanvasIds();
       for(final String id : realIds) {
         if(canvasId.contains(id) && canvasId.contains(" " + id + " ")) {
           msgHnd.processMessage(this, m);

@@ -8,10 +8,12 @@ import java.io.StringReader;
 import java.util.Objects;
 
 import jkanvas.Canvas;
+import jkanvas.CanvasMessageHandler;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.painter.SimpleTextHUD;
 import jkanvas.util.Resource;
 
 /**
@@ -310,10 +312,12 @@ public class JSONReader {
    * Loads a canvas from JSON.
    * 
    * @param el The element.
+   * @param m The JSON manager. If <code>null</code> a manager is created.
    * @return The canvas.
    * @throws IOException I/O Exception.
    */
-  public static final Canvas loadCanvas(final JSONElement el) throws IOException {
+  public static final Canvas loadCanvas(final JSONElement el, final JSONManager m)
+      throws IOException {
     el.expectObject();
     final RenderpassPainter rp;
     if(el.getBool("animated", true)) {
@@ -333,7 +337,7 @@ public class JSONReader {
     if(rest != null) {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
-    final JSONManager mng = new JSONManager();
+    final JSONManager mng = m != null ? m : new JSONManager();
     if(el.hasValue("templates")) {
       final JSONElement tmpls = el.getValue("templates");
       addTemplates(mng, tmpls);
@@ -349,18 +353,56 @@ public class JSONReader {
         addTemplates(mng, in.get());
       }
     }
+    final JSONThunk[] passes;
     if(el.hasValue("content")) {
       final JSONElement content = el.getValue("content");
       if(content.isArray()) {
+        passes = new JSONThunk[content.size()];
         for(int i = 0; i < content.size(); ++i) {
           final JSONElement cnt = content.getAt(i);
           cnt.expectObject();
-          rp.addPass(JSONThunk.readJSON(cnt, mng).get(Renderpass.class));
+          passes[i] = JSONThunk.readJSON(cnt, mng);
         }
       } else {
+        passes = new JSONThunk[1];
         content.expectObject();
-        rp.addPass(JSONThunk.readJSON(content, mng).get(Renderpass.class));
+        passes[0] = JSONThunk.readJSON(content, mng);
       }
+    } else {
+      passes = new JSONThunk[0];
+    }
+    final JSONThunk msgHnd;
+    if(el.hasValue("handler")) {
+      final JSONElement h = el.getValue("handler");
+      h.expectObject();
+      msgHnd = JSONThunk.readJSON(h, mng);
+    } else {
+      msgHnd = null;
+    }
+    final JSONThunk help;
+    if(el.hasValue("help")) {
+      final JSONElement h = el.getValue("help");
+      h.expectObject();
+      help = JSONThunk.readJSON(h, mng);
+    } else {
+      help = null;
+    }
+    // ### evaluating ###
+    for(final JSONThunk p : passes) {
+      rp.addPass(p.get(Renderpass.class));
+    }
+    if(msgHnd != null) {
+      c.setMessageHandler(msgHnd.get(CanvasMessageHandler.class));
+    }
+    final SimpleTextHUD helpHUD;
+    if(help != null) {
+      helpHUD = help.get(SimpleTextHUD.class);
+    } else {
+      helpHUD = null;
+    }
+    // ### messages ###
+    if(helpHUD != null) {
+      JSONKeyBindings.load(el, c, helpHUD);
     }
     return c;
   }
