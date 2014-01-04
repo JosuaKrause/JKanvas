@@ -37,6 +37,18 @@ public class JSONManager {
     return Objects.requireNonNull(templates.get(name), name);
   }
 
+  /**
+   * Getter.
+   * 
+   * @param el The object.
+   * @return The template object or <code>null</code>.
+   */
+  public JSONElement getTemplateOf(final JSONElement el) {
+    final String tmpl = el.getString("template", null);
+    if(tmpl == null) return null;
+    return getTemplate(tmpl);
+  }
+
   /** The id map. */
   private final Map<String, JSONThunk> thunks = new HashMap<>();
 

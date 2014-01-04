@@ -1,36 +1,6 @@
 {
-    "template": "canvas",
+    "template": "animated_canvas",
     "keys": [
-        {
-            "key": "f",
-            "msg": "canvas#fps:toggle",
-            "help": "Toggle Framerate Display",
-        },
-        {
-            "key": "t",
-            "msg": "canvas#pause:toggle",
-            "help": "Pause Animation",
-        },
-        {
-            "key": "p",
-            "msg": "canvas#photo:window",
-            "help": "Take Photo",
-        },
-        {
-            "key": "r",
-            "msg": "canvas#reset",
-            "help": "Reset View",
-        },
-        {
-            "key": "h",
-            "msg": "info#visible:toggle",
-            "help": "Toggle Help",
-        },
-        {
-            "key": "q",
-            "msg": "canvas#quit",
-            "help": "Quit",
-        },
         {
             "key": "1",
             "msg": "nl#random",

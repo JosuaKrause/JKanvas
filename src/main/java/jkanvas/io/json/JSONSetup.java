@@ -287,9 +287,14 @@ public final class JSONSetup {
     oc.callSetters(c);
     // ### messages ###
     {
-      final JSONElement keys = getRecursiveParent(el, "keys", mng);
-      if(keys != null) {
+      JSONElement cur = el;
+      while(cur != null) {
+        final JSONElement keys = getRecursiveParent(cur, "keys", mng);
+        if(keys == null) {
+          break;
+        }
         JSONKeyBindings.load(keys, c, helpHUD);
+        cur = mng.getTemplateOf(keys);
       }
       if(helpHUD != null) {
         rp.addHUDPass(helpHUD);
@@ -314,9 +319,9 @@ public final class JSONSetup {
   public static JSONElement getRecursiveParent(
       final JSONElement el, final String name, final JSONManager mng) {
     if(el.hasValue(name)) return el;
-    final String tmpl = el.getString("template", null);
+    final JSONElement tmpl = mng.getTemplateOf(el);
     if(tmpl == null) return null;
-    return getRecursiveParent(mng.getTemplate(tmpl), name, mng);
+    return getRecursiveParent(tmpl, name, mng);
   }
 
   /**
