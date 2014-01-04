@@ -1,10 +1,6 @@
 {
     "help": {
-        "ids": "info",
-        "type": "jkanvas.painter.SimpleTextHUD",
-        "args": "hpos,vpos",
-        "hpos": "jkanvas.painter.TextHUD.RIGHT",
-        "vpos": "jkanvas.painter.TextHUD.BOTTOM",
+        "template": "help",
     },
     "handler": {
         "ids": "canvas",

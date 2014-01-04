@@ -6,4 +6,17 @@
         "height": "40",
         "space": "5",
     },
+    "handler": {
+        "ids": "canvas",
+        "type": "jkanvas.DefaultMessageHandler",
+        "args": "frame",
+        "frame": "#frame",
+    },
+    "help": {
+        "ids": "info",
+        "type": "jkanvas.painter.SimpleTextHUD",
+        "args": "hpos,vpos",
+        "hpos": "jkanvas.painter.TextHUD.RIGHT",
+        "vpos": "jkanvas.painter.TextHUD.BOTTOM",
+    },
 }
