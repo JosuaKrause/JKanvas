@@ -69,6 +69,21 @@ public class JSONManager {
   }
 
   /**
+   * Gets the content associated with the given id.
+   * 
+   * @param <T> The type.
+   * @param id The id.
+   * @param type The type.
+   * @return The content.
+   * @throws IOException I/O Exception.
+   */
+  public <T> T getForId(final String id, final Class<T> type) throws IOException {
+    Objects.requireNonNull(id);
+    if(!thunks.containsKey(id)) throw new IllegalArgumentException("unknown id: " + id);
+    return getForId(id).get(type);
+  }
+
+  /**
    * Adds a raw object to the id list.
    * 
    * @param id The id.

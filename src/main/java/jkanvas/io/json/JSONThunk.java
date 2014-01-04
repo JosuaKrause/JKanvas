@@ -3,6 +3,7 @@ package jkanvas.io.json;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -98,8 +99,8 @@ public class JSONThunk {
    */
   public void setType(final String type) throws IOException {
     try {
-      setType(Class.forName(type));
-    } catch(IllegalStateException | IllegalArgumentException | ClassNotFoundException e) {
+      setType(findClass(type));
+    } catch(IllegalStateException | ClassNotFoundException e) {
       throw new IOException(e);
     }
   }
@@ -206,6 +207,27 @@ public class JSONThunk {
   }
 
   /**
+   * Finds and loads the class for the given name. This also finds inner
+   * classes.
+   * 
+   * @param name The name of the class.
+   * @return The class.
+   * @throws ClassNotFoundException If the class cannot be found.
+   */
+  private static Class<?> findClass(final String name) throws ClassNotFoundException {
+    String n = name;
+    for(;;) {
+      try {
+        return Class.forName(n);
+      } catch(final ClassNotFoundException e) {
+        final int i = n.lastIndexOf('.');
+        if(i < 0) throw new ClassNotFoundException("class not found: " + name, e);
+        n = n.substring(0, i) + "$" + n.substring(i + 1);
+      }
+    }
+  }
+
+  /**
    * Casts the object to the given type.
    * 
    * @param <T> The type.
@@ -217,6 +239,17 @@ public class JSONThunk {
   @SuppressWarnings("unchecked")
   private static <T> T cast(final Object o, final Class<T> type) throws IOException {
     final Class<?> oc = o.getClass();
+    if(type.isPrimitive()) {
+      try {
+        final Object pt = oc.getField("TYPE").get(null);
+        if(pt != type) throw new IllegalArgumentException();
+        return (T) o;
+      } catch(final IllegalArgumentException | IllegalAccessException
+          | NoSuchFieldException | SecurityException e) {
+        throw new IOException(
+            "invalid type: " + type.getSimpleName() + " <=!= " + oc.getSimpleName(), e);
+      }
+    }
     if(!type.isAssignableFrom(oc)) throw new IOException(
         "invalid type: " + type.getSimpleName() + " <=!= " + oc.getSimpleName());
     return (T) o;
@@ -248,33 +281,70 @@ public class JSONThunk {
       obj = res;
     } else if(str != null) {
       try {
-        if(type.isAssignableFrom(Long.class)) {
+        if(type.isAssignableFrom(Long.class)
+            || type.isAssignableFrom(Long.TYPE)) {
           obj = Long.parseLong(str);
-        } else if(type.isAssignableFrom(Integer.class)) {
+        } else if(type.isAssignableFrom(Integer.class)
+            || type.isAssignableFrom(Integer.TYPE)) {
           obj = Integer.parseInt(str);
-        } else if(type.isAssignableFrom(Short.class)) {
+        } else if(type.isAssignableFrom(Short.class)
+            || type.isAssignableFrom(Short.TYPE)) {
           obj = Short.parseShort(str);
-        } else if(type.isAssignableFrom(Byte.class)) {
+        } else if(type.isAssignableFrom(Byte.class)
+            || type.isAssignableFrom(Byte.TYPE)) {
           obj = Byte.parseByte(str);
-        } else if(type.isAssignableFrom(Double.class)) {
+        } else if(type.isAssignableFrom(Double.class)
+            || type.isAssignableFrom(Double.TYPE)) {
           obj = Double.parseDouble(str);
-        } else if(type.isAssignableFrom(Float.class)) {
+        } else if(type.isAssignableFrom(Float.class)
+            || type.isAssignableFrom(Float.TYPE)) {
           obj = Float.parseFloat(str);
         } else if(type.isAssignableFrom(String.class)) {
           obj = str;
-        } else {
+        } else if(str.startsWith("#")) {
           // string is ID
-          obj = mng.getForId(str).get(type);
+          obj = mng.getForId(str.substring(1)).get(type);
+        } else {
+          // string is constant
+          obj = getConstant(str, type);
         }
       } catch(final NumberFormatException e) {
-        throw new IOException(
-            "could not interpret \"" + str + "\" as " + type.getName(), e);
+        try {
+          obj = getConstant(str, type);
+        } catch(final IOException io) {
+          throw new IOException(
+              "could not interpret \"" + str + "\" as " + type.getSimpleName(), io);
+        }
       }
     } else {
       obj = eval(type);
     }
     eval = false;
     return cast(obj, type);
+  }
+
+  /**
+   * Interpret string as constant.
+   * 
+   * @param str The string to interpret as constant.
+   * @param type The type.
+   * @return The constant.
+   * @throws IOException I/O Exception.
+   */
+  private static Object getConstant(
+      final String str, final Class<?> type) throws IOException {
+    final int constant = str.lastIndexOf('.');
+    if(constant < 0) throw new IOException(
+        "expected '.' for constant: " + str + " for type: " + type.getSimpleName());
+    try {
+      final Class<?> cl = findClass(str.substring(0, constant));
+      final Field f = cl.getDeclaredField(str.substring(constant + 1));
+      return f.get(null);
+    } catch(ClassNotFoundException | IllegalArgumentException | IllegalAccessException
+        | NoSuchFieldException | SecurityException e) {
+      throw new IOException("could not interpret \"" + str
+          + "\" as constant for type: " + type.getSimpleName(), e);
+    }
   }
 
   /**
@@ -336,13 +406,17 @@ public class JSONThunk {
    * @return The setter method.
    * @throws IOException I/O Exception.
    */
-  private static Method findSetter(final Class<?> type, final String name)
-      throws IOException {
+  private static Method findSetter(
+      final Class<?> type, final String name) throws IOException {
     final String setter = getSetter(name);
-    for(final Method m : type.getDeclaredMethods()) {
-      if(setter.equals(m.getName()) && m.getParameterTypes().length == 1) return m;
+    for(final Method m : type.getMethods()) {
+      if(!setter.equals(m.getName())) {
+        continue;
+      }
+      if(m.getParameterTypes().length == 1) return m;
     }
-    throw new IOException("could not find setter for: " + name);
+    throw new IOException("could not find setter (" + setter
+        + ") in " + type.getSimpleName() + " for: " + name);
   }
 
   /**

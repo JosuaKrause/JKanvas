@@ -11,6 +11,7 @@ import jkanvas.Canvas;
 import jkanvas.CanvasMessageHandler;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationTiming;
+import jkanvas.painter.HUDRenderpass;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
@@ -39,7 +40,7 @@ public class JSONReader {
   }
 
   /**
-   * Getter.
+   * Getter. This method automatically closes the input stream.
    * 
    * @return The root element of the JSON document.
    * @throws IOException I/O Exception.
@@ -48,8 +49,18 @@ public class JSONReader {
     if(r != null) {
       root = read(null);
       eatWhitespace();
-      if(!isEOF()) throw new IllegalStateException(
-          "unexpected character: '" + next() + "'");
+      if(!isEOF()) {
+        final char c = next();
+        try {
+          if(r != null) {
+            r.close();
+            r = null;
+          }
+          throw new IllegalStateException("unexpected character: '" + c + "'");
+        } catch(final IOException e) {
+          throw new IllegalStateException("EOF not reached", e);
+        }
+      }
     }
     return root;
   }
@@ -296,7 +307,7 @@ public class JSONReader {
   public static void main(final String[] args) throws IOException {
     final String s = "{" +
         " \"foo\": 3, " +
-        " \"bar\"   :\"text\"     ,\"baz\":[\"a\",3]," +
+        " \"bar\"   :\"text\"     ,\"baz\":[\"a\",3], \"obj\": {}" +
         "}";
     System.out.println("input:");
     System.out.println(s);
@@ -316,15 +327,20 @@ public class JSONReader {
    * @return The canvas.
    * @throws IOException I/O Exception.
    */
-  public static final Canvas loadCanvas(final JSONElement el, final JSONManager m)
-      throws IOException {
+  public static final Canvas loadCanvas(
+      final JSONElement el, final JSONManager m) throws IOException {
     el.expectObject();
+    final JSONManager mng = m != null ? m : new JSONManager();
     final RenderpassPainter rp;
+    final AnimatedPainter ap;
     if(el.getBool("animated", true)) {
-      rp = new AnimatedPainter();
+      ap = new AnimatedPainter();
+      rp = ap;
     } else {
       rp = new RenderpassPainter();
+      ap = null;
     }
+    mng.addRawId("painter", rp);
     final Rectangle2D rest;
     if(el.hasValue("restriction")) {
       rest = JSONLoader.getRectFromJSON(el.getValue("restriction"));
@@ -334,10 +350,13 @@ public class JSONReader {
     final int width = el.getInt("width", 800);
     final int height = el.getInt("height", 600);
     final Canvas c = new Canvas(rp, rest != null, width, height);
+    if(ap != null) {
+      c.setAnimator(ap);
+    }
+    mng.addRawId("canvas", c);
     if(rest != null) {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
-    final JSONManager mng = m != null ? m : new JSONManager();
     if(el.hasValue("templates")) {
       final JSONElement tmpls = el.getValue("templates");
       addTemplates(mng, tmpls);
@@ -371,6 +390,24 @@ public class JSONReader {
     } else {
       passes = new JSONThunk[0];
     }
+    final JSONThunk[] huds;
+    if(el.hasValue("huds")) {
+      final JSONElement content = el.getValue("huds");
+      if(content.isArray()) {
+        huds = new JSONThunk[content.size()];
+        for(int i = 0; i < content.size(); ++i) {
+          final JSONElement cnt = content.getAt(i);
+          cnt.expectObject();
+          huds[i] = JSONThunk.readJSON(cnt, mng);
+        }
+      } else {
+        huds = new JSONThunk[1];
+        content.expectObject();
+        huds[0] = JSONThunk.readJSON(content, mng);
+      }
+    } else {
+      huds = new JSONThunk[0];
+    }
     final JSONThunk msgHnd;
     if(el.hasValue("handler")) {
       final JSONElement h = el.getValue("handler");
@@ -391,6 +428,9 @@ public class JSONReader {
     for(final JSONThunk p : passes) {
       rp.addPass(p.get(Renderpass.class));
     }
+    for(final JSONThunk p : huds) {
+      rp.addHUDPass(p.get(HUDRenderpass.class));
+    }
     if(msgHnd != null) {
       c.setMessageHandler(msgHnd.get(CanvasMessageHandler.class));
     }
@@ -403,6 +443,7 @@ public class JSONReader {
     // ### messages ###
     if(helpHUD != null) {
       JSONKeyBindings.load(el, c, helpHUD);
+      rp.addHUDPass(helpHUD);
     }
     return c;
   }

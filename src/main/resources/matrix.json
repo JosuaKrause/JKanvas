@@ -1,0 +1,106 @@
+{
+    "help": {
+        "ids": "info",
+        "type": "jkanvas.painter.SimpleTextHUD",
+        "args": "hpos,vpos",
+        "hpos": "jkanvas.painter.TextHUD.RIGHT",
+        "vpos": "jkanvas.painter.TextHUD.BOTTOM",
+    },
+    "handler": {
+        "ids": "canvas",
+        "type": "jkanvas.DefaultMessageHandler",
+        "args": "frame",
+        "frame": "#frame",
+    },
+    "keys": [
+        {
+            "key": "f",
+            "msg": "canvas#fps:toggle",
+            "help": "Toggle Framerate Display",
+        },
+        {
+            "key": "t",
+            "msg": "canvas#pause:toggle",
+            "help": "Pause Animation",
+        },
+        {
+            "key": "p",
+            "msg": "canvas#photo:window",
+            "help": "Take Photo",
+        },
+        {
+            "key": "r",
+            "msg": "canvas#reset",
+            "help": "Reset View",
+        },
+        {
+            "key": "h",
+            "msg": "info#visible:toggle",
+            "help": "Toggle Help",
+        },
+        {
+            "key": "q",
+            "msg": "canvas#quit",
+            "help": "Quit",
+        },
+    ],
+    "width": "500",
+    "height": "500",
+    "restriction": {
+        "width": "630",
+        "height": "630",
+    },
+    "content": [
+        {
+            "type": "jkanvas.painter.TitleRenderpass",
+            "args": "parent,title,height,space",
+            "title": "",
+            "height": "40",
+            "space": "5",
+            "position": "jkanvas.painter.TitleRenderpass.Position.BELOW",
+            "orientation": "jkanvas.util.StringDrawer.Orientation.VERTICAL",
+            "titles": "#odds",
+            "parent": {
+                "type": "jkanvas.painter.TitleRenderpass",
+                "args": "parent,title,height,space",
+                "title": "",
+                "height": "40",
+                "space": "5",
+                "position": "jkanvas.painter.TitleRenderpass.Position.RIGHT",
+                "titles": "#odds",
+                "parent": {
+                    "type": "jkanvas.painter.TitleRenderpass",
+                    "args": "parent,title,height,space",
+                    "title": "",
+                    "height": "40",
+                    "space": "5",
+                    "position": "jkanvas.painter.TitleRenderpass.Position.LEFT",
+                    "titles": "#evens",
+                    "parent": {
+                        "type": "jkanvas.painter.TitleRenderpass",
+                        "args": "parent,title,height,space",
+                        "title": "",
+                        "height": "40",
+                        "space": "5",
+                        "orientation": "jkanvas.util.StringDrawer.Orientation.DIAGONAL",
+                        "titles": "#evens",
+                        "parent": {
+                            "id": "main",
+                            "type": "jkanvas.examples.MatrixMain",
+                            "args": "matrix,color,refresh",
+                            "matrix": "#matrix",
+                            "color": "#cell",
+                            "refresh": "#painter",
+                        },
+                    },
+                },
+            },
+        },
+    ],
+    "huds": [
+    ],
+    "import": [
+    ],
+    "templates": {
+    },
+}

@@ -119,7 +119,7 @@ public class JSONElement implements Iterable<JSONElement> {
    */
   private void expectType(final JSONType type) {
     if(type() != type) throw new IllegalStateException(
-        "wrong type: " + type + "! expected: " + type());
+        "wrong type: " + type + " expected: " + type());
   }
 
   /**
