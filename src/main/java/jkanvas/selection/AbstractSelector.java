@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import jkanvas.Canvas;
 import jkanvas.KanvasContext;
-import jkanvas.painter.HUDRenderpassAdapter;
+import jkanvas.painter.HUDRenderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.util.PaintUtil;
 
@@ -21,7 +21,7 @@ import jkanvas.util.PaintUtil;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class AbstractSelector extends HUDRenderpassAdapter {
+public abstract class AbstractSelector extends HUDRenderpass {
 
   /** The inner alpha value. */
   private final float alphaInner;
@@ -165,7 +165,8 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
     selection = s;
     final KanvasContext ctx = canvas.getHUDContext();
     for(final Selectable r : selects) {
-      final KanvasContext c = RenderpassPainter.getContextFor(r.getRenderpass(), ctx);
+      final KanvasContext c = RenderpassPainter.getRecursiveContextFor(
+          r.getRenderpass(), ctx);
       final AffineTransform at = c.toCanvasTransformation();
       final Shape selection = at.createTransformedShape(s);
       r.select(selection, preview);
@@ -198,12 +199,7 @@ public abstract class AbstractSelector extends HUDRenderpassAdapter {
   @Override
   public void dragHUD(final Point2D start, final Point2D cur,
       final double dx, final double dy) {
-    if(selection == null) {
-      selection = beginShape(start, cur);
-    } else {
-      selection = growShape(start, cur);
-    }
-    doSelection(selection, true);
+    doSelection(selection == null ? beginShape(start, cur) : growShape(start, cur), true);
   }
 
   @Override

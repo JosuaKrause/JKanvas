@@ -2,19 +2,20 @@ package jkanvas.examples;
 
 import java.awt.Color;
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.Random;
 
 import javax.swing.SwingUtilities;
 
 import jkanvas.Camera;
 import jkanvas.Canvas;
-import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.animation.AnimationTiming;
+import jkanvas.io.json.JSONManager;
+import jkanvas.io.json.JSONSetup;
 import jkanvas.nodelink.DefaultEdgeRealizer;
 import jkanvas.nodelink.DefaultNodeRealizer;
 import jkanvas.nodelink.NodeLinkRenderpass;
@@ -25,7 +26,8 @@ import jkanvas.nodelink.layout.CircleLayouter;
 import jkanvas.nodelink.layout.ForceDirectedLayouter;
 import jkanvas.nodelink.layout.RandomLayouter;
 import jkanvas.nodelink.layout.SimpleLayoutedView;
-import jkanvas.painter.SimpleTextHUD;
+import jkanvas.painter.RenderpassPainter;
+import jkanvas.util.Resource;
 
 /**
  * A small node-link example application.
@@ -203,15 +205,15 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
    * Starts the example application.
    * 
    * @param args No arguments.
+   * @throws IOException I/O Exception.
    */
-  public static void main(final String[] args) {
+  public static void main(final String[] args) throws IOException {
     // Canvas.DEBUG_BBOX = true;
-    final int w = 800;
-    final int h = 600;
     final int nodes = 20;
     final int edges = 100;
-    final AnimatedPainter p = new AnimatedPainter();
-    final Canvas c = new Canvas(p, w, h);
+    final JSONManager mng = new JSONManager();
+    JSONSetup.setupCanvas("Node-Link", mng, Resource.getFor("nodelink.json"), true);
+    final Canvas c = mng.getForId("canvas", Canvas.class);
     final SimpleLayoutedView<AnimatedPosition> view = new SimpleLayoutedView<>(c, false);
     fillGraph(view, nodes, edges);
     final NodeLinkMain r = new NodeLinkMain(view);
@@ -224,18 +226,8 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       }
 
     });
+    final RenderpassPainter p = mng.getForId("painter", RenderpassPainter.class);
     p.addPass(r);
-    // configure Canvas
-    final SimpleTextHUD info = ExampleUtil.setupCanvas("Node-Link", c, p,
-        true, true, true, false);
-    c.addMessageAction(KeyEvent.VK_1, "nl#random");
-    c.addMessageAction(KeyEvent.VK_2, "nl#circle");
-    c.addMessageAction(KeyEvent.VK_3, "nl#force");
-    c.addMessageAction(KeyEvent.VK_4, "nl#bounce");
-    info.addLine("1: Lay out nodes randomly once");
-    info.addLine("2: Lay out nodes in a circle");
-    info.addLine("3: Force directed layout");
-    info.addLine("4: Bounce layout");
     // TODO start with MDS layout #24
     final RandomLayouter<AnimatedPosition> rl = new RandomLayouter<>();
     rl.setTiming(AnimationTiming.NO_ANIMATION);

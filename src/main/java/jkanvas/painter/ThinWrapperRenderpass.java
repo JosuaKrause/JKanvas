@@ -8,11 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.SwingUtilities;
-
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
-import jkanvas.animation.AnimationTiming;
 
 /**
  * A thin wrapper around a render pass. Thin wrapper do ignore each other
@@ -146,13 +143,11 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
   }
 
   @Override
-  public final boolean doubleClick(final Camera cam, final Point2D position,
-      final MouseEvent e) {
+  public final boolean doubleClick(
+      final Camera cam, final Point2D position, final MouseEvent e) {
     if(RenderpassPainter.doubleClick(list, cam, position, e)) return true;
-    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
-    if(!SwingUtilities.isLeftMouseButton(e)) return false;
-    cam.toView(this, AnimationTiming.SMOOTH, null, true);
-    return true;
+    if(USE_DOUBLE_CLICK_DEFAULT) return defaultDoubleClick(this, cam, e);
+    return false;
   }
 
   @Override

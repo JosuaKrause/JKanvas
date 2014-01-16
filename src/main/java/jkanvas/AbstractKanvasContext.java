@@ -101,7 +101,8 @@ public abstract class AbstractKanvasContext implements KanvasContext {
   @Override
   public KanvasContext translate(final double dx, final double dy) {
     if(dx == 0 && dy == 0) return this;
-    return create(inCanvasSpace, offX - dx, offY - dy);
+    if(inCanvasSpace) return create(true, offX - dx, offY - dy);
+    return create(false, offX + dx, offY + dy);
   }
 
   /**
