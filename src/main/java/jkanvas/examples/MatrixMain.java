@@ -178,4 +178,5 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     p.addHUDPass(sel);
     frame.setVisible(true);
   }
+
 }

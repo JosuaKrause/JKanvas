@@ -23,9 +23,6 @@ import jkanvas.animation.AnimationTiming;
  */
 public abstract class Renderpass implements KanvasInteraction {
 
-  /** Whether to use the double click default action. */
-  public static boolean USE_DOUBLE_CLICK_DEFAULT = true;
-
   /** Whether caching is forced. */
   private boolean forceCache;
 
@@ -48,12 +45,43 @@ public abstract class Renderpass implements KanvasInteraction {
     return forceCache;
   }
 
+  /** Whether to use the double click default action. */
+  public static boolean USE_DOUBLE_CLICK_DEFAULT = true;
+
+  /**
+   * The double click default action.
+   * 
+   * @param rp The render pass.
+   * @param cam The camera.
+   * @param e The mouse event.
+   * @return Whether the click was consumed.
+   */
+  public static final boolean defaultDoubleClick(
+      final Renderpass rp, final Camera cam, final MouseEvent e) {
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
+    cam.toView(rp, AnimationTiming.SMOOTH, null, true);
+    return true;
+  }
+
+  /**
+   * The double click default action.
+   * 
+   * @param rect The rectangle.
+   * @param cam The camera.
+   * @param e The mouse event.
+   * @return Whether the click was consumed.
+   */
+  public static final boolean defaultDoubleClick(
+      final Rectangle2D rect, final Camera cam, final MouseEvent e) {
+    if(!SwingUtilities.isLeftMouseButton(e)) return false;
+    cam.toView(rect, AnimationTiming.SMOOTH, null, true);
+    return true;
+  }
+
   @Override
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
-    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
-    if(!SwingUtilities.isLeftMouseButton(e)) return false;
-    cam.toView(this, AnimationTiming.SMOOTH, null, true);
-    return true;
+    if(USE_DOUBLE_CLICK_DEFAULT) return defaultDoubleClick(this, cam, e);
+    return false;
   }
 
   /** Whether the pass is visible. */

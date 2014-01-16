@@ -14,7 +14,6 @@ import javax.swing.SwingUtilities;
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.KanvasPainter;
-import jkanvas.animation.AnimationTiming;
 import jkanvas.util.PaintUtil;
 
 /**
@@ -167,11 +166,9 @@ public class RenderpassPainter implements KanvasPainter {
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
     if(doubleClick(back, cam, p, e)) return true;
     if(!Renderpass.USE_DOUBLE_CLICK_DEFAULT) return false;
-    if(!SwingUtilities.isLeftMouseButton(e)) return false;
     final Rectangle2D box = new Rectangle2D.Double();
     getBoundingBox(box, back);
-    cam.toView(box, AnimationTiming.SMOOTH, null, true);
-    return true;
+    return Renderpass.defaultDoubleClick(box, cam, e);
   }
 
   /**
