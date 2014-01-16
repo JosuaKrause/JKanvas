@@ -421,6 +421,21 @@ public class RenderpassPainter implements KanvasPainter {
   }
 
   /**
+   * Converts the given context to represent the context of the given render
+   * pass from the top level.
+   * 
+   * @param r The render pass.
+   * @param ctx The context.
+   * @return The transformed context.
+   */
+  public static final KanvasContext getRecursiveContextFor(
+      final Renderpass r, final KanvasContext ctx) {
+    final Renderpass p = r.getParent();
+    final KanvasContext c = p != null ? getRecursiveContextFor(p, ctx) : ctx;
+    return getContextFor(r, c);
+  }
+
+  /**
    * Getter.
    * 
    * @param rect The rectangle in which the bounding box of the render pass in

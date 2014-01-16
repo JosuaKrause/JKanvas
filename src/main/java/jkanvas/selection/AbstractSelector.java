@@ -165,7 +165,8 @@ public abstract class AbstractSelector extends HUDRenderpass {
     selection = s;
     final KanvasContext ctx = canvas.getHUDContext();
     for(final Selectable r : selects) {
-      final KanvasContext c = RenderpassPainter.getContextFor(r.getRenderpass(), ctx);
+      final KanvasContext c = RenderpassPainter.getRecursiveContextFor(
+          r.getRenderpass(), ctx);
       final AffineTransform at = c.toCanvasTransformation();
       final Shape selection = at.createTransformedShape(s);
       r.select(selection, preview);
@@ -198,12 +199,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
   @Override
   public void dragHUD(final Point2D start, final Point2D cur,
       final double dx, final double dy) {
-    if(selection == null) {
-      selection = beginShape(start, cur);
-    } else {
-      selection = growShape(start, cur);
-    }
-    doSelection(selection, true);
+    doSelection(selection == null ? beginShape(start, cur) : growShape(start, cur), true);
   }
 
   @Override
