@@ -17,7 +17,7 @@ import jkanvas.util.StringDrawer;
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
-public abstract class TextHUD extends HUDRenderpassAdapter {
+public abstract class TextHUD extends HUDRenderpass {
 
   /** The padding of the text box. */
   public static final double PADDING = 5.0;

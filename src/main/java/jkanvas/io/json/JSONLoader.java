@@ -1,5 +1,7 @@
 package jkanvas.io.json;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -75,6 +77,34 @@ public final class JSONLoader {
         | IllegalAccessException | InvocationTargetException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  /**
+   * Reads a rectangle from JSON.
+   * 
+   * @param el The element.
+   * @return The rectangle.
+   */
+  public static Rectangle2D getRectFromJSON(final JSONElement el) {
+    el.expectObject();
+    final double x = el.getDouble("x", 0.0);
+    final double y = el.getDouble("y", 0.0);
+    final double w = el.getDouble("width", 0.0);
+    final double h = el.getDouble("height", 0.0);
+    return new Rectangle2D.Double(x, y, w, h);
+  }
+
+  /**
+   * Reads a point from JSON.
+   * 
+   * @param el The element.
+   * @return The point.
+   */
+  public static Point2D getPointFromJSON(final JSONElement el) {
+    el.expectObject();
+    final double x = el.getDouble("x", 0.0);
+    final double y = el.getDouble("y", 0.0);
+    return new Point2D.Double(x, y);
   }
 
 }

@@ -130,8 +130,8 @@ public interface KanvasInteraction {
    * 
    * @param ids A list of ids the message is for. Only objects with at least one
    *          of those ids should consume the message. Due to technical reasons
-   *          the characters '<code>#</code>' and '<code>&#20;</code>' cannot be
-   *          in ids. The list may be empty. Ids cannot be the empty string.
+   *          the characters '<code>#</code>' and '<code> </code>' cannot be in
+   *          ids. The list may be empty. Ids cannot be the empty string.
    * @param msg The message to be processed. The message must be handed to all
    *          children even when consumed. Due to technical reasons the
    *          character '<code>#</code>' cannot be in messages. Messages cannot
