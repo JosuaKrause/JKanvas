@@ -15,7 +15,7 @@ import jkanvas.util.StringDrawer.Orientation;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
-public class TitleRenderpass<T extends Renderpass> extends ThinWrapperRenderpass<T> {
+public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
 
   /**
    * The position of the titles.
@@ -74,7 +74,7 @@ public class TitleRenderpass<T extends Renderpass> extends ThinWrapperRenderpass
    * @param textHeight The text height.
    * @param space The space.
    */
-  public TitleRenderpass(final ThinWrapperRenderpass<T> pass,
+  public TitleRenderpass(final Renderpod<T> pass,
       final String title, final double textHeight, final double space) {
     super(pass);
     this.textHeight = textHeight;

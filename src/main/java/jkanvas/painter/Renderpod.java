@@ -18,7 +18,7 @@ import jkanvas.KanvasContext;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
-public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Renderpass {
+public abstract class Renderpod<T extends Renderpass> extends Renderpass {
 
   /** The render pass in a list for easier handling. */
   private final List<Renderpass> list;
@@ -28,7 +28,7 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    */
   private final T pass;
   /** Another wrapper if render pass is <code>null</code>. */
-  private final ThinWrapperRenderpass<T> wrapper;
+  private final Renderpod<T> wrapper;
 
   /**
    * Creates a thin wrapper around the given render pass. You may set the offset
@@ -37,9 +37,9 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    * 
    * @param wrap The render pass to wrap.
    */
-  public ThinWrapperRenderpass(final T wrap) {
-    if(wrap instanceof ThinWrapperRenderpass) {
-      wrapper = (ThinWrapperRenderpass<T>) Objects.requireNonNull(wrap);
+  public Renderpod(final T wrap) {
+    if(wrap instanceof Renderpod) {
+      wrapper = (Renderpod<T>) Objects.requireNonNull(wrap);
       pass = null;
     } else {
       pass = Objects.requireNonNull(wrap);
@@ -56,7 +56,7 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    * 
    * @param wrap The wrapper to wrap.
    */
-  public ThinWrapperRenderpass(final ThinWrapperRenderpass<T> wrap) {
+  public Renderpod(final Renderpod<T> wrap) {
     wrapper = Objects.requireNonNull(wrap);
     wrapper.setParent(this);
     list = Collections.singletonList((Renderpass) wrapper);
@@ -69,7 +69,7 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    * @return Gets the innermost wrapped render pass.
    */
   public T getWrapRenderpass() {
-    ThinWrapperRenderpass<T> p = this;
+    Renderpod<T> p = this;
     while(p.wrapper != null) {
       p = p.wrapper;
     }
@@ -95,7 +95,7 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
   protected final void getInnerBoundingBox(final Rectangle2D bbox) {
     double x = 0;
     double y = 0;
-    ThinWrapperRenderpass<T> t = this;
+    Renderpod<T> t = this;
     while(t.pass == null) {
       t = t.wrapper;
       x += t.getOffsetX();
