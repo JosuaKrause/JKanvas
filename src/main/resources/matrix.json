@@ -6,16 +6,16 @@
     "content": [
         {
             "template": "title",
-            "position": "jkanvas.painter.TitleRenderpass.Position.BELOW",
+            "position": "jkanvas.painter.pod.TitleRenderpass.Position.BELOW",
             "orientation": "jkanvas.util.StringDrawer.Orientation.VERTICAL",
             "titles": "#odds",
             "parent": {
                 "template": "title",
-                "position": "jkanvas.painter.TitleRenderpass.Position.RIGHT",
+                "position": "jkanvas.painter.pod.TitleRenderpass.Position.RIGHT",
                 "titles": "#odds",
                 "parent": {
                     "template": "title",
-                    "position": "jkanvas.painter.TitleRenderpass.Position.LEFT",
+                    "position": "jkanvas.painter.pod.TitleRenderpass.Position.LEFT",
                     "titles": "#evens",
                     "parent": {
                         "template": "title",

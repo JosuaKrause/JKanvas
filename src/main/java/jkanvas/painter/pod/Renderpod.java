@@ -71,7 +71,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
    * 
    * @return Gets the innermost wrapped render pass.
    */
-  public T getWrapRenderpass() {
+  public T unwrap() {
     Renderpod<T> p = this;
     while(p.wrapper != null) {
       p = p.wrapper;
