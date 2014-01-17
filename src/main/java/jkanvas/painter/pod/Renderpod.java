@@ -1,4 +1,4 @@
-package jkanvas.painter;
+package jkanvas.painter.pod;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -10,6 +10,9 @@ import java.util.Objects;
 
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
+import jkanvas.animation.AnimationList;
+import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderpassPainter;
 
 /**
  * A thin wrapper around a render pass. Thin wrapper do ignore each other
@@ -74,6 +77,15 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
       p = p.wrapper;
     }
     return p.pass;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The parent pod or <code>null</code> if this is the final pod.
+   */
+  public Renderpod<T> getParentPod() {
+    return wrapper;
   }
 
   /**
@@ -200,10 +212,15 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public final void processMessage(final String[] ids, final String msg) {
+  public void processMessage(final String[] ids, final String msg) {
     super.processMessage(ids, msg);
-    final Renderpass pass = list.get(0);
-    pass.processMessage(ids, msg);
+    RenderpassPainter.processMessage(list, ids, msg);
+  }
+
+  @Override
+  public void setAnimationList(final AnimationList al) {
+    super.setAnimationList(al);
+    list.get(0).setAnimationList(al);
   }
 
 }

@@ -1,4 +1,4 @@
-package jkanvas.groups;
+package jkanvas.painter.groups;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

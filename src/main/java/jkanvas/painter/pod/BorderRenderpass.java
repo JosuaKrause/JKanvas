@@ -1,4 +1,4 @@
-package jkanvas.painter;
+package jkanvas.painter.pod;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
+import jkanvas.painter.Renderpass;
 
 /**
  * Shows borders of render passes.

@@ -1,4 +1,4 @@
-package jkanvas.groups;
+package jkanvas.painter.groups;
 
 import static jkanvas.util.ArrayUtil.*;
 

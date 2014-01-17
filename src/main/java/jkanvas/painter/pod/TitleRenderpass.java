@@ -1,4 +1,4 @@
-package jkanvas.painter;
+package jkanvas.painter.pod;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
+import jkanvas.painter.Renderpass;
 import jkanvas.util.StringDrawer;
 import jkanvas.util.StringDrawer.Orientation;
 
@@ -116,6 +117,33 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
    */
   public String getTitle(final int num) {
     return titles[num];
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return All titles.
+   */
+  public String[] getTitles() {
+    return titles.clone();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The text height.
+   */
+  public double getTextHeight() {
+    return textHeight;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The space.
+   */
+  public double getSpace() {
+    return space;
   }
 
   /**

@@ -18,8 +18,6 @@ import jkanvas.RefreshManager;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
-import jkanvas.groups.LinearGroup;
-import jkanvas.groups.LinearGroup.Alignment;
 import jkanvas.matrix.AbstractQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
 import jkanvas.matrix.DefaultCellRealizer;
@@ -27,6 +25,8 @@ import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
+import jkanvas.painter.groups.LinearGroup;
+import jkanvas.painter.groups.LinearGroup.Alignment;
 import jkanvas.util.Screenshot;
 
 /**

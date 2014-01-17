@@ -9,7 +9,7 @@ import java.util.List;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
-import jkanvas.groups.LinearGroup;
+import jkanvas.painter.groups.LinearGroup;
 import jkanvas.table.DataTable;
 import jkanvas.table.Feature;
 import jkanvas.table.LineMapper;

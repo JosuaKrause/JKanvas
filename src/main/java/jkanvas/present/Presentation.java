@@ -4,11 +4,11 @@ import java.awt.geom.Rectangle2D;
 
 import jkanvas.Canvas;
 import jkanvas.animation.AnimationTiming;
-import jkanvas.groups.LinearGroup;
 import jkanvas.io.json.JSONElement;
 import jkanvas.io.json.JSONKeyBindings;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
+import jkanvas.painter.groups.LinearGroup;
 
 /**
  * A presentation containing slides.
