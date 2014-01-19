@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -115,13 +117,13 @@ public abstract class CoRoutine<T> implements Iterator<T> {
     }
   }
 
+  /** The thread pool. */
+  private static final ExecutorService POOL = Executors.newCachedThreadPool();
+
   /** Ensures that the coroutine is started. */
   private void ensureStarted() {
     if(runner == null) return;
-    final Thread t = new Thread(runner);
-    t.setDaemon(true);
-    t.start();
-    fetchNext();
+    POOL.execute(runner);
     runner = null;
   }
 

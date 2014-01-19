@@ -35,7 +35,7 @@ public class CoRoutineBenchmark {
 
     @Override
     public String getConfigurationString() {
-      return "thread[count: " + numberOfItems + "]";
+      return "pool[count: " + numberOfItems + "]";
     }
 
     @Override
@@ -115,6 +115,19 @@ public class CoRoutineBenchmark {
    * | thread[count: 10000]   |     7.259980 ms | +/-     1.352968 ms |
    * | thread[count: 1000000] |   860.554820 ms | +/-    73.994132 ms |
    * +------------------------+-----------------+---------------------+
+   * ==================================================================
+   * coroutine with thread pool and linked blocking queue
+   * ==================================================================
+   * +----------------------+-----------------+---------------------+
+   * | configuration        |            mean |              stddev |
+   * +----------------------+-----------------+---------------------+
+   * | pool[count: 0]       |     0.011140 ms | +/-     0.004015 ms |
+   * | pool[count: 1]       |     0.009400 ms | +/-     0.001604 ms |
+   * | pool[count: 100]     |     0.132200 ms | +/-     0.324306 ms |
+   * | pool[count: 2000]    |     0.748940 ms | +/-     1.488631 ms |
+   * | pool[count: 10000]   |     0.159240 ms | +/-     0.103668 ms |
+   * | pool[count: 1000000] |     0.135580 ms | +/-     0.065989 ms |
+   * +----------------------+-----------------+---------------------+
    * </pre>
    */
 
