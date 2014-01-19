@@ -96,16 +96,16 @@ public class CoRoutineBenchmark {
    * +------------------------+-----------------+---------------------+
    * | configuration          |            mean |              stddev |
    * +------------------------+-----------------+---------------------+
-   * | thread[count: 0]       |     0.111140 ms | +/-     0.023123 ms |
-   * | thread[count: 1]       |     0.111560 ms | +/-     0.014795 ms |
-   * | thread[count: 100]     |     0.637260 ms | +/-     0.144068 ms |
-   * | thread[count: 2000]    |     1.520080 ms | +/-     0.354738 ms |
-   * | thread[count: 10000]   |     6.049480 ms | +/-     1.572290 ms |
-   * | thread[count: 1000000] |   755.040160 ms | +/-    61.527500 ms |
+   * | thread[count: 0]       |     0.115360 ms | +/-     0.018939 ms |
+   * | thread[count: 1]       |     0.110580 ms | +/-     0.010861 ms |
+   * | thread[count: 100]     |     0.621280 ms | +/-     0.121569 ms |
+   * | thread[count: 2000]    |     1.474180 ms | +/-     0.455673 ms |
+   * | thread[count: 10000]   |     7.514260 ms | +/-     1.647875 ms |
+   * | thread[count: 1000000] |   895.383720 ms | +/-    86.177997 ms |
    * +------------------------+-----------------+---------------------+
    * ==================================================================
    * coroutine with thread and array blocking queue
-   * (Note that, although the times are very similar, the array
+   * (Note that, although the times are sometimes better, the array
    * blocking queue always has a fixed amount of space requirement)
    * ==================================================================
    * | thread[count: 0]       |     0.109800 ms | +/-     0.017158 ms |

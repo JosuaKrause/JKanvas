@@ -3,8 +3,8 @@ package jkanvas.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Iterates over items that are generated on the fly. Generated items are freed
@@ -39,7 +39,7 @@ public abstract class CoRoutine<T> implements Iterator<T> {
    * @param maxCapacity The maximal capacity of the temporary storage.
    */
   public CoRoutine(final int maxCapacity) {
-    queue = new ArrayBlockingQueue<>(maxCapacity);
+    queue = new LinkedBlockingQueue<>(maxCapacity);
     lock = new Object();
     runner = new Runnable() {
 
