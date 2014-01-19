@@ -7,6 +7,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Iterates over items that are generated on the fly. Generated items are freed
@@ -119,6 +121,24 @@ public abstract class CoRoutine<T> implements Iterator<T> {
 
   /** The thread pool. */
   private static final ExecutorService POOL = Executors.newCachedThreadPool();
+
+  static {
+    // make threads daemons so they won't prevent the program from terminating
+    if(POOL instanceof ThreadPoolExecutor) {
+      final ThreadPoolExecutor p = ((ThreadPoolExecutor) POOL);
+      final ThreadFactory factory = p.getThreadFactory();
+      p.setThreadFactory(new ThreadFactory() {
+
+        @Override
+        public Thread newThread(final Runnable r) {
+          final Thread t = factory.newThread(r);
+          t.setDaemon(true);
+          return t;
+        }
+
+      });
+    }
+  }
 
   /** Ensures that the coroutine is started. */
   private void ensureStarted() {
