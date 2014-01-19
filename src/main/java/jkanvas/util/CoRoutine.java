@@ -124,6 +124,7 @@ public abstract class CoRoutine<T> implements Iterator<T> {
   private void ensureStarted() {
     if(runner == null) return;
     POOL.execute(runner);
+    fetchNext();
     runner = null;
   }
 

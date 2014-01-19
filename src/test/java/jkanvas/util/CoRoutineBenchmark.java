@@ -51,6 +51,10 @@ public class CoRoutineBenchmark {
             yield(cur);
             s += cur;
           }
+          if(s == 0) {
+            ++s;
+            yield(1);
+          }
           sum.set(s);
           yield(0);
         }
@@ -60,6 +64,8 @@ public class CoRoutineBenchmark {
       while(routine.hasNext()) {
         ownSum += routine.next();
       }
+      if(ownSum == 0 || sum.get() == 0) throw new IllegalStateException(
+          "some value is 0");
       if(ownSum != sum.get()) throw new IllegalStateException(
           "sums must be equal: " + ownSum + " != " + sum);
     }
@@ -121,25 +127,25 @@ public class CoRoutineBenchmark {
    * +----------------------+-----------------+---------------------+
    * | configuration        |            mean |              stddev |
    * +----------------------+-----------------+---------------------+
-   * | pool[count: 0]       |     0.011140 ms | +/-     0.004015 ms |
-   * | pool[count: 1]       |     0.009400 ms | +/-     0.001604 ms |
-   * | pool[count: 100]     |     0.132200 ms | +/-     0.324306 ms |
-   * | pool[count: 2000]    |     0.748940 ms | +/-     1.488631 ms |
-   * | pool[count: 10000]   |     0.159240 ms | +/-     0.103668 ms |
-   * | pool[count: 1000000] |     0.135580 ms | +/-     0.065989 ms |
+   * | pool[count: 0]       |     0.046980 ms | +/-     0.012880 ms |
+   * | pool[count: 1]       |     0.039740 ms | +/-     0.011835 ms |
+   * | pool[count: 100]     |     0.491260 ms | +/-     0.158098 ms |
+   * | pool[count: 2000]    |     1.325580 ms | +/-     0.303864 ms |
+   * | pool[count: 10000]   |     6.818480 ms | +/-     0.985133 ms |
+   * | pool[count: 1000000] |   841.330740 ms | +/-    57.272445 ms |
    * +----------------------+-----------------+---------------------+
    * ==================================================================
-   * coroutine with thread pool and linked blocking queue
+   * coroutine with thread pool and array blocking queue
    * ==================================================================
    * +----------------------+-----------------+---------------------+
    * | configuration        |            mean |              stddev |
    * +----------------------+-----------------+---------------------+
-   * | pool[count: 0]       |     0.010560 ms | +/-     0.003494 ms |
-   * | pool[count: 1]       |     0.010020 ms | +/-     0.001720 ms |
-   * | pool[count: 100]     |     0.143280 ms | +/-     0.322088 ms |
-   * | pool[count: 2000]    |     0.870300 ms | +/-     1.771968 ms |
-   * | pool[count: 10000]   |     0.147780 ms | +/-     0.111337 ms |
-   * | pool[count: 1000000] |     0.145120 ms | +/-     0.099671 ms |
+   * | pool[count: 0]       |     0.063680 ms | +/-     0.036240 ms |
+   * | pool[count: 1]       |     0.040520 ms | +/-     0.007833 ms |
+   * | pool[count: 100]     |     0.444560 ms | +/-     0.129575 ms |
+   * | pool[count: 2000]    |     1.340540 ms | +/-     0.470384 ms |
+   * | pool[count: 10000]   |     7.330880 ms | +/-     1.735762 ms |
+   * | pool[count: 1000000] |   902.617580 ms | +/-    87.604299 ms |
    * +----------------------+-----------------+---------------------+
    * </pre>
    */
