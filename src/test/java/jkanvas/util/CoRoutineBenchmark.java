@@ -90,9 +90,9 @@ public class CoRoutineBenchmark {
    * 2.3 GHz Intel Core i7
    * 8GB Ram 1600 MHz DDR3
    * no VM arguments
-   * =============================
+   * ==================================================================
    * coroutine with thread and linked blocking queue
-   * =============================
+   * ==================================================================
    * +------------------------+-----------------+---------------------+
    * | configuration          |            mean |              stddev |
    * +------------------------+-----------------+---------------------+
@@ -102,6 +102,18 @@ public class CoRoutineBenchmark {
    * | thread[count: 2000]    |     1.520080 ms | +/-     0.354738 ms |
    * | thread[count: 10000]   |     6.049480 ms | +/-     1.572290 ms |
    * | thread[count: 1000000] |   755.040160 ms | +/-    61.527500 ms |
+   * +------------------------+-----------------+---------------------+
+   * ==================================================================
+   * coroutine with thread and array blocking queue
+   * (Note that, although the times are very similar, the array
+   * blocking queue always has a fixed amount of space requirement)
+   * ==================================================================
+   * | thread[count: 0]       |     0.109800 ms | +/-     0.017158 ms |
+   * | thread[count: 1]       |     0.106480 ms | +/-     0.009314 ms |
+   * | thread[count: 100]     |     0.600560 ms | +/-     0.170556 ms |
+   * | thread[count: 2000]    |     1.373600 ms | +/-     0.480028 ms |
+   * | thread[count: 10000]   |     7.259980 ms | +/-     1.352968 ms |
+   * | thread[count: 1000000] |   860.554820 ms | +/-    73.994132 ms |
    * +------------------------+-----------------+---------------------+
    * </pre>
    */
