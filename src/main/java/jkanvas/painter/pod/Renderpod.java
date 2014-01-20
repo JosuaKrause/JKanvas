@@ -1,4 +1,4 @@
-package jkanvas.painter;
+package jkanvas.painter.pod;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -8,11 +8,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.SwingUtilities;
-
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
-import jkanvas.animation.AnimationTiming;
+import jkanvas.animation.AnimationList;
+import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderpassPainter;
 
 /**
  * A thin wrapper around a render pass. Thin wrapper do ignore each other
@@ -21,7 +21,7 @@ import jkanvas.animation.AnimationTiming;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
-public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Renderpass {
+public abstract class Renderpod<T extends Renderpass> extends Renderpass {
 
   /** The render pass in a list for easier handling. */
   private final List<Renderpass> list;
@@ -31,7 +31,7 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    */
   private final T pass;
   /** Another wrapper if render pass is <code>null</code>. */
-  private final ThinWrapperRenderpass<T> wrapper;
+  private final Renderpod<T> wrapper;
 
   /**
    * Creates a thin wrapper around the given render pass. You may set the offset
@@ -40,9 +40,9 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    * 
    * @param wrap The render pass to wrap.
    */
-  public ThinWrapperRenderpass(final T wrap) {
-    if(wrap instanceof ThinWrapperRenderpass) {
-      wrapper = (ThinWrapperRenderpass<T>) Objects.requireNonNull(wrap);
+  public Renderpod(final T wrap) {
+    if(wrap instanceof Renderpod) {
+      wrapper = (Renderpod<T>) Objects.requireNonNull(wrap);
       pass = null;
     } else {
       pass = Objects.requireNonNull(wrap);
@@ -59,7 +59,7 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    * 
    * @param wrap The wrapper to wrap.
    */
-  public ThinWrapperRenderpass(final ThinWrapperRenderpass<T> wrap) {
+  public Renderpod(final Renderpod<T> wrap) {
     wrapper = Objects.requireNonNull(wrap);
     wrapper.setParent(this);
     list = Collections.singletonList((Renderpass) wrapper);
@@ -71,12 +71,21 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
    * 
    * @return Gets the innermost wrapped render pass.
    */
-  public T getWrapRenderpass() {
-    ThinWrapperRenderpass<T> p = this;
+  public T unwrap() {
+    Renderpod<T> p = this;
     while(p.wrapper != null) {
       p = p.wrapper;
     }
     return p.pass;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The parent pod or <code>null</code> if this is the final pod.
+   */
+  public Renderpod<T> getParentPod() {
+    return wrapper;
   }
 
   /**
@@ -98,7 +107,7 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
   protected final void getInnerBoundingBox(final Rectangle2D bbox) {
     double x = 0;
     double y = 0;
-    ThinWrapperRenderpass<T> t = this;
+    Renderpod<T> t = this;
     while(t.pass == null) {
       t = t.wrapper;
       x += t.getOffsetX();
@@ -146,13 +155,11 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
   }
 
   @Override
-  public final boolean doubleClick(final Camera cam, final Point2D position,
-      final MouseEvent e) {
+  public final boolean doubleClick(
+      final Camera cam, final Point2D position, final MouseEvent e) {
     if(RenderpassPainter.doubleClick(list, cam, position, e)) return true;
-    if(!USE_DOUBLE_CLICK_DEFAULT) return false;
-    if(!SwingUtilities.isLeftMouseButton(e)) return false;
-    cam.toView(this, AnimationTiming.SMOOTH, null, true);
-    return true;
+    if(USE_DOUBLE_CLICK_DEFAULT) return defaultDoubleClick(this, cam, e);
+    return false;
   }
 
   @Override
@@ -205,10 +212,15 @@ public abstract class ThinWrapperRenderpass<T extends Renderpass> extends Render
   }
 
   @Override
-  public final void processMessage(final String[] ids, final String msg) {
+  public void processMessage(final String[] ids, final String msg) {
     super.processMessage(ids, msg);
-    final Renderpass pass = list.get(0);
-    pass.processMessage(ids, msg);
+    RenderpassPainter.processMessage(list, ids, msg);
+  }
+
+  @Override
+  public void setAnimationList(final AnimationList al) {
+    super.setAnimationList(al);
+    list.get(0).setAnimationList(al);
   }
 
 }

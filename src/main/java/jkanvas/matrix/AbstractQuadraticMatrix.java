@@ -95,6 +95,19 @@ public abstract class AbstractQuadraticMatrix<T> implements MutableQuadraticMatr
     return names[row] == null ? "" : names[row];
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The names of the matrix rows / columns.
+   */
+  public String[] getNames() {
+    final String[] names = new String[size()];
+    for(int i = 0; i < names.length; ++i) {
+      names[i] = getName(i);
+    }
+    return names;
+  }
+
   @Override
   public void setName(final int row, final String name) {
     names[row] = name;

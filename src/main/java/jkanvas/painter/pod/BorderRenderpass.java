@@ -1,4 +1,4 @@
-package jkanvas.painter;
+package jkanvas.painter.pod;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
+import jkanvas.painter.Renderpass;
 
 /**
  * Shows borders of render passes.
@@ -13,7 +14,7 @@ import jkanvas.KanvasContext;
  * @author Joschi <josua.krause@googlemail.com>
  * @param <T> The innermost wrapped type.
  */
-public class BorderRenderpass<T extends Renderpass> extends ThinWrapperRenderpass<T> {
+public class BorderRenderpass<T extends Renderpass> extends Renderpod<T> {
 
   /** The stroke width. */
   private double width;
@@ -49,7 +50,7 @@ public class BorderRenderpass<T extends Renderpass> extends ThinWrapperRenderpas
    * @param border The border color or <code>null</code> if transparent.
    * @param width The stroke width.
    */
-  public BorderRenderpass(final ThinWrapperRenderpass<T> pass,
+  public BorderRenderpass(final Renderpod<T> pass,
       final Color border, final double width) {
     super(pass);
     this.border = border;

@@ -1,11 +1,13 @@
 package jkanvas.io.json;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A JSON element.
@@ -117,28 +119,31 @@ public class JSONElement implements Iterable<JSONElement> {
    */
   private void expectType(final JSONType type) {
     if(type() != type) throw new IllegalStateException(
-        "wrong type: " + type + "! expected: " + type());
+        "wrong type: " + type + " expected: " + type());
   }
 
   /**
-   * Expects an object. @throws IllegalStateException When the type is not
-   * correct.
+   * Expects an object.
+   * 
+   * @throws IllegalStateException When the type is not correct.
    */
   public void expectObject() {
     expectType(JSONType.OBJECT);
   }
 
   /**
-   * Expects an array. @throws IllegalStateException When the type is not
-   * correct.
+   * Expects an array.
+   * 
+   * @throws IllegalStateException When the type is not correct.
    */
   public void expectArray() {
     expectType(JSONType.ARRAY);
   }
 
   /**
-   * Expects a string. @throws IllegalStateException When the type is not
-   * correct.
+   * Expects a string.
+   * 
+   * @throws IllegalStateException When the type is not correct.
    */
   public void expectString() {
     expectType(JSONType.STRING);
@@ -233,6 +238,17 @@ public class JSONElement implements Iterable<JSONElement> {
   public JSONElement getValue(final String key) {
     if(object == null) throw new IllegalStateException("not an object");
     return object.get(key);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The keys in this object.
+   * @throws IllegalStateException If the type is not right.
+   */
+  public Set<String> getKeys() {
+    if(object == null) throw new IllegalStateException("not an object");
+    return Collections.unmodifiableSet(object.keySet());
   }
 
   /**

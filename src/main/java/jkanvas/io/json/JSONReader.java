@@ -29,7 +29,7 @@ public class JSONReader {
   }
 
   /**
-   * Getter.
+   * Getter. This method automatically closes the input stream.
    * 
    * @return The root element of the JSON document.
    * @throws IOException I/O Exception.
@@ -38,8 +38,18 @@ public class JSONReader {
     if(r != null) {
       root = read(null);
       eatWhitespace();
-      if(!isEOF()) throw new IllegalStateException(
-          "unexpected character: '" + next() + "'");
+      if(!isEOF()) {
+        final char c = next();
+        try {
+          if(r != null) {
+            r.close();
+            r = null;
+          }
+          throw new IllegalStateException("unexpected character: '" + c + "'");
+        } catch(final IOException e) {
+          throw new IllegalStateException("EOF not reached", e);
+        }
+      }
     }
     return root;
   }
@@ -286,7 +296,7 @@ public class JSONReader {
   public static void main(final String[] args) throws IOException {
     final String s = "{" +
         " \"foo\": 3, " +
-        " \"bar\"   :\"text\"     ,\"baz\":[\"a\",3]," +
+        " \"bar\"   :\"text\"     ,\"baz\":[\"a\",3], \"obj\": {}" +
         "}";
     System.out.println("input:");
     System.out.println(s);

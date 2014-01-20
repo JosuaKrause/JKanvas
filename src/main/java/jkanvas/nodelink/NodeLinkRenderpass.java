@@ -191,7 +191,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends Renderpass {
 
   @Override
   public void setAnimationList(final AnimationList list) {
-    this.list = list;
+    this.list = Objects.requireNonNull(list);
   }
 
   /**

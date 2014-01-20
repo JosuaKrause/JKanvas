@@ -5,32 +5,30 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import jkanvas.Camera;
 import jkanvas.Canvas;
 import jkanvas.RefreshManager;
-import jkanvas.SimpleRefreshManager;
-import jkanvas.animation.AnimatedPainter;
-import jkanvas.animation.AnimationTiming;
+import jkanvas.io.json.JSONManager;
+import jkanvas.io.json.JSONSetup;
 import jkanvas.matrix.AbstractQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
 import jkanvas.matrix.DefaultCellRealizer;
 import jkanvas.matrix.MatrixPosition;
 import jkanvas.matrix.MatrixRenderpass;
-import jkanvas.matrix.MutableQuadraticMatrix;
 import jkanvas.matrix.QuadraticMatrix;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
-import jkanvas.painter.TitleRenderpass;
-import jkanvas.painter.TitleRenderpass.Position;
 import jkanvas.selection.AbstractSelector;
 import jkanvas.selection.RectangleSelection;
 import jkanvas.selection.Selectable;
-import jkanvas.util.StringDrawer.Orientation;
+import jkanvas.util.Resource;
 
 /**
  * An example show-casing the painting of {@link QuadraticMatrix quadratic
@@ -113,9 +111,10 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
    * Starts the example application.
    * 
    * @param args No arguments.
+   * @throws IOException I/O Exception.
    */
-  public static void main(final String[] args) {
-    final MutableQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(9) {
+  public static void main(final String[] args) throws IOException {
+    final AbstractQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(9) {
 
       @Override
       protected Double[][] createMatrix(final int size) {
@@ -135,6 +134,15 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
       matrix.setWidth(i, 60); // 20 + Math.random() * 80);
       matrix.setHeight(i, 60); // 20 + Math.random() * 80);
     }
+    final String[] odds = matrix.getNames();
+    final String[] evens = matrix.getNames();
+    for(int i = 0; i < odds.length; ++i) {
+      if(i % 2 == 0) {
+        odds[i] = "";
+      } else {
+        evens[i] = "";
+      }
+    }
     final CellRealizer<QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
@@ -146,36 +154,15 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
       }
 
     };
-    final RefreshManager manager = new SimpleRefreshManager();
-    // FIXME animated painter because of initial reset -- fix in ExampleUtil #28
-    final RenderpassPainter p = new AnimatedPainter();
-    final MatrixMain matrixMain = new MatrixMain(matrix, cellColor, manager);
-    final String[] odds = matrixMain.getNames();
-    final String[] evens = matrixMain.getNames();
-    for(int i = 0; i < odds.length; ++i) {
-      if(i % 2 == 0) {
-        odds[i] = "";
-      } else {
-        evens[i] = "";
-      }
-    }
-    final TitleRenderpass<MatrixMain> top =
-        new TitleRenderpass<>(matrixMain, "", 40, 5);
-    top.setOrientation(Orientation.DIAGONAL);
-    top.setTitles(evens);
-    final TitleRenderpass<MatrixMain> left = new TitleRenderpass<>(top, "", 40, 5);
-    left.setPosition(Position.LEFT);
-    left.setTitles(evens);
-    final TitleRenderpass<MatrixMain> right = new TitleRenderpass<>(left, "", 40, 5);
-    right.setPosition(Position.RIGHT);
-    right.setTitles(odds);
-    final TitleRenderpass<MatrixMain> bottom = new TitleRenderpass<>(right, "", 40, 5);
-    bottom.setPosition(Position.BELOW);
-    bottom.setOrientation(Orientation.VERTICAL);
-    bottom.setTitles(odds);
-    p.addPass(bottom);
-    final Canvas c = new Canvas(p, true, 500, 500);
+    final JSONManager mng = new JSONManager();
+    mng.addRawId("matrix", matrix);
+    mng.addRawId("cell", cellColor);
+    mng.addRawId("odds", odds);
+    mng.addRawId("evens", evens);
+    final JFrame frame = new JFrame("Matrix");
+    JSONSetup.setupCanvas(frame, mng, Resource.getFor("matrix.json"), false, true);
     // add arbitrary shape selection
+    final Canvas c = mng.getForId("canvas", Canvas.class);
     final AbstractSelector sel = new RectangleSelection(c,
         // final AbstractSelector sel = new LassoSelection(c,
         new Color(5, 113, 176, 200)) {
@@ -186,16 +173,10 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
       }
 
     };
-    sel.addSelectable(matrixMain);
+    sel.addSelectable(mng.getForId("main", Selectable.class));
+    final RenderpassPainter p = mng.getForId("painter", RenderpassPainter.class);
     p.addHUDPass(sel);
-    // let RefreshManager refresh the Canvas
-    manager.addRefreshable(c);
-    // configure the Canvas
-    // c.setMargin(40);
-    ExampleUtil.setupCanvas("Matrix", c, p, true, false, true, false);
-    final Rectangle2D box = new Rectangle2D.Double();
-    p.getBoundingBox(box);
-    c.setRestriction(box, AnimationTiming.NO_ANIMATION);
+    frame.setVisible(true);
   }
 
 }

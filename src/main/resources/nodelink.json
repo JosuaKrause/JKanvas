@@ -1,0 +1,28 @@
+{
+    "template": "animated_canvas",
+    "keys": [
+        {
+            "key": "1",
+            "msg": "nl#random",
+            "help": "Lay out nodes randomly once",
+        },
+        {
+            "key": "2",
+            "msg": "nl#circle",
+            "help": "Lay out nodes in a circle",
+        },
+        {
+            "key": "3",
+            "msg": "nl#force",
+            "help": "Force directed layout",
+        },
+        {
+            "key": "4",
+            "msg": "nl#bounce",
+            "help": "Bounce layout",
+        },
+    ],
+    "import": [
+        "std.json",
+    ],
+}
