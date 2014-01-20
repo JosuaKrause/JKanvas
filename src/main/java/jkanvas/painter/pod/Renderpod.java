@@ -35,7 +35,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
 
   /**
    * Creates a thin wrapper around the given render pass. You may set the offset
-   * of the render pass via {@link #setWrapOffset(double, double)} after the
+   * of the render pass via {@link #setChildOffset(double, double)} after the
    * initialization.
    * 
    * @param wrap The render pass to wrap.
@@ -54,7 +54,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
 
   /**
    * Creates a thin wrapper around the given render pass. You may set the offset
-   * of the render pass via {@link #setWrapOffset(double, double)} after the
+   * of the render pass via {@link #setChildOffset(double, double)} after the
    * initialization.
    * 
    * @param wrap The wrapper to wrap.
@@ -82,9 +82,57 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   /**
    * Getter.
    * 
+   * @return The x offset of the inner render pass in relation to the parent of
+   *         this render pod.
+   */
+  public double unwrapOffsetX() {
+    double x = 0;
+    Renderpod<T> p = this;
+    while(p.wrapper != null) {
+      p = p.wrapper;
+      x += p.getOffsetX();
+    }
+    final Renderpass rp = p.list.get(0);
+    final Renderpass pass = list.get(0);
+    x += rp.getOffsetX() - pass.getOffsetX();
+    return x + getOffsetX();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The y offset of the inner render pass in relation to the parent of
+   *         this render pod.
+   */
+  public double unwrapOffsetY() {
+    double y = 0;
+    Renderpod<T> p = this;
+    while(p.wrapper != null) {
+      p = p.wrapper;
+      y += p.getOffsetY();
+    }
+    final Renderpass rp = p.list.get(0);
+    final Renderpass pass = list.get(0);
+    y += rp.getOffsetY() - pass.getOffsetY();
+    return y + getOffsetY();
+  }
+
+  /**
+   * Computes the bounding box of the inner render pass in relation to the
+   * parent of this render pod.
+   * 
+   * @param bbox The bounding box to store the result in.
+   */
+  public void unwrapBoundingBox(final Rectangle2D bbox) {
+    unwrap().getBoundingBox(bbox);
+  }
+
+  /**
+   * Getter.
+   * 
    * @return The parent pod or <code>null</code> if this is the final pod.
    */
-  public Renderpod<T> getParentPod() {
+  public Renderpod<T> getChildPod() {
     return wrapper;
   }
 
@@ -94,7 +142,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
    * @param x The x offset.
    * @param y The y offset.
    */
-  protected final void setWrapOffset(final double x, final double y) {
+  protected final void setChildOffset(final double x, final double y) {
     final Renderpass pass = list.get(0);
     pass.setOffset(x, y);
   }

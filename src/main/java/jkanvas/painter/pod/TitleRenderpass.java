@@ -64,7 +64,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     titles = new String[] { Objects.requireNonNull(title)};
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
-    setWrapOffset(0, space + textHeight);
+    setChildOffset(0, space + textHeight);
   }
 
   /**
@@ -83,7 +83,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     titles = new String[] { Objects.requireNonNull(title)};
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
-    setWrapOffset(0, space + textHeight);
+    setChildOffset(0, space + textHeight);
   }
 
   /**
@@ -165,14 +165,14 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     final double add = textHeight + space;
     switch(pos) {
       case LEFT:
-        setWrapOffset(add, 0);
+        setChildOffset(add, 0);
         break;
       case RIGHT:
       case BELOW:
-        setWrapOffset(0, 0);
+        setChildOffset(0, 0);
         break;
       case ABOVE:
-        setWrapOffset(0, add);
+        setChildOffset(0, add);
         break;
       default:
         throw new AssertionError();

@@ -94,7 +94,7 @@ public class BorderRenderpass<T extends Renderpass> extends Renderpod<T> {
   }
 
   @Override
-  public void drawOwn(final Graphics2D g, final KanvasContext ctx) {
+  protected void drawOwn(final Graphics2D g, final KanvasContext ctx) {
     if(border == null) return;
     final Rectangle2D box = new Rectangle2D.Double();
     getInnerBoundingBox(box);
