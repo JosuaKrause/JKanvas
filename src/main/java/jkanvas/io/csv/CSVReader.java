@@ -8,9 +8,8 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
+import jkanvas.util.CoRoutine;
 import jkanvas.util.Resource;
 
 /**
@@ -240,8 +239,7 @@ public class CSVReader {
    * @return A lazy iterator.
    */
   public static final Iterator<CSVRow> readRows(final Reader r, final CSVReader reader) {
-    final Object lock = new Object();
-    return new Iterator<CSVRow>() {
+    return new CoRoutine<CSVRow>() {
 
       private final CSVHandler handler = new CSVAdapter() {
 
@@ -268,14 +266,7 @@ public class CSVReader {
         @Override
         public void row(final CSVContext ctx) {
           if(current != null) {
-            try {
-              rows.put(current);
-              synchronized(lock) {
-                lock.notifyAll();
-              }
-            } catch(final InterruptedException e) {
-              Thread.currentThread().interrupt();
-            }
+            yield(current);
             current = null;
           }
         }
@@ -283,76 +274,30 @@ public class CSVReader {
         @Override
         public void end(final CSVContext ctx) {
           row(ctx);
-          finish = true;
-          synchronized(lock) {
-            lock.notifyAll();
-          }
+          endRoutine();
         }
 
       };
 
-      // TODO maybe use something different than a blocking queue
-      protected final BlockingQueue<CSVRow> rows = new LinkedBlockingQueue<CSVRow>(2000);
-
-      protected volatile boolean finish = false;
-
-      {
-        final CSVHandler h = handler;
-        final Thread runner = new Thread() {
-
-          @Override
-          public void run() {
-            try {
-              reader.setHandler(h);
-              reader.read(r);
-              r.close();
-            } catch(final IOException e) {
-              e.printStackTrace();
-            } finally {
-              finish = true;
-              synchronized(lock) {
-                lock.notifyAll();
-              }
-            }
-          }
-
-        };
-        runner.setDaemon(true);
-        runner.start();
-        fetchNext();
+      @Override
+      public void yield(final CSVRow row) {
+        super.yield(row);
       }
 
-      private CSVRow cur;
+      @Override
+      public void endRoutine() {
+        super.endRoutine();
+      }
 
-      private void fetchNext() {
-        while((cur = rows.poll()) == null) {
-          if(finish) return;
-          try {
-            synchronized(lock) {
-              lock.wait(100);
-            }
-          } catch(final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return;
-          }
+      @Override
+      protected void compute() {
+        try {
+          reader.setHandler(handler);
+          reader.read(r);
+          r.close();
+        } catch(final IOException e) {
+          e.printStackTrace();
         }
-      }
-
-      @Override
-      public boolean hasNext() {
-        return cur != null;
-      }
-
-      @Override
-      public CSVRow next() {
-        final CSVRow row = cur;
-        fetchNext();
-        return row;
-      }
-
-      @Override
-      public void remove() {
-        throw new UnsupportedOperationException();
       }
 
     };
