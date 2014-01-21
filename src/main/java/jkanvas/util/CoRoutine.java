@@ -31,6 +31,10 @@ public abstract class CoRoutine<T> implements Iterator<T> {
   private volatile boolean finish;
   /** A reference to the producer before it is started. */
   private Runnable runner;
+  /** The exception if encountered. */
+  private Exception except;
+  /** The worker thread during the run. */
+  private Thread worker;
 
   /** Creates a coroutine with default settings. */
   public CoRoutine() {
@@ -49,10 +53,17 @@ public abstract class CoRoutine<T> implements Iterator<T> {
 
       @Override
       public void run() {
+        setThread(Thread.currentThread());
         try {
-          compute();
+          try {
+            compute();
+          } finally {
+            endRoutine();
+          }
+        } catch(final Exception e) {
+          setException(e);
         } finally {
-          endRoutine();
+          setThread(null);
         }
       }
 
@@ -67,13 +78,29 @@ public abstract class CoRoutine<T> implements Iterator<T> {
   protected abstract void compute();
 
   /**
+   * Setter.
+   * 
+   * @param worker The worker thread.
+   */
+  void setThread(final Thread worker) {
+    this.worker = worker;
+  }
+
+  /** Ensures that the calling method is accessed from the worker thread. */
+  protected final void ensureCorrectThread() {
+    if(worker != Thread.currentThread()) throw new IllegalStateException(
+        "attempt to access coroutine only method");
+  }
+
+  /**
    * Enqueues an item to be iterated over. This method should not be called from
    * outside of the {@link #compute()} method.
    * 
    * @param obj The item which must not be <code>null</code>.
    * @throws IllegalStateException If the coroutine has already finished.
    */
-  protected void yield(final T obj) {
+  public final void yield(final T obj) {
+    ensureCorrectThread();
     if(finish) throw new IllegalStateException("cannot add items after end of coroutine");
     try {
       queue.put(Objects.requireNonNull(obj));
@@ -86,12 +113,26 @@ public abstract class CoRoutine<T> implements Iterator<T> {
   }
 
   /**
+   * Sets the exception that aborted the element creation. All elements in the
+   * buffer will be returned before the exception is actually thrown. After a
+   * call to this method no new elements can be added.
+   * 
+   * @param e The exception.
+   */
+  public final void setException(final Exception e) {
+    ensureCorrectThread();
+    except = e;
+    endRoutine();
+  }
+
+  /**
    * Ends the coroutine. Note that after this method is called no new elements
    * may be added. It is optional to call this method to signal the end of
    * elements. This method should not be called from outside of the
    * {@link #compute()} method.
    */
-  protected void endRoutine() {
+  public final void endRoutine() {
+    ensureCorrectThread();
     finish = true;
     synchronized(lock) {
       lock.notifyAll();
@@ -107,6 +148,8 @@ public abstract class CoRoutine<T> implements Iterator<T> {
   /** Fetches the next element. */
   private void fetchNext() {
     while((cur = queue.poll()) == null) {
+      if(except != null) throw new IllegalStateException(
+          "exception during element creation", except);
       if(finish) return;
       try {
         synchronized(lock) {
