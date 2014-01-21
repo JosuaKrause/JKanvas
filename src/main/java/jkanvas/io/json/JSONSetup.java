@@ -2,9 +2,7 @@ package jkanvas.io.json;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JFrame;
@@ -96,25 +94,13 @@ public final class JSONSetup {
     final Set<String> fields = new HashSet<>();
     fields.add("keys");
     final JSONManager mng = m != null ? m : new JSONManager();
-    // TODO enable recursive templates?
     fields.add("templates");
     if(el.hasValue("templates")) {
       final JSONElement tmpls = el.getValue("templates");
       addTemplates(mng, tmpls);
     }
-    // TODO enable recursive imports?
     fields.add("import");
-    if(el.hasValue("import")) {
-      final JSONElement imp = el.getValue("import");
-      imp.expectArray();
-      for(int i = 0; i < imp.size(); ++i) {
-        final JSONElement file = imp.getAt(i);
-        file.expectString();
-        final Resource r = Resource.getFor(file.string());
-        final JSONReader in = new JSONReader(r.reader());
-        addTemplates(mng, in.get());
-      }
-    }
+    readImports(new HashSet<String>(), el, mng);
     final RenderpassPainter rp;
     final AnimatedPainter ap;
     {
@@ -227,46 +213,7 @@ public final class JSONSetup {
       }
     }
     // ### interpret remaining fields ###
-    final ObjectCreator oc = new ObjectCreator() {
-
-      private final Map<String, JSONThunk> setters = new HashMap<>();
-
-      @Override
-      public boolean hasField(final String name) {
-        return setters.containsKey(name);
-      }
-
-      @Override
-      public void addField(final String name, final JSONThunk thunk) {
-        setters.put(name, thunk);
-      }
-
-      @Override
-      public void callSetters(final Object o) throws IOException {
-        JSONThunk.callSetters(o, setters);
-      }
-
-      @Override
-      public boolean hasType() {
-        return true;
-      }
-
-      @Override
-      public boolean hasConstructor() {
-        return true;
-      }
-
-      @Override
-      public void setType(final String type) throws IOException {
-        throw new UnsupportedOperationException();
-      }
-
-      @Override
-      public void setConstructor(final String args) {
-        throw new UnsupportedOperationException();
-      }
-
-    };
+    final ObjectCreator oc = new SimpleObjectCreator();
     JSONThunk.addFields(oc, el, mng, fields);
     // ### evaluating ###
     for(final JSONThunk p : passes) {
@@ -306,6 +253,35 @@ public final class JSONSetup {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
     return c;
+  }
+
+  /**
+   * Reads imports of an element.
+   * 
+   * @param alreadyImported The filenames that are already imported.
+   * @param el The element that has the import field.
+   * @param mng The JSON manager.
+   * @throws IOException I/O Exception.
+   */
+  private static void readImports(final Set<String> alreadyImported,
+      final JSONElement el, final JSONManager mng) throws IOException {
+    if(!el.hasValue("import")) return;
+    final JSONElement imp = el.getValue("import");
+    imp.expectArray();
+    for(int i = 0; i < imp.size(); ++i) {
+      final JSONElement file = imp.getAt(i);
+      file.expectString();
+      final String rName = file.string();
+      if(alreadyImported.contains(rName)) {
+        continue;
+      }
+      alreadyImported.add(rName);
+      final Resource r = Resource.getFor(rName);
+      final JSONReader in = new JSONReader(r.reader());
+      final JSONElement imported = in.get();
+      addTemplates(mng, imported);
+      readImports(alreadyImported, imported, mng);
+    }
   }
 
   /**
@@ -403,7 +379,13 @@ public final class JSONSetup {
    */
   public static void addTemplates(final JSONManager mng, final JSONElement tmpls) {
     tmpls.expectObject();
-    for(final String k : tmpls.getKeys()) {
+    loop: for(final String k : tmpls.getKeys()) {
+      switch(k) {
+        case "import":
+          continue loop;
+        case "templates":
+          throw new IllegalArgumentException("cannot define template called 'templates'");
+      }
       mng.addTemplate(k, tmpls.getValue(k));
     }
   }
