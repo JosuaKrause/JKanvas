@@ -33,6 +33,8 @@ public class JSONThunk implements ObjectCreator {
   private final String str;
   /** The thunk array or <code>null</code>. */
   private final JSONThunk[] arr;
+  /** The id if any. */
+  private final String id;
   /** The creation type of the thunk if it is not a simple string. */
   private Class<?> type;
   /** The actual object. */
@@ -47,9 +49,13 @@ public class JSONThunk implements ObjectCreator {
    * Creates a complex thunk.
    * 
    * @param mng The manager.
+   * @param id The id of the thunk if any. Must be non-<code>null</code> if
+   *          <code>hasId</code> is <code>true</code>.
+   * @param hasId Whether the thunk has an id.
    */
-  public JSONThunk(final JSONManager mng) {
+  public JSONThunk(final JSONManager mng, final String id, final boolean hasId) {
     this.mng = Objects.requireNonNull(mng);
+    this.id = hasId ? Objects.requireNonNull(id) : null;
     str = null;
     arr = null;
   }
@@ -64,6 +70,7 @@ public class JSONThunk implements ObjectCreator {
     this.mng = Objects.requireNonNull(mng);
     this.str = Objects.requireNonNull(str);
     arr = null;
+    id = null;
   }
 
   /**
@@ -76,6 +83,7 @@ public class JSONThunk implements ObjectCreator {
     this.mng = Objects.requireNonNull(mng);
     this.arr = Objects.requireNonNull(arr);
     str = null;
+    id = null;
   }
 
   /**
@@ -83,12 +91,23 @@ public class JSONThunk implements ObjectCreator {
    * 
    * @param obj The evaluated object.
    * @param mng The manager.
+   * @param id The id of the thunk. Must be non-<code>null</code>.
    */
-  JSONThunk(final Object obj, final JSONManager mng) {
+  JSONThunk(final Object obj, final JSONManager mng, final String id) {
     this.mng = Objects.requireNonNull(mng);
     this.obj = Objects.requireNonNull(obj);
+    this.id = Objects.requireNonNull(id);
     str = null;
     arr = null;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The id of the thunk or <code>null</code> if it has none.
+   */
+  public String getId() {
+    return id;
   }
 
   @Override
@@ -463,7 +482,7 @@ public class JSONThunk implements ObjectCreator {
     if(el.hasValue("id")) {
       thunk = mng.getForId(el.getString("id", null));
     } else {
-      thunk = new JSONThunk(mng);
+      thunk = new JSONThunk(mng, null, false);
     }
     addFields(thunk, el, mng, null);
     return thunk;
