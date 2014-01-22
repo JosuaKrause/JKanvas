@@ -2,9 +2,10 @@ package jkanvas.io.json;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
@@ -19,6 +20,7 @@ import jkanvas.painter.HUDRenderpass;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
+import jkanvas.util.CoRoutine;
 import jkanvas.util.Resource;
 
 /**
@@ -96,25 +98,14 @@ public final class JSONSetup {
     final Set<String> fields = new HashSet<>();
     fields.add("keys");
     final JSONManager mng = m != null ? m : new JSONManager();
-    // TODO enable recursive templates?
     fields.add("templates");
     if(el.hasValue("templates")) {
       final JSONElement tmpls = el.getValue("templates");
       addTemplates(mng, tmpls);
     }
-    // TODO enable recursive imports?
     fields.add("import");
-    if(el.hasValue("import")) {
-      final JSONElement imp = el.getValue("import");
-      imp.expectArray();
-      for(int i = 0; i < imp.size(); ++i) {
-        final JSONElement file = imp.getAt(i);
-        file.expectString();
-        final Resource r = Resource.getFor(file.string());
-        final JSONReader in = new JSONReader(r.reader());
-        addTemplates(mng, in.get());
-      }
-    }
+    readImports(new HashSet<String>(), el, mng);
+    // ### recursive can be used after here ###
     final RenderpassPainter rp;
     final AnimatedPainter ap;
     {
@@ -162,48 +153,18 @@ public final class JSONSetup {
     if(rest != null && !autoRest) {
       c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
     }
-    final JSONThunk[] passes;
+    final List<JSONThunk> passes = new ArrayList<>();
     {
-      // TODO enable recursive render passes?
-      fields.add("content");
-      if(el.hasValue("content")) {
-        final JSONElement content = el.getValue("content");
-        if(content.isArray()) {
-          passes = new JSONThunk[content.size()];
-          for(int i = 0; i < content.size(); ++i) {
-            final JSONElement cnt = content.getAt(i);
-            cnt.expectObject();
-            passes[i] = JSONThunk.readJSON(cnt, mng);
-          }
-        } else {
-          passes = new JSONThunk[1];
-          content.expectObject();
-          passes[0] = JSONThunk.readJSON(content, mng);
-        }
-      } else {
-        passes = new JSONThunk[0];
+      for(final JSONElement cnt : getRecursiveArray(el, "content", mng, fields)) {
+        cnt.expectObject();
+        passes.add(JSONThunk.readJSON(cnt, mng));
       }
     }
-    final JSONThunk[] huds;
+    final List<JSONThunk> huds = new ArrayList<>();
     {
-      // TODO enable recursive huds?
-      fields.add("huds");
-      if(el.hasValue("huds")) {
-        final JSONElement content = el.getValue("huds");
-        if(content.isArray()) {
-          huds = new JSONThunk[content.size()];
-          for(int i = 0; i < content.size(); ++i) {
-            final JSONElement cnt = content.getAt(i);
-            cnt.expectObject();
-            huds[i] = JSONThunk.readJSON(cnt, mng);
-          }
-        } else {
-          huds = new JSONThunk[1];
-          content.expectObject();
-          huds[0] = JSONThunk.readJSON(content, mng);
-        }
-      } else {
-        huds = new JSONThunk[0];
+      for(final JSONElement cnt : getRecursiveArray(el, "huds", mng, fields)) {
+        cnt.expectObject();
+        huds.add(JSONThunk.readJSON(cnt, mng));
       }
     }
     final JSONThunk msgHnd;
@@ -226,47 +187,16 @@ public final class JSONSetup {
         help = null;
       }
     }
+    {
+      for(final JSONElement cnt : getRecursiveArray(el, "objects", mng, fields)) {
+        cnt.expectObject();
+        final JSONThunk thunk = JSONThunk.readJSON(cnt, mng);
+        if(thunk.getId() == null) throw new IOException(
+            "all objects in 'objects' must have an id");
+      }
+    }
     // ### interpret remaining fields ###
-    final ObjectCreator oc = new ObjectCreator() {
-
-      private final Map<String, JSONThunk> setters = new HashMap<>();
-
-      @Override
-      public boolean hasField(final String name) {
-        return setters.containsKey(name);
-      }
-
-      @Override
-      public void addField(final String name, final JSONThunk thunk) {
-        setters.put(name, thunk);
-      }
-
-      @Override
-      public void callSetters(final Object o) throws IOException {
-        JSONThunk.callSetters(o, setters);
-      }
-
-      @Override
-      public boolean hasType() {
-        return true;
-      }
-
-      @Override
-      public boolean hasConstructor() {
-        return true;
-      }
-
-      @Override
-      public void setType(final String type) throws IOException {
-        throw new UnsupportedOperationException();
-      }
-
-      @Override
-      public void setConstructor(final String args) {
-        throw new UnsupportedOperationException();
-      }
-
-    };
+    final ObjectCreator oc = new SimpleObjectCreator();
     JSONThunk.addFields(oc, el, mng, fields);
     // ### evaluating ###
     for(final JSONThunk p : passes) {
@@ -396,6 +326,81 @@ public final class JSONSetup {
   }
 
   /**
+   * Recursively computes an array.
+   * 
+   * @param el The root element.
+   * @param name The name of the field.
+   * @param mng The manager.
+   * @param fields The set of used fields.
+   * @return The array elements.
+   */
+  public static Iterable<JSONElement> getRecursiveArray(final JSONElement el,
+      final String name, final JSONManager mng, final Set<String> fields) {
+    fields.add(name);
+    return new Iterable<JSONElement>() {
+
+      @Override
+      public Iterator<JSONElement> iterator() {
+        return new CoRoutine<JSONElement>() {
+
+          @Override
+          protected void compute() {
+            addArray(el);
+          }
+
+          public void addArray(final JSONElement el) {
+            if(el.hasValue(name)) {
+              final JSONElement content = el.getValue(name);
+              if(content.isArray()) {
+                for(int i = 0; i < content.size(); ++i) {
+                  yield(content.getAt(i));
+                }
+              } else {
+                content.expectObject();
+                yield(content);
+              }
+            }
+            final JSONElement tmpl = mng.getTemplateOf(el);
+            if(tmpl == null) return;
+            addArray(tmpl);
+          }
+
+        };
+      }
+
+    };
+  }
+
+  /**
+   * Reads imports of an element.
+   * 
+   * @param alreadyImported The filenames that are already imported.
+   * @param el The element that has the import field.
+   * @param mng The JSON manager.
+   * @throws IOException I/O Exception.
+   */
+  private static void readImports(final Set<String> alreadyImported,
+      final JSONElement el, final JSONManager mng) throws IOException {
+    if(!el.hasValue("import")) return;
+    final JSONElement imp = el.getValue("import");
+    imp.expectArray();
+    for(int i = 0; i < imp.size(); ++i) {
+      final JSONElement file = imp.getAt(i);
+      file.expectString();
+      final String rName = file.string();
+      if(alreadyImported.contains(rName)) {
+        continue;
+      }
+      alreadyImported.add(rName);
+      final Resource r = Resource.getFor(rName);
+      final JSONReader in = new JSONReader(r.reader());
+      final JSONElement imported = in.get();
+      addTemplates(mng, imported);
+      readImports(alreadyImported, imported, mng);
+    }
+  }
+
+  /**
    * Adds all elements as templates.
    * 
    * @param mng The manager.
@@ -403,7 +408,13 @@ public final class JSONSetup {
    */
   public static void addTemplates(final JSONManager mng, final JSONElement tmpls) {
     tmpls.expectObject();
-    for(final String k : tmpls.getKeys()) {
+    loop: for(final String k : tmpls.getKeys()) {
+      switch(k) {
+        case "import":
+          continue loop;
+        case "templates":
+          throw new IllegalArgumentException("cannot define template called 'templates'");
+      }
       mng.addTemplate(k, tmpls.getValue(k));
     }
   }
