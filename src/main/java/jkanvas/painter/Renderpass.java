@@ -14,6 +14,7 @@ import jkanvas.KanvasContext;
 import jkanvas.KanvasInteraction;
 import jkanvas.animation.AnimationList;
 import jkanvas.animation.AnimationTiming;
+import jkanvas.painter.pod.Renderpod;
 
 /**
  * Render passes can be used to dynamically change what is rendered on a canvas
@@ -59,7 +60,11 @@ public abstract class Renderpass implements KanvasInteraction {
   public static final boolean defaultDoubleClick(
       final Renderpass rp, final Camera cam, final MouseEvent e) {
     if(!SwingUtilities.isLeftMouseButton(e)) return false;
-    cam.toView(rp, AnimationTiming.SMOOTH, null, true);
+    Renderpass r = rp;
+    while(r.getParent() instanceof Renderpod) {
+      r = r.getParent();
+    }
+    cam.toView(r, AnimationTiming.SMOOTH, null, true);
     return true;
   }
 
