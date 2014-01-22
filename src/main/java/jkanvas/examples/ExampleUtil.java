@@ -11,7 +11,6 @@ import jkanvas.Canvas;
 import jkanvas.CanvasMessageHandler;
 import jkanvas.DefaultMessageHandler;
 import jkanvas.animation.AnimatedPainter;
-import jkanvas.animation.AnimationAction;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
@@ -106,14 +105,7 @@ public final class ExampleUtil {
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
     if(reset) {
-      c.scheduleAction(new AnimationAction() {
-
-        @Override
-        public void animationFinished() {
-          c.reset();
-        }
-
-      }, 0);
+      c.postMessage(canvasId + "#reset", 0);
     }
     return info;
   }

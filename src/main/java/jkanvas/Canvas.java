@@ -785,18 +785,54 @@ public class Canvas extends JComponent implements Refreshable {
   }
 
   /**
+   * Posts a message to be processed by {@link KanvasInteraction} in the future.
+   * A message consists of two parts: The optional id part and the actual
+   * message. The id is separated from the message via the character '
+   * <code>#</code>'. Multiple ids may be passed by separating them with space '
+   * <code> </code>'
+   * 
+   * @param msg The message to post.
+   * @param timing The timing to infer the duration.
+   * @throws IllegalArgumentException If the message part is empty.
+   */
+  public void postMessage(final String msg, final AnimationTiming timing) {
+    postMessage(msg, timing.duration);
+  }
+
+  /**
+   * Posts a message to be processed by {@link KanvasInteraction} in the future.
+   * A message consists of two parts: The optional id part and the actual
+   * message. The id is separated from the message via the character '
+   * <code>#</code>'. Multiple ids may be passed by separating them with space '
+   * <code> </code>'
+   * 
+   * @param msg The message to post.
+   * @param delay The time in milliseconds until the message is processed.
+   * @throws IllegalArgumentException If the message part is empty.
+   */
+  public void postMessage(final String msg, final long delay) {
+    validateMessage(msg);
+    scheduleAction(new AnimationAction() {
+
+      @Override
+      public void animationFinished() {
+        postMessage(msg);
+      }
+
+    }, delay);
+  }
+
+  /**
    * Posts a message to be processed by {@link KanvasInteraction}. A message
-   * contains of two parts: The optional id part and the actual message. The id
+   * consists of two parts: The optional id part and the actual message. The id
    * is separated from the message via the character '<code>#</code>'. Multiple
-   * ids may be passed by separating them with space '<code>&#20;</code>'
+   * ids may be passed by separating them with space '<code> </code>'
    * 
    * @param msg The message to post.
    * @throws IllegalArgumentException If the message part is empty.
    */
   public void postMessage(final String msg) {
-    final int idEnd = msg.indexOf('#');
-    if(msg.isEmpty() || idEnd >= msg.length() - 1) throw new IllegalArgumentException(
-        "empty message not allowed: '" + msg + "'");
+    final int idEnd = validateMessage(msg);
     final String[] ids = idEnd < 0 ? new String[0] : msg.substring(0, idEnd).split(" ");
     int emptyCount = 0;
     for(final String id : ids) {
@@ -829,6 +865,19 @@ public class Canvas extends JComponent implements Refreshable {
       }
     }
     cfg.getPainter().processMessage(realIds, m);
+  }
+
+  /**
+   * Validates the given message.
+   * 
+   * @param msg The message.
+   * @return The index of the id delimiter.
+   */
+  private static int validateMessage(final String msg) {
+    final int idEnd = msg.indexOf('#');
+    if(msg.isEmpty() || idEnd >= msg.length() - 1) throw new IllegalArgumentException(
+        "empty message not allowed: '" + msg + "'");
+    return idEnd;
   }
 
   /** The currently installed message handler. */
