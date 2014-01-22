@@ -280,16 +280,6 @@ public class CSVReader {
       };
 
       @Override
-      public void yield(final CSVRow row) {
-        super.yield(row);
-      }
-
-      @Override
-      public void endRoutine() {
-        super.endRoutine();
-      }
-
-      @Override
       protected void compute() {
         try {
           reader.setHandler(handler);

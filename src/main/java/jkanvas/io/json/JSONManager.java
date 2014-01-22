@@ -75,7 +75,7 @@ public class JSONManager {
   public JSONThunk getForId(final String id) {
     Objects.requireNonNull(id);
     if(!thunks.containsKey(id)) {
-      setForId(id, new JSONThunk(this));
+      setForId(id, new JSONThunk(this, id, true));
     }
     return thunks.get(id);
   }
@@ -103,7 +103,7 @@ public class JSONManager {
    */
   public void addRawId(final String id, final Object obj) {
     Objects.requireNonNull(id);
-    if(thunks.put(id, new JSONThunk(obj, this)) != null) throw new IllegalArgumentException(
+    if(thunks.put(id, new JSONThunk(obj, this, id)) != null) throw new IllegalArgumentException(
         "id already in use: " + id);
   }
 
