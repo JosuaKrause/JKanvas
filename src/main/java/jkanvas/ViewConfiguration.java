@@ -40,7 +40,7 @@ public class ViewConfiguration {
 
       @Override
       public Rectangle2D getComponentView() {
-        return canvas.getVisibleRect();
+        return canvas.getCanvasRect();
       }
 
       @Override
@@ -223,7 +223,7 @@ public class ViewConfiguration {
 
     @Override
     protected Rectangle2D createVisibleComponent() {
-      return zui.getVisibleRect();
+      return zui.getCanvasRect();
     }
 
     @Override

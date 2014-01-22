@@ -448,7 +448,7 @@ public class Canvas extends JComponent implements Refreshable {
       gfx.fillRect(0, 0, getWidth(), getHeight());
     }
     // clip the visible area
-    g.clip(getVisibleRect());
+    g.clip(getCanvasRect());
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     if(barrier == null) {
       cfg.paint(g);
@@ -460,7 +460,7 @@ public class Canvas extends JComponent implements Refreshable {
     if(mft) {
       final long nano = watch != null ? watch.currentNano() : barrier.lastCycle();
       frameRateDisplayer.setLastFrameTime(nano);
-      frameRateDisplayer.drawFrameRate(g, getVisibleRect());
+      frameRateDisplayer.drawFrameRate(g, getCanvasRect());
     }
     g.dispose();
   }
@@ -654,7 +654,7 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public void reset(final RectangularShape bbox, final double margin) {
     Objects.requireNonNull(bbox);
-    final Rectangle2D rect = getVisibleRect();
+    final Rectangle2D rect = getCanvasRect();
     cfg.getZUI().showRectangle(bbox, rect, margin, true);
   }
 
@@ -666,7 +666,7 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public void showOnly(final RectangularShape bbox) {
     Objects.requireNonNull(bbox);
-    cfg.getZUI().showRectangle(bbox, getVisibleRect(), getMargin(), false);
+    cfg.getZUI().showRectangle(bbox, getCanvasRect(), getMargin(), false);
   }
 
   /** Whether the canvas is moveable, ie it can be panned and zoomed. */
@@ -696,7 +696,19 @@ public class Canvas extends JComponent implements Refreshable {
    * @return The currently visible portion of the canvas.
    */
   public Rectangle2D getVisibleCanvas() {
-    return cfg.getZUI().toCanvas(getVisibleRect());
+    return cfg.getZUI().toCanvas(getCanvasRect());
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The canvas in component coordinates.
+   */
+  public Rectangle2D getCanvasRect() {
+    final Rectangle2D rect = getVisibleRect();
+    // don't allow empty rectangles
+    if(rect.isEmpty()) return new Rectangle2D.Double(rect.getX(), rect.getY(), 1, 1);
+    return rect;
   }
 
   /**

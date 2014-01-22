@@ -72,13 +72,13 @@ class CameraZUI implements ZoomableView, Camera, Animated {
    * 
    * @return The size of the canvas in component coordinates.
    */
-  public Rectangle2D getVisibleRect() {
-    return canvas.getVisibleRect();
+  public Rectangle2D getCanvasRect() {
+    return canvas.getCanvasRect();
   }
 
   @Override
   public Rectangle2D getView() {
-    return zui.toCanvas(canvas.getVisibleRect());
+    return zui.toCanvas(canvas.getCanvasRect());
   }
 
   @Override
@@ -122,7 +122,7 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   @Override
   public boolean animate(final long currentTime) {
     if(toBeSet != null) {
-      final Rectangle2D vis = canvas.getVisibleRect();
+      final Rectangle2D vis = canvas.getCanvasRect();
       if(!vis.isEmpty()) {
         zui.showRectangle(toBeSet, vis, 0, true);
         toBeSet = null;
@@ -131,7 +131,7 @@ class CameraZUI implements ZoomableView, Camera, Animated {
     }
     if(view == null) return false;
     if(!view.animate(currentTime)) return false;
-    final Rectangle2D vis = canvas.getVisibleRect();
+    final Rectangle2D vis = canvas.getCanvasRect();
     final Rectangle2D v = view.get();
     if(v.isEmpty()) return true;
     if(vis.isEmpty()) {
