@@ -73,7 +73,9 @@ public class JSONReader {
         return new JSONElement(name, readStr());
       default:
         if(isNumberStart(peek())) return readNumber(name);
-        throw new IllegalStateException("unexpected character: " + next());
+        final String word = readWord();
+        if("true".equals(word) || "false".equals(word)) return new JSONElement(name, word);
+        throw new IllegalStateException("unexpected word: " + word);
     }
   }
 
@@ -169,6 +171,26 @@ public class JSONReader {
       ensureOpen();
     }
     expect('"');
+    return sb.toString();
+  }
+
+  /**
+   * Reads a single word without spaces or delimiter characters.
+   * 
+   * @return The read word.
+   * @throws IOException I/O Exception.
+   */
+  private String readWord() throws IOException {
+    final StringBuilder sb = new StringBuilder();
+    while(!isWhitespace(peek())) {
+      final char c = peek();
+      if(",]}:".indexOf(c) >= 0) {
+        break;
+      }
+      if("\\\"[{".indexOf(c) >= 0) throw new IllegalStateException(
+          "unexpected character in word: " + sb.toString() + ">" + c + "<");
+      sb.append(next());
+    }
     return sb.toString();
   }
 
