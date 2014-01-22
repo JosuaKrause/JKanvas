@@ -75,6 +75,7 @@ public class JSONReader {
         if(isNumberStart(peek())) return readNumber(name);
         final String word = readWord();
         if("true".equals(word) || "false".equals(word)) return new JSONElement(name, word);
+        if("null".equals(word)) return new JSONElement(name);
         throw new IllegalStateException("unexpected word: " + word);
     }
   }

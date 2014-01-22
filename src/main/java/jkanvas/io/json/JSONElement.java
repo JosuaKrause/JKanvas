@@ -28,6 +28,8 @@ public class JSONElement implements Iterable<JSONElement> {
     ARRAY,
     /** An object. */
     OBJECT,
+    /** The null value. */
+    NULL,
   }
 
   /** The name of the element or <code>null</code>. */
@@ -40,6 +42,19 @@ public class JSONElement implements Iterable<JSONElement> {
   private final List<JSONElement> array;
   /** The object map or <code>null</code> if other type. */
   private final Map<String, JSONElement> object;
+
+  /**
+   * Creates a <code>null</code> value.
+   * 
+   * @param name The name, may be <code>null</code>.
+   */
+  JSONElement(final String name) {
+    this.name = name;
+    type = JSONType.NULL;
+    str = null;
+    array = null;
+    object = null;
+  }
 
   /**
    * Creates a string element.
@@ -123,6 +138,15 @@ public class JSONElement implements Iterable<JSONElement> {
   }
 
   /**
+   * Expects the <code>null</code> type.
+   * 
+   * @throws IllegalStateException When the type is not correct.
+   */
+  public void expectNull() {
+    expectType(JSONType.NULL);
+  }
+
+  /**
    * Expects an object.
    * 
    * @throws IllegalStateException When the type is not correct.
@@ -147,6 +171,15 @@ public class JSONElement implements Iterable<JSONElement> {
    */
   public void expectString() {
     expectType(JSONType.STRING);
+  }
+
+  /**
+   * Whether the type of the element is the <code>null</code> type.
+   * 
+   * @return Whether it is a <code>null</code> type.
+   */
+  public boolean isNull() {
+    return type() == JSONType.NULL;
   }
 
   /**
@@ -208,12 +241,13 @@ public class JSONElement implements Iterable<JSONElement> {
   /**
    * Getter.
    * 
-   * @return The number of elements in this element.
+   * @return The number of elements in this element. The <code>null</code> type
+   *         has the size 0.
    * @throws IllegalStateException If the type is not an array or an object.
    */
   public int size() {
-    if(type == JSONType.STRING) throw new IllegalStateException("not an array or object");
-    return array != null ? array.size() : object.size();
+    if(isString()) throw new IllegalStateException("not an array, object, or null");
+    return array != null ? array.size() : object != null ? object.size() : 0;
   }
 
   /**
@@ -264,7 +298,8 @@ public class JSONElement implements Iterable<JSONElement> {
 
   @Override
   public Iterator<JSONElement> iterator() {
-    if(type == JSONType.STRING) throw new IllegalStateException("not an array or object");
+    if(isString()) throw new IllegalStateException("not an array or object");
+    if(isNull()) return Collections.emptyIterator();
     final Iterator<JSONElement> it =
         array != null ? array.iterator() : object.values().iterator();
     return new Iterator<JSONElement>() {
@@ -330,6 +365,9 @@ public class JSONElement implements Iterable<JSONElement> {
       }
       case STRING:
         str(sb, string());
+        break;
+      case NULL:
+        sb.append("null");
         break;
       default:
         throw new AssertionError();
