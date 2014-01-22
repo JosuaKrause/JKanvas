@@ -39,13 +39,13 @@ public class JSONReader {
       root = read(null);
       eatWhitespace();
       if(!isEOF()) {
-        final char c = next();
+        next();
         try {
           if(r != null) {
             r.close();
             r = null;
           }
-          throw new IllegalStateException("unexpected character: '" + c + "'");
+          throw new IllegalStateException("unexpected character: " + context(1));
         } catch(final IOException e) {
           throw new IllegalStateException("EOF not reached", e);
         }
@@ -76,7 +76,10 @@ public class JSONReader {
         final String word = readWord();
         if("true".equals(word) || "false".equals(word)) return new JSONElement(name, word);
         if("null".equals(word)) return new JSONElement(name);
-        throw new IllegalStateException("unexpected word: " + word);
+        if(!word.isEmpty()) throw new IllegalStateException(
+            "unexpected word: " + context(word.length()));
+        next();
+        throw new IllegalStateException("unexpected character: " + context(1));
     }
   }
 
@@ -164,7 +167,7 @@ public class JSONReader {
             sb.append('"');
             break;
           default:
-            throw new IllegalStateException("illegal escape: '\\" + seq + "'");
+            throw new IllegalStateException("illegal escape: " + context(2));
         }
       } else {
         sb.append(c);
@@ -188,8 +191,10 @@ public class JSONReader {
       if(",]}:".indexOf(c) >= 0) {
         break;
       }
-      if("\\\"[{".indexOf(c) >= 0) throw new IllegalStateException(
-          "unexpected character in word: " + sb.toString() + ">" + c + "<");
+      if("\\\"[{".indexOf(c) >= 0) {
+        next();
+        throw new IllegalStateException("unexpected character in word: " + context(1));
+      }
       sb.append(next());
     }
     return sb.toString();
@@ -217,7 +222,7 @@ public class JSONReader {
     try {
       Double.parseDouble(str);
     } catch(final NumberFormatException e) {
-      throw new IllegalStateException("not a number: \"" + str + "\"");
+      throw new IllegalStateException("not a number: " + context(str.length()));
     }
     return new JSONElement(name, str);
   }
@@ -236,6 +241,9 @@ public class JSONReader {
     if(isEOF()) throw new IllegalStateException("early EOF!");
   }
 
+  /** Whether the current character was read before. */
+  private boolean again;
+
   /**
    * Peeks at the next character.
    * 
@@ -246,8 +254,42 @@ public class JSONReader {
     final char c = next();
     if(!isEOF()) {
       r.unread(c);
+      again = true;
     }
     return c;
+  }
+
+  /** The number of characters used for context. */
+  private static final int CONTEXT_SIZE = 16;
+
+  /** Stores the current parsing context. */
+  private final StringBuilder context = new StringBuilder();
+
+  /**
+   * Returns the context of the failing character or word. All faulty characters
+   * must have been consumed.
+   * 
+   * @param length The length of the faulty word.
+   * @return The context.
+   */
+  private String context(final int length) {
+    final int l = context.length() - (again ? 1 : 0);
+    final int start = Math.max(l - length - CONTEXT_SIZE, 0);
+    final int end = Math.max(l - length, start);
+    final String pre = context.substring(start, end);
+    final String word = context.substring(end, l);
+    final StringBuilder post = new StringBuilder();
+    try {
+      for(int i = 0; i < CONTEXT_SIZE; ++i) {
+        if(isEOF() || "\r\n".indexOf(peek()) >= 0) {
+          break;
+        }
+        post.append(next());
+      }
+    } catch(final IOException e) {
+      // we are about to print a more important error message anyway
+    }
+    return (pre + " >" + word + "< " + post).trim();
   }
 
   /**
@@ -257,9 +299,20 @@ public class JSONReader {
    * @throws IOException I/O Exception.
    */
   private char next() throws IOException {
+    final boolean isNew = !again;
+    again = false;
     if(!isEOF()) {
       final int c = r.read();
-      if(c >= 0) return (char) c;
+      if(c >= 0) {
+        if(isNew) {
+          if("\r\n".indexOf(c) >= 0) {
+            context.setLength(0);
+          } else {
+            context.append((char) c);
+          }
+        }
+        return (char) c;
+      }
       r.close();
       r = null;
     }
@@ -275,7 +328,7 @@ public class JSONReader {
   private void expect(final char expect) throws IOException {
     final char c = next();
     if(c != expect) throw new IllegalArgumentException(
-        "expected '" + expect + "' got '" + c + "'");
+        "expected '" + expect + "' got '" + c + "': " + context(1));
   }
 
   /**
