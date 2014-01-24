@@ -179,7 +179,7 @@ public class CSVReader {
    * @param delimiter The cell delimiter.
    * @param string The string delimiter.
    * @param columnTitles Whether to interpret the first row as column titles.
-   * @param rowTitles Wheter to interpret the first column of each row as row
+   * @param rowTitles Whether to interpret the first column of each row as row
    *          title.
    */
   public CSVReader(final char delimiter, final char string,
@@ -193,7 +193,7 @@ public class CSVReader {
    * @param delimiter The cell delimiter.
    * @param string The string delimiter.
    * @param columnTitles Whether to interpret the first row as column titles.
-   * @param rowTitles Wheter to interpret the first column of each row as row
+   * @param rowTitles Whether to interpret the first column of each row as row
    *          title.
    * @param trimFields Whether fields are trimmed.
    */

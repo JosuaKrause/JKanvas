@@ -1,5 +1,9 @@
 {
     "template": "animated_canvas",
+    "help": {
+        "id": "info",
+        "template": "help",
+    },
     "keys": [
         {
             "key": "1",

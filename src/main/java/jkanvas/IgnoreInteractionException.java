@@ -20,7 +20,7 @@ class IgnoreInteractionException extends RuntimeException {
 
   @Override
   public synchronized Throwable fillInStackTrace() {
-    // we wont use the stack trace so we safe the costs of creating it
+    // we wont use the stack trace so we save the costs of creating it
     return this;
   }
 

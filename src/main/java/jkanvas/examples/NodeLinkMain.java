@@ -2,6 +2,7 @@ package jkanvas.examples;
 
 import java.awt.Color;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -21,12 +22,16 @@ import jkanvas.nodelink.DefaultNodeRealizer;
 import jkanvas.nodelink.NodeLinkRenderpass;
 import jkanvas.nodelink.NodeRealizer;
 import jkanvas.nodelink.SimpleNodeLinkView;
+import jkanvas.nodelink.layout.AbstractLayouter;
 import jkanvas.nodelink.layout.BouncingLayouter;
 import jkanvas.nodelink.layout.CircleLayouter;
 import jkanvas.nodelink.layout.ForceDirectedLayouter;
 import jkanvas.nodelink.layout.RandomLayouter;
 import jkanvas.nodelink.layout.SimpleLayoutedView;
+import jkanvas.optional.MDSLayouter;
+import jkanvas.optional.MDSProjector;
 import jkanvas.painter.RenderpassPainter;
+import jkanvas.painter.SimpleTextHUD;
 import jkanvas.util.Resource;
 
 /**
@@ -74,6 +79,13 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       case "bounce":
         simpleView.setLayouter(new BouncingLayouter<>());
         break;
+      case "mds": {
+        // estimate node size
+        final Shape s = getNodeRealizer().createNodeShape(view.getNode(0), 0, 0);
+        final double radius = s.getBounds2D().getWidth() * 0.5;
+        simpleView.setLayouter(new MDSLayouter<>(radius));
+        break;
+      }
     }
   }
 
@@ -228,10 +240,17 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     });
     final RenderpassPainter p = mng.getForId("painter", RenderpassPainter.class);
     p.addPass(r);
-    // TODO start with MDS layout #24
-    final RandomLayouter<AnimatedPosition> rl = new RandomLayouter<>();
-    rl.setTiming(AnimationTiming.NO_ANIMATION);
-    view.setLayouter(rl);
+    final AbstractLayouter<AnimatedPosition> layout;
+    if(MDSProjector.hasMDSJ()) {
+      layout = new MDSLayouter<>(DefaultNodeRealizer.RADIUS);
+      c.addMessageAction(KeyEvent.VK_5, "nl#mds");
+      final SimpleTextHUD info = mng.getForId("info", SimpleTextHUD.class);
+      info.insertLine(4, "5: MDS Layout");
+    } else {
+      layout = new RandomLayouter<>();
+    }
+    layout.setTiming(AnimationTiming.NO_ANIMATION);
+    view.setLayouter(layout);
   }
 
 }

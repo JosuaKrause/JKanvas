@@ -102,7 +102,7 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
    * Calculates the layout for the given view.
    * 
    * @param view The view.
-   * @return The layout.
+   * @return If the position was altered.
    */
   protected abstract boolean doLayout(NodeLinkView<T> view);
 

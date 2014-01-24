@@ -58,6 +58,16 @@ public class SimpleTextHUD extends TextHUD {
   }
 
   /**
+   * Inserts a line to the text box.
+   * 
+   * @param pos The position.
+   * @param line The line.
+   */
+  public void insertLine(final int pos, final String line) {
+    lines.add(pos, line);
+  }
+
+  /**
    * Adds a line at the end of the text box.
    * 
    * @param line The line.
