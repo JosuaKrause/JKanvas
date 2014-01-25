@@ -1,4 +1,4 @@
-package jkanvas.util;
+package jkanvas.optional;
 
 import java.awt.Color;
 import java.awt.Composite;

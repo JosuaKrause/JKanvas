@@ -8,18 +8,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 /**
- * Saves screen-shots.
+ * Saves screenshots.
  * 
  * @author Joschi <josua.krause@googlemail.com>
  */
 public final class Screenshot {
 
-  /** The scaling factor for raster screen-shots. */
+  /** The scaling factor for raster screenshots. */
   public static int SCALE = 3;
 
   /** No constructor. */
@@ -28,7 +29,7 @@ public final class Screenshot {
   }
 
   /**
-   * Ensures a directory.
+   * Ensures that a directory exists.
    * 
    * @param dir The directory.
    */
@@ -63,7 +64,7 @@ public final class Screenshot {
   }
 
   /**
-   * Saves a screen-shot as PNG.
+   * Saves a screenshot.
    * 
    * @param dir The directory.
    * @param prefix The name prefix.
@@ -71,69 +72,106 @@ public final class Screenshot {
    * @return The file that was used to store the image.
    * @throws IOException I/O Exception.
    */
-  public static File savePNG(final File dir, final String prefix, final JComponent comp)
-      throws IOException {
-    return savePNG(dir, prefix, ".png", comp);
+  public static File save(
+      final File dir, final String prefix, final JComponent comp) throws IOException {
+    return save(dir, prefix, "." + ALGO.extension(), comp);
   }
 
   /**
-   * Saves a screen-shot as PNG.
+   * Saves a screenshot.
    * 
    * @param dir The directory.
    * @param prefix The name prefix.
-   * @param postfix The name postfix. It should end with ".png".
+   * @param postfix The name extension.
    * @param comp The component to draw.
    * @return The file that was used to store the image.
    * @throws IOException I/O Exception.
    */
-  public static File savePNG(final File dir, final String prefix,
+  public static File save(final File dir, final String prefix,
       final String postfix, final JComponent comp) throws IOException {
     final File out = findFile(dir, prefix, postfix);
-    savePNG(new FileOutputStream(out), comp);
+    save(new FileOutputStream(out), comp);
     return out;
   }
 
+  /** Saves screenshots as PNG. This is the default screenshot algorithm. */
+  public static final ScreenshotAlgorithm PNG = new ScreenshotAlgorithm() {
+
+    @Override
+    public void save(final OutputStream out, final JComponent comp, final Rectangle rect)
+        throws IOException {
+      final BufferedImage img = new BufferedImage(
+          rect.width * SCALE, rect.height * SCALE, BufferedImage.TYPE_INT_ARGB);
+      final Graphics2D g = img.createGraphics();
+      g.scale(SCALE, SCALE);
+      paint(comp, g);
+      g.dispose();
+      ImageIO.write(img, "png", out);
+      out.close();
+    }
+
+    @Override
+    public String extension() {
+      return "png";
+    }
+
+  };
+
+  /** The current screenshot algorithm. */
+  private static ScreenshotAlgorithm ALGO = PNG;
+
   /**
-   * Saves a screen-shot as PNG.
+   * Saves a screenshot.
    * 
    * @param out The output.
    * @param comp The component.
    * @throws IOException I/O Exception.
    */
-  public static void savePNG(final OutputStream out, final JComponent comp)
-      throws IOException {
+  public static void save(
+      final OutputStream out, final JComponent comp) throws IOException {
     final Rectangle rect = outputSize(comp);
-    final BufferedImage img = new BufferedImage(
-        rect.width * SCALE, rect.height * SCALE, BufferedImage.TYPE_INT_ARGB);
-    final Graphics2D g = img.createGraphics();
-    g.scale(SCALE, SCALE);
-    final boolean isCacheDisabled = jkanvas.Canvas.DISABLE_CACHING;
-    jkanvas.Canvas.DISABLE_CACHING = true;
-    paint(comp, g);
-    jkanvas.Canvas.DISABLE_CACHING = isCacheDisabled;
-    g.dispose();
-    ImageIO.write(img, "png", out);
-    out.close();
+    ALGO.save(out, comp, rect);
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param algo The screenshot algorithm to use.
+   */
+  public static void setAlgorithm(final ScreenshotAlgorithm algo) {
+    ALGO = Objects.requireNonNull(algo);
   }
 
   /**
    * Getter.
    * 
-   * @param comp The component to take a screen-shot of.
-   * @return The size of the screen-shot.
+   * @return The currently used screenshot algorithm.
+   */
+  public static ScreenshotAlgorithm getAlgorithm() {
+    return ALGO;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param comp The component to take a screenshot of.
+   * @return The size of the screenshot.
    */
   public static Rectangle outputSize(final JComponent comp) {
     return comp.getVisibleRect();
   }
 
   /**
-   * Paints a screen-shot of the given component to the graphics context.
+   * Paints a screenshot of the given component to the graphics context.
    * 
    * @param comp The component.
    * @param g The graphics context.
    */
   public static void paint(final JComponent comp, final Graphics2D g) {
+    final boolean isCacheDisabled = jkanvas.Canvas.DISABLE_CACHING;
+    jkanvas.Canvas.DISABLE_CACHING = true;
     comp.paintAll(g);
+    jkanvas.Canvas.DISABLE_CACHING = isCacheDisabled;
   }
 
   /**

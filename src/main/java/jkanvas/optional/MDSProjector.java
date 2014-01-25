@@ -9,7 +9,8 @@ import java.lang.reflect.Method;
 /**
  * Provides a method to compute the MDS projection for a distance matrix. This
  * class depends on <code>mdsj.MDSJ</code> which must be included in the
- * class-path.
+ * class-path. The original page for MDSJ is located <a
+ * href="http://www.inf.uni-konstanz.de/algo/software/mdsj/">here</a>.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
@@ -51,19 +52,12 @@ public final class MDSProjector {
     return MDSJ != null && METHOD != null;
   }
 
-  /**
-   * Getter.
-   * 
-   * @return The projection method. An exception is thrown when MDSJ could not
-   *         be loaded.
-   */
-  public static Method expectMDSJ() {
+  /** An exception is thrown when MDSJ could not be loaded. */
+  public static void expectMDSJ() {
     loadMDSJ();
-    if(MDSJ == null || METHOD == null) {
-      if(EXCEPTION == null) throw new IllegalStateException("could not load MDSJ");
-      throw new IllegalStateException("error loading MDSJ", EXCEPTION);
-    }
-    return METHOD;
+    if(MDSJ != null && METHOD != null) return;
+    if(EXCEPTION == null) throw new IllegalStateException("could not load MDSJ");
+    throw new IllegalStateException("error loading MDSJ", EXCEPTION);
   }
 
   /**
@@ -73,7 +67,8 @@ public final class MDSProjector {
    * @return The projection.
    */
   private static double[][] doScale(final double[][] m) {
-    final Method scale = expectMDSJ();
+    expectMDSJ();
+    final Method scale = METHOD;
     try {
       // we must cast to Object because of vararg ambiguity otherwise
       return (double[][]) scale.invoke(null, (Object) m);

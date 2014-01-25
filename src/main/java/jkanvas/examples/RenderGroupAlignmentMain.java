@@ -159,7 +159,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       @Override
       public void actionPerformed(final ActionEvent ae) {
         try {
-          final File png = Screenshot.savePNG(new File("pics"), "group", c);
+          final File png = Screenshot.save(new File("pics"), "group", c);
           System.out.println("Saved screenshot in " + png);
         } catch(final IOException e) {
           e.printStackTrace();

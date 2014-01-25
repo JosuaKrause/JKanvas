@@ -86,7 +86,7 @@ public class DefaultMessageHandler implements CanvasMessageHandler {
       } else {
         before = false;
       }
-      final File png = Screenshot.savePNG(
+      final File png = Screenshot.save(
           photoFolder(), photoPrefix(),
           (window && frame != null) ? frame.getRootPane() : canvas);
       photoSuccess(png);
