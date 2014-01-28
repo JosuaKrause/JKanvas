@@ -380,7 +380,7 @@ public abstract class DataTable {
     if(end < 0) return n;
     // automatically generated name detected
     final String begin = n.substring(0, start);
-    final String trail = end + 1 < n.length() ? n.substring(end + 1) : n.substring(end);
+    final String trail = end + 1 < n.length() ? n.substring(end + 1) : "";
     // we have to generate a new name every time
     // since we do not know whether begin and trail are empty sometimes
     return begin + generateName() + trail;
