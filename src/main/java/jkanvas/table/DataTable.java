@@ -66,6 +66,20 @@ public abstract class DataTable {
   public abstract String getName(int col);
 
   /**
+   * Lists the names of the columns.
+   * 
+   * @see #getName(int)
+   * @return The names.
+   */
+  public String[] getNames() {
+    final String[] res = new String[cols()];
+    for(int i = 0; i < res.length; ++i) {
+      res[i] = getName(i);
+    }
+    return res;
+  }
+
+  /**
    * Finds the first column that has the given name.
    * 
    * @param name The name.
@@ -366,7 +380,7 @@ public abstract class DataTable {
     if(end < 0) return n;
     // automatically generated name detected
     final String begin = n.substring(0, start);
-    final String trail = n.substring(end + 1);
+    final String trail = end + 1 < n.length() ? n.substring(end + 1) : n.substring(end);
     // we have to generate a new name every time
     // since we do not know whether begin and trail are empty sometimes
     return begin + generateName() + trail;

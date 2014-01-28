@@ -11,8 +11,8 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
 
 /**
- * A ghost render pass is an {@link Renderpass} that mimics the behavior
- * of another {@link Renderpass} but at a different location.
+ * A ghost render pass is an {@link Renderpass} that mimics the behavior of
+ * another {@link Renderpass} but at a different location.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of entity to mimic.
@@ -40,66 +40,161 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
     return entity;
   }
 
+  /**
+   * Replaces the parent of the entity with this render pass.
+   * 
+   * @see #end(Renderpass)
+   * @return The old parent.
+   */
+  private Renderpass start() {
+    final Renderpass old = entity.getParent();
+    entity.setParent(null);
+    entity.setParent(this);
+    return old;
+  }
+
+  /**
+   * Restores the old parent of the entity. This method must be called even in
+   * the event of an exception or otherwise the wrong parent will be kept. Use
+   * the following code snippet to delegate calls to the entity.
+   * 
+   * <pre>
+   * final Renderpass old = start();
+   * try {
+   *   // use entity here
+   * } finally {
+   *   end(old);
+   * }
+   * </pre>
+   * 
+   * @see #start()
+   * @param parent The old parent.
+   */
+  private void end(final Renderpass parent) {
+    entity.setParent(null);
+    entity.setParent(parent);
+  }
+
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
-    entity.draw(g, ctx);
+    final Renderpass old = start();
+    try {
+      entity.draw(g, ctx);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
-    return entity.click(cam, p, e);
+    final Renderpass old = start();
+    try {
+      return entity.click(cam, p, e);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
-    return entity.doubleClick(cam, p, e);
+    final Renderpass old = start();
+    try {
+      return entity.doubleClick(cam, p, e);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public String getTooltip(final Point2D p) {
-    return entity.getTooltip(p);
+    final Renderpass old = start();
+    try {
+      return entity.getTooltip(p);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public boolean moveMouse(final Point2D cur) {
-    return entity.moveMouse(cur);
+    final Renderpass old = start();
+    try {
+      return entity.moveMouse(cur);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public boolean acceptDrag(final Point2D p, final MouseEvent e) {
-    return entity.acceptDrag(p, e);
+    final Renderpass old = start();
+    try {
+      return entity.acceptDrag(p, e);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public void drag(final Point2D start, final Point2D cur,
       final double dx, final double dy) {
-    entity.drag(start, cur, dx, dy);
+    final Renderpass old = start();
+    try {
+      entity.drag(start, cur, dx, dy);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public void endDrag(final Point2D start, final Point2D end,
       final double dx, final double dy) {
-    entity.endDrag(start, end, dx, dy);
+    final Renderpass old = start();
+    try {
+      entity.endDrag(start, end, dx, dy);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public void getBoundingBox(final Rectangle2D bbox) {
-    entity.getBoundingBox(bbox);
+    final Renderpass old = start();
+    try {
+      entity.getBoundingBox(bbox);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public boolean isChanging() {
-    return entity.isChanging();
+    final Renderpass old = start();
+    try {
+      return entity.isChanging();
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public void setForceCache(final boolean forceCache) {
-    entity.setForceCache(forceCache);
+    final Renderpass old = start();
+    try {
+      entity.setForceCache(forceCache);
+    } finally {
+      end(old);
+    }
   }
 
   @Override
   public boolean isForceCaching() {
-    return entity.isForceCaching();
+    final Renderpass old = start();
+    try {
+      return entity.isForceCaching();
+    } finally {
+      end(old);
+    }
   }
 
   @Override

@@ -119,6 +119,11 @@ public class CachedTable extends DataTable {
   }
 
   @Override
+  public String[] getNames() {
+    return Arrays.copyOf(names, names.length);
+  }
+
+  @Override
   public boolean isCategorical(final int col) {
     return categorical != null && categorical.get(col);
   }
@@ -163,10 +168,13 @@ public class CachedTable extends DataTable {
    * @param arr The array.
    */
   private void setCachedArray(final ColumnAggregation agg, final double[] arr) {
+    final int ord = agg.ordinal();
     if(aggs == null) {
-      aggs = new double[ColumnAggregation.values().length][];
+      aggs = new double[ColumnAggregation.aggregationTypeCount()][];
+    } else if(ord >= aggs.length) {
+      aggs = Arrays.copyOf(aggs, ColumnAggregation.aggregationTypeCount());
     }
-    aggs[agg.ordinal()] = arr;
+    aggs[ord] = arr;
   }
 
   /**
@@ -176,8 +184,9 @@ public class CachedTable extends DataTable {
    * @return The array.
    */
   private double[] getCacheArray(final ColumnAggregation agg) {
-    if(aggs != null) {
-      final double[] res = aggs[agg.ordinal()];
+    final int ord = agg.ordinal();
+    if(aggs != null && ord < aggs.length) {
+      final double[] res = aggs[ord];
       if(res != null) return res;
     }
     final double[] arr = new double[cols];
@@ -189,7 +198,9 @@ public class CachedTable extends DataTable {
   @Override
   protected double getCachedValue(final ColumnAggregation agg, final int col) {
     if(aggs == null) return Double.NaN;
-    final double[] arr = aggs[agg.ordinal()];
+    final int ord = agg.ordinal();
+    if(ord >= aggs.length) return Double.NaN;
+    final double[] arr = aggs[ord];
     if(arr == null) return Double.NaN;
     return arr[col];
   }
