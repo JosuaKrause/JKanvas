@@ -48,6 +48,8 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
    */
   private Renderpass start() {
     final Renderpass old = entity.getParent();
+    if(old == null || old == this) throw new IllegalStateException(
+        "entity already in use");
     entity.setParent(null);
     entity.setParent(this);
     return old;
