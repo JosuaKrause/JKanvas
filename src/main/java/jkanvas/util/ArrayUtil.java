@@ -1,5 +1,7 @@
 package jkanvas.util;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -140,6 +142,29 @@ public final class ArrayUtil {
     final double temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
+  }
+
+  /**
+   * Converts an {@link Iterable} to an array.
+   * 
+   * @param <T> The type.
+   * @param it The {@link Iterable}.
+   * @return The array.
+   */
+  public static <T> T[] toArray(final Iterable<T> it) {
+    Class<T> curClass = null;
+    final List<T> list = new ArrayList<>();
+    for(final T e : it) {
+      final Class<T> clazz = (Class<T>) e.getClass();
+      if(curClass == null) {
+        curClass = clazz;
+      } else if(clazz != curClass && clazz.isAssignableFrom(curClass)) {
+        curClass = clazz;
+      }
+      list.add(e);
+    }
+    if(curClass == null) return (T[]) list.toArray(); // list is empty
+    return list.toArray((T[]) Array.newInstance(curClass, list.size()));
   }
 
   /**
