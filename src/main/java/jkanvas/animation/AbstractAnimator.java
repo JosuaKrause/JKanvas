@@ -46,19 +46,30 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
       @Override
       public void run() {
         try {
+          long lastStep = 0;
           while(!isInterrupted() && !isDisposed()) {
-            synchronized(this) {
-              try {
-                wait(getFramewait());
-              } catch(final InterruptedException e) {
-                interrupt();
-                continue;
+            final long nextWait = getFramewait() - lastStep;
+            lastStep = 0;
+            // only wait if we were not too slow in the last step
+            if(nextWait > 0) {
+              synchronized(this) {
+                try {
+                  wait(nextWait);
+                } catch(final InterruptedException e) {
+                  interrupt();
+                  continue;
+                }
               }
+              // System.out.println("no lag");
+            } else {
+              // System.err.println("LAG!!!");
             }
+            final long startStep = System.nanoTime();
             final boolean needsRedraw = doStep();
             if(needsRedraw) {
               refreshAll();
             }
+            lastStep = (System.nanoTime() - startStep) / 1000000L;
           }
         } finally {
           dispose();
