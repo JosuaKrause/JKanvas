@@ -1,5 +1,7 @@
 package jkanvas.animation;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import jkanvas.Canvas;
 import jkanvas.Refreshable;
 import jkanvas.SimpleRefreshManager;
@@ -11,6 +13,9 @@ import jkanvas.animation.AnimationBarrier.CloseBlock;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public abstract class AbstractAnimator extends SimpleRefreshManager implements Animator {
+
+  /** The number of animation threads that were created. */
+  private static final AtomicInteger ANIMATOR_COUNT = new AtomicInteger();
 
   /** The frame rate of the animator. */
   private long framerate;
@@ -36,7 +41,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   /** Creates an animator. */
   public AbstractAnimator() {
     setFramerate(60);
-    animator = new Thread() {
+    animator = new Thread("animation-thread-" + ANIMATOR_COUNT.getAndIncrement()) {
 
       @Override
       public void run() {
@@ -134,11 +139,13 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
    * stopping the simulation thread. The object cannot be used anymore after a
    * call to this method.
    */
+  @Override
   public void dispose() {
     if(disposed) return;
     disposed = true;
     clearRefreshables();
     animator.interrupt();
+    list.dispose();
   }
 
   @Override

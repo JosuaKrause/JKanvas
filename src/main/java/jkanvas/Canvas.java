@@ -507,6 +507,7 @@ public class Canvas extends JComponent implements Refreshable {
         barrier.dispose();
       }
       barrier = null;
+      this.animator.dispose();
     }
     this.animator = animator;
     if(animator != null) {

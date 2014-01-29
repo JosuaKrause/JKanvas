@@ -327,4 +327,10 @@ public final class AnimationList implements AnimationToken {
     }
   }
 
+  /** Disposes this animation list. The list cannot be used afterwards. */
+  public void dispose() {
+    animated.clear();
+    pool.shutdown();
+  }
+
 }

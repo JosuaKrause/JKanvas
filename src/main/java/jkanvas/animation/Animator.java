@@ -42,4 +42,7 @@ public interface Animator extends RefreshManager {
    */
   void setAnimationBarrier(AnimationBarrier barrier, Canvas canvas);
 
+  /** Disposes this animator. The animator cannot be used afterwards. */
+  void dispose();
+
 }
