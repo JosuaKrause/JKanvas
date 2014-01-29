@@ -11,7 +11,7 @@ import java.util.Objects;
  * The implementation of a zoom-able user interface that can be translated.
  * Zooming can also be performed.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class ZoomableUI implements ZoomableView {
 

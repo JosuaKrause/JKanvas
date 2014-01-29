@@ -21,7 +21,7 @@ import jkanvas.painter.TextHUD;
 /**
  * Common tasks for example applications.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class ExampleUtil {
 

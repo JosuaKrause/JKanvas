@@ -12,7 +12,7 @@ import jkanvas.table.PointMapper;
 /**
  * A render pass for a scatter plot.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class ScatterplotRenderpass extends CachedRenderpass {
 

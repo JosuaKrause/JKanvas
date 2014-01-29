@@ -11,14 +11,14 @@ import java.awt.geom.RectangularShape;
 /**
  * Draws and measures a string.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class StringDrawer {
 
   /**
    * Orientations to draw a string.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   public static enum Orientation {
 

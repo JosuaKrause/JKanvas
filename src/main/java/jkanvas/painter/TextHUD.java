@@ -15,7 +15,7 @@ import jkanvas.util.StringDrawer;
  * A HUD that displays multiple lines of text. All lines are displayed in the
  * same color and an all enclosing background is added.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class TextHUD extends HUDRenderpass {
 

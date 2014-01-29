@@ -3,7 +3,7 @@ package jkanvas.nodelink;
 /**
  * A view on a graph.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface GraphView {
 

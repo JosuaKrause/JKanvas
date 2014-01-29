@@ -8,7 +8,7 @@ import jkanvas.animation.AnimatedPosition;
 /**
  * Realizes the actual painting of edges.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The node type.
  */
 public interface EdgeRealizer<T extends AnimatedPosition> {

@@ -12,14 +12,14 @@ import java.util.Set;
 /**
  * A JSON element.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * The type of an {@link JSONElement}.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   public static enum JSONType {
     /** A simple string. */

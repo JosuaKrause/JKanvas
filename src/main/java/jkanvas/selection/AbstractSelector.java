@@ -19,7 +19,7 @@ import jkanvas.util.PaintUtil;
 /**
  * Allows for arbitrary shaped selections.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class AbstractSelector extends HUDRenderpass {
 

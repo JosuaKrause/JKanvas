@@ -15,7 +15,7 @@ import jkanvas.util.Resource;
 /**
  * A short example showing the presentation capabilities of Kanvas.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class PresentationMain {
 

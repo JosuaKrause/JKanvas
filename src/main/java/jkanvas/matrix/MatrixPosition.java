@@ -3,7 +3,7 @@ package jkanvas.matrix;
 /**
  * A position within an {@link QuadraticMatrix}.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class MatrixPosition {
 

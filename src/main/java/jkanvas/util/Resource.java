@@ -19,7 +19,7 @@ import java.util.Objects;
  * A device independent resource identifier. It can either be an URL, a file, or
  * a system resource (located in the jar).
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class Resource {
 

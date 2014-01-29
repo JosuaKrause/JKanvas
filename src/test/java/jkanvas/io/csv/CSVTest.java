@@ -14,14 +14,14 @@ import org.junit.Test;
 /**
  * Tests for the csv reader.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class CSVTest {
 
   /**
    * The event type.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   public static enum EventType {
     /** Start. */
@@ -40,7 +40,7 @@ public class CSVTest {
   /**
    * An CSV event.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   private static final class Event {
 
@@ -138,7 +138,7 @@ public class CSVTest {
   /**
    * The handler for tests.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   protected final class TestHandler implements CSVHandler {
 

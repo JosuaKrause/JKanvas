@@ -11,7 +11,7 @@ import org.junit.Test;
 /**
  * Tests for animated positions.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class AnimatedPositionTest {
 

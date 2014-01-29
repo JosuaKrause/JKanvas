@@ -10,7 +10,7 @@ import jkanvas.Canvas;
 /**
  * A lasso selection.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class LassoSelection extends AbstractSelector {
 

@@ -9,7 +9,7 @@ import org.junit.Test;
 /**
  * Tests the zoom-able user interface.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class ZoomableUITest {
 
@@ -37,7 +37,7 @@ public class ZoomableUITest {
   /**
    * A {@link Refreshable} that counts the number of refreshes.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   private class DummyRefreshable implements Refreshable {
 

@@ -20,7 +20,7 @@ import jkanvas.painter.pod.Renderpod;
  * Render passes can be used to dynamically change what is rendered on a canvas
  * and define an order.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class Renderpass implements KanvasInteraction {
 

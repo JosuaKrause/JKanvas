@@ -12,7 +12,7 @@ import jkanvas.util.BitSetIterable;
 /**
  * Creates a simple view on a graph. Nodes can only be added.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The position type.
  */
 public class SimpleNodeLinkView<T extends Position2D> implements NodeLinkView<T> {

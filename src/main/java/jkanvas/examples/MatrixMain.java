@@ -34,7 +34,7 @@ import jkanvas.util.Resource;
  * An example show-casing the painting of {@link QuadraticMatrix quadratic
  * matrices}.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
     implements Selectable {

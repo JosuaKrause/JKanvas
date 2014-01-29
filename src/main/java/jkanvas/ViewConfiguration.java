@@ -14,7 +14,7 @@ import jkanvas.animation.AnimationTiming;
  * A view configuration provides a view on a {@link KanvasPainter}. The view is
  * tied to the painter.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class ViewConfiguration {
 
@@ -166,7 +166,7 @@ public class ViewConfiguration {
    * A context for this configuration. The ZUI camera should not change during
    * its usage.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   private static final class ViewContext extends AbstractKanvasContext {
 

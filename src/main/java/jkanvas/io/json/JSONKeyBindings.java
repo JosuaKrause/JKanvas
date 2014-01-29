@@ -11,7 +11,7 @@ import jkanvas.painter.SimpleTextHUD;
 /**
  * Interprets key bindings from a JSON element.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class JSONKeyBindings {
 

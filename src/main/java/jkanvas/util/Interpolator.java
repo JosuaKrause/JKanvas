@@ -4,7 +4,7 @@ package jkanvas.util;
  * An interpolator maps values from the range <code>[0,1]</code> to
  * <code>[0,1]</code>.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface Interpolator {
 

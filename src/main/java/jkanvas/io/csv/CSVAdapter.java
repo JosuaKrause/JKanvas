@@ -3,7 +3,7 @@ package jkanvas.io.csv;
 /**
  * An empty csv handler adapter. Ignores every event.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class CSVAdapter implements CSVHandler {
 

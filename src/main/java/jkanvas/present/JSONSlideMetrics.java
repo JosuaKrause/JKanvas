@@ -5,7 +5,7 @@ import jkanvas.io.json.JSONElement;
 /**
  * JSON specified slide metrics.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class JSONSlideMetrics extends SlideMetrics {
 

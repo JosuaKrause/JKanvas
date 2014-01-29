@@ -16,7 +16,7 @@ import jkanvas.util.Resource;
  * An easy to use csv reader. During the reading events are generated and passed
  * to the {@link CSVHandler} set by {@link #setHandler(CSVHandler)}.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class CSVReader {
 
@@ -26,7 +26,7 @@ public class CSVReader {
   /**
    * The context of the CSV cursor.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   private final class Context implements CSVContext {
 

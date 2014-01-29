@@ -5,7 +5,7 @@ import java.awt.geom.Point2D;
 /**
  * A position in two dimensions.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class Position2D {
 

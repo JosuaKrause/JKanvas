@@ -9,7 +9,7 @@ import org.junit.Test;
 /**
  * Tests some paint utility methods.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class PaintUtilTest {
 

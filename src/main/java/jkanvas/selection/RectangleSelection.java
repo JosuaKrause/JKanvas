@@ -10,7 +10,7 @@ import jkanvas.Canvas;
 /**
  * A rectangle selection.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class RectangleSelection extends AbstractSelector {
 

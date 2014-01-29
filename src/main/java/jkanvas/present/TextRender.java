@@ -14,7 +14,7 @@ import jkanvas.present.SlideMetrics.VerticalSlideAlignment;
 /**
  * A simple text object for a slide.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class TextRender extends SlideObject {
 

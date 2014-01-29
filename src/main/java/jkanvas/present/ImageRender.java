@@ -17,7 +17,7 @@ import jkanvas.util.Resource;
 /**
  * An image slide object.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class ImageRender extends SlideObject {
 

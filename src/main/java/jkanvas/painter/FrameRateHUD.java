@@ -9,7 +9,7 @@ import jkanvas.FrameRateDisplayer;
 /**
  * A HUD showing the current frame-rate.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class FrameRateHUD extends TextHUD implements FrameRateDisplayer {
 

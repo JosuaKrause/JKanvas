@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 /**
  * Paints and interacts with a {@link Canvas}.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface KanvasPainter extends KanvasInteraction, HUDInteraction {
 

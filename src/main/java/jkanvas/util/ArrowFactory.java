@@ -10,14 +10,14 @@ import java.util.Objects;
 /**
  * A factory for creating arrow shapes.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class ArrowFactory {
 
   /**
    * The type of an arrow tip.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    */
   public static interface TipType {
 

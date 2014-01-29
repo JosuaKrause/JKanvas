@@ -12,7 +12,7 @@ import jkanvas.painter.Renderpass;
 /**
  * Paints a matrix.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The matrix type.
  */
 public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {

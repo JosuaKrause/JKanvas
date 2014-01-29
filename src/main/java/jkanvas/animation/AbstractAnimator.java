@@ -10,7 +10,7 @@ import jkanvas.animation.AnimationBarrier.CloseBlock;
 /**
  * An abstract animator.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class AbstractAnimator extends SimpleRefreshManager implements Animator {
 

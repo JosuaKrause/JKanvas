@@ -7,7 +7,7 @@ import jkanvas.nodelink.GraphView;
 /**
  * An adjacency matrix using a {@link GraphView} as data storage.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The graph view type.
  */
 public class GraphMatrix<T extends GraphView> implements QuadraticMatrix<Boolean> {

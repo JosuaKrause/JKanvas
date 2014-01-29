@@ -11,7 +11,7 @@ import jkanvas.painter.Renderpass;
 /**
  * Shows borders of render passes.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
 public class BorderRenderpass<T extends Renderpass> extends Renderpod<T> {

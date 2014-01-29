@@ -5,7 +5,7 @@ import jkanvas.animation.Position2D;
 /**
  * Provides a view on a graph with enumerable edges and nodes.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The position type.
  */
 public interface NodeLinkView<T extends Position2D> extends GraphView {

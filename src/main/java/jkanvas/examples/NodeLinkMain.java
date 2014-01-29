@@ -37,7 +37,7 @@ import jkanvas.util.Resource;
 /**
  * A small node-link example application.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
 

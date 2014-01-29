@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * A quadratic matrix.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
 public interface QuadraticMatrix<T> {

@@ -13,7 +13,7 @@ import jkanvas.KanvasContext;
 /**
  * A HUD render pass is always in component coordinates.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class HUDRenderpass implements HUDInteraction {
 

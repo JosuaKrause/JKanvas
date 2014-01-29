@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * Restricts the area of a {@link ZoomableUI}.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface RestrictedCanvas {
 

@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Provides an interface to write a CSV file.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class CSVWriter implements Closeable {
 

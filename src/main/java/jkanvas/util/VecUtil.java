@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * A small vector utility class.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class VecUtil {
 

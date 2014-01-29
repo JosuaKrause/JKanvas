@@ -3,7 +3,7 @@ package jkanvas.animation;
 /**
  * An animatable object.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface Animated {
 

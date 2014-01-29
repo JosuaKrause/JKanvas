@@ -9,7 +9,7 @@ import jkanvas.util.Interpolator;
  * The timing of an animation consists of an {@link Interpolator} and a duration
  * of the animation in milliseconds.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class AnimationTiming {
 

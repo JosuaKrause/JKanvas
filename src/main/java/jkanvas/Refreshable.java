@@ -3,7 +3,7 @@ package jkanvas;
 /**
  * Provides a method to actively refresh the current view.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface Refreshable {
 

@@ -29,7 +29,7 @@ import jkanvas.util.VecUtil;
  * depending of the implementation of the subclass. Transitions between layouts
  * can be animated.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
 public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
@@ -37,7 +37,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * The offset of a render pass as {@link AnimatedPosition}.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    * @param <T> The type of the render pass.
    */
   protected static final class RenderpassPosition<T extends Renderpass>

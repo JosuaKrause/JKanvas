@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * Paints and interacts with a Kanvas in canvas coordinates.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface KanvasInteraction {
 

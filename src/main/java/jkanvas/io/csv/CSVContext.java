@@ -6,7 +6,7 @@ package jkanvas.io.csv;
 /**
  * The context of an csv event.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface CSVContext {
 

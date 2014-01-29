@@ -11,7 +11,7 @@ import java.util.ListIterator;
  * Utility functions for arrays.
  * 
  * @author Leonard Woerteler <leo@woerteler.de>
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class ArrayUtil {
 

@@ -12,7 +12,7 @@ import jkanvas.util.PaintUtil;
 /**
  * A default implementation for a node realizer.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The position type.
  */
 public class DefaultNodeRealizer<T extends AnimatedPosition> implements NodeRealizer<T> {

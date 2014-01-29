@@ -305,7 +305,7 @@ public abstract class GenericAnimated<T> implements Animated {
   /**
    * A pending animation operation.
    * 
-   * @author Joschi <josua.krause@googlemail.com>
+   * @author Joschi <josua.krause@gmail.com>
    * @param <T> The animation type.
    */
   private static final class PendingOp<T> {

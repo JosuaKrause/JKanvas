@@ -7,7 +7,7 @@ import java.awt.geom.Point2D;
 /**
  * Paints and interacts with a canvas in component coordinates.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface HUDInteraction {
 

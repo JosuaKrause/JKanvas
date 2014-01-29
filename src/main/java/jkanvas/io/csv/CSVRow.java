@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * A CSV row.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class CSVRow {
 

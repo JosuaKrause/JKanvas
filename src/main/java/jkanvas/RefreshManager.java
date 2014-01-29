@@ -1,10 +1,9 @@
 package jkanvas;
 
-
 /**
  * Manages refreshing of various resources.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface RefreshManager {
 

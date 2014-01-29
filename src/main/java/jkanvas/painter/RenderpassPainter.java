@@ -19,7 +19,7 @@ import jkanvas.util.PaintUtil;
 /**
  * A render pass painter renders render passes.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class RenderpassPainter implements KanvasPainter {
 

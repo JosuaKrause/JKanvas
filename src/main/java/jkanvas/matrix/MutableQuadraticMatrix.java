@@ -5,7 +5,7 @@ import jkanvas.RefreshManager;
 /**
  * A mutable quadratic matrix.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
 public interface MutableQuadraticMatrix<T> extends QuadraticMatrix<T> {

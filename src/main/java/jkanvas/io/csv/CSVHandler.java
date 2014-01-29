@@ -7,7 +7,7 @@ package jkanvas.io.csv;
  * A csv handler receives events from the csv reader. {@link CSVAdapter} can be
  * used as adapter class.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface CSVHandler {
 

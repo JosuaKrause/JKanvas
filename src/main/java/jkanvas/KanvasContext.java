@@ -11,7 +11,7 @@ import java.awt.geom.RectangularShape;
  * coordinates are provided. In order to retrieve the current zoom factor the
  * method {@link #toComponentLength(double)} can be used.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface KanvasContext {
 

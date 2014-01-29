@@ -7,7 +7,7 @@ import jkanvas.painter.Renderpass;
 /**
  * An interface for arbitrary shaped selections.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface Selectable {
 

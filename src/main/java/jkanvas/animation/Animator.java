@@ -7,7 +7,7 @@ import jkanvas.Refreshable;
 /**
  * An animator refreshes a {@link Refreshable} successively.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface Animator extends RefreshManager {
 

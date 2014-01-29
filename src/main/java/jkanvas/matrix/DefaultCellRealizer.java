@@ -10,7 +10,7 @@ import jkanvas.KanvasContext;
  * A default implementation for cell realizer. The color of a cell has to be
  * implemented.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <U> The content type.
  * @param <T> The matrix type.
  */

@@ -8,7 +8,7 @@ import jkanvas.RefreshManager;
  * A straight forward implementation of a {@link QuadraticMatrix}. Only the
  * creation of the typed arrays must be handled by a sub-class.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
 public abstract class AbstractQuadraticMatrix<T> implements MutableQuadraticMatrix<T> {

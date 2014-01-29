@@ -9,7 +9,7 @@ import java.awt.geom.Point2D;
 /**
  * A list of circular shaped points with filling and border color.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The point shape type.
  */
 public abstract class PointList<T extends Shape> extends GenericPaintList<T> {

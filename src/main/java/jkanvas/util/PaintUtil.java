@@ -15,7 +15,7 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * Utility methods for painting.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class PaintUtil {
 

@@ -11,7 +11,7 @@ import jkanvas.painter.RenderpassPainter;
 /**
  * An animated painter.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class AnimatedPainter extends RenderpassPainter implements Animator {
 

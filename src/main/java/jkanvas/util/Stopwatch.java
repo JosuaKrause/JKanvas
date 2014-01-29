@@ -3,7 +3,7 @@ package jkanvas.util;
 /**
  * A simple class to measure the computation time of tasks.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class Stopwatch {
 

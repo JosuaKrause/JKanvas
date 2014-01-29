@@ -36,7 +36,7 @@ import jkanvas.util.Stopwatch;
  * A simple class adding panning and zooming functionality to a
  * {@link JComponent}.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class Canvas extends JComponent implements Refreshable {
 

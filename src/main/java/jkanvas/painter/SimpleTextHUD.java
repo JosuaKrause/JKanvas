@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A simple {@link TextHUD} implementation.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class SimpleTextHUD extends TextHUD {
 

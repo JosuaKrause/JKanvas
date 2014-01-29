@@ -16,7 +16,7 @@ import javax.swing.JComponent;
 /**
  * Saves screenshots.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class Screenshot {
 

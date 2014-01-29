@@ -7,7 +7,7 @@ import java.awt.geom.Point2D;
 /**
  * Mouse interactions for dragging objects or the background.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class MouseInteraction extends MouseAdapter {
 

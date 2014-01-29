@@ -6,7 +6,7 @@ import java.awt.geom.RectangularShape;
 /**
  * Displays the frame rate.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public interface FrameRateDisplayer {
 

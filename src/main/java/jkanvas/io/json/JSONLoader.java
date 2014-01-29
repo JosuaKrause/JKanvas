@@ -10,7 +10,7 @@ import java.util.Objects;
  * Accesses the static <code>loadFromJSON</code> method from a class to create
  * objects via JSON description.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class JSONLoader {
 

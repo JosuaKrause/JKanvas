@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 /**
  * Iterates over the given bit set.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public final class BitSetIterable implements Iterable<Integer> {
 

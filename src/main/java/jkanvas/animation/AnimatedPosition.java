@@ -9,7 +9,7 @@ import jkanvas.util.VecUtil;
  * animation is computed. All public facing methods do copy the {@link Point2D}
  * objects to ensure that outside changes do not affect them afterwards.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class AnimatedPosition extends Position2D implements Animated {
 

@@ -16,7 +16,7 @@ import jkanvas.painter.Renderpass;
  * A group linearly ordering the members. Render passes without bounding boxes
  * are <em>not</em> allowed.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
 public class LinearGroup<T extends Renderpass> extends RenderGroup<T> {

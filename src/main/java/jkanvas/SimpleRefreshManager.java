@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A simple implementation of a {@link RefreshManager}.
  * 
- * @author Joschi <josua.krause@googlemail.com>
+ * @author Joschi <josua.krause@gmail.com>
  */
 public class SimpleRefreshManager implements RefreshManager {
 
