@@ -273,4 +273,17 @@ public class SnapshotList<T> {
     return snapshots;
   }
 
+  /** Clears all elements from the list. */
+  public final void clear() {
+    synchronized(toBeAdded) {
+      toBeAdded.clear();
+      startSnapshot();
+      for(final WeakReference<T> ref : list) {
+        ref.clear();
+      }
+      // the last snapshot will clean up the list eventually
+      endSnapshot(true);
+    }
+  }
+
 }
