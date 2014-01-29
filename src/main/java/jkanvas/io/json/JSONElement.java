@@ -411,11 +411,21 @@ public class JSONElement implements Iterable<JSONElement> {
    * 
    * @param name The name of the value.
    * @param defaultValue The default value.
-   * @return The double value.
+   * @return The double value of the given child.
    */
   public double getDouble(final String name, final double defaultValue) {
-    if(hasValue(name)) return Double.parseDouble(getValue(name).string());
-    return defaultValue;
+    if(!hasValue(name)) return defaultValue;
+    return getDouble(name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @return The double value of the given child.
+   */
+  public double getDouble(final String name) {
+    return Double.parseDouble(getString(name));
   }
 
   /**
@@ -426,8 +436,18 @@ public class JSONElement implements Iterable<JSONElement> {
    * @return The integer value of the given child.
    */
   public int getInt(final String name, final int defaultValue) {
-    if(hasValue(name)) return Integer.parseInt(getValue(name).string());
-    return defaultValue;
+    if(!hasValue(name)) return defaultValue;
+    return getInt(name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @return The integer value of the given child.
+   */
+  public int getInt(final String name) {
+    return Integer.parseInt(getString(name));
   }
 
   /**
@@ -438,8 +458,18 @@ public class JSONElement implements Iterable<JSONElement> {
    * @return The long value of the given child.
    */
   public long getLong(final String name, final long defaultValue) {
-    if(hasValue(name)) return Long.parseLong(getValue(name).string());
-    return defaultValue;
+    if(!hasValue(name)) return defaultValue;
+    return getLong(name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @return The long value of the given child.
+   */
+  public long getLong(final String name) {
+    return Long.parseLong(getString(name));
   }
 
   /**
@@ -450,8 +480,19 @@ public class JSONElement implements Iterable<JSONElement> {
    * @return The string value of the given child.
    */
   public String getString(final String name, final String defaultValue) {
-    if(hasValue(name)) return getValue(name).string();
-    return defaultValue;
+    if(!hasValue(name)) return defaultValue;
+    return getString(name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @return The string value of the given child.
+   */
+  public String getString(final String name) {
+    if(!hasValue(name)) throw new IllegalArgumentException("expected value for " + name);
+    return getValue(name).string();
   }
 
   /**
@@ -463,7 +504,17 @@ public class JSONElement implements Iterable<JSONElement> {
    */
   public boolean getBool(final String name, final boolean defaultValue) {
     if(!hasValue(name)) return defaultValue;
-    final String str = getValue(name).string();
+    return getBool(name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @return The boolean value of the given child.
+   */
+  public boolean getBool(final String name) {
+    final String str = getString(name);
     if(str.equals("false")) return false;
     if(str.equals("true")) return true;
     throw new IllegalArgumentException("value must be either true or false: " + str);
@@ -492,7 +543,18 @@ public class JSONElement implements Iterable<JSONElement> {
    */
   public double getPercentage(final String name, final double defaultPercentage) {
     if(!hasValue(name)) return defaultPercentage;
-    final String str = getValue(name).string();
+    return getPercentage(name);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param name The name of the value.
+   * @return The percentage value of the child as ratio between 0.0 and 1.0. A
+   *         '%' is expected at the end of the string.
+   */
+  public double getPercentage(final String name) {
+    final String str = getString(name);
     if(!str.endsWith("%")) throw new IllegalArgumentException(
         "value must end in %: " + str);
     return Double.parseDouble(str.substring(0, str.length() - 1)) * 0.01;
