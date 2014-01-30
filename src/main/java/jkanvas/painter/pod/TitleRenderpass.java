@@ -18,6 +18,9 @@ import jkanvas.util.StringDrawer.Orientation;
  */
 public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
 
+  /** An array for initializing with no title. */
+  private static final String[] NO_TITLE = { ""};
+
   /**
    * The position of the titles.
    * 
@@ -60,11 +63,39 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
    */
   public TitleRenderpass(final T pass, final String title,
       final double textHeight, final double space) {
+    this(pass, textHeight, space, title);
+  }
+
+  /**
+   * Creates an empty title at the top for the given render pass.
+   * 
+   * @param pass The render pass.
+   * @param textHeight The text height.
+   * @param space The space.
+   */
+  public TitleRenderpass(final T pass, final double textHeight, final double space) {
+    this(pass, textHeight, space, NO_TITLE);
+  }
+
+  /**
+   * Creates a title at the top for the given render pass.
+   * 
+   * @param pass The render pass.
+   * @param textHeight The text height.
+   * @param space The space.
+   * @param titles The initial titles.
+   */
+  public TitleRenderpass(final T pass, final double textHeight,
+      final double space, final String... titles) {
     super(pass);
+    if(titles.length == 0) throw new IllegalArgumentException("empty titles");
+    for(final String s : titles) {
+      Objects.requireNonNull(s);
+    }
     this.textHeight = textHeight;
     this.space = space;
+    this.titles = titles.clone();
     titleSpace = 0;
-    titles = new String[] { Objects.requireNonNull(title)};
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
     setChildOffset(0, space + textHeight);
@@ -80,11 +111,40 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
    */
   public TitleRenderpass(final Renderpod<T> pass,
       final String title, final double textHeight, final double space) {
+    this(pass, textHeight, space, title);
+  }
+
+  /**
+   * Creates an empty title at the top for the given render pass.
+   * 
+   * @param pass The render pass.
+   * @param textHeight The text height.
+   * @param space The space.
+   */
+  public TitleRenderpass(
+      final Renderpod<T> pass, final double textHeight, final double space) {
+    this(pass, textHeight, space, NO_TITLE);
+  }
+
+  /**
+   * Creates a title at the top for the given render pass.
+   * 
+   * @param pass The render pass.
+   * @param textHeight The text height.
+   * @param space The space.
+   * @param titles The initial titles.
+   */
+  public TitleRenderpass(final Renderpod<T> pass, final double textHeight,
+      final double space, final String... titles) {
     super(pass);
+    if(titles.length == 0) throw new IllegalArgumentException("empty titles");
+    for(final String s : titles) {
+      Objects.requireNonNull(s);
+    }
     this.textHeight = textHeight;
     this.space = space;
+    this.titles = titles.clone();
     titleSpace = 0;
-    titles = new String[] { Objects.requireNonNull(title)};
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
     setChildOffset(0, space + textHeight);
@@ -106,7 +166,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
    */
   public void setTitles(final String... titles) {
     Objects.requireNonNull(titles);
-    if(titles.length == 0) throw new IllegalArgumentException();
+    if(titles.length == 0) throw new IllegalArgumentException("empty titles");
     for(final String s : titles) {
       Objects.requireNonNull(s);
     }

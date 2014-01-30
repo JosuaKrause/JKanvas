@@ -1,8 +1,8 @@
 {
     "title": {
         "type": "jkanvas.painter.pod.TitleRenderpass",
-        "args": "parent,title,height,space",
-        "title": "",
+        "args": "parent(jkanvas.painter.Renderpass),height,space,titles",
+        "titles": [""],
         "height": "40",
         "space": "5",
     },

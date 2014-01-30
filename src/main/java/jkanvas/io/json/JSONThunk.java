@@ -27,6 +27,8 @@ public class JSONThunk implements ObjectCreator {
   private final Map<String, JSONThunk> setters = new HashMap<>();
   /** The thunks for the constructor arguments. */
   private final Map<String, JSONThunk> constructorLookup = new HashMap<>();
+  /** Hints to find the right constructor. */
+  private final Map<String, Class<?>> constructorHints = new HashMap<>();
   /** The constructor arguments. */
   private final List<String> constructor = new ArrayList<>();
   /** The creation string or <code>null</code>. */
@@ -146,15 +148,36 @@ public class JSONThunk implements ObjectCreator {
         "cannot define constructor for primitives");
     if(arr != null) throw new IllegalStateException(
         "cannot define constructor for arrays");
+    if(!constructor.isEmpty()) throw new IllegalStateException("constructor already set");
     final String[] fields = construct.split(",");
     if(fields.length == 0) throw new IllegalArgumentException(
         "default constructor is implicit");
-    if(!constructor.isEmpty()) throw new IllegalStateException("constructor already set");
     for(final String f : fields) {
-      constructor.add(f);
-      final JSONThunk thunk = setters.remove(f);
+      final String field;
+      if(f.endsWith(")")) {
+        final int begin = f.lastIndexOf('(');
+        final int end = f.lastIndexOf(')', f.length() - 2);
+        if(begin >= 0 && end < begin) {
+          final String hint = f.substring(begin + 1, f.length() - 1);
+          field = f.substring(0, begin);
+          try {
+            constructorHints.put(field, findClass(hint));
+          } catch(final ClassNotFoundException e) {
+            throw new IllegalArgumentException(
+                "could not interpret hint \"" + hint + "\" in " + construct, e);
+          }
+        } else {
+          field = f;
+        }
+      } else {
+        field = f;
+      }
+      if(field.isEmpty()) throw new IllegalArgumentException(
+          "empty field in constructor definition: " + construct);
+      constructor.add(field);
+      final JSONThunk thunk = setters.remove(field);
       if(thunk != null) {
-        constructorLookup.put(f, thunk);
+        constructorLookup.put(field, thunk);
       }
     }
   }
@@ -341,14 +364,29 @@ public class JSONThunk implements ObjectCreator {
    * Finds a constructor for the given type with the given number of arguments.
    * 
    * @param type The type.
-   * @param args The number of arguments.
+   * @param args The names of the arguments.
+   * @param hints The constructor hints.
    * @return The first matching constructor.
    * @throws IOException I/O Exception.
    */
-  private static Constructor<?> findConstructor(final Class<?> type, final int args)
+  private static Constructor<?> findConstructor(final Class<?> type,
+      final List<String> args, final Map<String, Class<?>> hints)
       throws IOException {
-    for(final Constructor<?> c : type.getConstructors()) {
-      if(c.getParameterTypes().length == args) return c;
+    outer: for(final Constructor<?> c : type.getConstructors()) {
+      final Class<?>[] params = c.getParameterTypes();
+      if(params.length != args.size()) {
+        continue outer;
+      }
+      for(int i = 0; i < params.length; ++i) {
+        final Class<?> hint = hints.get(args.get(i));
+        if(hint == null) {
+          continue;
+        }
+        if(!params[i].equals(hint)) {
+          continue outer;
+        }
+      }
+      return c;
     }
     throw new IOException("could not find constructor: " + type.getSimpleName());
   }
@@ -363,7 +401,7 @@ public class JSONThunk implements ObjectCreator {
   private Object create(final Class<?> type) throws IOException {
     try {
       if(constructor.isEmpty()) return type.newInstance();
-      final Constructor<?> c = findConstructor(type, constructor.size());
+      final Constructor<?> c = findConstructor(type, constructor, constructorHints);
       final Class<?>[] classes = c.getParameterTypes();
       final Object[] args = new Object[classes.length];
       for(int i = 0; i < classes.length; ++i) {
