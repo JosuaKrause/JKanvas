@@ -243,6 +243,7 @@ public final class ArrayUtil {
           }
 
           @Override
+          // TODO #43 -- Java 8 simplification
           public void remove() {
             throw new UnsupportedOperationException();
           }
@@ -269,7 +270,6 @@ public final class ArrayUtil {
     for(int i = 0; i < k && reservoir.hasNext(); i++) {
       list.add(reservoir.next());
     }
-
     if(list.size() == k) {
       for(int j = k; reservoir.hasNext(); j++) {
         final T e = reservoir.next();
@@ -279,7 +279,6 @@ public final class ArrayUtil {
         }
       }
     }
-
     return list;
   }
 

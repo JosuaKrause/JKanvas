@@ -94,6 +94,7 @@ public final class JSONSetup {
       frame.setVisible(true);
     }
     if(reset) {
+      // TODO #43 -- Java 8 simplification
       canvas.scheduleAction(new AnimationAction() {
 
         @Override
@@ -145,15 +146,19 @@ public final class JSONSetup {
       final JSONElement restr = getRecursive(el, "restriction", mng, fields);
       if(restr != null) {
         if(restr.isString()) {
-          final String s = restr.string();
-          if(s.equals("auto")) {
-            rest = new Rectangle2D.Double();
-            autoRest = true;
-          } else if(s.equals("none")) {
-            rest = null;
-            autoRest = false;
-          } else throw new IOException(
-              "expect \"auto\", \"none\", or rectangle as restriction");
+          switch(restr.string()) {
+            case "auto":
+              rest = new Rectangle2D.Double();
+              autoRest = true;
+              break;
+            case "none":
+              rest = null;
+              autoRest = false;
+              break;
+            default:
+              throw new IOException(
+                  "expect \"auto\", \"none\", or rectangle as restriction");
+          }
         } else {
           rest = JSONLoader.getRectFromJSON(restr);
           autoRest = false;
@@ -358,6 +363,7 @@ public final class JSONSetup {
   public static Iterable<JSONElement> getRecursiveArray(final JSONElement el,
       final String name, final JSONManager mng, final Set<String> fields) {
     fields.add(name);
+    // TODO #43 -- Java 8 simplification
     return new Iterable<JSONElement>() {
 
       @Override

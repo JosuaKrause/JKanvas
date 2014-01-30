@@ -29,6 +29,7 @@ public interface ZoomableView {
    * @param y The y coordinate.
    * @param zooming The amount of zooming.
    */
+  // TODO #43 -- Java 8 simplification
   void zoomTicks(final double x, final double y, final int zooming);
 
   /**
@@ -47,6 +48,7 @@ public interface ZoomableView {
    * @param factor The zoom factor.
    * @param box The rectangle to zoom to in component coordinates.
    */
+  // TODO #43 -- Java 8 simplification
   void zoom(final double factor, final RectangularShape box);
 
   /**
@@ -55,6 +57,7 @@ public interface ZoomableView {
    * 
    * @param screen The screen rectangle in component coordinates.
    */
+  // TODO #43 -- Java 8 simplification
   void resetView(final RectangularShape screen);
 
   /**
@@ -70,6 +73,7 @@ public interface ZoomableView {
    *          possible from <code>view</code> will be visible without showing
    *          anything else.
    */
+  // TODO #43 -- Java 8 simplification
   void showRectangle(final RectangularShape view, final RectangularShape screen,
       final double margin, final boolean fit);
 
@@ -92,6 +96,7 @@ public interface ZoomableView {
    * 
    * @param g The graphics object.
    */
+  // TODO #43 -- Java 8 simplification
   void transform(final Graphics2D g);
 
   /**
@@ -164,6 +169,7 @@ public interface ZoomableView {
    * @param p The point.
    * @return The point in the canvas coordinates.
    */
+  // TODO #43 -- Java 8 simplification
   Point2D getForScreen(final Point2D p);
 
   /**
@@ -172,6 +178,7 @@ public interface ZoomableView {
    * @param rect The rectangle.
    * @return The rectangle in canvas coordinates.
    */
+  // TODO #43 -- Java 8 simplification
   Rectangle2D toCanvas(final RectangularShape rect);
 
   /**

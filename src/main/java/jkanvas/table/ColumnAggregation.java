@@ -16,6 +16,7 @@ public abstract class ColumnAggregation {
   private static final List<ColumnAggregation> VALUES = new ArrayList<>();
 
   /** The minimum of the column. */
+  // TODO #43 -- Java 8 simplification
   public static final ColumnAggregation MINIMUM = new ColumnAggregation("min") {
 
     @Override
@@ -33,6 +34,7 @@ public abstract class ColumnAggregation {
   };
 
   /** The maximum of the column. */
+  // TODO #43 -- Java 8 simplification
   public static final ColumnAggregation MAXIMUM = new ColumnAggregation("max") {
 
     @Override
@@ -50,6 +52,7 @@ public abstract class ColumnAggregation {
   };
 
   /** The mean value of the column. */
+  // TODO #43 -- Java 8 simplification
   public static final ColumnAggregation MEAN = new ColumnAggregation("mean") {
 
     @Override
@@ -65,6 +68,7 @@ public abstract class ColumnAggregation {
   };
 
   /** The standard deviation. */
+  // TODO #43 -- Java 8 simplification
   public static final ColumnAggregation STD_DEVIATION = new ColumnAggregation("std") {
 
     @Override

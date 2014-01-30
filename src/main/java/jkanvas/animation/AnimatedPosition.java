@@ -20,6 +20,7 @@ public class AnimatedPosition extends Position2D implements Animated {
    * 
    * @author Joschi <josua.krause@gmail.com>
    */
+  // TODO #43 -- Java 8 simplification
   private final class Point2DAnimated extends GenericAnimated<Point2D> {
 
     /**

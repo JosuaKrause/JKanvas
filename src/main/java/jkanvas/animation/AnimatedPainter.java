@@ -30,6 +30,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     this.isStopped = isStopped;
     final AtomicLong lastStop = new AtomicLong(getTime());
     this.lastStop = lastStop;
+    // TODO #43 -- Java 8 simplification
     animator = new AbstractAnimator() {
 
       @Override

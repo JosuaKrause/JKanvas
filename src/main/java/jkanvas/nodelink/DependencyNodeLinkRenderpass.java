@@ -43,6 +43,7 @@ public class DependencyNodeLinkRenderpass extends NodeLinkRenderpass<IndexedPosi
   public DependencyNodeLinkRenderpass(final DependencyNodeLinkView v) {
     super(v);
     this.v = v;
+    // TODO #43 -- Java 8 simplification
     setNodeRealizer(new DefaultNodeRealizer<IndexedPosition>() {
 
       @Override

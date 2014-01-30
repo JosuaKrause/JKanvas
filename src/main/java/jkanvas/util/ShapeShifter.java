@@ -31,8 +31,8 @@ public abstract class ShapeShifter implements Shape {
     }
 
     @Override
-    public boolean intersects(final double x, final double y, final double w,
-        final double h) {
+    public boolean intersects(
+        final double x, final double y, final double w, final double h) {
       return fail();
     }
 

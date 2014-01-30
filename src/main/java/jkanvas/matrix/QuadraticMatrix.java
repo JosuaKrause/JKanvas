@@ -21,6 +21,7 @@ public interface QuadraticMatrix<T> extends Matrix<T> {
    * 
    * @return The names of the matrix rows / columns.
    */
+  // TODO #43 -- Java 8 simplification
   String[] getNames();
 
   /**

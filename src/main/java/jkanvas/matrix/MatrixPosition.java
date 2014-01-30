@@ -1,7 +1,7 @@
 package jkanvas.matrix;
 
 /**
- * A position within an {@link QuadraticMatrix}.
+ * A position within a {@link Matrix}.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
@@ -14,7 +14,7 @@ public class MatrixPosition {
   public final int col;
 
   /**
-   * Creates a position within an {@link QuadraticMatrix}.
+   * Creates a position within a {@link Matrix}.
    * 
    * @param row The row.
    * @param col The column.

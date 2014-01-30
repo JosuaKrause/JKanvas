@@ -217,6 +217,7 @@ public class CSVReader {
   public static final Iterable<CSVRow> readRows(
       final Resource resource, final CSVReader reader) {
     if(!resource.hasContent()) return null;
+    // TODO #43 -- Java 8 simplification
     return new Iterable<CSVRow>() {
 
       @Override

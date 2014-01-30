@@ -348,6 +348,7 @@ public class Canvas extends JComponent implements Refreshable {
     }
     addMessage(cmd, message);
     if(!printKey) {
+      // TODO #43 -- Java 8 simplification
       addAction(key, new AbstractAction() {
 
         @Override
@@ -362,6 +363,7 @@ public class Canvas extends JComponent implements Refreshable {
         addMessage(lc, message);
       }
       if(messageDispatcher == null) {
+        // TODO #43 -- Java 8 simplification
         messageDispatcher = new AbstractAction() {
 
           @Override

@@ -210,6 +210,7 @@ public class Feature implements Iterable<Double> {
       }
 
       @Override
+      // TODO #43 -- Java 8 simplification
       public void remove() {
         throw new UnsupportedOperationException();
       }
@@ -356,6 +357,7 @@ public class Feature implements Iterable<Double> {
   } // FeatureMetric
 
   /** The euclidean metric. */
+  // TODO #43 -- Java 8 simplification
   public static final Metric<Feature> EUCLID = new FeatureMetric() {
 
     @Override
@@ -367,6 +369,7 @@ public class Feature implements Iterable<Double> {
   }; // EUCLID
 
   /** The scaled metric. */
+  // TODO #43 -- Java 8 simplification
   public static final Metric<Feature> SCALED = new FeatureMetric() {
 
     @Override
@@ -387,6 +390,7 @@ public class Feature implements Iterable<Double> {
    * correlation (-1 or 1) is 0 distance and no correlation (0) is the maximum
    * distance of 1.
    */
+  // TODO #43 -- Java 8 simplification
   public static final Metric<Feature> PEARSON = new FeatureMetric() {
 
     @Override

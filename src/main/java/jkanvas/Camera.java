@@ -38,6 +38,7 @@ public interface Camera {
    *          finished.
    * @param useMargin Whether to add the canvas margin.
    */
+  // TODO #43 -- Java 8 simplification
   void toView(Renderpass pass, AnimationTiming timing,
       AnimationAction onFinish, boolean useMargin);
 

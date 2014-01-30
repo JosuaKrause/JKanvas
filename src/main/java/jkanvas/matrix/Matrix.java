@@ -46,6 +46,7 @@ public interface Matrix<T> {
    * 
    * @return The names of the matrix rows.
    */
+  // TODO #43 -- Java 8 simplification
   String[] getRowNames();
 
   /**
@@ -61,6 +62,7 @@ public interface Matrix<T> {
    * 
    * @return The names of the matrix columns.
    */
+  // TODO #43 -- Java 8 simplification
   String[] getColumnNames();
 
   /**

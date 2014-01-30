@@ -47,6 +47,7 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   /** Ensures that {@link #view} is non-<code>null</code>. */
   private void ensureView() {
     if(view != null) return;
+    // TODO #43 -- Java 8 simplification
     view = new GenericAnimated<Rectangle2D>(getView()) {
 
       @Override

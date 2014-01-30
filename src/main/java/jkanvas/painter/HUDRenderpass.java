@@ -103,6 +103,7 @@ public class HUDRenderpass implements HUDInteraction {
   }
 
   @Override
+  // TODO #43 -- Java 8 simplification
   public void processMessage(final String[] ids, final String msg) {
     for(final String id : ids) {
       if(this.ids.contains(id) && this.ids.contains(" " + id + " ")) {

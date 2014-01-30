@@ -69,6 +69,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
         final AnimationTiming timing, final AnimationAction onFinish) {
       if(timing.duration <= 0) return onFinish;
       pass.setForceCache(true);
+      // TODO #43 -- Java 8 simplification
       return new AnimationAction() {
 
         @Override

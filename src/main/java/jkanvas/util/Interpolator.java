@@ -48,7 +48,7 @@ public interface Interpolator {
     /** The minimal value of the arc tangents. */
     private final double MIN_VAL = VecUtil.fastArcTan(-0.5 * STRENGTH);
 
-    /** The range of the arc tangets. */
+    /** The range of the arc tangents. */
     private final double RANGE = -MIN_VAL * 2;
 
     @Override

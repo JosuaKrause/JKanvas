@@ -41,6 +41,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   /** Creates an animator. */
   public AbstractAnimator() {
     setFramerate(60);
+    // TODO #43 -- Java 8 simplification
     animator = new Thread("animation-thread-" + ANIMATOR_COUNT.getAndIncrement()) {
 
       @Override

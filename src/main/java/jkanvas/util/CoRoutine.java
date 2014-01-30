@@ -49,6 +49,7 @@ public abstract class CoRoutine<T> implements Iterator<T> {
   public CoRoutine(final int maxCapacity) {
     queue = new LinkedBlockingQueue<>(maxCapacity);
     lock = new Object();
+    // TODO #43 -- Java 8 simplification
     runner = new Runnable() {
 
       @Override
@@ -207,6 +208,7 @@ public abstract class CoRoutine<T> implements Iterator<T> {
   }
 
   @Override
+  // TODO #43 -- Java 8 simplification
   public void remove() {
     throw new UnsupportedOperationException();
   }

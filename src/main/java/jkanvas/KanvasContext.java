@@ -21,6 +21,7 @@ public interface KanvasContext {
    * @param r The rectangle in canvas coordinates.
    * @return The rectangle in component coordinates.
    */
+  // TODO #43 -- Java 8 simplification
   Rectangle2D toComponentCoordinates(RectangularShape r);
 
   /**
@@ -47,6 +48,7 @@ public interface KanvasContext {
    * @param r The rectangle in component coordinates.
    * @return The rectangle in canvas coordinates.
    */
+  // TODO #43 -- Java 8 simplification
   Rectangle2D toCanvasCoordinates(RectangularShape r);
 
   /**

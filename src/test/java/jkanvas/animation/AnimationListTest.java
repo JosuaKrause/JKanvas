@@ -113,6 +113,7 @@ public class AnimationListTest {
     final Iterable<TestAnimated> it2 = createAnimated(3, size);
     final AnimationList list = new AnimationList();
     list.scheduleAction(null, 1);
+    // TODO #43 -- Java 8 simplification
     list.scheduleAction(new AnimationAction() {
 
       @Override
@@ -122,6 +123,7 @@ public class AnimationListTest {
       }
 
     }, 0);
+    // TODO #43 -- Java 8 simplification
     list.scheduleAction(new AnimationAction() {
 
       @Override
@@ -131,6 +133,7 @@ public class AnimationListTest {
       }
 
     }, 1);
+    // TODO #43 -- Java 8 simplification
     list.scheduleAction(new AnimationAction() {
 
       @Override
@@ -140,6 +143,7 @@ public class AnimationListTest {
       }
 
     }, 2);
+    // TODO #43 -- Java 8 simplification
     list.scheduleAction(new AnimationAction() {
 
       @Override
@@ -161,6 +165,7 @@ public class AnimationListTest {
     checkAnimated(it1, 1);
     checkAnimated(it2, 1);
     if(size > 0) {
+      // TODO #43 -- Java 8 simplification
       list.scheduleAction(new AnimationAction() {
 
         @Override

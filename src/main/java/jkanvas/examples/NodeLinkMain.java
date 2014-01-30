@@ -230,6 +230,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
     fillGraph(view, nodes, edges);
     final NodeLinkMain r = new NodeLinkMain(view);
     r.setEdgeRealizer(new DefaultEdgeRealizer<>());
+    // TODO #43 -- Java 8 simplification
     r.setNodeRealizer(new DefaultNodeRealizer<AnimatedPosition>() {
 
       @Override

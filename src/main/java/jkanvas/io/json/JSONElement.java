@@ -314,6 +314,7 @@ public class JSONElement implements Iterable<JSONElement> {
         return it.next();
       }
 
+      // TODO #43 -- Java 8 simplification
       @Override
       public void remove() {
         throw new UnsupportedOperationException();

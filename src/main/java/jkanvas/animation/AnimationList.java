@@ -53,6 +53,7 @@ public final class AnimationList implements AnimationToken {
    * @param size The size of the array to split.
    * @return The depth of the parallel computation tree.
    */
+  // TODO #43 -- Java 8 simplification
   private int suggestDepth(final long size) {
     long s = size;
     final long leafSize = 1 + ((s + 7) >>> 3) / pool.getParallelism();

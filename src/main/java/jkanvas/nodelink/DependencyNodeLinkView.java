@@ -225,6 +225,7 @@ public class DependencyNodeLinkView implements LayoutedView<IndexedPosition>, An
             return it.next() - start;
           }
 
+          // TODO #43 -- Java 8 simplification
           @Override
           public void remove() {
             throw new UnsupportedOperationException();

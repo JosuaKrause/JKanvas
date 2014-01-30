@@ -54,6 +54,7 @@ public final class BitSetIterable implements Iterable<Integer> {
     }
 
     @Override
+    // TODO #43 -- Java 8 simplification
     public void remove() {
       throw new UnsupportedOperationException();
     }

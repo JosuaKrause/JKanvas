@@ -20,6 +20,7 @@ public class BitSetMetrics {
    * The Jaccard distance of two sets.
    * <code>(|A &cup; B| - |A &cap; B|) / |A &cup; B|</code>
    */
+  // TODO #43 -- Java 8 simplification
   public static final Metric<BitSet> JACCARD = new Metric<BitSet>() {
 
     @Override
@@ -41,6 +42,7 @@ public class BitSetMetrics {
   /**
    * The Hamming distance of two sets. <code>|A &oplus; B|</code>
    */
+  // TODO #43 -- Java 8 simplification
   public static final Metric<BitSet> HAMMING = new Metric<BitSet>() {
 
     @Override

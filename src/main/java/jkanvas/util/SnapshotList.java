@@ -164,6 +164,7 @@ public class SnapshotList<T> {
         }
 
         @Override
+        // TODO #43 -- Java 8 simplification
         public void remove() {
           throw new UnsupportedOperationException();
         }

@@ -55,6 +55,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
+    // TODO #43 -- Java 8 simplification
     final CellRealizer<QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
@@ -67,6 +68,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
     };
     final AnimatedPainter p = new AnimatedPainter();
+    // TODO #43 -- Java 8 simplification
     final LinearGroup<RenderGroupAlignmentMain> group =
         new LinearGroup<RenderGroupAlignmentMain>(p, true, 50.0, AnimationTiming.SMOOTH) {
 
@@ -81,6 +83,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
         };
     for(int num = 0; num < 3; ++num) {
+      // TODO #43 -- Java 8 simplification
       final MutableQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(
           9 + num * num) {
 
@@ -110,6 +113,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
     // add group
     p.addPass(group);
     final Canvas c = new Canvas(p, true, 500, 500);
+    // TODO #43 -- Java 8 simplification
     group.setOnFinish(new AnimationAction() {
 
       @Override
@@ -128,6 +132,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
     // configure the Canvas
     // c.setMargin(40);
     c.setBackground(Color.WHITE);
+    // TODO #43 -- Java 8 simplification
     final JFrame frame = new JFrame("Matrix") {
 
       @Override
@@ -138,6 +143,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
     };
     // add actions to the Canvas
+    // TODO #43 -- Java 8 simplification
     c.addAction(KeyEvent.VK_Q, new AbstractAction() {
 
       @Override
@@ -146,6 +152,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       }
 
     });
+    // TODO #43 -- Java 8 simplification
     c.addAction(KeyEvent.VK_R, new AbstractAction() {
 
       @Override
@@ -154,6 +161,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       }
 
     });
+    // TODO #43 -- Java 8 simplification
     c.addAction(KeyEvent.VK_P, new AbstractAction() {
 
       @Override
@@ -167,6 +175,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       }
 
     });
+    // TODO #43 -- Java 8 simplification
     c.addAction(KeyEvent.VK_C, new AbstractAction() {
 
       private final Alignment[] align =
@@ -184,6 +193,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
 
     });
     final SimpleTextHUD info = new SimpleTextHUD(TextHUD.RIGHT, TextHUD.BOTTOM);
+    // TODO #43 -- Java 8 simplification
     c.addAction(KeyEvent.VK_H, new AbstractAction() {
 
       @Override

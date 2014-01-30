@@ -103,6 +103,7 @@ public interface KanvasInteraction {
    * @param dx The x distance of the drag in canvas coordinates.
    * @param dy The y distance of the drag in canvas coordinates.
    */
+  // TODO #43 -- Java 8 simplification
   void endDrag(Point2D start, Point2D end, double dx, double dy);
 
   /**

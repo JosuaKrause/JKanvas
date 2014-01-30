@@ -132,6 +132,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
       }
 
       @Override
+      // TODO #43 -- Java 8 simplification
       public void remove() {
         throw new UnsupportedOperationException();
       }

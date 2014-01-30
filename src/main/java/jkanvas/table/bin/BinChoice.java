@@ -18,6 +18,7 @@ public interface BinChoice {
   int numberOfBins(Feature feature);
 
   /** The square root choice. Used for example by Excel. */
+  // TODO #43 -- Java 8 simplification
   BinChoice SQRT = new BinChoice() {
 
     @Override
@@ -28,6 +29,7 @@ public interface BinChoice {
   };
 
   /** Sturge's rule assumes a normal distribution. */
+  // TODO #43 -- Java 8 simplification
   BinChoice STURGES = new BinChoice() {
 
     @Override
@@ -38,6 +40,7 @@ public interface BinChoice {
   };
 
   /** A simple alternative to {@link #STURGES Sturge's} rule. */
+  // TODO #43 -- Java 8 simplification
   BinChoice RICE = new BinChoice() {
 
     @Override

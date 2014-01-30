@@ -138,6 +138,7 @@ public class AnimationListBenchmark {
     /** Initializes the benchmark once. */
     private void ini() {
       for(int i = 0; i < animated.length; ++i) {
+        // TODO #43 -- Java 8 simplification
         final GenericAnimated<Double> a = new GenericAnimated<Double>(0.0) {
 
           @Override

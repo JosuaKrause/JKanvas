@@ -34,6 +34,7 @@ public class ArrowFactory {
   } // TipType
 
   /** No tip. */
+  // TODO #43 -- Java 8 simplification
   public static final TipType NONE = new TipType() {
 
     @Override
@@ -44,6 +45,7 @@ public class ArrowFactory {
   };
 
   /** A flat line orthogonal to the direction of the arrow. */
+  // TODO #43 -- Java 8 simplification
   public static final TipType FLAT = new TipType() {
 
     @Override
@@ -58,6 +60,7 @@ public class ArrowFactory {
   };
 
   /** A non filled arrow head. */
+  // TODO #43 -- Java 8 simplification
   public static final TipType ARROW_THIN = new TipType() {
 
     @Override
@@ -74,6 +77,7 @@ public class ArrowFactory {
   };
 
   /** A filled arrow head. */
+  // TODO #43 -- Java 8 simplification
   public static final TipType ARROW_FULL = new TipType() {
 
     @Override
@@ -90,6 +94,7 @@ public class ArrowFactory {
   };
 
   /** A circle as head. */
+  // TODO #43 -- Java 8 simplification
   public static final TipType CIRCLE = new TipType() {
 
     @Override

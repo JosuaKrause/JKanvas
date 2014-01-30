@@ -130,6 +130,7 @@ public class ViewConfiguration {
     this.restriction = null;
     if(restriction != null) {
       final Rectangle2D rest = jkanvas.util.PaintUtil.addPadding(restriction, margin);
+      // TODO #43 -- Java 8 simplification
       zui.toView(rest, timing, new AnimationAction() {
 
         @Override

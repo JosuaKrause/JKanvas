@@ -132,4 +132,5 @@ public class HistogramRenderpass extends Renderpass {
       }
     }
   }
+
 }

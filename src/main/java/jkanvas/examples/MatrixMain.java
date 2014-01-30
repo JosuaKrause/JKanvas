@@ -116,6 +116,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
    * @throws IOException I/O Exception.
    */
   public static void main(final String[] args) throws IOException {
+    // TODO #43 -- Java 8 simplification
     final AbstractQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(9) {
 
       @Override
@@ -145,6 +146,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
         evens[i] = "";
       }
     }
+    // TODO #43 -- Java 8 simplification
     final CellRealizer<QuadraticMatrix<Double>> cellColor = new DefaultCellRealizer<Double, QuadraticMatrix<Double>>() {
 
       @Override
@@ -165,6 +167,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
     JSONSetup.setupCanvas(frame, mng, Resource.getFor("matrix.json"), false, true);
     // add arbitrary shape selection
     final Canvas c = mng.getForId("canvas", Canvas.class);
+    // TODO #43 -- Java 8 simplification
     final AbstractSelector sel = new RectangleSelection(c,
         // final AbstractSelector sel = new LassoSelection(c,
         new Color(5, 113, 176, 200)) {

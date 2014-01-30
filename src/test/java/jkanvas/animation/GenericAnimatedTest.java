@@ -87,6 +87,7 @@ public class GenericAnimatedTest {
   public void testAnimationActions() {
     final AnimationTiming timing = new AnimationTiming(Interpolator.LINEAR, 2);
     final AtomicInteger e = new AtomicInteger();
+    // TODO #43 -- Java 8 simplification
     final AnimationAction action = new AnimationAction() {
 
       @Override

@@ -140,6 +140,7 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
       }
       return;
     }
+    // TODO #43 -- Java 8 simplification
     canvas.scheduleAction(new AnimationAction() {
 
       @Override

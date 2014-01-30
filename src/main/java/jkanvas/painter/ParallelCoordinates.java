@@ -39,6 +39,7 @@ public class ParallelCoordinates {
   public ParallelCoordinates(final Animator animator,
       final double width, final double height, final double alpha) {
     this.alpha = alpha;
+    // TODO #43 -- Java 8 simplification
     group = new LinearGroup<Renderpass>(
         animator, true, 0, AnimationTiming.NO_ANIMATION) {
 
