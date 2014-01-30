@@ -1,6 +1,8 @@
 package jkanvas.matrix;
 
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -57,6 +59,38 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
     final int tmp = colPerm[a];
     colPerm[a] = colPerm[b];
     colPerm[b] = tmp;
+  }
+
+  /**
+   * Sorts the rows with the given comparator.
+   * 
+   * @param cmp The comparator. The index of the row is handed in.
+   */
+  public void sortRows(final Comparator<Integer> cmp) {
+    final Integer[] arr = new Integer[rowPerm.length];
+    for(int i = 0; i < arr.length; ++i) {
+      arr[i] = rowPerm[i];
+    }
+    Arrays.sort(arr, cmp);
+    for(int i = 0; i < rowPerm.length; ++i) {
+      rowPerm[i] = arr[i];
+    }
+  }
+
+  /**
+   * Sorts the columns with the given comparator.
+   * 
+   * @param cmp The comparator. The index of the column is handed in.
+   */
+  public void sortColumns(final Comparator<Integer> cmp) {
+    final Integer[] arr = new Integer[colPerm.length];
+    for(int i = 0; i < arr.length; ++i) {
+      arr[i] = colPerm[i];
+    }
+    Arrays.sort(arr, cmp);
+    for(int i = 0; i < colPerm.length; ++i) {
+      colPerm[i] = arr[i];
+    }
   }
 
   @Override

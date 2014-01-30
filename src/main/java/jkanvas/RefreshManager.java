@@ -5,7 +5,7 @@ package jkanvas;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public interface RefreshManager {
+public interface RefreshManager extends Refreshable {
 
   /**
    * Adds a {@link Refreshable} that is refreshed each time a value gets

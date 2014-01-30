@@ -40,6 +40,12 @@ public class SimpleRefreshManager implements RefreshManager {
   }
 
   @Override
+  // TODO #43 -- Java 8 simplification
+  public void refresh() {
+    refreshAll();
+  }
+
+  @Override
   public void startBulkOperation() {
     ++bulkOps;
   }

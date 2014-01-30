@@ -7,7 +7,14 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
+import jkanvas.Refreshable;
+import jkanvas.SimpleRefreshManager;
 import jkanvas.painter.Renderpass;
+import jkanvas.painter.pod.BorderRenderpass;
+import jkanvas.painter.pod.Renderpod;
+import jkanvas.painter.pod.TitleRenderpass;
+import jkanvas.painter.pod.TitleRenderpass.Position;
+import jkanvas.util.StringDrawer.Orientation;
 
 /**
  * Paints a matrix.
@@ -46,11 +53,11 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    */
   public void setMatrix(final T m) {
     Objects.requireNonNull(m);
-    if(matrix != null && matrix instanceof MutableQuadraticMatrix) {
-      ((MutableQuadraticMatrix<?>) matrix).setRefreshManager(null);
+    if(matrix != null && matrix instanceof MutableMatrix) {
+      ((MutableMatrix<?>) matrix).setRefreshManager(null);
     }
-    if(m instanceof MutableQuadraticMatrix) {
-      ((MutableQuadraticMatrix<?>) m).setRefreshManager(manager);
+    if(m instanceof MutableMatrix) {
+      ((MutableMatrix<?>) m).setRefreshManager(manager);
     }
     matrix = m;
     manager.refreshAll();
@@ -176,6 +183,42 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    */
   public RefreshManager getRefreshManager() {
     return manager;
+  }
+
+  /**
+   * Creates a {@link MatrixRenderpass} with titles
+   * 
+   * @param <T> The matrix type.
+   * @param matrix The matrix.
+   * @param cellDrawer The cell renderer.
+   * @param mng The refresh manager.
+   * @param textHeight The title text height.
+   * @param space The space between title and matrix.
+   * @return The render pod.
+   */
+  public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
+      createTitledMatrixRenderpass(final T matrix, final CellRealizer<T> cellDrawer,
+          final RefreshManager mng, final double textHeight, final double space) {
+    final SimpleRefreshManager rm = new SimpleRefreshManager();
+    rm.addRefreshable(mng);
+    final MatrixRenderpass<T> rp = new MatrixRenderpass<>(matrix, cellDrawer, rm);
+    final TitleRenderpass<MatrixRenderpass<T>> top = new TitleRenderpass<>(
+        new BorderRenderpass<>(rp), textHeight, space);
+    top.setOrientation(Orientation.DIAGONAL);
+    final TitleRenderpass<MatrixRenderpass<T>> left = new TitleRenderpass<>(
+        top, textHeight, space);
+    left.setPosition(Position.LEFT);
+    // TODO #43 -- Java 8 simplification
+    rm.addRefreshable(new Refreshable() {
+
+      @Override
+      public void refresh() {
+        top.setTitles(matrix.getColumnNames());
+        left.setTitles(matrix.getRowNames());
+      }
+
+    });
+    return left;
   }
 
 }

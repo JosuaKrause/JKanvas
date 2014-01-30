@@ -156,6 +156,12 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
     animator.refreshAll();
   }
 
+  @Override
+  // TODO #43 -- Java 8 simplification
+  public void refresh() {
+    refreshAll();
+  }
+
   /** Disposes this painter and stops the animator. */
   @Override
   public void dispose() {
