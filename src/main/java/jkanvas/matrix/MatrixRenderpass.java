@@ -15,7 +15,7 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The matrix type.
  */
-public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {
+public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
 
   /** The refresh manager. */
   private final RefreshManager manager;
@@ -88,10 +88,10 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     final boolean hasSelection = hasSelection();
     double y = 0;
-    for(int row = 0; row < matrix.size(); ++row) {
+    for(int row = 0; row < matrix.rows(); ++row) {
       double x = 0;
       final double h = matrix.getHeight(row);
-      for(int col = 0; col < matrix.size(); ++col) {
+      for(int col = 0; col < matrix.cols(); ++col) {
         final double w = matrix.getWidth(col);
         final Rectangle2D rect = new Rectangle2D.Double(x, y, w, h);
         final boolean sel = isSelected(row, col);
@@ -136,7 +136,7 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {
   protected MatrixPosition pick(final Point2D pos) {
     int col = -1;
     double w = 0;
-    for(int i = 0; i < matrix.size(); ++i) {
+    for(int i = 0; i < matrix.cols(); ++i) {
       if(w > pos.getX()) {
         break;
       }
@@ -145,7 +145,7 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {
     }
     int row = -1;
     double h = 0;
-    for(int i = 0; i < matrix.size(); ++i) {
+    for(int i = 0; i < matrix.rows(); ++i) {
       if(h > pos.getY()) {
         break;
       }
@@ -158,11 +158,13 @@ public class MatrixRenderpass<T extends QuadraticMatrix<?>> extends Renderpass {
 
   @Override
   public void getBoundingBox(final Rectangle2D bbox) {
-    double w = 0;
     double h = 0;
-    for(int i = 0; i < matrix.size(); ++i) {
-      w += matrix.getWidth(i);
+    for(int i = 0; i < matrix.rows(); ++i) {
       h += matrix.getHeight(i);
+    }
+    double w = 0;
+    for(int i = 0; i < matrix.cols(); ++i) {
+      w += matrix.getWidth(i);
     }
     bbox.setFrame(0, 0, w, h);
   }

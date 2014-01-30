@@ -20,6 +20,7 @@ import jkanvas.io.json.JSONSetup;
 import jkanvas.matrix.AbstractQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
 import jkanvas.matrix.DefaultCellRealizer;
+import jkanvas.matrix.Matrix;
 import jkanvas.matrix.MatrixPosition;
 import jkanvas.matrix.MatrixRenderpass;
 import jkanvas.matrix.QuadraticMatrix;
@@ -36,8 +37,8 @@ import jkanvas.util.Resource;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
-    implements Selectable {
+public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implements
+    Selectable {
 
   /**
    * Creates a matrix painter.
@@ -78,20 +79,21 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
 
   @Override
   public String getTooltip(final Point2D p) {
-    final QuadraticMatrix<Double> matrix = getMatrix();
+    final Matrix<Double> matrix = getMatrix();
     final MatrixPosition pos = pick(p);
     if(pos == null) return "";
-    return "row: " + matrix.getName(pos.row)
-        + " col: " + matrix.getName(pos.col)
+    return "row: " + matrix.getRowName(pos.row)
+        + " col: " + matrix.getColumnName(pos.col)
         + " value: " + matrix.get(pos.row, pos.col);
   }
 
   @Override
   public void select(final Shape selection, final boolean preview) {
-    final QuadraticMatrix<Double> matrix = getMatrix();
-    for(int row = 0; row < matrix.size(); ++row) {
-      for(int col = 0; col < matrix.size(); ++col) {
-        final Rectangle2D bbox = matrix.getBoundingBox(row, col);
+    final Matrix<Double> matrix = getMatrix();
+    for(int row = 0; row < matrix.rows(); ++row) {
+      for(int col = 0; col < matrix.cols(); ++col) {
+        final Rectangle2D bbox = new Rectangle2D.Double();
+        matrix.getBoundingBox(bbox, row, col);
         final MatrixPosition m = new MatrixPosition(row, col);
         if(selection.intersects(bbox)/* selection.contains(bbox) */) {
           selected.add(m);

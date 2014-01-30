@@ -1,30 +1,12 @@
 package jkanvas.matrix;
 
-import java.awt.geom.Rectangle2D;
-
 /**
  * A quadratic matrix.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
-public interface QuadraticMatrix<T> {
-
-  /**
-   * Getter.
-   * 
-   * @param row The row.
-   * @return The visual height of the row.
-   */
-  double getHeight(final int row);
-
-  /**
-   * Getter.
-   * 
-   * @param col The column.
-   * @return The visual width of the column.
-   */
-  double getWidth(final int col);
+public interface QuadraticMatrix<T> extends Matrix<T> {
 
   /**
    * Getter.
@@ -32,16 +14,14 @@ public interface QuadraticMatrix<T> {
    * @param row The row / column.
    * @return The name of the row / column.
    */
-  String getName(final int row);
+  String getName(int row);
 
   /**
    * Getter.
    * 
-   * @param row The row.
-   * @param col The column.
-   * @return The content of the cell.
+   * @return The names of the matrix rows / columns.
    */
-  T get(final int row, final int col);
+  String[] getNames();
 
   /**
    * Getter.
@@ -49,14 +29,5 @@ public interface QuadraticMatrix<T> {
    * @return The number of rows / columns.
    */
   int size();
-
-  /**
-   * Getter.
-   * 
-   * @param row The row.
-   * @param col The column.
-   * @return The bounding box of the given cell.
-   */
-  Rectangle2D getBoundingBox(int row, int col);
 
 }

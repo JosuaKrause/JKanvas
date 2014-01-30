@@ -11,7 +11,7 @@ import jkanvas.KanvasContext;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The matrix type.
  */
-public interface CellRealizer<T extends QuadraticMatrix<?>> {
+public interface CellRealizer<T extends Matrix<?>> {
 
   /**
    * Draws a cell.
@@ -19,7 +19,7 @@ public interface CellRealizer<T extends QuadraticMatrix<?>> {
    * @param g The graphics context.
    * @param ctx The canvas context.
    * @param rect The cell rectangle.
-   * @param matrix The quadratic matrix.
+   * @param matrix The matrix.
    * @param row The row of the cell.
    * @param col The column of the cell.
    * @param isSelected Whether this cell is selected. Note that this value may

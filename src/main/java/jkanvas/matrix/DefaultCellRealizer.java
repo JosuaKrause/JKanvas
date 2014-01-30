@@ -14,7 +14,7 @@ import jkanvas.KanvasContext;
  * @param <U> The content type.
  * @param <T> The matrix type.
  */
-public abstract class DefaultCellRealizer<U, T extends QuadraticMatrix<U>>
+public abstract class DefaultCellRealizer<U, T extends Matrix<U>>
     implements CellRealizer<T> {
 
   @Override

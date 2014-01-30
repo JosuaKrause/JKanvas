@@ -45,8 +45,47 @@ public class GraphMatrix<T extends GraphView> implements QuadraticMatrix<Boolean
   }
 
   @Override
+  public String getRowName(final int row) {
+    return getName(row);
+  }
+
+  @Override
+  public String getColumnName(final int col) {
+    return getName(col);
+  }
+
+  @Override
+  public String[] getNames() {
+    final String[] names = new String[cols()];
+    for(int i = 0; i < names.length; ++i) {
+      names[i] = getName(i);
+    }
+    return names;
+  }
+
+  @Override
+  public String[] getRowNames() {
+    return getNames();
+  }
+
+  @Override
+  public String[] getColumnNames() {
+    return getNames();
+  }
+
+  @Override
   public int size() {
     return view.nodeCount();
+  }
+
+  @Override
+  public int rows() {
+    return size();
+  }
+
+  @Override
+  public int cols() {
+    return size();
   }
 
   @Override
@@ -84,8 +123,8 @@ public class GraphMatrix<T extends GraphView> implements QuadraticMatrix<Boolean
   }
 
   @Override
-  public Rectangle2D getBoundingBox(final int row, final int col) {
-    return new Rectangle2D.Double(row * size, col * size, size, size);
+  public void getBoundingBox(final Rectangle2D bbox, final int row, final int col) {
+    bbox.setFrame(row * size, col * size, size, size);
   }
 
 }
