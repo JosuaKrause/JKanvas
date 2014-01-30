@@ -26,17 +26,19 @@ public abstract class AbstractQuadraticMatrix<T>
 
   @Override
   public String getName(final int row) {
-    return super.getRowName(row);
+    return getRowName(row);
   }
 
   @Override
   public String[] getNames() {
-    return super.getRowNames();
+    return getRowNames();
   }
 
   @Override
   public void setName(final int row, final String name) {
+    // set for rows and columns so they don't get out of sync
     super.setRowName(row, name);
+    super.setColumnName(row, name);
   }
 
   @Override
@@ -45,28 +47,8 @@ public abstract class AbstractQuadraticMatrix<T>
   }
 
   @Override
-  public final String getRowName(final int row) {
-    return getName(row);
-  }
-
-  @Override
-  public final String[] getRowNames() {
-    return getNames();
-  }
-
-  @Override
   public final void setColumnName(final int col, final String name) {
     setName(col, name);
-  }
-
-  @Override
-  public final String getColumnName(final int col) {
-    return getName(col);
-  }
-
-  @Override
-  public final String[] getColumnNames() {
-    return getNames();
   }
 
   @Override
