@@ -41,6 +41,8 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
   private final double textHeight;
   /** The space between render pass and text. */
   private final double space;
+  /** The space between title texts. */
+  private double titleSpace;
   /** The title texts. */
   private String[] titles;
   /** The position of the titles. */
@@ -61,6 +63,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     super(pass);
     this.textHeight = textHeight;
     this.space = space;
+    titleSpace = 0;
     titles = new String[] { Objects.requireNonNull(title)};
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
@@ -80,6 +83,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     super(pass);
     this.textHeight = textHeight;
     this.space = space;
+    titleSpace = 0;
     titles = new String[] { Objects.requireNonNull(title)};
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
@@ -206,6 +210,24 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     return orientation;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param titleSpace The space between titles.
+   */
+  public void setTitleSpace(final double titleSpace) {
+    this.titleSpace = titleSpace;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The space between titles.
+   */
+  public double getTitleSpace() {
+    return titleSpace;
+  }
+
   @Override
   protected void drawOwn(final Graphics2D g, final KanvasContext ctx) {
     final boolean hor;
@@ -247,7 +269,8 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
    */
   private void drawTexts(final Graphics2D g, final Rectangle2D box, final boolean hor) {
     double x = 0;
-    final double w = (hor ? box.getWidth() : box.getHeight()) / titles.length;
+    final double totalW = (hor ? box.getWidth() : box.getHeight());
+    final double w = (totalW - titleSpace * (titles.length - 1)) / titles.length;
     final Rectangle2D cur = new Rectangle2D.Double();
     for(final String t : titles) {
       if(hor) {
@@ -256,7 +279,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
         cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
       }
       StringDrawer.drawInto(g, t, cur, orientation);
-      x += w;
+      x += w + titleSpace;
     }
   }
 
