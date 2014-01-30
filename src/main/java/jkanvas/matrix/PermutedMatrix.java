@@ -3,14 +3,26 @@ package jkanvas.matrix;
 import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
+/**
+ * A permuted view on a matrix.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ * @param <T> The content type.
+ */
 public abstract class PermutedMatrix<T> implements Matrix<T> {
 
+  /** The underlying matrix. */
   private final Matrix<T> matrix;
-
+  /** The row permutations. */
   private final int[] rowPerm;
-
+  /** The column permutations. */
   private final int[] colPerm;
 
+  /**
+   * Creates a permuted view on the given matrix.
+   * 
+   * @param matrix The matrix.
+   */
   public PermutedMatrix(final Matrix<T> matrix) {
     this.matrix = Objects.requireNonNull(matrix);
     rowPerm = new int[matrix.rows()];
@@ -23,12 +35,24 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
     }
   }
 
+  /**
+   * Swaps two rows.
+   * 
+   * @param a The first row.
+   * @param b The second row.
+   */
   public void swapRows(final int a, final int b) {
     final int tmp = rowPerm[a];
     rowPerm[a] = rowPerm[b];
     rowPerm[b] = tmp;
   }
 
+  /**
+   * Swaps two columns.
+   * 
+   * @param a The first column.
+   * @param b The second column.
+   */
   public void swapColumns(final int a, final int b) {
     final int tmp = colPerm[a];
     colPerm[a] = colPerm[b];
