@@ -54,19 +54,6 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
   private Orientation orientation;
 
   /**
-   * Creates a title at the top for the given render pass.
-   * 
-   * @param title The initial title.
-   * @param pass The render pass.
-   * @param textHeight The text height.
-   * @param space The space.
-   */
-  public TitleRenderpass(final T pass, final String title,
-      final double textHeight, final double space) {
-    this(pass, textHeight, space, title);
-  }
-
-  /**
    * Creates an empty title at the top for the given render pass.
    * 
    * @param pass The render pass.
@@ -99,19 +86,6 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
     setChildOffset(0, space + textHeight);
-  }
-
-  /**
-   * Creates a title at the top for the given render pass.
-   * 
-   * @param title The initial title.
-   * @param pass The render pass.
-   * @param textHeight The text height.
-   * @param space The space.
-   */
-  public TitleRenderpass(final Renderpod<T> pass,
-      final String title, final double textHeight, final double space) {
-    this(pass, textHeight, space, title);
   }
 
   /**
