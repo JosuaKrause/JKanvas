@@ -94,6 +94,7 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
 
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
+    final Rectangle2D view = ctx.getVisibleCanvas();
     final boolean hasSelection = hasSelection();
     double y = 0;
     for(int row = 0; row < matrix.rows(); ++row) {
@@ -102,11 +103,14 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
       for(int col = 0; col < matrix.cols(); ++col) {
         final double w = matrix.getWidth(col);
         final Rectangle2D rect = new Rectangle2D.Double(x, y, w, h);
+        x += w;
+        if(!view.intersects(rect)) {
+          continue;
+        }
         final boolean sel = isSelected(row, col);
         final Graphics2D g = (Graphics2D) gfx.create();
         cellDrawer.drawCell(g, ctx, rect, matrix, row, col, sel, hasSelection);
         g.dispose();
-        x += w;
       }
       y += h;
     }
