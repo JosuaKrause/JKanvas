@@ -215,7 +215,7 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
     final T matrix = rp.getMatrix();
     final TitleRenderpass<MatrixRenderpass<T>> top = new TitleRenderpass<>(
         new BorderRenderpass<>(rp), textHeight, space);
-    top.setOrientation(Orientation.DIAGONAL);
+    top.setOrientation(Orientation.VERTICAL);
     final TitleRenderpass<MatrixRenderpass<T>> left = new TitleRenderpass<>(
         top, textHeight, space);
     left.setPosition(Position.LEFT);
