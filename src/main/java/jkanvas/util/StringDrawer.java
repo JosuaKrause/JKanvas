@@ -110,7 +110,7 @@ public class StringDrawer {
         res = getRotatedBounds(pos, hpos, vpos, ROT_V);
         break;
       default:
-        throw new AssertionError();
+        throw new AssertionError("" + o);
     }
     return res;
   }
@@ -202,6 +202,8 @@ public class StringDrawer {
       case VERTICAL:
         drawRotated(pos, hpos, vpos, ROT_V);
         break;
+      default:
+        throw new AssertionError("" + o);
     }
   }
 
@@ -354,16 +356,92 @@ public class StringDrawer {
    */
   public static final void drawInto(final Graphics2D gfx,
       final String text, final RectangularShape rect, final Orientation o) {
+    drawInto(gfx, text, rect, o, CENTER_H);
+  }
+
+  /**
+   * Draws text into the given rectangle. The text is scaled that it fits the
+   * rectangle.
+   * 
+   * @param gfx The graphics context.
+   * @param text The text.
+   * @param rect The rectangle.
+   * @param o The orientation of the text.
+   * @param alignX The horizontal alignment of the text.
+   */
+  public static final void drawInto(final Graphics2D gfx, final String text,
+      final RectangularShape rect, final Orientation o, final int alignX) {
     final Graphics2D g = (Graphics2D) gfx.create();
     final StringDrawer sd = new StringDrawer(g, text);
-    final Rectangle2D box = sd.getBounds(ORIGIN, CENTER_H, CENTER_V, o).getBounds2D();
+    final Rectangle2D box = sd.getBounds(ORIGIN, alignX, CENTER_V, o).getBounds2D();
     final double width = box.getWidth();
     final Rectangle2D fit = PaintUtil.fitInto(rect, width, box.getHeight());
     final double scale = fit.getWidth() / width;
-    g.translate(fit.getCenterX(), fit.getCenterY());
+    switch(alignX) {
+      case CENTER_H:
+        g.translate(fit.getCenterX(), fit.getCenterY());
+        break;
+      case LEFT:
+        translateLeftAligned(g, rect, o);
+        break;
+      case RIGHT:
+        translateRightAligned(g, rect, o);
+        break;
+      default:
+        throw new IllegalArgumentException("alignX: " + alignX);
+    }
     g.scale(scale, scale);
-    sd.draw(ORIGIN, CENTER_H, CENTER_V, o);
+    sd.draw(ORIGIN, alignX, CENTER_V, o);
     g.dispose();
+  }
+
+  /**
+   * Translates the graphics context for left aligned text.
+   * 
+   * @param g The graphics context.
+   * @param rect The rectangle.
+   * @param o The orientation.
+   */
+  private static void translateLeftAligned(
+      final Graphics2D g, final RectangularShape rect, final Orientation o) {
+    switch(o) {
+      case HORIZONTAL:
+        g.translate(rect.getMinX(), rect.getCenterY());
+        break;
+      case VERTICAL:
+        g.translate(rect.getCenterX(), rect.getMaxY());
+        break;
+      case DIAGONAL:
+        g.translate(rect.getMinX(), rect.getMaxY());
+        break;
+      default:
+        throw new AssertionError("" + o);
+    }
+  }
+
+  /**
+   * Translates the graphics context for right aligned text.
+   * 
+   * @param g The graphics context.
+   * @param rect The rectangle.
+   * @param o The orientation.
+   */
+  private static void translateRightAligned(
+      final Graphics2D g, final RectangularShape rect, final Orientation o) {
+    // FIXME bug #44
+    switch(o) {
+      case HORIZONTAL:
+        g.translate(rect.getMaxX(), rect.getCenterY());
+        break;
+      case VERTICAL:
+        g.translate(rect.getCenterX(), rect.getMinY());
+        break;
+      case DIAGONAL:
+        g.translate(rect.getMaxX(), rect.getMinY());
+        break;
+      default:
+        throw new AssertionError("" + o);
+    }
   }
 
   /**

@@ -40,6 +40,44 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
 
   } // Position
 
+  /**
+   * The alignment of the titles.
+   * 
+   * @author Joschi <josua.krause@gmail.com>
+   */
+  public static enum Alignment {
+    /** Text is aligned left w.r.t. drawing direction. */
+    LEFT(StringDrawer.LEFT),
+    /** Text is centered w.r.t. drawing direction. */
+    CENTER(StringDrawer.CENTER_H),
+    /** Text is aligned right w.r.t. drawing direction. */
+    RIGHT(StringDrawer.RIGHT),
+    // EOD
+    ;
+
+    /** The alignment value. */
+    private final int alignX;
+
+    /**
+     * Creates an alignment.
+     * 
+     * @param alignX The alignment value from {@link StringDrawer}.
+     */
+    private Alignment(final int alignX) {
+      this.alignX = alignX;
+    }
+
+    /**
+     * Getter.
+     * 
+     * @return The alignment value.
+     */
+    public int getAlignment() {
+      return alignX;
+    }
+
+  } // Alignment
+
   /** The text height. */
   private final double textHeight;
   /** The space between render pass and text. */
@@ -52,6 +90,8 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
   private Position pos;
   /** The orientation of the titles. */
   private Orientation orientation;
+  /** The alignment of the titles. */
+  private Alignment align;
 
   /**
    * Creates an empty title at the top for the given render pass.
@@ -85,6 +125,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     titleSpace = 0;
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
+    align = Alignment.CENTER;
     setChildOffset(0, space + textHeight);
   }
 
@@ -121,6 +162,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
     titleSpace = 0;
     pos = Position.ABOVE;
     orientation = Orientation.HORIZONTAL;
+    align = Alignment.CENTER;
     setChildOffset(0, space + textHeight);
   }
 
@@ -182,6 +224,24 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
    */
   public double getSpace() {
     return space;
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param align The alignment of the titles w.r.t. the drawing direction.
+   */
+  public void setAlignment(final Alignment align) {
+    this.align = Objects.requireNonNull(align);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The alignment of the titles w.r.t. the drawing direction.
+   */
+  public Alignment getAlignment() {
+    return align;
   }
 
   /**
@@ -312,7 +372,7 @@ public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
       } else {
         cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
       }
-      StringDrawer.drawInto(g, t, cur, orientation);
+      StringDrawer.drawInto(g, t, cur, orientation, align.getAlignment());
       x += w + titleSpace;
     }
   }

@@ -13,6 +13,7 @@ import jkanvas.painter.Renderpass;
 import jkanvas.painter.pod.BorderRenderpass;
 import jkanvas.painter.pod.Renderpod;
 import jkanvas.painter.pod.TitleRenderpass;
+import jkanvas.painter.pod.TitleRenderpass.Alignment;
 import jkanvas.painter.pod.TitleRenderpass.Position;
 import jkanvas.util.StringDrawer.Orientation;
 
@@ -216,9 +217,11 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
     final TitleRenderpass<MatrixRenderpass<T>> top = new TitleRenderpass<>(
         new BorderRenderpass<>(rp), textHeight, space);
     top.setOrientation(Orientation.VERTICAL);
+    top.setAlignment(Alignment.LEFT);
     final TitleRenderpass<MatrixRenderpass<T>> left = new TitleRenderpass<>(
         top, textHeight, space);
     left.setPosition(Position.LEFT);
+    left.setAlignment(Alignment.RIGHT);
     // TODO #43 -- Java 8 simplification
     rm.addRefreshable(new Refreshable() {
 
