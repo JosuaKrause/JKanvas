@@ -3,6 +3,7 @@ package jkanvas.animation;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jkanvas.Canvas;
+import jkanvas.FrameRateDisplayer;
 import jkanvas.Refreshable;
 import jkanvas.SimpleRefreshManager;
 import jkanvas.animation.AnimationBarrier.CloseBlock;
@@ -13,6 +14,12 @@ import jkanvas.animation.AnimationBarrier.CloseBlock;
  * @author Joschi <josua.krause@googlemail.com>
  */
 public abstract class AbstractAnimator extends SimpleRefreshManager implements Animator {
+
+  /**
+   * Whether the pauses between animation calculations should be adjusted to
+   * compensate lag.
+   */
+  public static boolean COMPENSATE_LAG = false;
 
   /** The number of animation threads that were created. */
   private static final AtomicInteger ANIMATOR_COUNT = new AtomicInteger();
@@ -48,9 +55,8 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
         try {
           long lastStep = 0;
           while(!isInterrupted() && !isDisposed()) {
-            final long nextWait = getFramewait() - lastStep;
+            final long nextWait = getFramewait() - (COMPENSATE_LAG ? lastStep : 0L);
             lastStep = 0;
-            // only wait if we were not too slow in the last step
             if(nextWait > 0) {
               synchronized(this) {
                 try {
@@ -60,16 +66,19 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
                   continue;
                 }
               }
-              // System.out.println("no lag");
-            } else {
-              // System.err.println("LAG!!!");
             }
             final long startStep = System.nanoTime();
             final boolean needsRedraw = doStep();
             if(needsRedraw) {
               refreshAll();
             }
-            lastStep = (System.nanoTime() - startStep) / 1000000L;
+            final long stepTime = System.nanoTime() - startStep;
+            lastStep = stepTime / 1000000L;
+            final FrameRateDisplayer frd = getFrameRateDisplayer();
+            if(frd != null) {
+              final boolean lag = lastStep > getFramewait();
+              frd.setLastAnimationTime(stepTime, lag);
+            }
           }
         } finally {
           dispose();
@@ -139,6 +148,24 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
    */
   protected abstract boolean step();
 
+  /** The frame rate displayer. */
+  private FrameRateDisplayer frd;
+
+  @Override
+  public void setFrameRateDisplayer(final FrameRateDisplayer frd) {
+    this.frd = frd;
+    forceNextFrame();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The current frame rate displayer or <code>null</code>.
+   */
+  public FrameRateDisplayer getFrameRateDisplayer() {
+    return frd;
+  }
+
   @Override
   public void addRefreshable(final Refreshable r) {
     if(disposed) throw new IllegalStateException("object already disposed");
@@ -154,6 +181,7 @@ public abstract class AbstractAnimator extends SimpleRefreshManager implements A
   public void dispose() {
     if(disposed) return;
     disposed = true;
+    frd = null;
     clearRefreshables();
     animator.interrupt();
     list.dispose();

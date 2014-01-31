@@ -20,6 +20,16 @@ public interface FrameRateDisplayer {
   void setLastFrameTime(long time);
 
   /**
+   * Sets the time it took to animate the current frame in nano-seconds. This
+   * method is called by an {@link jkanvas.animation.Animator}.
+   * 
+   * @param time The time it took to animate the most recent frame in
+   *          nano-seconds.
+   * @param lag Whether the animation computation took longer than expected.
+   */
+  void setLastAnimationTime(long time, boolean lag);
+
+  /**
    * Draws the frame rate.
    * 
    * @param g The graphics context.

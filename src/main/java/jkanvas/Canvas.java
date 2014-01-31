@@ -414,6 +414,9 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public void setFrameRateDisplayer(final FrameRateDisplayer frameRateDisplayer) {
     this.frameRateDisplayer = frameRateDisplayer;
+    if(animator != null) {
+      animator.setFrameRateDisplayer(frameRateDisplayer);
+    }
     refresh();
   }
 
@@ -516,6 +519,7 @@ public class Canvas extends JComponent implements Refreshable {
       al.addAnimated(zui);
       barrier = new AnimationBarrier(this);
       animator.setAnimationBarrier(barrier, this);
+      animator.setFrameRateDisplayer(getFrameRateDisplayer());
     }
   }
 

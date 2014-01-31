@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import jkanvas.Canvas;
+import jkanvas.FrameRateDisplayer;
 import jkanvas.Refreshable;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
@@ -108,6 +109,11 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   @Override
   public void setAnimationBarrier(final AnimationBarrier barrier, final Canvas canvas) {
     animator.setAnimationBarrier(barrier, canvas);
+  }
+
+  @Override
+  public void setFrameRateDisplayer(final FrameRateDisplayer frd) {
+    animator.setFrameRateDisplayer(frd);
   }
 
   @Override
