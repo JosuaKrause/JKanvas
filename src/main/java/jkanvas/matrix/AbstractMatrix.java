@@ -77,7 +77,7 @@ public abstract class AbstractMatrix<T> implements MutableMatrix<T> {
    * Refreshes all {@link jkanvas.Refreshable Refreshables} if a refresh manager
    * is installed.
    */
-  private void refreshAll() {
+  protected void refreshAll() {
     if(manager == null) return;
     manager.refreshAll();
   }

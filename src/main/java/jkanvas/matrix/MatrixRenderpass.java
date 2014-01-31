@@ -25,7 +25,7 @@ import jkanvas.util.StringDrawer.Orientation;
 public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
 
   /** The refresh manager. */
-  private final RefreshManager manager;
+  private RefreshManager manager;
   /** The matrix. */
   private T matrix;
   /** The cell drawer. */
@@ -177,6 +177,18 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
   }
 
   /**
+   * Setter.
+   * 
+   * @param manager The refresh manager.
+   */
+  protected void setRefreshManager(final RefreshManager manager) {
+    this.manager = Objects.requireNonNull(manager);
+    if(matrix instanceof MutableMatrix) {
+      ((MutableMatrix<?>) matrix).setRefreshManager(this.manager);
+    }
+  }
+
+  /**
    * Getter.
    * 
    * @return The refresh manager.
@@ -189,19 +201,18 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    * Creates a {@link MatrixRenderpass} with titles
    * 
    * @param <T> The matrix type.
-   * @param matrix The matrix.
-   * @param cellDrawer The cell renderer.
-   * @param mng The refresh manager.
+   * @param rp The render pass to wrap.
    * @param textHeight The title text height.
    * @param space The space between title and matrix.
    * @return The render pod.
    */
   public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
-      createTitledMatrixRenderpass(final T matrix, final CellRealizer<T> cellDrawer,
-          final RefreshManager mng, final double textHeight, final double space) {
+      createTitledMatrixRenderpass(final MatrixRenderpass<T> rp, final double textHeight,
+          final double space) {
+    final RefreshManager old = rp.getRefreshManager();
     final SimpleRefreshManager rm = new SimpleRefreshManager();
-    rm.addRefreshable(mng);
-    final MatrixRenderpass<T> rp = new MatrixRenderpass<>(matrix, cellDrawer, rm);
+    rp.setRefreshManager(rm);
+    final T matrix = rp.getMatrix();
     final TitleRenderpass<MatrixRenderpass<T>> top = new TitleRenderpass<>(
         new BorderRenderpass<>(rp), textHeight, space);
     top.setOrientation(Orientation.DIAGONAL);
@@ -218,6 +229,8 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
       }
 
     });
+    rm.refreshAll();
+    rm.addRefreshable(old);
     return left;
   }
 

@@ -5,16 +5,18 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
+import jkanvas.RefreshManager;
+
 /**
  * A permuted view on a matrix.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
-public abstract class PermutedMatrix<T> implements Matrix<T> {
+public class PermutedMatrix<T> implements MutableMatrix<T> {
 
   /** The underlying matrix. */
-  private final Matrix<T> matrix;
+  private final MutableMatrix<T> matrix;
   /** The row permutations. */
   private final int[] rowPerm;
   /** The column permutations. */
@@ -25,7 +27,7 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
    * 
    * @param matrix The matrix.
    */
-  public PermutedMatrix(final Matrix<T> matrix) {
+  public PermutedMatrix(final MutableMatrix<T> matrix) {
     this.matrix = Objects.requireNonNull(matrix);
     rowPerm = new int[matrix.rows()];
     for(int i = 0; i < rowPerm.length; ++i) {
@@ -47,6 +49,7 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
     final int tmp = rowPerm[a];
     rowPerm[a] = rowPerm[b];
     rowPerm[b] = tmp;
+    refreshAll();
   }
 
   /**
@@ -59,6 +62,7 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
     final int tmp = colPerm[a];
     colPerm[a] = colPerm[b];
     colPerm[b] = tmp;
+    refreshAll();
   }
 
   /**
@@ -69,12 +73,13 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
   public void sortRows(final Comparator<Integer> cmp) {
     final Integer[] arr = new Integer[rowPerm.length];
     for(int i = 0; i < arr.length; ++i) {
-      arr[i] = rowPerm[i];
+      arr[i] = rowPerm[i] = i; // unsort first
     }
     Arrays.sort(arr, cmp);
     for(int i = 0; i < rowPerm.length; ++i) {
       rowPerm[i] = arr[i];
     }
+    refreshAll();
   }
 
   /**
@@ -85,12 +90,13 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
   public void sortColumns(final Comparator<Integer> cmp) {
     final Integer[] arr = new Integer[colPerm.length];
     for(int i = 0; i < arr.length; ++i) {
-      arr[i] = colPerm[i];
+      arr[i] = colPerm[i] = i; // unsort first
     }
     Arrays.sort(arr, cmp);
     for(int i = 0; i < colPerm.length; ++i) {
       colPerm[i] = arr[i];
     }
+    refreshAll();
   }
 
   @Override
@@ -109,8 +115,20 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
   }
 
   @Override
+  public void set(final int row, final int col, final T value) {
+    matrix.set(rowPerm[row], colPerm[col], value);
+    refreshAll();
+  }
+
+  @Override
   public double getWidth(final int col) {
     return matrix.getWidth(colPerm[col]);
+  }
+
+  @Override
+  public void setWidth(final int col, final double value) {
+    matrix.setWidth(colPerm[col], value);
+    refreshAll();
   }
 
   @Override
@@ -119,8 +137,20 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
   }
 
   @Override
+  public void setHeight(final int row, final double value) {
+    matrix.setHeight(rowPerm[row], value);
+    refreshAll();
+  }
+
+  @Override
   public String getRowName(final int row) {
     return matrix.getRowName(rowPerm[row]);
+  }
+
+  @Override
+  public void setRowName(final int row, final String name) {
+    matrix.setRowName(rowPerm[row], name);
+    refreshAll();
   }
 
   @Override
@@ -138,6 +168,12 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
   }
 
   @Override
+  public void setColumnName(final int col, final String name) {
+    matrix.setColumnName(colPerm[col], name);
+    refreshAll();
+  }
+
+  @Override
   public String[] getColumnNames() {
     final String[] res = new String[cols()];
     for(int i = 0; i < res.length; ++i) {
@@ -149,6 +185,23 @@ public abstract class PermutedMatrix<T> implements Matrix<T> {
   @Override
   public void getBoundingBox(final Rectangle2D bbox, final int row, final int col) {
     matrix.getBoundingBox(bbox, rowPerm[row], colPerm[col]);
+  }
+
+  /** The refresh manager. */
+  private RefreshManager manager;
+
+  @Override
+  public void setRefreshManager(final RefreshManager manager) {
+    this.manager = manager;
+  }
+
+  /**
+   * Refreshes all {@link jkanvas.Refreshable Refreshables} if a refresh manager
+   * is installed.
+   */
+  protected void refreshAll() {
+    if(manager == null) return;
+    manager.refreshAll();
   }
 
 }
