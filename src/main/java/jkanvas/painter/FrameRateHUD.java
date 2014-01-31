@@ -3,6 +3,7 @@ package jkanvas.painter;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.RectangularShape;
+import java.util.concurrent.atomic.AtomicLong;
 
 import jkanvas.FrameRateDisplayer;
 
@@ -56,8 +57,12 @@ public class FrameRateHUD extends TextHUD implements FrameRateDisplayer {
     return 1;
   }
 
+  /** The time it took to animate the most recent frame in nano-seconds. */
+  private final AtomicLong lastAnimationTime = new AtomicLong();
   /** The time it took to draw the most recent frame in nano-seconds. */
   private long lastFrameTime;
+  /** Whether the animation thread encountered lag recently. */
+  private volatile boolean lag;
 
   @Override
   public void setLastFrameTime(final long time) {
@@ -65,10 +70,16 @@ public class FrameRateHUD extends TextHUD implements FrameRateDisplayer {
   }
 
   @Override
+  public void setLastAnimationTime(final long time, final boolean lag) {
+    lastAnimationTime.set(time);
+    this.lag = lag;
+  }
+
+  @Override
   public String getLine(final int i) {
     if(lastFrameTime == 0) return null;
-    final double fps = 1e9 / lastFrameTime;
-    return "fps: " + format(fps);
+    final double fps = 1e9 / (lastFrameTime + lastAnimationTime.get());
+    return (lag ? "fps: *" : "fps: ") + format(fps);
   }
 
   /**

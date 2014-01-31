@@ -1,6 +1,7 @@
 package jkanvas.animation;
 
 import jkanvas.Canvas;
+import jkanvas.FrameRateDisplayer;
 import jkanvas.RefreshManager;
 import jkanvas.Refreshable;
 
@@ -23,7 +24,7 @@ public interface Animator extends RefreshManager {
    * @param r The {@link Refreshable}.
    */
   @Override
-  void addRefreshable(final Refreshable r);
+  void addRefreshable(Refreshable r);
 
   /**
    * Getter.
@@ -41,6 +42,14 @@ public interface Animator extends RefreshManager {
    * @param canvas The canvas connected to the barrier.
    */
   void setAnimationBarrier(AnimationBarrier barrier, Canvas canvas);
+
+  /**
+   * Setter.
+   * 
+   * @param frd Sets the frame rate displayer. <code>null</code> stops time
+   *          measuring.
+   */
+  void setFrameRateDisplayer(FrameRateDisplayer frd);
 
   /** Disposes this animator. The animator cannot be used afterwards. */
   void dispose();

@@ -416,6 +416,9 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public void setFrameRateDisplayer(final FrameRateDisplayer frameRateDisplayer) {
     this.frameRateDisplayer = frameRateDisplayer;
+    if(animator != null) {
+      animator.setFrameRateDisplayer(frameRateDisplayer);
+    }
     refresh();
   }
 
@@ -518,6 +521,7 @@ public class Canvas extends JComponent implements Refreshable {
       al.addAnimated(zui);
       barrier = new AnimationBarrier(this);
       animator.setAnimationBarrier(barrier, this);
+      animator.setFrameRateDisplayer(getFrameRateDisplayer());
     }
   }
 
@@ -554,7 +558,10 @@ public class Canvas extends JComponent implements Refreshable {
    * @see jkanvas.animation.AnimationList#scheduleAction(AnimationAction, long)
    */
   public void scheduleAction(final AnimationAction action, final long delay) {
-    if(animator == null) throw new IllegalStateException("no animator installed");
+    if(animator == null) {
+      if(disposed) return;
+      throw new IllegalStateException("no animator installed");
+    }
     animator.getAnimationList().scheduleAction(action, delay);
   }
 
@@ -574,11 +581,10 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public void setViewConfiguration(final ViewConfiguration cfg) {
     this.cfg = Objects.requireNonNull(cfg);
-    if(animator != null) {
-      final AnimationList al = animator.getAnimationList();
-      final CameraZUI zui = cfg.getZUI();
-      al.addAnimated(zui);
-    }
+    if(animator == null) return;
+    final AnimationList al = animator.getAnimationList();
+    final CameraZUI zui = cfg.getZUI();
+    al.addAnimated(zui);
   }
 
   /**
@@ -925,8 +931,13 @@ public class Canvas extends JComponent implements Refreshable {
     return cfg.getPainter();
   }
 
+  /** Whether the canvas has been disposed. */
+  private boolean disposed;
+
   /** Disposes the painter. */
   public void dispose() {
+    if(disposed) return;
+    disposed = true;
     cfg.getPainter().dispose();
     setAnimator(null);
   }
