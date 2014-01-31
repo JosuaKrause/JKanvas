@@ -57,7 +57,7 @@ public class Canvas extends JComponent implements Refreshable {
   public static boolean DISABLE_CACHING;
 
   /** The current view configuration for the canvas. */
-  protected ViewConfiguration cfg;
+  private ViewConfiguration cfg;
 
   /** The focused component. */
   private JComponent focus;
@@ -85,158 +85,7 @@ public class Canvas extends JComponent implements Refreshable {
       final int width, final int height) {
     setPreferredSize(new Dimension(width, height));
     cfg = new ViewConfiguration(this, p, restricted);
-    final MouseAdapter mouse = new MouseInteraction() {
-
-      /** Whether the drag is on the HUD. */
-      private boolean hudDrag;
-
-      @Override
-      public void mousePressed(final MouseEvent e) {
-        getFocusComponent().grabFocus();
-        final Camera cam = getCamera();
-        final KanvasPainter painter = cfg.getPainter();
-        final Point2D p = e.getPoint();
-        try {
-          if(painter.clickHUD(cam, p, e)) {
-            refresh();
-            return;
-          }
-        } catch(final IgnoreInteractionException i) {
-          // nothing to do
-        }
-        try {
-          if(painter.acceptDragHUD(p, e)) {
-            hudDrag = true;
-            startDragging(p);
-            refresh();
-            return;
-          }
-        } catch(final IgnoreInteractionException i) {
-          // nothing to do
-        }
-        final CameraZUI zui = cfg.getZUI();
-        final Point2D c = zui.getForScreen(p);
-        try {
-          if(painter.click(cam, c, e)) {
-            refresh();
-            return;
-          }
-        } catch(final IgnoreInteractionException i) {
-          // nothing to do
-        }
-        try {
-          if(painter.acceptDrag(c, e)) {
-            hudDrag = false;
-            startDragging(c);
-            refresh();
-            return;
-          }
-        } catch(final IgnoreInteractionException i) {
-          // nothing to do
-        }
-        if(isMoveable() && painter.isAllowingPan(c, e)) {
-          startDragging(e, zui.getOffsetX(), zui.getOffsetY());
-        }
-      }
-
-      @Override
-      public void mouseClicked(final MouseEvent e) {
-        if(e.getClickCount() < 2) return;
-        final Camera cam = getCamera();
-        getFocusComponent().grabFocus();
-        final KanvasPainter painter = cfg.getPainter();
-        final Point2D p = e.getPoint();
-        try {
-          if(painter.doubleClickHUD(cam, p, e)) {
-            refresh();
-            return;
-          }
-        } catch(final IgnoreInteractionException i) {
-          // nothing to do
-        }
-        final CameraZUI zui = cfg.getZUI();
-        final Point2D c = zui.getForScreen(p);
-        try {
-          if(painter.doubleClick(cam, c, e)) {
-            refresh();
-            return;
-          }
-        } catch(final IgnoreInteractionException i) {
-          // nothing to do
-        }
-      }
-
-      @Override
-      public void mouseDragged(final MouseEvent e) {
-        if(!isDragging()) return;
-        if(!isPointDrag()) {
-          move(e.getX(), e.getY());
-          return;
-        }
-        final KanvasPainter painter = cfg.getPainter();
-        final Point2D start = getStartPoint();
-        final Point2D p = e.getPoint();
-        if(hudDrag) {
-          painter.dragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
-        } else {
-          final CameraZUI zui = cfg.getZUI();
-          final Point2D cur = zui.getForScreen(p);
-          painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
-        }
-        refresh();
-      }
-
-      @Override
-      public void mouseReleased(final MouseEvent e) {
-        if(!isDragging()) return;
-        if(!isPointDrag()) {
-          move(e.getX(), e.getY());
-          stopDragging();
-          return;
-        }
-        final KanvasPainter painter = cfg.getPainter();
-        final Point2D p = e.getPoint();
-        final Point2D start = stopPointDrag();
-        if(hudDrag) {
-          painter.endDragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
-        } else {
-          final CameraZUI zui = cfg.getZUI();
-          final Point2D c = zui.getForScreen(p);
-          painter.endDrag(start, c, c.getX() - start.getX(), c.getY() - start.getY());
-        }
-        refresh();
-      }
-
-      /**
-       * Sets the offset according to the mouse position.
-       * 
-       * @param x The mouse x position.
-       * @param y The mouse y position.
-       */
-      protected void move(final int x, final int y) {
-        cfg.getZUI().setOffset(getMoveX(x), getMoveY(y));
-      }
-
-      @Override
-      public void mouseWheelMoved(final MouseWheelEvent e) {
-        if(isDragging() || !isMoveable()) return;
-        cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
-      }
-
-      @Override
-      public void mouseMoved(final MouseEvent e) {
-        final KanvasPainter painter = cfg.getPainter();
-        final CameraZUI zui = cfg.getZUI();
-        try {
-          if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
-        } catch(final IgnoreInteractionException i) {
-          // better refresh also in this case --
-          // some method may have returned true
-        }
-        refresh();
-      }
-
-    };
+    final MouseAdapter mouse = getMouseAdapter(this);
     addMouseListener(mouse);
     addMouseMotionListener(mouse);
     addMouseWheelListener(mouse);
@@ -929,6 +778,208 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public KanvasPainter getPainter() {
     return cfg.getPainter();
+  }
+
+  /**
+   * Creates a window adapter to automatically dispose of the canvas when the
+   * frame closes (
+   * {@link javax.swing.JFrame#addWindowListener(java.awt.event.WindowListener)}
+   * ). Also, it fixes a problem with mouse interaction when using full-screen
+   * on MAC OS (
+   * {@link javax.swing.JFrame#addWindowStateListener(java.awt.event.WindowStateListener)}
+   * ).
+   * 
+   * @param frame The frame.
+   * @param canvas The canvas.
+   * @return The adapter.
+   */
+  public static final java.awt.event.WindowAdapter getWindowAdapter(
+      final javax.swing.JFrame frame, final Canvas canvas) {
+    return new java.awt.event.WindowAdapter() {
+
+      @Override
+      public void windowStateChanged(final java.awt.event.WindowEvent e) {
+        // fix for not being able to get some mouse events
+        // on a MAC when extending window -- doesn't hurt for other OSes
+        if((frame.getExtendedState() & java.awt.Frame.MAXIMIZED_BOTH) == 0) return;
+        frame.setBounds(frame.getGraphicsConfiguration().getBounds());
+      }
+
+      @Override
+      public void windowClosed(final java.awt.event.WindowEvent e) {
+        canvas.dispose();
+      }
+
+    };
+  }
+
+  /**
+   * Creates the mouse interaction for the given canvas. This method should only
+   * be called once in the constructor of the canvas.
+   * 
+   * @param canvas The canvas.
+   * @return The mouse interaction.
+   */
+  static final MouseAdapter getMouseAdapter(final Canvas canvas) {
+    return new MouseInteraction() {
+
+      /** Whether the drag is on the HUD. */
+      private boolean hudDrag;
+
+      @Override
+      public void mousePressed(final MouseEvent e) {
+        canvas.getFocusComponent().grabFocus();
+        final Camera cam = canvas.getCamera();
+        final ViewConfiguration cfg = canvas.getViewConfiguration();
+        final KanvasPainter painter = cfg.getPainter();
+        final Point2D p = e.getPoint();
+        try {
+          if(painter.clickHUD(cam, p, e)) {
+            canvas.refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+        try {
+          if(painter.acceptDragHUD(p, e)) {
+            hudDrag = true;
+            startDragging(p);
+            canvas.refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+        final CameraZUI zui = cfg.getZUI();
+        final Point2D c = zui.getForScreen(p);
+        try {
+          if(painter.click(cam, c, e)) {
+            canvas.refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+        try {
+          if(painter.acceptDrag(c, e)) {
+            hudDrag = false;
+            startDragging(c);
+            canvas.refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+        if(canvas.isMoveable() && painter.isAllowingPan(c, e)) {
+          startDragging(e, zui.getOffsetX(), zui.getOffsetY());
+        }
+      }
+
+      @Override
+      public void mouseClicked(final MouseEvent e) {
+        if(e.getClickCount() < 2) return;
+        final ViewConfiguration cfg = canvas.getViewConfiguration();
+        final Camera cam = canvas.getCamera();
+        canvas.getFocusComponent().grabFocus();
+        final KanvasPainter painter = cfg.getPainter();
+        final Point2D p = e.getPoint();
+        try {
+          if(painter.doubleClickHUD(cam, p, e)) {
+            canvas.refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+        final CameraZUI zui = cfg.getZUI();
+        final Point2D c = zui.getForScreen(p);
+        try {
+          if(painter.doubleClick(cam, c, e)) {
+            canvas.refresh();
+            return;
+          }
+        } catch(final IgnoreInteractionException i) {
+          // nothing to do
+        }
+      }
+
+      @Override
+      public void mouseDragged(final MouseEvent e) {
+        if(!isDragging()) return;
+        if(!isPointDrag()) {
+          move(e.getX(), e.getY());
+          return;
+        }
+        final ViewConfiguration cfg = canvas.getViewConfiguration();
+        final KanvasPainter painter = cfg.getPainter();
+        final Point2D start = getStartPoint();
+        final Point2D p = e.getPoint();
+        if(hudDrag) {
+          painter.dragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
+        } else {
+          final CameraZUI zui = cfg.getZUI();
+          final Point2D cur = zui.getForScreen(p);
+          painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
+        }
+        canvas.refresh();
+      }
+
+      @Override
+      public void mouseReleased(final MouseEvent e) {
+        if(!isDragging()) return;
+        if(!isPointDrag()) {
+          move(e.getX(), e.getY());
+          stopDragging();
+          return;
+        }
+        final ViewConfiguration cfg = canvas.getViewConfiguration();
+        final KanvasPainter painter = cfg.getPainter();
+        final Point2D p = e.getPoint();
+        final Point2D start = stopPointDrag();
+        if(hudDrag) {
+          painter.endDragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
+        } else {
+          final CameraZUI zui = cfg.getZUI();
+          final Point2D c = zui.getForScreen(p);
+          painter.endDrag(start, c, c.getX() - start.getX(), c.getY() - start.getY());
+        }
+        canvas.refresh();
+      }
+
+      /**
+       * Sets the offset according to the mouse position.
+       * 
+       * @param x The mouse x position.
+       * @param y The mouse y position.
+       */
+      protected void move(final int x, final int y) {
+        final ViewConfiguration cfg = canvas.getViewConfiguration();
+        cfg.getZUI().setOffset(getMoveX(x), getMoveY(y));
+      }
+
+      @Override
+      public void mouseWheelMoved(final MouseWheelEvent e) {
+        if(isDragging() || !canvas.isMoveable()) return;
+        final ViewConfiguration cfg = canvas.getViewConfiguration();
+        cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
+      }
+
+      @Override
+      public void mouseMoved(final MouseEvent e) {
+        final ViewConfiguration cfg = canvas.getViewConfiguration();
+        final KanvasPainter painter = cfg.getPainter();
+        final CameraZUI zui = cfg.getZUI();
+        try {
+          if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
+        } catch(final IgnoreInteractionException i) {
+          // better refresh also in this case --
+          // some method may have returned true
+        }
+        canvas.refresh();
+      }
+
+    };
   }
 
   /** Whether the canvas has been disposed. */

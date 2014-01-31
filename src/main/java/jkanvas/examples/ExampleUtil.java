@@ -1,10 +1,8 @@
 package jkanvas.examples;
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Objects;
 
 import javax.swing.JFrame;
@@ -107,22 +105,7 @@ public final class ExampleUtil {
     frame.setLocationRelativeTo(null);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setVisible(true);
-    final WindowAdapter wnd = new WindowAdapter() {
-
-      @Override
-      public void windowStateChanged(final WindowEvent e) {
-        // fix for not being able to get some mouse events
-        // on a MAC when extending window -- doesn't hurt for other OSes
-        if((frame.getExtendedState() & Frame.MAXIMIZED_BOTH) == 0) return;
-        frame.setBounds(frame.getGraphicsConfiguration().getBounds());
-      }
-
-      @Override
-      public void windowClosed(final WindowEvent e) {
-        c.dispose();
-      }
-
-    };
+    final WindowAdapter wnd = Canvas.getWindowAdapter(frame, c);
     frame.addWindowListener(wnd);
     frame.addWindowStateListener(wnd);
     if(reset) {
