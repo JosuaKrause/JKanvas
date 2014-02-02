@@ -4,7 +4,7 @@ import java.awt.geom.Rectangle2D;
 
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * A camera is way to control the viewport of a {@link jkanvas.Canvas}.
@@ -39,7 +39,7 @@ public interface Camera {
    * @param useMargin Whether to add the canvas margin.
    */
   // TODO #43 -- Java 8 simplification
-  void toView(Renderpass pass, AnimationTiming timing,
+  void toView(RenderNode pass, AnimationTiming timing,
       AnimationAction onFinish, boolean useMargin);
 
   /**

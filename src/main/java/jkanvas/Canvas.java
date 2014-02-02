@@ -42,7 +42,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * A debug flag to activate bounding box rendering. This flag is optional for
-   * a {@link KanvasPainter} or a {@link jkanvas.painter.Renderpass} to
+   * a {@link KanvasPainter} or a {@link jkanvas.painter.RenderNode} to
    * interpret.
    */
   public static boolean DEBUG_BBOX;

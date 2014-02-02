@@ -11,7 +11,7 @@ import jkanvas.animation.Animated;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.GenericAnimated;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * A zoom-able view with an attached camera.
@@ -110,7 +110,7 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
-  public void toView(final Renderpass pass, final AnimationTiming timing,
+  public void toView(final RenderNode pass, final AnimationTiming timing,
       final AnimationAction onFinish, final boolean useMargin) {
     final Rectangle2D box = new Rectangle2D.Double();
     jkanvas.painter.RenderpassPainter.getTopLevelBounds(box, pass);

@@ -22,7 +22,7 @@ import jkanvas.table.LineMapper;
 public class ParallelCoordinates {
 
   /** The group of render passes. */
-  private final LinearGroup<Renderpass> group;
+  private final LinearGroup<RenderNode> group;
   /** The size of a cell. */
   private final Rectangle2D box;
   /** The alpha value for the lines. */
@@ -40,12 +40,12 @@ public class ParallelCoordinates {
       final double width, final double height, final double alpha) {
     this.alpha = alpha;
     // TODO #43 -- Java 8 simplification
-    group = new LinearGroup<Renderpass>(
+    group = new LinearGroup<RenderNode>(
         animator, true, 0, AnimationTiming.NO_ANIMATION) {
 
       @Override
       protected void drawBetween(final Graphics2D gfx, final KanvasContext ctx,
-          final Renderpass left, final Renderpass right) {
+          final RenderNode left, final RenderNode right) {
         if(left == right && left == null) return;
         final double x;
         if(left != null) {
@@ -121,7 +121,7 @@ public class ParallelCoordinates {
    * 
    * @return The actual render pass.
    */
-  public Renderpass getRenderpass() {
+  public RenderNode getRenderpass() {
     return group;
   }
 

@@ -9,7 +9,7 @@ import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
 import jkanvas.Refreshable;
 import jkanvas.SimpleRefreshManager;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 import jkanvas.painter.pod.BorderRenderpass;
 import jkanvas.painter.pod.Renderpod;
 import jkanvas.painter.pod.TitleRenderpass;
@@ -23,7 +23,7 @@ import jkanvas.util.StringDrawer.Orientation;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The matrix type.
  */
-public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
+public class MatrixRenderpass<T extends Matrix<?>> extends RenderNode {
 
   /** The refresh manager. */
   private RefreshManager manager;

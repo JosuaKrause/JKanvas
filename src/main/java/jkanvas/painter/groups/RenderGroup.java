@@ -18,7 +18,7 @@ import jkanvas.animation.AnimationList;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
 import jkanvas.animation.GenericAnimated;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.VecUtil;
@@ -32,7 +32,7 @@ import jkanvas.util.VecUtil;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
-public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
+public abstract class RenderGroup<T extends RenderNode> extends RenderNode {
 
   /**
    * The offset of a render pass as {@link AnimatedPosition}.
@@ -40,7 +40,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @author Joschi <josua.krause@gmail.com>
    * @param <T> The type of the render pass.
    */
-  protected static final class RenderpassPosition<T extends Renderpass>
+  protected static final class RenderpassPosition<T extends RenderNode>
       extends GenericAnimated<Point2D> {
 
     /** The render pass. */
@@ -140,10 +140,10 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
   private final List<RenderpassPosition<T>> members;
 
   /** The list of non layouted members in front of the layouted members. */
-  private final List<Renderpass> nlFront = new ArrayList<>();
+  private final List<RenderNode> nlFront = new ArrayList<>();
 
   /** The list of non layouted members behind the layouted members. */
-  private final List<Renderpass> nlBack = new ArrayList<>();
+  private final List<RenderNode> nlBack = new ArrayList<>();
 
   /** The underlying animator. */
   private final Animator animator;
@@ -417,7 +417,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @param pass The render pass.
    * @param front Whether this pass is added in front of the layouted passes.
    */
-  public void addNonLayouted(final Renderpass pass, final boolean front) {
+  public void addNonLayouted(final RenderNode pass, final boolean front) {
     if(front) {
       nlFront.add(pass);
     } else {
@@ -433,7 +433,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @param pass The render pass.
    * @param front Whether this pass is added in front of the layouted passes.
    */
-  public void addNonLayouted(final int index, final Renderpass pass, final boolean front) {
+  public void addNonLayouted(final int index, final RenderNode pass, final boolean front) {
     if(front) {
       nlFront.add(index, pass);
     } else {
@@ -465,7 +465,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @param front Whether this method addresses passes in front of the layouted
    *          passes.
    */
-  public void setNonLayouted(final int index, final Renderpass pass, final boolean front) {
+  public void setNonLayouted(final int index, final RenderNode pass, final boolean front) {
     if(front) {
       nlFront.set(index, pass);
     } else {
@@ -482,7 +482,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    *          passes.
    * @return The render pass at the given index that is not used for the layout.
    */
-  public Renderpass getNonLayouted(final int index, final boolean front) {
+  public RenderNode getNonLayouted(final int index, final boolean front) {
     return front ? nlFront.get(index) : nlBack.get(index);
   }
 
@@ -585,7 +585,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
       PaintUtil.setAlpha(g, 0.3);
       g.setColor(java.awt.Color.BLUE);
       for(final RenderpassPosition<T> rp : members) {
-        final Renderpass r = rp.pass;
+        final RenderNode r = rp.pass;
         if(!r.isVisible()) {
           continue;
         }
@@ -620,7 +620,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
     if(RenderpassPainter.click(nlFront, cam, position, e)) return true;
     final Rectangle2D bbox = new Rectangle2D.Double();
     for(final RenderpassPosition<T> p : reverseArray(members())) {
-      final Renderpass r = p.pass;
+      final RenderNode r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
@@ -639,7 +639,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
     if(RenderpassPainter.doubleClick(nlFront, cam, position, e)) return true;
     final Rectangle2D bbox = new Rectangle2D.Double();
     for(final RenderpassPosition<T> p : reverseArray(members())) {
-      final Renderpass r = p.pass;
+      final RenderNode r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
@@ -661,7 +661,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
     if(tt != null) return tt;
     final Rectangle2D bbox = new Rectangle2D.Double();
     for(final RenderpassPosition<T> p : reverseArray(members())) {
-      final Renderpass r = p.pass;
+      final RenderNode r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
@@ -680,7 +680,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
   public boolean moveMouse(final Point2D cur) {
     boolean moved = RenderpassPainter.moveMouse(nlFront, cur);
     for(final RenderpassPosition<T> p : reverseArray(members())) {
-      final Renderpass r = p.pass;
+      final RenderNode r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
@@ -699,10 +699,10 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @return The render pass at the given position or <code>null</code> if there
    *         is none.
    */
-  protected Renderpass pickLayouted(final Point2D position) {
+  protected RenderNode pickLayouted(final Point2D position) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     for(final RenderpassPosition<T> p : reverseArray(members())) {
-      final Renderpass r = p.pass;
+      final RenderNode r = p.pass;
       if(!r.isVisible()) {
         continue;
       }
@@ -717,7 +717,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
   }
 
   /** The render pass currently responsible for dragging. */
-  private Renderpass dragging = null;
+  private RenderNode dragging = null;
 
   /** The start position of the drag in the render pass coordinates. */
   private Point2D start = null;
@@ -733,7 +733,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @see #acceptDrag(Point2D, MouseEvent)
    */
   private boolean acceptDrag(
-      final Renderpass r, final Point2D position, final MouseEvent e) {
+      final RenderNode r, final Point2D position, final MouseEvent e) {
     if(!r.isVisible()) return false;
     final Rectangle2D bbox = new Rectangle2D.Double();
     r.getBoundingBox(bbox);
@@ -747,13 +747,13 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
 
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
-    for(final Renderpass r : reverseList(nlFront)) {
+    for(final RenderNode r : reverseList(nlFront)) {
       if(acceptDrag(r, position, e)) return true;
     }
     for(final RenderpassPosition<T> p : reverseArray(members())) {
       if(acceptDrag(p.pass, position, e)) return true;
     }
-    for(final Renderpass r : reverseList(nlBack)) {
+    for(final RenderNode r : reverseList(nlBack)) {
       if(acceptDrag(r, position, e)) return true;
     }
     return false;
@@ -811,10 +811,10 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
 
   @Override
   public boolean isChanging() {
-    for(final Renderpass r : nlBack) {
+    for(final RenderNode r : nlBack) {
       if(r.isChanging()) return true;
     }
-    for(final Renderpass r : nlFront) {
+    for(final RenderNode r : nlFront) {
       if(r.isChanging()) return true;
     }
     for(final RenderpassPosition<T> rp : members) {

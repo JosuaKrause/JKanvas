@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import jkanvas.Canvas;
 import jkanvas.FrameRateDisplayer;
 import jkanvas.Refreshable;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 import jkanvas.painter.RenderpassPainter;
 
 /**
@@ -102,7 +102,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   }
 
   @Override
-  public void addPass(final Renderpass r) {
+  public void addPass(final RenderNode r) {
     super.addPass(r);
     r.setAnimationList(getAnimationList());
   }

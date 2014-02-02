@@ -2,7 +2,7 @@ package jkanvas.selection;
 
 import java.awt.Shape;
 
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * An interface for arbitrary shaped selections.
@@ -24,6 +24,6 @@ public interface Selectable {
    * 
    * @return The associated render pass.
    */
-  Renderpass getRenderpass();
+  RenderNode getRenderpass();
 
 }

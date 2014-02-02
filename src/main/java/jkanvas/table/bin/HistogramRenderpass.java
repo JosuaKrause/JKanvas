@@ -5,14 +5,14 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * A render pass to paint histograms for {@link ColumnBinner column bins}.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class HistogramRenderpass extends Renderpass {
+public class HistogramRenderpass extends RenderNode {
 
   /** The width of the render pass. */
   private final double width;

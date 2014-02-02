@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 import jkanvas.util.StringDrawer;
 import jkanvas.util.StringDrawer.Orientation;
 
@@ -16,7 +16,7 @@ import jkanvas.util.StringDrawer.Orientation;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
-public class TitleRenderpass<T extends Renderpass> extends Renderpod<T> {
+public class TitleRenderpass<T extends RenderNode> extends Renderpod<T> {
 
   /** An array for initializing with no title. */
   private static final String[] NO_TITLE = { ""};

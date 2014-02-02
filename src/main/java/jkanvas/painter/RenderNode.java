@@ -17,12 +17,12 @@ import jkanvas.animation.AnimationTiming;
 import jkanvas.painter.pod.Renderpod;
 
 /**
- * Render passes can be used to dynamically change what is rendered on a canvas
- * and define an order.
+ * Render nodes can be used to dynamically change what is rendered on a canvas
+ * and are used to define an order.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public abstract class Renderpass implements KanvasInteraction {
+public abstract class RenderNode implements KanvasInteraction {
 
   /** Whether caching is forced. */
   private boolean forceCache;
@@ -30,7 +30,7 @@ public abstract class Renderpass implements KanvasInteraction {
   /**
    * Setter.
    * 
-   * @param forceCache Force caching. This can be useful when the render pass is
+   * @param forceCache Force caching. This can be useful when the render node is
    *          moving and caching is supported.
    */
   public void setForceCache(final boolean forceCache) {
@@ -58,9 +58,9 @@ public abstract class Renderpass implements KanvasInteraction {
    * @return Whether the click was consumed.
    */
   public static final boolean defaultDoubleClick(
-      final Renderpass rp, final Camera cam, final MouseEvent e) {
+      final RenderNode rp, final Camera cam, final MouseEvent e) {
     if(!SwingUtilities.isLeftMouseButton(e)) return false;
-    Renderpass r = rp;
+    RenderNode r = rp;
     while(r.getParent() instanceof Renderpod) {
       r = r.getParent();
     }
@@ -132,7 +132,7 @@ public abstract class Renderpass implements KanvasInteraction {
   /**
    * Getter.
    * 
-   * @return The x offset of this pass in canvas coordinates.
+   * @return The x offset of this node in canvas coordinates.
    */
   public double getOffsetX() {
     return x;
@@ -141,16 +141,16 @@ public abstract class Renderpass implements KanvasInteraction {
   /**
    * Getter.
    * 
-   * @return The y offset of this pass in canvas coordinates.
+   * @return The y offset of this node in canvas coordinates.
    */
   public double getOffsetY() {
     return y;
   }
 
   /**
-   * Calculates the bounding box of the render pass. The method does
+   * Calculates the bounding box of the render node. The method does
    * <em>not</em> account for the offset. To get information about the offset of
-   * the render pass use {@link #getOffsetX()} and {@link #getOffsetY()}
+   * the render node use {@link #getOffsetX()} and {@link #getOffsetY()}
    * respectively.
    * 
    * @param bbox The rectangle in which the bounding box is stored.
@@ -161,15 +161,15 @@ public abstract class Renderpass implements KanvasInteraction {
   public abstract void getBoundingBox(Rectangle2D bbox);
 
   /** The parent. */
-  private Renderpass parent;
+  private RenderNode parent;
 
   /**
    * Setter.
    * 
-   * @param parent Sets the parent of this render pass. Parents can not be
+   * @param parent Sets the parent of this render node. Parents can not be
    *          switched directly.
    */
-  public void setParent(final Renderpass parent) {
+  public void setParent(final RenderNode parent) {
     if(parent != null && this.parent != null) throw new IllegalStateException(
         "tried to set two parents");
     this.parent = parent;
@@ -178,25 +178,25 @@ public abstract class Renderpass implements KanvasInteraction {
   /**
    * Getter.
    * 
-   * @return The parent of this render pass. The parent is used to calculate
-   *         correct top level canvas positions when render passes are combined
+   * @return The parent of this render node. The parent is used to calculate
+   *         correct top level canvas positions when render nodes are combined
    *         in groups.
    * @see jkanvas.painter.RenderpassPainter#getTopLevelBounds(Rectangle2D,
-   *      Renderpass)
+   *      RenderNode)
    * @see jkanvas.painter.RenderpassPainter#convertToTopLevelBounds(Rectangle2D,
-   *      Renderpass)
+   *      RenderNode)
    */
-  public Renderpass getParent() {
+  public RenderNode getParent() {
     return parent;
   }
 
-  /** The ids associated with this render pass. */
+  /** The ids associated with this render node. */
   private String ids = "";
 
   /**
    * Setter.
    * 
-   * @param ids The ids associated with this render pass. Multiple ids may be
+   * @param ids The ids associated with this render node. Multiple ids may be
    *          separated with space '<code> </code>'.
    */
   public void setIds(final String ids) {
@@ -206,7 +206,7 @@ public abstract class Renderpass implements KanvasInteraction {
   /**
    * Getter.
    * 
-   * @return The ids associated with this render pass. Multiple ids may be
+   * @return The ids associated with this render node. Multiple ids may be
    *         separated with space '<code> </code>'.
    */
   public String getIds() {
@@ -292,8 +292,8 @@ public abstract class Renderpass implements KanvasInteraction {
   /**
    * Setter.
    * 
-   * @param list Sets the animation list so that the render pass can add and
-   *          remove animated objects. If the render pass has nothing to add to
+   * @param list Sets the animation list so that the render node can add and
+   *          remove animated objects. If the render node has nothing to add to
    *          the list this method can be ignored.
    */
   public void setAnimationList(@SuppressWarnings("unused") final AnimationList list) {
@@ -303,7 +303,7 @@ public abstract class Renderpass implements KanvasInteraction {
   /**
    * Getter.
    * 
-   * @return Whether the render pass may be altered until the next call of
+   * @return Whether the render node may be altered until the next call of
    *         {@link #draw(java.awt.Graphics2D, jkanvas.KanvasContext)}.
    */
   public boolean isChanging() {

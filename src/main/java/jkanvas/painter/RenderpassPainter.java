@@ -27,7 +27,7 @@ public class RenderpassPainter implements KanvasPainter {
   private final List<HUDRenderpass> front;
 
   /** The normal render passes. */
-  private final List<Renderpass> back;
+  private final List<RenderNode> back;
 
   /** Creates an empty render pass painter. */
   public RenderpassPainter() {
@@ -45,7 +45,7 @@ public class RenderpassPainter implements KanvasPainter {
    * 
    * @param r The render pass.
    */
-  public void addPass(final Renderpass r) {
+  public void addPass(final RenderNode r) {
     back.add(r);
   }
 
@@ -54,7 +54,7 @@ public class RenderpassPainter implements KanvasPainter {
    * 
    * @param r The render pass.
    */
-  public void removePass(final Renderpass r) {
+  public void removePass(final RenderNode r) {
     back.remove(r);
   }
 
@@ -93,10 +93,10 @@ public class RenderpassPainter implements KanvasPainter {
    * @see #draw(Graphics2D, KanvasContext)
    */
   public static final void draw(
-      final List<Renderpass> passes, final Graphics2D gfx, final KanvasContext ctx) {
+      final List<RenderNode> passes, final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D view = ctx.getVisibleCanvas();
     final Rectangle2D bbox = new Rectangle2D.Double();
-    for(final Renderpass r : passes) {
+    for(final RenderNode r : passes) {
       if(!r.isVisible()) {
         continue;
       }
@@ -116,7 +116,7 @@ public class RenderpassPainter implements KanvasPainter {
     if(jkanvas.Canvas.DEBUG_BBOX) {
       final Graphics2D g = (Graphics2D) gfx.create();
       PaintUtil.setAlpha(g, 0.3);
-      for(final Renderpass r : passes) {
+      for(final RenderNode r : passes) {
         if(!r.isVisible()) {
           continue;
         }
@@ -146,9 +146,9 @@ public class RenderpassPainter implements KanvasPainter {
    * @see #click(Camera, Point2D, MouseEvent)
    */
   public static final boolean click(
-      final List<Renderpass> passes, final Camera cam, final Point2D p, final MouseEvent e) {
+      final List<RenderNode> passes, final Camera cam, final Point2D p, final MouseEvent e) {
     final Rectangle2D bbox = new Rectangle2D.Double();
-    for(final Renderpass r : reverseList(passes)) {
+    for(final RenderNode r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -165,10 +165,10 @@ public class RenderpassPainter implements KanvasPainter {
   @Override
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
     if(doubleClick(back, cam, p, e)) return true;
-    if(!Renderpass.USE_DOUBLE_CLICK_DEFAULT) return false;
+    if(!RenderNode.USE_DOUBLE_CLICK_DEFAULT) return false;
     final Rectangle2D box = new Rectangle2D.Double();
     getBoundingBox(box, back);
-    return Renderpass.defaultDoubleClick(box, cam, e);
+    return RenderNode.defaultDoubleClick(box, cam, e);
   }
 
   /**
@@ -182,9 +182,9 @@ public class RenderpassPainter implements KanvasPainter {
    * @see #doubleClick(Camera, Point2D, MouseEvent)
    */
   public static final boolean doubleClick(
-      final List<Renderpass> passes, final Camera cam, final Point2D p, final MouseEvent e) {
+      final List<RenderNode> passes, final Camera cam, final Point2D p, final MouseEvent e) {
     final Rectangle2D bbox = new Rectangle2D.Double();
-    for(final Renderpass r : reverseList(passes)) {
+    for(final RenderNode r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -212,9 +212,9 @@ public class RenderpassPainter implements KanvasPainter {
    *         pass.
    * @see #getTooltip(Point2D)
    */
-  public static final String getTooltip(final List<Renderpass> passes, final Point2D p) {
+  public static final String getTooltip(final List<RenderNode> passes, final Point2D p) {
     final Rectangle2D bbox = new Rectangle2D.Double();
-    for(final Renderpass r : reverseList(passes)) {
+    for(final RenderNode r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -242,9 +242,9 @@ public class RenderpassPainter implements KanvasPainter {
    * @return Whether any render pass has been affected by the mouse move.
    * @see #moveMouse(Point2D)
    */
-  public static final boolean moveMouse(final List<Renderpass> passes, final Point2D cur) {
+  public static final boolean moveMouse(final List<RenderNode> passes, final Point2D cur) {
     boolean moved = false;
-    for(final Renderpass r : reverseList(passes)) {
+    for(final RenderNode r : reverseList(passes)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -257,7 +257,7 @@ public class RenderpassPainter implements KanvasPainter {
   }
 
   /** The render pass currently responsible for dragging. */
-  private Renderpass dragging = null;
+  private RenderNode dragging = null;
 
   /** The start position of the drag in the render pass coordinates. */
   private Point2D start = null;
@@ -265,7 +265,7 @@ public class RenderpassPainter implements KanvasPainter {
   @Override
   public final boolean acceptDrag(final Point2D p, final MouseEvent e) {
     final Rectangle2D bbox = new Rectangle2D.Double();
-    for(final Renderpass r : reverseList(back)) {
+    for(final RenderNode r : reverseList(back)) {
       if(!r.isVisible()) {
         continue;
       }
@@ -389,7 +389,7 @@ public class RenderpassPainter implements KanvasPainter {
    * @param pos The position in canvas coordinates.
    * @return The position in render pass coordinates.
    */
-  public static final Point2D getPositionFromCanvas(final Renderpass r, final Point2D pos) {
+  public static final Point2D getPositionFromCanvas(final RenderNode r, final Point2D pos) {
     return new Point2D.Double(pos.getX() - r.getOffsetX(), pos.getY() - r.getOffsetY());
   }
 
@@ -403,7 +403,7 @@ public class RenderpassPainter implements KanvasPainter {
    * @return The position in render pass coordinates.
    */
   public static final Point2D getPositionFromComponent(
-      final Renderpass r, final KanvasContext ctx, final Point2D pos) {
+      final RenderNode r, final KanvasContext ctx, final Point2D pos) {
     return getPositionFromCanvas(r, ctx.toCanvasCoordinates(pos));
   }
 
@@ -416,7 +416,7 @@ public class RenderpassPainter implements KanvasPainter {
    * @return The transformed context.
    */
   public static final KanvasContext getContextFor(
-      final Renderpass r, final KanvasContext ctx) {
+      final RenderNode r, final KanvasContext ctx) {
     return ctx.translate(r.getOffsetX(), r.getOffsetY());
   }
 
@@ -429,8 +429,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @return The transformed context.
    */
   public static final KanvasContext getRecursiveContextFor(
-      final Renderpass r, final KanvasContext ctx) {
-    final Renderpass p = r.getParent();
+      final RenderNode r, final KanvasContext ctx) {
+    final RenderNode p = r.getParent();
     final KanvasContext c = p != null ? getRecursiveContextFor(p, ctx) : ctx;
     return getContextFor(r, c);
   }
@@ -443,7 +443,7 @@ public class RenderpassPainter implements KanvasPainter {
    * @param r The render pass.
    */
   public static final void getPassBoundingBox(
-      final Rectangle2D rect, final Renderpass r) {
+      final Rectangle2D rect, final RenderNode r) {
     r.getBoundingBox(rect);
     rect.setFrame(rect.getX() + r.getOffsetX(),
         rect.getY() + r.getOffsetY(), rect.getWidth(), rect.getHeight());
@@ -457,11 +457,11 @@ public class RenderpassPainter implements KanvasPainter {
    * @param passes The render passes.
    */
   public static final void getBoundingBox(
-      final Rectangle2D rect, final Iterable<Renderpass> passes) {
+      final Rectangle2D rect, final Iterable<RenderNode> passes) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     // clear rect
     rect.setFrame(bbox);
-    for(final Renderpass r : passes) {
+    for(final RenderNode r : passes) {
       if(!r.isVisible()) {
         continue;
       }
@@ -495,8 +495,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @param msg The message.
    */
   public static final void processMessage(
-      final Iterable<Renderpass> passes, final String[] ids, final String msg) {
-    for(final Renderpass r : passes) {
+      final Iterable<RenderNode> passes, final String[] ids, final String msg) {
+    for(final RenderNode r : passes) {
       r.processMessage(ids, msg);
     }
   }
@@ -523,7 +523,7 @@ public class RenderpassPainter implements KanvasPainter {
    * @param pass The render pass.
    * @return Whether it is actually visible.
    */
-  public static final boolean isTopLevelVisible(final Renderpass pass) {
+  public static final boolean isTopLevelVisible(final RenderNode pass) {
     if(pass == null) return true;
     return pass.isVisible() && isTopLevelVisible(pass.getParent());
   }
@@ -535,7 +535,7 @@ public class RenderpassPainter implements KanvasPainter {
    * @param bbox The rectangle in which the result will be stored.
    * @param pass The render pass.
    */
-  public static final void getTopLevelBounds(final Rectangle2D bbox, final Renderpass pass) {
+  public static final void getTopLevelBounds(final Rectangle2D bbox, final RenderNode pass) {
     pass.getBoundingBox(bbox);
     convertToTopLevelBounds(bbox, pass);
   }
@@ -548,8 +548,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @param pass The render pass.
    */
   public static final void convertToTopLevelBounds(
-      final Rectangle2D rect, final Renderpass pass) {
-    Renderpass p = pass;
+      final Rectangle2D rect, final RenderNode pass) {
+    RenderNode p = pass;
     do {
       rect.setFrame(rect.getX() + p.getOffsetX(), rect.getY() + p.getOffsetY(),
           rect.getWidth(), rect.getHeight());
@@ -564,8 +564,8 @@ public class RenderpassPainter implements KanvasPainter {
    * @param pass The render pass.
    * @return The offset of the render pass in top level canvas coordinates.
    */
-  public static final Point2D getTopLevelOffset(final Renderpass pass) {
-    Renderpass p = pass;
+  public static final Point2D getTopLevelOffset(final RenderNode pass) {
+    RenderNode p = pass;
     final Point2D res = new Point2D.Double();
     do {
       res.setLocation(res.getX() + pass.getOffsetX(), res.getY() + pass.getOffsetY());

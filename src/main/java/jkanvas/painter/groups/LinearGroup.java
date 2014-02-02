@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * A group linearly ordering the members. Render passes without bounding boxes
@@ -19,7 +19,7 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
-public class LinearGroup<T extends Renderpass> extends RenderGroup<T> {
+public class LinearGroup<T extends RenderNode> extends RenderGroup<T> {
 
   /** The on finish action to use when layouting. */
   private final AtomicReference<AnimationAction> curOnFinish;
@@ -123,7 +123,7 @@ public class LinearGroup<T extends Renderpass> extends RenderGroup<T> {
     double maxH = 0;
     double maxV = 0;
     for(final RenderpassPosition<T> p : members) {
-      final Renderpass pass = p.pass;
+      final RenderNode pass = p.pass;
       final Rectangle2D bbox = new Rectangle2D.Double();
       pass.getBoundingBox(bbox);
       bboxes.add(bbox);

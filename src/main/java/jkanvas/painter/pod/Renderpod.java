@@ -11,7 +11,7 @@ import java.util.Objects;
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 import jkanvas.painter.RenderpassPainter;
 
 /**
@@ -21,10 +21,10 @@ import jkanvas.painter.RenderpassPainter;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
-public abstract class Renderpod<T extends Renderpass> extends Renderpass {
+public abstract class Renderpod<T extends RenderNode> extends RenderNode {
 
   /** The render pass in a list for easier handling. */
-  private final List<Renderpass> list;
+  private final List<RenderNode> list;
   /**
    * The decorated render pass or <code>null</code> if another wrapper was
    * handed in.
@@ -48,7 +48,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
       pass = Objects.requireNonNull(wrap);
       wrapper = null;
     }
-    list = Collections.singletonList((Renderpass) wrap);
+    list = Collections.singletonList((RenderNode) wrap);
     list.get(0).setParent(this);
   }
 
@@ -62,7 +62,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   public Renderpod(final Renderpod<T> wrap) {
     wrapper = Objects.requireNonNull(wrap);
     wrapper.setParent(this);
-    list = Collections.singletonList((Renderpass) wrapper);
+    list = Collections.singletonList((RenderNode) wrapper);
     pass = null;
   }
 
@@ -92,8 +92,8 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
       p = p.wrapper;
       x += p.getOffsetX();
     }
-    final Renderpass rp = p.list.get(0);
-    final Renderpass pass = list.get(0);
+    final RenderNode rp = p.list.get(0);
+    final RenderNode pass = list.get(0);
     x += rp.getOffsetX() - pass.getOffsetX();
     return x + getOffsetX();
   }
@@ -111,8 +111,8 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
       p = p.wrapper;
       y += p.getOffsetY();
     }
-    final Renderpass rp = p.list.get(0);
-    final Renderpass pass = list.get(0);
+    final RenderNode rp = p.list.get(0);
+    final RenderNode pass = list.get(0);
     y += rp.getOffsetY() - pass.getOffsetY();
     return y + getOffsetY();
   }
@@ -143,7 +143,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
    * @param y The y offset.
    */
   protected final void setChildOffset(final double x, final double y) {
-    final Renderpass pass = list.get(0);
+    final RenderNode pass = list.get(0);
     pass.setOffset(x, y);
   }
 
@@ -161,9 +161,9 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
       x += t.getOffsetX();
       y += t.getOffsetY();
     }
-    final Renderpass p = t.list.get(0);
+    final RenderNode p = t.list.get(0);
     p.getBoundingBox(bbox);
-    final Renderpass pass = list.get(0);
+    final RenderNode pass = list.get(0);
     x += p.getOffsetX() - pass.getOffsetX();
     y += p.getOffsetY() - pass.getOffsetY();
     bbox.setFrame(bbox.getX() + x, bbox.getY() + y, bbox.getWidth(), bbox.getHeight());
@@ -192,7 +192,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
 
   @Override
   public final void getBoundingBox(final Rectangle2D bbox) {
-    final Renderpass pass = list.get(0);
+    final RenderNode pass = list.get(0);
     pass.getBoundingBox(bbox);
     addOwnBox(bbox);
   }
@@ -225,7 +225,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
 
   @Override
   public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
-    final Renderpass pass = list.get(0);
+    final RenderNode pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, position);
     final Rectangle2D bbox = new Rectangle2D.Double();
     pass.getBoundingBox(bbox);
@@ -239,7 +239,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   public final void drag(final Point2D _, final Point2D cur,
       final double dx, final double dy) {
     // dx and dy do not change
-    final Renderpass pass = list.get(0);
+    final RenderNode pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, cur);
     pass.drag(start, pos, dx, dy);
   }
@@ -248,14 +248,14 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   public final void endDrag(final Point2D _, final Point2D end,
       final double dx, final double dy) {
     // dx and dy do not change
-    final Renderpass pass = list.get(0);
+    final RenderNode pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, end);
     pass.endDrag(start, pos, dx, dy);
   }
 
   @Override
   public final boolean isChanging() {
-    final Renderpass pass = list.get(0);
+    final RenderNode pass = list.get(0);
     return pass.isChanging();
   }
 

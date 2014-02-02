@@ -18,7 +18,7 @@ import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.painter.HUDRenderpass;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.util.CoRoutine;
@@ -209,7 +209,7 @@ public final class JSONSetup {
     JSONThunk.addFields(oc, el, mng, fields);
     // ### evaluating ###
     for(final JSONThunk p : passes) {
-      rp.addPass(p.get(Renderpass.class));
+      rp.addPass(p.get(RenderNode.class));
     }
     for(final JSONThunk p : huds) {
       rp.addHUDPass(p.get(HUDRenderpass.class));

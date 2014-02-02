@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * A wrapper around a render pass without adding features.
@@ -12,7 +12,7 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The render pass type.
  */
-public final class WrapperRenderpass<T extends Renderpass> extends Renderpod<T> {
+public final class WrapperRenderpass<T extends RenderNode> extends Renderpod<T> {
 
   /**
    * Wraps the given render pass.

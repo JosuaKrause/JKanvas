@@ -11,7 +11,7 @@ import jkanvas.KanvasContext;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class BoxRenderpass extends Renderpass {
+public class BoxRenderpass extends RenderNode {
 
   /** The box. */
   private final Rectangle2D rect;

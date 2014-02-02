@@ -11,13 +11,13 @@ import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
 
 /**
- * A ghost render pass is an {@link Renderpass} that mimics the behavior of
- * another {@link Renderpass} but at a different location.
+ * A ghost render pass is an {@link RenderNode} that mimics the behavior of
+ * another {@link RenderNode} but at a different location.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of entity to mimic.
  */
-public class GhostRenderpass<T extends Renderpass> extends Renderpass {
+public class GhostRenderpass<T extends RenderNode> extends RenderNode {
 
   /** The entity to be ghosted. */
   private final T entity;
@@ -43,11 +43,11 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
   /**
    * Replaces the parent of the entity with this render pass.
    * 
-   * @see #end(Renderpass)
+   * @see #end(RenderNode)
    * @return The old parent.
    */
-  private Renderpass start() {
-    final Renderpass old = entity.getParent();
+  private RenderNode start() {
+    final RenderNode old = entity.getParent();
     if(old == null || old == this) throw new IllegalStateException(
         "entity already in use");
     entity.setParent(null);
@@ -72,14 +72,14 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
    * @see #start()
    * @param parent The old parent.
    */
-  private void end(final Renderpass parent) {
+  private void end(final RenderNode parent) {
     entity.setParent(null);
     entity.setParent(parent);
   }
 
   @Override
   public void draw(final Graphics2D g, final KanvasContext ctx) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       entity.draw(g, ctx);
     } finally {
@@ -89,7 +89,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       return entity.click(cam, p, e);
     } finally {
@@ -99,7 +99,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       return entity.doubleClick(cam, p, e);
     } finally {
@@ -109,7 +109,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public String getTooltip(final Point2D p) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       return entity.getTooltip(p);
     } finally {
@@ -119,7 +119,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public boolean moveMouse(final Point2D cur) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       return entity.moveMouse(cur);
     } finally {
@@ -129,7 +129,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public boolean acceptDrag(final Point2D p, final MouseEvent e) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       return entity.acceptDrag(p, e);
     } finally {
@@ -140,7 +140,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
   @Override
   public void drag(final Point2D start, final Point2D cur,
       final double dx, final double dy) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       entity.drag(start, cur, dx, dy);
     } finally {
@@ -151,7 +151,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
   @Override
   public void endDrag(final Point2D start, final Point2D end,
       final double dx, final double dy) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       entity.endDrag(start, end, dx, dy);
     } finally {
@@ -161,7 +161,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public void getBoundingBox(final Rectangle2D bbox) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       entity.getBoundingBox(bbox);
     } finally {
@@ -171,7 +171,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public boolean isChanging() {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       return entity.isChanging();
     } finally {
@@ -181,7 +181,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public void setForceCache(final boolean forceCache) {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       entity.setForceCache(forceCache);
     } finally {
@@ -191,7 +191,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
 
   @Override
   public boolean isForceCaching() {
-    final Renderpass old = start();
+    final RenderNode old = start();
     try {
       return entity.isForceCaching();
     } finally {

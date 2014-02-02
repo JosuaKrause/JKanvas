@@ -7,7 +7,7 @@ import java.util.List;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * A group that can be expanded.
@@ -15,7 +15,7 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
-public class ExpandableGroup<T extends Renderpass> extends LinearGroup<T> {
+public class ExpandableGroup<T extends RenderNode> extends LinearGroup<T> {
 
   /** Whether the group is expanded. */
   private boolean expanded = false;

@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import jkanvas.KanvasContext;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 
 /**
  * Shows borders of render passes.
@@ -14,7 +14,7 @@ import jkanvas.painter.Renderpass;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
-public class BorderRenderpass<T extends Renderpass> extends Renderpod<T> {
+public class BorderRenderpass<T extends RenderNode> extends Renderpod<T> {
 
   /** The stroke width. */
   private double width;

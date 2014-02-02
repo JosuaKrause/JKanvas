@@ -24,7 +24,7 @@ import jkanvas.matrix.Matrix;
 import jkanvas.matrix.MatrixPosition;
 import jkanvas.matrix.MatrixRenderpass;
 import jkanvas.matrix.QuadraticMatrix;
-import jkanvas.painter.Renderpass;
+import jkanvas.painter.RenderNode;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.selection.AbstractSelector;
 import jkanvas.selection.RectangleSelection;
@@ -105,7 +105,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
   }
 
   @Override
-  public Renderpass getRenderpass() {
+  public RenderNode getRenderpass() {
     return this;
   }
 
