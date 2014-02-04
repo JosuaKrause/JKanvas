@@ -107,6 +107,7 @@ public abstract class AbstractMatrix<T> implements MutableMatrix<T> {
   }
 
   @Override
+  // TODO #43 -- Java 8 simplification
   public String[] getRowNames() {
     final String[] names = new String[rows()];
     for(int i = 0; i < names.length; ++i) {
@@ -116,6 +117,7 @@ public abstract class AbstractMatrix<T> implements MutableMatrix<T> {
   }
 
   @Override
+  // TODO #43 -- Java 8 simplification
   public String[] getColumnNames() {
     final String[] names = new String[cols()];
     for(int i = 0; i < names.length; ++i) {

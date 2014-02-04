@@ -11,7 +11,7 @@ import jkanvas.util.StringDrawer;
 import jkanvas.util.StringDrawer.Orientation;
 
 /**
- * Adds a title to the given renderpass.
+ * Adds a title to the given render pass.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
