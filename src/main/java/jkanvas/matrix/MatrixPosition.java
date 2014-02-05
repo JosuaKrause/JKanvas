@@ -33,7 +33,7 @@ public class MatrixPosition {
 
   @Override
   public int hashCode() {
-    return row + 31 * col;
+    return (31 + row) * 31 + col;
   }
 
 }

@@ -1,6 +1,5 @@
 package jkanvas.matrix;
 
-import jkanvas.RefreshManager;
 
 /**
  * A mutable quadratic matrix.
@@ -50,14 +49,5 @@ public interface MutableMatrix<T> extends Matrix<T> {
    * @param value Sets the content of the cell.
    */
   void set(int row, int col, T value);
-
-  /**
-   * Sets the refresh manager of this quadratic matrix. Whenever a value of this
-   * matrix changes the refresh manager gets notified. If the manager is
-   * <code>null</code> value changes are not reported.
-   * 
-   * @param manager The refresh manager or <code>null</code>.
-   */
-  void setRefreshManager(RefreshManager manager);
 
 }

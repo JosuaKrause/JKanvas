@@ -17,7 +17,7 @@ import jkanvas.Canvas;
 import jkanvas.RefreshManager;
 import jkanvas.io.json.JSONManager;
 import jkanvas.io.json.JSONSetup;
-import jkanvas.matrix.AbstractQuadraticMatrix;
+import jkanvas.matrix.AbstractMutableQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
 import jkanvas.matrix.DefaultCellRealizer;
 import jkanvas.matrix.Matrix;
@@ -84,7 +84,7 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
     if(pos == null) return "";
     return "row: " + matrix.getRowName(pos.row)
         + " col: " + matrix.getColumnName(pos.col)
-        + " value: " + matrix.get(pos.row, pos.col);
+        + " value: " + matrix.get(pos);
   }
 
   @Override
@@ -117,7 +117,8 @@ public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implem
    */
   public static void main(final String[] args) throws IOException {
     // TODO #43 -- Java 8 simplification
-    final AbstractQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(9) {
+    final AbstractMutableQuadraticMatrix<Double> matrix = new AbstractMutableQuadraticMatrix<Double>(
+        9) {
 
       @Override
       protected Double[][] createMatrix(final int size) {

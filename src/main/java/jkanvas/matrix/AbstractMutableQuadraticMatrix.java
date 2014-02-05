@@ -7,15 +7,15 @@ package jkanvas.matrix;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
-public abstract class AbstractQuadraticMatrix<T>
-    extends AbstractMatrix<T> implements MutableQuadraticMatrix<T> {
+public abstract class AbstractMutableQuadraticMatrix<T>
+    extends AbstractMutableMatrix<T> implements MutableQuadraticMatrix<T> {
 
   /**
    * Creates a matrix with the given size.
    * 
    * @param size The size.
    */
-  public AbstractQuadraticMatrix(final int size) {
+  public AbstractMutableQuadraticMatrix(final int size) {
     super(size, size);
   }
 

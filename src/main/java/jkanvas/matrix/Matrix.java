@@ -2,6 +2,8 @@ package jkanvas.matrix;
 
 import java.awt.geom.Rectangle2D;
 
+import jkanvas.RefreshManager;
+
 /**
  * A matrix.
  * 
@@ -18,6 +20,14 @@ public interface Matrix<T> {
    * @return The content of the cell.
    */
   T get(int row, int col);
+
+  /**
+   * Getter.
+   * 
+   * @param pos The position in the matrix.
+   * @return The content of the cell.
+   */
+  T get(MatrixPosition pos);
 
   /**
    * Getter.
@@ -89,5 +99,16 @@ public interface Matrix<T> {
    * @param col The column.
    */
   void getBoundingBox(Rectangle2D bbox, int row, int col);
+
+  /**
+   * Sets the refresh manager of this quadratic matrix. Whenever a value of this
+   * matrix changes the refresh manager gets notified. If the manager is
+   * <code>null</code> value changes are not reported. The currently installed
+   * refresh manager can be notified when values in the matrix change. This
+   * operation is optional.
+   * 
+   * @param manager The refresh manager or <code>null</code>.
+   */
+  void setRefreshManager(RefreshManager manager);
 
 }

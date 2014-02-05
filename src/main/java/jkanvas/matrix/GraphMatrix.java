@@ -2,6 +2,7 @@ package jkanvas.matrix;
 
 import java.awt.geom.Rectangle2D;
 
+import jkanvas.RefreshManager;
 import jkanvas.nodelink.GraphView;
 
 /**
@@ -93,6 +94,12 @@ public class GraphMatrix<T extends GraphView> implements QuadraticMatrix<Boolean
     return areConnected(row, col);
   }
 
+  @Override
+  // TODO #43 -- Java 8 simplification
+  public Boolean get(final MatrixPosition pos) {
+    return get(pos.row, pos.col);
+  }
+
   /**
    * Getter.
    * 
@@ -125,6 +132,11 @@ public class GraphMatrix<T extends GraphView> implements QuadraticMatrix<Boolean
   @Override
   public void getBoundingBox(final Rectangle2D bbox, final int row, final int col) {
     bbox.setFrame(row * size, col * size, size, size);
+  }
+
+  @Override
+  public void setRefreshManager(final RefreshManager manager) {
+    // nothing to do
   }
 
 }

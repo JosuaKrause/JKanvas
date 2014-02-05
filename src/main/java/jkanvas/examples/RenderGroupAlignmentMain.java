@@ -18,7 +18,7 @@ import jkanvas.RefreshManager;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationTiming;
-import jkanvas.matrix.AbstractQuadraticMatrix;
+import jkanvas.matrix.AbstractMutableQuadraticMatrix;
 import jkanvas.matrix.CellRealizer;
 import jkanvas.matrix.DefaultCellRealizer;
 import jkanvas.matrix.MutableQuadraticMatrix;
@@ -84,7 +84,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
         };
     for(int num = 0; num < 3; ++num) {
       // TODO #43 -- Java 8 simplification
-      final MutableQuadraticMatrix<Double> matrix = new AbstractQuadraticMatrix<Double>(
+      final MutableQuadraticMatrix<Double> matrix = new AbstractMutableQuadraticMatrix<Double>(
           9 + num * num) {
 
         @Override

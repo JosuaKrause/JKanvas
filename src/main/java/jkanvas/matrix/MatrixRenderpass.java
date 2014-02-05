@@ -54,12 +54,10 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    */
   public void setMatrix(final T m) {
     Objects.requireNonNull(m);
-    if(matrix != null && matrix instanceof MutableMatrix) {
-      ((MutableMatrix<?>) matrix).setRefreshManager(null);
+    if(matrix != null) {
+      matrix.setRefreshManager(null);
     }
-    if(m instanceof MutableMatrix) {
-      ((MutableMatrix<?>) m).setRefreshManager(manager);
-    }
+    m.setRefreshManager(manager);
     matrix = m;
     manager.refreshAll();
   }
@@ -188,9 +186,7 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    */
   protected void setRefreshManager(final RefreshManager manager) {
     this.manager = Objects.requireNonNull(manager);
-    if(matrix instanceof MutableMatrix) {
-      ((MutableMatrix<?>) matrix).setRefreshManager(this.manager);
-    }
+    matrix.setRefreshManager(this.manager);
   }
 
   /**
@@ -212,8 +208,8 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    * @return The render pod.
    */
   public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
-      createTitledMatrixRenderpass(final MatrixRenderpass<T> rp, final double textHeight,
-          final double space) {
+      createTitledMatrixRenderpass(
+          final MatrixRenderpass<T> rp, final double textHeight, final double space) {
     final RefreshManager old = rp.getRefreshManager();
     final SimpleRefreshManager rm = new SimpleRefreshManager();
     rp.setRefreshManager(rm);

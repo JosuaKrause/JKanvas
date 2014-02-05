@@ -27,7 +27,7 @@ public interface CellRealizer<T extends Matrix<?>> {
    *          <code>false</code>. In this case the selection should be ignored.
    * @param hasSelection Whether any cell in the matrix is selected.
    */
-  void drawCell(Graphics2D g, KanvasContext ctx, Rectangle2D rect, T matrix,
-      int row, int col, boolean isSelected, boolean hasSelection);
+  void drawCell(Graphics2D g, KanvasContext ctx, Rectangle2D rect,
+      T matrix, int row, int col, boolean isSelected, boolean hasSelection);
 
 }

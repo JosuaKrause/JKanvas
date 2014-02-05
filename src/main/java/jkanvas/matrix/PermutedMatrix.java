@@ -5,18 +5,16 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
-import jkanvas.RefreshManager;
-
 /**
  * A permuted view on a matrix.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
-public class PermutedMatrix<T> implements MutableMatrix<T> {
+public class PermutedMatrix<T> extends AbstractMatrix<T> {
 
   /** The underlying matrix. */
-  private final MutableMatrix<T> matrix;
+  private final Matrix<T> matrix;
   /** The row permutations. */
   private final int[] rowPerm;
   /** The column permutations. */
@@ -27,7 +25,7 @@ public class PermutedMatrix<T> implements MutableMatrix<T> {
    * 
    * @param matrix The matrix.
    */
-  public PermutedMatrix(final MutableMatrix<T> matrix) {
+  public PermutedMatrix(final Matrix<T> matrix) {
     this.matrix = Objects.requireNonNull(matrix);
     rowPerm = new int[matrix.rows()];
     for(int i = 0; i < rowPerm.length; ++i) {
@@ -115,20 +113,8 @@ public class PermutedMatrix<T> implements MutableMatrix<T> {
   }
 
   @Override
-  public void set(final int row, final int col, final T value) {
-    matrix.set(rowPerm[row], colPerm[col], value);
-    refreshAll();
-  }
-
-  @Override
   public double getWidth(final int col) {
     return matrix.getWidth(colPerm[col]);
-  }
-
-  @Override
-  public void setWidth(final int col, final double value) {
-    matrix.setWidth(colPerm[col], value);
-    refreshAll();
   }
 
   @Override
@@ -137,29 +123,8 @@ public class PermutedMatrix<T> implements MutableMatrix<T> {
   }
 
   @Override
-  public void setHeight(final int row, final double value) {
-    matrix.setHeight(rowPerm[row], value);
-    refreshAll();
-  }
-
-  @Override
   public String getRowName(final int row) {
     return matrix.getRowName(rowPerm[row]);
-  }
-
-  @Override
-  public void setRowName(final int row, final String name) {
-    matrix.setRowName(rowPerm[row], name);
-    refreshAll();
-  }
-
-  @Override
-  public String[] getRowNames() {
-    final String[] res = new String[rows()];
-    for(int i = 0; i < res.length; ++i) {
-      res[i] = getRowName(i);
-    }
-    return res;
   }
 
   @Override
@@ -168,40 +133,8 @@ public class PermutedMatrix<T> implements MutableMatrix<T> {
   }
 
   @Override
-  public void setColumnName(final int col, final String name) {
-    matrix.setColumnName(colPerm[col], name);
-    refreshAll();
-  }
-
-  @Override
-  public String[] getColumnNames() {
-    final String[] res = new String[cols()];
-    for(int i = 0; i < res.length; ++i) {
-      res[i] = getColumnName(i);
-    }
-    return res;
-  }
-
-  @Override
   public void getBoundingBox(final Rectangle2D bbox, final int row, final int col) {
     matrix.getBoundingBox(bbox, rowPerm[row], colPerm[col]);
-  }
-
-  /** The refresh manager. */
-  private RefreshManager manager;
-
-  @Override
-  public void setRefreshManager(final RefreshManager manager) {
-    this.manager = manager;
-  }
-
-  /**
-   * Refreshes all {@link jkanvas.Refreshable Refreshables} if a refresh manager
-   * is installed.
-   */
-  protected void refreshAll() {
-    if(manager == null) return;
-    manager.refreshAll();
   }
 
 }
