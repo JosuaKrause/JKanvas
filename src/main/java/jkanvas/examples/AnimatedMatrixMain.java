@@ -3,7 +3,6 @@ package jkanvas.examples;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,8 +20,14 @@ import jkanvas.matrix.Matrix;
 import jkanvas.matrix.MatrixPosition;
 import jkanvas.matrix.MatrixRenderpass;
 
+/**
+ * An example application to play around with animated matrices.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class AnimatedMatrixMain {
 
+  /** No constructor. */
   private AnimatedMatrixMain() {
     throw new AssertionError();
   }
@@ -31,9 +36,8 @@ public class AnimatedMatrixMain {
    * Starts the example application.
    * 
    * @param args No arguments.
-   * @throws IOException I/O Exception.
    */
-  public static void main(final String[] args) throws IOException {
+  public static void main(final String[] args) {
     final AnimatedMatrix<Double> am = new AnimatedMatrix<>(0.0, 10.0, 10.0, "r0", "c0");
     final CellRealizer<Matrix<Double>> cd = new DefaultCellRealizer<Double, Matrix<Double>>() {
 
@@ -57,6 +61,7 @@ public class AnimatedMatrixMain {
         final List<String> names = Arrays.asList("0", "1");
         final List<Double> sizes = Arrays.asList(10.0, 10.0);
         final AnimationTiming timing = AnimationTiming.SMOOTH;
+        if(!e.isAltDown())
         if(e.isShiftDown()) { // columns
           final int c = p.col;
           for(int r = 0; r < am.rows(); ++r) {
@@ -65,14 +70,21 @@ public class AnimatedMatrixMain {
             els.get(1).add(shift(v, 1));
           }
           am.replaceColumns(c, c + 1, els, names, sizes, timing);
-        } else {// rows
+        } else { // rows
           final int r = p.row;
           for(int c = 0; c < am.cols(); ++c) {
             final double v = am.get(r, c);
             els.get(0).add(shift(v, -1));
             els.get(1).add(shift(v, 1));
           }
-          am.replaceColumns(r, r + 1, els, names, sizes, timing);
+          am.replaceRows(r, r + 1, els, names, sizes, timing);
+        }
+        else if(e.isShiftDown()) {
+          if(am.cols() > 1) {
+            am.removeColumns(p.col, p.col + 1, timing);
+          }
+        } else if(am.rows() > 1) {
+          am.removeRows(p.row, p.row + 1, timing);
         }
         return true;
       }
@@ -84,8 +96,11 @@ public class AnimatedMatrixMain {
       }
 
     };
+    // TODO make create title render pod work for animated matrices
+    // TODO make titles display correctly according to the width and height
     ap.addPass(mr);
     final Canvas c = new Canvas(ap, 500, 500);
     ExampleUtil.setupCanvas("animated-matrix", c, ap, true, true, true, false);
   }
+
 }

@@ -1,7 +1,17 @@
 package jkanvas.animation;
 
+/**
+ * Animates a double value.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class AnimatedDouble extends GenericAnimated<Double> {
 
+  /**
+   * Creates an animated double value.
+   * 
+   * @param init The initial value.
+   */
   public AnimatedDouble(final double init) {
     super(init);
   }
