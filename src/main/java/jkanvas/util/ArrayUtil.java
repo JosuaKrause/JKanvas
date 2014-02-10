@@ -179,7 +179,8 @@ public final class ArrayUtil {
   }
 
   /**
-   * Applies a permutation to a list.
+   * Applies a permutation to a list. The running time is
+   * <code>&theta;(2n)</code> and a copy of the list is created.
    * 
    * @param <T> The element type.
    * @param list The list to permute.
@@ -196,7 +197,10 @@ public final class ArrayUtil {
   }
 
   /**
-   * Applies a permutation to a swap-able data structure.
+   * Applies a permutation to a swap-able data structure. The running time is
+   * <code>&theta;(3n)</code> with <code>&#x1d4aa;(n)</code> swap operations.
+   * The permutation array gets copied to use internally. Otherwise there is no
+   * additional space used.
    * 
    * @param <T> The element type.
    * @param list A data structure allowing only swap operations to permute.
