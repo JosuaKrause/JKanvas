@@ -72,7 +72,7 @@ public class PermutedMatrix<T> extends AbstractMatrix<T> {
   public void sortRows(final Comparator<Integer> cmp) {
     final Integer[] arr = new Integer[rowPerm.length];
     for(int i = 0; i < arr.length; ++i) {
-      arr[i] = rowPerm[i] = i; // unsort first
+      arr[i] = rowPerm[i];
     }
     Arrays.sort(arr, cmp);
     for(int i = 0; i < rowPerm.length; ++i) {
@@ -89,7 +89,7 @@ public class PermutedMatrix<T> extends AbstractMatrix<T> {
   public void sortColumns(final Comparator<Integer> cmp) {
     final Integer[] arr = new Integer[colPerm.length];
     for(int i = 0; i < arr.length; ++i) {
-      arr[i] = colPerm[i] = i; // unsort first
+      arr[i] = colPerm[i];
     }
     Arrays.sort(arr, cmp);
     for(int i = 0; i < colPerm.length; ++i) {
