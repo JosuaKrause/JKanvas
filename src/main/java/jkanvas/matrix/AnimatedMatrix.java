@@ -2,6 +2,8 @@ package jkanvas.matrix;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,6 +13,8 @@ import jkanvas.animation.AnimationAction;
 import jkanvas.animation.AnimationList;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
+import jkanvas.util.ArrayUtil;
+import jkanvas.util.Swapable;
 
 /**
  * A matrix that has a mutable number of rows and columns. Rows and columns can
@@ -20,7 +24,7 @@ import jkanvas.animation.Animator;
  * @param <T> The content type.
  */
 public class AnimatedMatrix<T>
-    extends AbstractMatrix<T> implements MutableMatrix<T> {
+    extends AbstractMatrix<T> implements MutableMatrix<T>, PermutableMatrix<T> {
 
   /** The matrix content. */
   private final List<List<T>> matrix;
@@ -356,6 +360,90 @@ public class AnimatedMatrix<T>
     final double w = getWidth(from, to);
     addColumns(to, cols, names, w / cols.size(), widths, timing);
     removeColumns(from, to);
+  }
+
+  @Override
+  public synchronized void swapRows(final int a, final int b) {
+    ensureChangeAllowed();
+    Collections.swap(matrix, a, b);
+    Collections.swap(heights, a, b);
+    Collections.swap(rowNames, a, b);
+  }
+
+  /**
+   * Fills the given list with the content of the column.
+   * 
+   * @param column The list to store the column in. If <code>null</code> a new
+   *          list is allocated.
+   * @param col The column index.
+   * @return The list holding the result.
+   */
+  protected synchronized ArrayList<T> getColumn(final ArrayList<T> column, final int col) {
+    final ArrayList<T> l;
+    if(column == null) {
+      l = new ArrayList<>(rows());
+    } else {
+      column.clear();
+      column.ensureCapacity(rows());
+      l = column;
+    }
+    for(final List<T> row : matrix) {
+      l.add(row.get(col));
+    }
+    return l;
+  }
+
+  /**
+   * Sets the specified column to the values given in the list. The list
+   * contains the previous values afterwards.
+   * 
+   * @param column The new elements. After this method this list contains the
+   *          previous values.
+   * @param dest The destination column index.
+   * @return The list holding all previous values.
+   */
+  protected synchronized List<T> setColumn(final List<T> column, final int dest) {
+    int r = 0;
+    for(final List<T> row : matrix) {
+      column.set(r, row.set(dest, column.get(r)));
+      ++r;
+    }
+    return column;
+  }
+
+  @Override
+  public synchronized void swapColumns(final int a, final int b) {
+    ensureChangeAllowed();
+    setColumn(setColumn(getColumn(null, a), b), a).clear();
+    Collections.swap(widths, a, b);
+    Collections.swap(colNames, a, b);
+  }
+
+  @Override
+  public synchronized void sortRows(final Comparator<Integer> cmp) {
+    ensureChangeAllowed();
+    final Integer[] perm = ArrayUtil.createPermutation(cmp, rows());
+    ArrayUtil.applyPermutation(matrix, perm);
+    ArrayUtil.applyPermutation(heights, perm);
+    ArrayUtil.applyPermutation(rowNames, perm);
+  }
+
+  @Override
+  public synchronized void sortColumns(final Comparator<Integer> cmp) {
+    ensureChangeAllowed();
+    final ArrayList<T> column = new ArrayList<>();
+    final Integer[] perm = ArrayUtil.createPermutation(cmp, cols());
+    ArrayUtil.applyPermutation(new Swapable() {
+
+      @Override
+      public void swap(final int col1, final int col2) {
+        setColumn(setColumn(getColumn(column, col1), col2), col1);
+      }
+
+    }, perm);
+    column.clear();
+    ArrayUtil.applyPermutation(widths, perm);
+    ArrayUtil.applyPermutation(colNames, perm);
   }
 
   @Override

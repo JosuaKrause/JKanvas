@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
+import jkanvas.util.ArrayUtil;
+
 /**
  * A permuted view on a matrix. The size of the underlying matrix must not
  * change.
@@ -12,7 +14,7 @@ import java.util.Objects;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
  */
-public class PermutedMatrix<T> extends AbstractMatrix<T> {
+public class PermutedMatrix<T> extends AbstractMatrix<T> implements PermutableMatrix<T> {
 
   /** The underlying matrix. */
   private final Matrix<T> matrix;
@@ -38,37 +40,19 @@ public class PermutedMatrix<T> extends AbstractMatrix<T> {
     }
   }
 
-  /**
-   * Swaps two rows.
-   * 
-   * @param a The first row.
-   * @param b The second row.
-   */
+  @Override
   public void swapRows(final int a, final int b) {
-    final int tmp = rowPerm[a];
-    rowPerm[a] = rowPerm[b];
-    rowPerm[b] = tmp;
+    ArrayUtil.swap(rowPerm, a, b);
     refreshAll();
   }
 
-  /**
-   * Swaps two columns.
-   * 
-   * @param a The first column.
-   * @param b The second column.
-   */
+  @Override
   public void swapColumns(final int a, final int b) {
-    final int tmp = colPerm[a];
-    colPerm[a] = colPerm[b];
-    colPerm[b] = tmp;
+    ArrayUtil.swap(colPerm, a, b);
     refreshAll();
   }
 
-  /**
-   * Sorts the rows with the given comparator.
-   * 
-   * @param cmp The comparator. The index of the row is handed in.
-   */
+  @Override
   public void sortRows(final Comparator<Integer> cmp) {
     final Integer[] arr = new Integer[rowPerm.length];
     for(int i = 0; i < arr.length; ++i) {
@@ -81,11 +65,7 @@ public class PermutedMatrix<T> extends AbstractMatrix<T> {
     refreshAll();
   }
 
-  /**
-   * Sorts the columns with the given comparator.
-   * 
-   * @param cmp The comparator. The index of the column is handed in.
-   */
+  @Override
   public void sortColumns(final Comparator<Integer> cmp) {
     final Integer[] arr = new Integer[colPerm.length];
     for(int i = 0; i < arr.length; ++i) {
