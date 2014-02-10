@@ -90,24 +90,33 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D view = ctx.getVisibleCanvas();
+    final Rectangle2D rect = new Rectangle2D.Double();
     final boolean hasSelection = hasSelection();
     double y = 0;
-    for(int row = 0; row < matrix.rows(); ++row) {
+    outer: for(int row = 0; row < matrix.rows(); ++row) {
       double x = 0;
       final double h = matrix.getHeight(row);
-      for(int col = 0; col < matrix.cols(); ++col) {
+      inner: for(int col = 0; col < matrix.cols(); ++col) {
         final double w = matrix.getWidth(col);
-        final Rectangle2D rect = new Rectangle2D.Double(x, y, w, h);
+        rect.setFrame(x, y, w, h);
         x += w;
         if(!view.intersects(rect)) {
-          continue;
+          continue inner;
         }
         final boolean sel = isSelected(row, col);
         final Graphics2D g = (Graphics2D) gfx.create();
         cellDrawer.drawCell(g, ctx, rect, matrix, row, col, sel, hasSelection);
         g.dispose();
+        if(x > view.getMaxX()) {
+          // we will not encounter any more visible rectangles on this line
+          break inner;
+        }
       }
       y += h;
+      if(y > view.getMaxY()) {
+        // we will not encounter any more visible rectangles
+        break outer;
+      }
     }
   }
 

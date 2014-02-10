@@ -245,8 +245,10 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
    * @param g The graphics context.
    * @param box The box to draw in.
    * @param hor Whether the box is horizontally aligned.
+   * @param view The currently visible portion of the canvas.
    */
-  private void drawTexts(final Graphics2D g, final Rectangle2D box, final boolean hor) {
+  private void drawTexts(final Graphics2D g, final Rectangle2D box,
+      final boolean hor, final Rectangle2D view) {
     double x = 0;
     final double totalW = (hor ? box.getWidth() : box.getHeight());
     final Rectangle2D cur = new Rectangle2D.Double();
@@ -258,7 +260,12 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
       } else {
         cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
       }
-      StringDrawer.drawInto(g, t, cur, orientation, align.getAlignment());
+      if(view.intersects(cur)) {
+        final Graphics2D g2 = (Graphics2D) g.create();
+        g2.clip(cur);
+        StringDrawer.drawInto(g2, t, cur, orientation, align.getAlignment());
+        g2.dispose();
+      }
       x += w + getTitleSpace(i);
     }
   }
@@ -291,8 +298,10 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
       default:
         throw new AssertionError();
     }
+    final Rectangle2D view = ctx.getVisibleCanvas();
+    if(!view.intersects(box)) return;
     g.setColor(Color.BLACK);
-    drawTexts(g, box, hor);
+    drawTexts(g, box, hor, view);
   }
 
   @Override
