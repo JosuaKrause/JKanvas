@@ -1,6 +1,7 @@
 package jkanvas.matrix;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,6 +64,36 @@ public class AnimatedMatrix<T>
     colNames = new ArrayList<>();
     colNames.add(Objects.requireNonNull(col));
     cols = 1;
+  }
+
+  public AnimatedMatrix(final T[][] m, final double[] widths, final double[] heights,
+      final String[] rowNames, final String[] colNames) {
+    final int rows = m.length;
+    cols = m[0].length;
+    matrix = new ArrayList<>(rows);
+    for(final T[] row : m) {
+      if(row.length != cols) throw new IllegalArgumentException(
+          "inconsistent row length: " + cols + " != " + row.length);
+      matrix.add(new ArrayList<>(Arrays.asList(row)));
+    }
+    this.widths = new ArrayList<>(widths.length);
+    for(final double w : widths) {
+      this.widths.add(new AnimatedDouble(w));
+    }
+    if(this.widths.size() != cols) throw new IllegalArgumentException(
+        this.widths.size() + " != " + cols);
+    this.heights = new ArrayList<>(heights.length);
+    for(final double h : heights) {
+      this.heights.add(new AnimatedDouble(h));
+    }
+    if(this.heights.size() != rows) throw new IllegalArgumentException(
+        this.heights.size() + " != " + rows);
+    this.rowNames = new ArrayList<>(Arrays.asList(rowNames));
+    if(this.rowNames.size() != rows) throw new IllegalArgumentException(
+        this.rowNames.size() + " != " + rows);
+    this.colNames = new ArrayList<>(Arrays.asList(colNames));
+    if(this.colNames.size() != cols) throw new IllegalArgumentException(
+        this.colNames.size() + " != " + cols);
   }
 
   /** Ensures that no further changes happen during animated removal. */

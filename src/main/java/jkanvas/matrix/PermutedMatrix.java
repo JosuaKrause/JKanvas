@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.Objects;
 
 /**
- * A permuted view on a matrix.
+ * A permuted view on a matrix. The size of the underlying matrix must not
+ * change.
  * 
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The content type.
