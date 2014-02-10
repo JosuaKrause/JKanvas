@@ -66,6 +66,15 @@ public class AnimatedMatrix<T>
     cols = 1;
   }
 
+  /**
+   * Creates an animated matrix.
+   * 
+   * @param m The initial matrix with rows and then columns.
+   * @param widths The widths of the columns.
+   * @param heights The heights of the rows.
+   * @param rowNames The names of the rows.
+   * @param colNames The names of the columns.
+   */
   public AnimatedMatrix(final T[][] m, final double[] widths, final double[] heights,
       final String[] rowNames, final String[] colNames) {
     final int rows = m.length;

@@ -108,6 +108,12 @@ public class PermutedMatrix<T> extends AbstractMatrix<T> {
     return matrix.cols();
   }
 
+  /**
+   * Computes the permutation of the given position.
+   * 
+   * @param pos The position.
+   * @return The actual position in the underlying matrix.
+   */
   public MatrixPosition permute(final MatrixPosition pos) {
     if(pos == null) return null;
     return new MatrixPosition(rowPerm[pos.row], colPerm[pos.col]);
