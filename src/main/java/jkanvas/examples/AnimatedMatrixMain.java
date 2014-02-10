@@ -19,6 +19,7 @@ import jkanvas.matrix.DefaultCellRealizer;
 import jkanvas.matrix.Matrix;
 import jkanvas.matrix.MatrixPosition;
 import jkanvas.matrix.MatrixRenderpass;
+import jkanvas.painter.pod.Renderpod;
 
 /**
  * An example application to play around with animated matrices.
@@ -38,7 +39,7 @@ public class AnimatedMatrixMain {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final AnimatedMatrix<Double> am = new AnimatedMatrix<>(0.0, 10.0, 10.0, "r0", "c0");
+    final AnimatedMatrix<Double> am = new AnimatedMatrix<>(0.0, 10.0, 10.0, "0", "0");
     final CellRealizer<Matrix<Double>> cd = new DefaultCellRealizer<Double, Matrix<Double>>() {
 
       @Override
@@ -58,12 +59,12 @@ public class AnimatedMatrixMain {
         final List<List<Double>> els = new ArrayList<>();
         els.add(new ArrayList<Double>());
         els.add(new ArrayList<Double>());
-        final List<String> names = Arrays.asList("0", "1");
         final List<Double> sizes = Arrays.asList(10.0, 10.0);
         final AnimationTiming timing = AnimationTiming.SMOOTH;
         if(!e.isAltDown())
         if(e.isShiftDown()) { // columns
           final int c = p.col;
+          final List<String> names = Arrays.asList("" + c, "" + (c + 1));
           for(int r = 0; r < am.rows(); ++r) {
             final double v = am.get(r, c);
             els.get(0).add(shift(v, -1));
@@ -72,6 +73,7 @@ public class AnimatedMatrixMain {
           am.replaceColumns(c, c + 1, els, names, sizes, timing);
         } else { // rows
           final int r = p.row;
+          final List<String> names = Arrays.asList("" + r, "" + (r + 1));
           for(int c = 0; c < am.cols(); ++c) {
             final double v = am.get(r, c);
             els.get(0).add(shift(v, -1));
@@ -96,9 +98,9 @@ public class AnimatedMatrixMain {
       }
 
     };
-    // TODO make create title render pod work for animated matrices
-    // TODO make titles display correctly according to the width and height
-    ap.addPass(mr);
+    final Renderpod<MatrixRenderpass<Matrix<Double>>> pod =
+        MatrixRenderpass.createTitledMatrixRenderpass(mr, 10, 10);
+    ap.addPass(pod);
     final Canvas c = new Canvas(ap, 500, 500);
     ExampleUtil.setupCanvas("animated-matrix", c, ap, true, true, true, false);
   }

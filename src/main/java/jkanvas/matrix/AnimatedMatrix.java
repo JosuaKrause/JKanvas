@@ -212,7 +212,8 @@ public class AnimatedMatrix<T>
    * @param to The end index exclusive.
    * @param timing The animation timing.
    */
-  public void removeRows(final int from, final int to, final AnimationTiming timing) {
+  public synchronized void removeRows(
+      final int from, final int to, final AnimationTiming timing) {
     if(to - from >= rows()) throw new IllegalArgumentException("cannot remove all rows");
     ensureChangeAllowed();
     Objects.requireNonNull(timing);
@@ -259,7 +260,8 @@ public class AnimatedMatrix<T>
    * @param to The end index exclusive.
    * @param timing The animation timing.
    */
-  public void removeColumns(final int from, final int to, final AnimationTiming timing) {
+  public synchronized void removeColumns(
+      final int from, final int to, final AnimationTiming timing) {
     if(to - from >= cols()) throw new IllegalArgumentException(
         "cannot remove all columns");
     ensureChangeAllowed();
