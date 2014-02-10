@@ -108,6 +108,11 @@ public class PermutedMatrix<T> extends AbstractMatrix<T> {
     return matrix.cols();
   }
 
+  public MatrixPosition permute(final MatrixPosition pos) {
+    if(pos == null) return null;
+    return new MatrixPosition(rowPerm[pos.row], colPerm[pos.col]);
+  }
+
   @Override
   public T get(final int row, final int col) {
     return matrix.get(rowPerm[row], colPerm[col]);
