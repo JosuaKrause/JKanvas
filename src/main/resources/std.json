@@ -6,6 +6,10 @@
         "height": "40",
         "space": "5",
     },
+    "border": {
+        "type": "jkanvas.painter.pod.BorderRenderpass",
+        "args": "parent(jkanvas.painter.Renderpass)",
+    },
     "handler": {
         "ids": "canvas",
         "type": "jkanvas.DefaultMessageHandler",
