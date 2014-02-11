@@ -261,10 +261,7 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
         cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
       }
       if(view.intersects(cur)) {
-        final Graphics2D g2 = (Graphics2D) g.create();
-        g2.clip(cur);
-        StringDrawer.drawInto(g2, t, cur, orientation, align.getAlignment());
-        g2.dispose();
+        StringDrawer.drawInto(g, t, cur, orientation, align.getAlignment());
       }
       x += w + getTitleSpace(i);
     }
