@@ -3,6 +3,7 @@ package jkanvas.util;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -118,7 +119,8 @@ public final class ArrayUtil {
   }
 
   /**
-   * Swaps two entries in a <code>T</code> array.
+   * Swaps two entries in a <code>T</code> array. For lists use
+   * {@link java.util.Collections#swap(List, int, int)}.
    * 
    * @param <T> The type of the array.
    * @param arr array
@@ -137,11 +139,104 @@ public final class ArrayUtil {
    * @param arr array
    * @param i position of first element
    * @param j position of second element
+   * @see #swap(Object[], int, int)
    */
   public static void swap(final double[] arr, final int i, final int j) {
     final double temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
+  }
+
+  /**
+   * Swaps two entries in an <code>int</code> array.
+   * 
+   * @param arr array
+   * @param i position of first element
+   * @param j position of second element
+   * @see #swap(Object[], int, int)
+   */
+  public static void swap(final int[] arr, final int i, final int j) {
+    final int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  /**
+   * Sort a given number of elements via their index.
+   * 
+   * @param cmp The comparator to sort the elements. The index of the elements
+   *          are handed in.
+   * @param size The number of elements.
+   * @return The permutation of the indices.
+   */
+  public static Integer[] createPermutation(final Comparator<Integer> cmp, final int size) {
+    final Integer[] perm = new Integer[size];
+    for(int i = 0; i < perm.length; ++i) {
+      perm[i] = i;
+    }
+    Arrays.sort(perm, cmp);
+    return perm;
+  }
+
+  /**
+   * Applies a permutation to a list. The running time is
+   * <code>&theta;(2n)</code> and a copy of the list is created.
+   * 
+   * @param <T> The element type.
+   * @param list The list to permute.
+   * @param perm The permutation.
+   * @see #createPermutation(Comparator, int)
+   */
+  public static <T> void applyPermutation(final List<T> list, final Integer[] perm) {
+    final List<T> tmp = new ArrayList<>(list);
+    if(tmp.size() != perm.length) throw new IllegalArgumentException(
+        tmp.size() + " != " + perm.length);
+    for(int i = 0; i < perm.length; ++i) {
+      list.set(i, tmp.get(perm[i]));
+    }
+  }
+
+  /**
+   * Applies a permutation to a swap-able data structure. The running time is
+   * <code>&theta;(3n)</code> with <code>&#x1d4aa;(n)</code> swap operations.
+   * The permutation array gets copied to use internally. Otherwise there is no
+   * additional space used.
+   * 
+   * @param <T> The element type.
+   * @param list A data structure allowing only swap operations to permute.
+   * @param perm The permutation.
+   * @see #createPermutation(Comparator, int)
+   */
+  public static <T> void applyPermutation(final Swapable list, final Integer[] perm) {
+    final int[] p = new int[perm.length];
+    for(int i = 0; i < perm.length; ++i) {
+      p[i] = perm[i];
+    }
+    // we know that all elements in p left of nextStart are -1
+    int nextStart = 0;
+    for(;;) {
+      // look for next start of a cycle (ie a value >= 0 in p)
+      int start = -1;
+      for(int i = nextStart; i < p.length; ++i) {
+        if(p[i] >= 0) {
+          start = i;
+          break;
+        }
+      }
+      if(start < 0) return;
+      nextStart = start + 1;
+      // swap along a cycle until reaching the beginning again
+      int cur = start;
+      for(;;) {
+        final int to = p[cur];
+        p[cur] = -1;
+        if(start == to) {
+          break;
+        }
+        list.swap(cur, to);
+        cur = to;
+      }
+    }
   }
 
   /**

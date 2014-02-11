@@ -7,14 +7,11 @@ import java.util.Objects;
 
 import jkanvas.KanvasContext;
 import jkanvas.RefreshManager;
-import jkanvas.Refreshable;
-import jkanvas.SimpleRefreshManager;
 import jkanvas.painter.Renderpass;
+import jkanvas.painter.pod.AbstractTitleRenderpass.Alignment;
+import jkanvas.painter.pod.AbstractTitleRenderpass.Position;
 import jkanvas.painter.pod.BorderRenderpass;
 import jkanvas.painter.pod.Renderpod;
-import jkanvas.painter.pod.TitleRenderpass;
-import jkanvas.painter.pod.TitleRenderpass.Alignment;
-import jkanvas.painter.pod.TitleRenderpass.Position;
 import jkanvas.util.StringDrawer.Orientation;
 
 /**
@@ -93,24 +90,33 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D view = ctx.getVisibleCanvas();
+    final Rectangle2D rect = new Rectangle2D.Double();
     final boolean hasSelection = hasSelection();
     double y = 0;
-    for(int row = 0; row < matrix.rows(); ++row) {
+    outer: for(int row = 0; row < matrix.rows(); ++row) {
       double x = 0;
       final double h = matrix.getHeight(row);
-      for(int col = 0; col < matrix.cols(); ++col) {
+      inner: for(int col = 0; col < matrix.cols(); ++col) {
         final double w = matrix.getWidth(col);
-        final Rectangle2D rect = new Rectangle2D.Double(x, y, w, h);
+        rect.setFrame(x, y, w, h);
         x += w;
         if(!view.intersects(rect)) {
-          continue;
+          continue inner;
         }
         final boolean sel = isSelected(row, col);
         final Graphics2D g = (Graphics2D) gfx.create();
         cellDrawer.drawCell(g, ctx, rect, matrix, row, col, sel, hasSelection);
         g.dispose();
+        if(x > view.getMaxX()) {
+          // we will not encounter any more visible rectangles on this line
+          break inner;
+        }
       }
       y += h;
+      if(y > view.getMaxY()) {
+        // we will not encounter any more visible rectangles
+        break outer;
+      }
     }
   }
 
@@ -210,30 +216,15 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
   public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
       createTitledMatrixRenderpass(
           final MatrixRenderpass<T> rp, final double textHeight, final double space) {
-    final RefreshManager old = rp.getRefreshManager();
-    final SimpleRefreshManager rm = new SimpleRefreshManager();
-    rp.setRefreshManager(rm);
-    final T matrix = rp.getMatrix();
-    final TitleRenderpass<MatrixRenderpass<T>> top = new TitleRenderpass<>(
-        new BorderRenderpass<>(rp), textHeight, space);
+    final MatrixTitleRenderpass<MatrixRenderpass<T>> top =
+        new MatrixTitleRenderpass<>(new BorderRenderpass<>(rp), textHeight, space);
+    top.setPosition(Position.ABOVE);
     top.setOrientation(Orientation.VERTICAL);
     top.setAlignment(Alignment.LEFT);
-    final TitleRenderpass<MatrixRenderpass<T>> left = new TitleRenderpass<>(
-        top, textHeight, space);
+    final MatrixTitleRenderpass<MatrixRenderpass<T>> left =
+        new MatrixTitleRenderpass<>(top, textHeight, space);
     left.setPosition(Position.LEFT);
     left.setAlignment(Alignment.RIGHT);
-    // TODO #43 -- Java 8 simplification
-    rm.addRefreshable(new Refreshable() {
-
-      @Override
-      public void refresh() {
-        top.setTitles(matrix.getColumnNames());
-        left.setTitles(matrix.getRowNames());
-      }
-
-    });
-    rm.refreshAll();
-    rm.addRefreshable(old);
     return left;
   }
 

@@ -37,8 +37,8 @@ import jkanvas.util.Resource;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>> implements
-    Selectable {
+public class MatrixMain extends MatrixRenderpass<QuadraticMatrix<Double>>
+    implements Selectable {
 
   /**
    * Creates a matrix painter.
