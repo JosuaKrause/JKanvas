@@ -119,6 +119,36 @@ public final class ArrayUtil {
   }
 
   /**
+   * Converts a primitive <code>int</code> array to a boxed {@link Integer}
+   * array.
+   * 
+   * @param arr The array to convert.
+   * @return The converted array.
+   */
+  public static Integer[] copyToBox(final int[] arr) {
+    final Integer[] res = new Integer[arr.length];
+    for(int i = 0; i < arr.length; ++i) {
+      res[i] = arr[i];
+    }
+    return res;
+  }
+
+  /**
+   * Converts a boxed {@link Integer} array to a primitive <code>int</code>
+   * array.
+   * 
+   * @param arr The array to convert.
+   * @return The converted array.
+   */
+  public static int[] copyFromBox(final Integer[] arr) {
+    final int[] res = new int[arr.length];
+    for(int i = 0; i < arr.length; ++i) {
+      res[i] = arr[i];
+    }
+    return res;
+  }
+
+  /**
    * Swaps two entries in a <code>T</code> array. For lists use
    * {@link java.util.Collections#swap(List, int, int)}.
    * 
@@ -169,13 +199,13 @@ public final class ArrayUtil {
    * @param size The number of elements.
    * @return The permutation of the indices.
    */
-  public static Integer[] createPermutation(final Comparator<Integer> cmp, final int size) {
+  public static int[] createPermutation(final Comparator<Integer> cmp, final int size) {
     final Integer[] perm = new Integer[size];
     for(int i = 0; i < perm.length; ++i) {
       perm[i] = i;
     }
     Arrays.sort(perm, cmp);
-    return perm;
+    return copyFromBox(perm);
   }
 
   /**
@@ -187,7 +217,7 @@ public final class ArrayUtil {
    * @param perm The permutation.
    * @see #createPermutation(Comparator, int)
    */
-  public static <T> void applyPermutation(final List<T> list, final Integer[] perm) {
+  public static <T> void applyPermutation(final List<T> list, final int[] perm) {
     final List<T> tmp = new ArrayList<>(list);
     if(tmp.size() != perm.length) throw new IllegalArgumentException(
         tmp.size() + " != " + perm.length);
@@ -198,43 +228,59 @@ public final class ArrayUtil {
 
   /**
    * Applies a permutation to a swap-able data structure. The running time is
-   * <code>&theta;(3n)</code> with <code>&#x1d4aa;(n)</code> swap operations.
-   * The permutation array gets copied to use internally. Otherwise there is no
-   * additional space used.
+   * <code>&theta;(2n)</code> with <code>O(n)</code> swap operations. There is
+   * no additional space used. No runtime checks regarding the integrity of the
+   * permutation array are made and the behavior of the method is undefined for
+   * an incorrect array.
+   * <p>
+   * The permutation array gets modified internally. This means the array cannot
+   * be used concurrently during a call to this method (the method is not
+   * thread-safe) and if an exception is thrown the array is likely to be
+   * corrupted. To fix a possibly corrupted array use the
+   * {@link #repairPermutationArray(int[])} method (This is only necessary after
+   * an exception was thrown).
    * 
    * @param <T> The element type.
    * @param list A data structure allowing only swap operations to permute.
-   * @param perm The permutation.
+   * @param pos The permutation array. This array is modified internally. This
+   *          means that it cannot be used concurrently and that it is possibly
+   *          corrupted if an exception occurs during execution.
+   *          {@link #repairPermutationArray(int[])} can be used to recover from
+   *          a failure.
    * @see #createPermutation(Comparator, int)
    */
-  public static <T> void applyPermutation(final Swapable list, final Integer[] perm) {
-    final int[] p = new int[perm.length];
-    for(int i = 0; i < perm.length; ++i) {
-      p[i] = perm[i];
-    }
-    // we know that all elements in p left of nextStart are -1
-    int nextStart = 0;
-    for(;;) {
-      // look for next start of a cycle (ie a value >= 0 in p)
-      int start = -1;
-      for(int i = nextStart; i < p.length; ++i) {
-        if(p[i] >= 0) {
-          start = i;
-          break;
+  public static <T> void applyPermutation(final Swapable list, final int[] pos) {
+    // look for next start of a cycle (ie a value >= 0 in pos)
+    for(int start = 0; start < pos.length; ++start) {
+      int to = pos[start];
+      if(to >= 0) {
+        // swap along a cycle until reaching the beginning again
+        int from = start;
+        while(to != start) {
+          list.swap(from, to);
+          from = to;
+          to = pos[from];
+          pos[from] = ~to;
         }
+      } else {
+        pos[start] = ~to;
       }
-      if(start < 0) return;
-      nextStart = start + 1;
-      // swap along a cycle until reaching the beginning again
-      int cur = start;
-      for(;;) {
-        final int to = p[cur];
-        p[cur] = -1;
-        if(start == to) {
-          break;
-        }
-        list.swap(cur, to);
-        cur = to;
+    }
+  }
+
+  /**
+   * Repairs a permutation array after it was corrupted by an exception during a
+   * call to {@link #applyPermutation(Swapable, int[])}. Note that the necessity
+   * of calling this method implies that either the {@link Swapable}
+   * implementation is incorrect or the permutation array was inconsistent. This
+   * method is only provided to prevent cascading exceptions from happening.
+   * 
+   * @param pos The possibly corrupted permutation array.
+   */
+  public static void repairPermutationArray(final int[] pos) {
+    for(int i = 0; i < pos.length; ++i) {
+      if(pos[i] < 0) {
+        pos[i] = ~pos[i];
       }
     }
   }

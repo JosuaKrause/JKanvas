@@ -379,16 +379,23 @@ public class AnimatedMatrix<T>
    * @return The list holding the result.
    */
   protected synchronized ArrayList<T> getColumn(final ArrayList<T> column, final int col) {
+    final int rows = rows();
     final ArrayList<T> l;
     if(column == null) {
-      l = new ArrayList<>(rows());
+      l = new ArrayList<>(rows);
     } else {
-      column.clear();
-      column.ensureCapacity(rows());
+      column.ensureCapacity(rows);
       l = column;
+      if(l.size() > rows) {
+        l.subList(rows, l.size()).clear();
+      }
     }
-    for(final List<T> row : matrix) {
-      l.add(row.get(col));
+    assert l.size() <= rows;
+    for(int pos = 0; pos < l.size(); ++pos) {
+      l.set(pos, matrix.get(pos).get(col));
+    }
+    for(int pos = l.size(); pos < matrix.size(); ++pos) {
+      l.add(matrix.get(pos).get(col));
     }
     return l;
   }
@@ -422,7 +429,7 @@ public class AnimatedMatrix<T>
   @Override
   public synchronized void sortRows(final Comparator<Integer> cmp) {
     ensureChangeAllowed();
-    final Integer[] perm = ArrayUtil.createPermutation(cmp, rows());
+    final int[] perm = ArrayUtil.createPermutation(cmp, rows());
     ArrayUtil.applyPermutation(matrix, perm);
     ArrayUtil.applyPermutation(heights, perm);
     ArrayUtil.applyPermutation(rowNames, perm);
@@ -432,7 +439,7 @@ public class AnimatedMatrix<T>
   public synchronized void sortColumns(final Comparator<Integer> cmp) {
     ensureChangeAllowed();
     final ArrayList<T> column = new ArrayList<>();
-    final Integer[] perm = ArrayUtil.createPermutation(cmp, cols());
+    final int[] perm = ArrayUtil.createPermutation(cmp, cols());
     ArrayUtil.applyPermutation(new Swapable() {
 
       @Override
