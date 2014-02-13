@@ -1,6 +1,7 @@
 package jkanvas.examples;
 
 import jkanvas.Canvas;
+import jkanvas.CanvasSetup;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.nodelink.DependencyNodeLinkRenderpass;
 import jkanvas.nodelink.IndexedPosition;
@@ -27,7 +28,7 @@ public final class DependencyNodeLinkMain {
     // configure Canvas
     final AnimatedPainter p = new AnimatedPainter();
     final Canvas c = new Canvas(p, w, h);
-    ExampleUtil.setupCanvas("Node-Link", c, p, true, true, false, false);
+    CanvasSetup.setupCanvas("Node-Link", c, p, true, true, false, false);
     final DependencyNodeLinkRenderpass pass =
         new DependencyNodeLinkRenderpass(c, start == null ? c : start, pkgs);
     p.addPass(pass);

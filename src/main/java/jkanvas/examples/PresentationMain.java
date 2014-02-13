@@ -3,6 +3,7 @@ package jkanvas.examples;
 import java.io.IOException;
 
 import jkanvas.Canvas;
+import jkanvas.CanvasSetup;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.io.json.JSONElement;
 import jkanvas.io.json.JSONReader;
@@ -28,7 +29,7 @@ public final class PresentationMain {
   public static void main(final String[] args) throws IOException {
     final AnimatedPainter p = new AnimatedPainter();
     final Canvas c = new Canvas(p, true, 1024, 768);
-    final SimpleTextHUD info = ExampleUtil.setupCanvas("Presentation", c, p,
+    final SimpleTextHUD info = CanvasSetup.setupCanvas("Presentation", c, p,
         true, true, true, false);
 
     final JSONElement el = new JSONReader(new Resource("test.json").reader()).get();

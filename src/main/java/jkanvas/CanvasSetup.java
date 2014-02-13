@@ -1,4 +1,4 @@
-package jkanvas.examples;
+package jkanvas;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -8,23 +8,20 @@ import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import jkanvas.Canvas;
-import jkanvas.CanvasMessageHandler;
-import jkanvas.DefaultMessageHandler;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
 
 /**
- * Common tasks for example applications.
+ * Setting up a canvas.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public final class ExampleUtil {
+public final class CanvasSetup {
 
   /** Nothing to create. */
-  private ExampleUtil() {
+  private CanvasSetup() {
     throw new AssertionError();
   }
 

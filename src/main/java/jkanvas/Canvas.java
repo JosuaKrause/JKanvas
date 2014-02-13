@@ -527,6 +527,27 @@ public class Canvas extends JComponent implements Refreshable {
     cfg.getZUI().showRectangle(bbox, getCanvasRect(), getMargin(), false);
   }
 
+  /** Whether the user is allowed to zoom via scrolling. */
+  private boolean isUserZoomable = true;
+
+  /**
+   * Setter.
+   * 
+   * @param isUserZoomable Whether the user is allowed to zoom via scrolling.
+   */
+  public void setUserZoomable(final boolean isUserZoomable) {
+    this.isUserZoomable = isUserZoomable;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return Whether the user is allowed to zoom via scrolling.
+   */
+  public boolean isUserZoomable() {
+    return isUserZoomable;
+  }
+
   /** Whether the canvas is moveable, ie it can be panned and zoomed. */
   private boolean isMoveable = true;
 
@@ -960,7 +981,7 @@ public class Canvas extends JComponent implements Refreshable {
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
-        if(isDragging() || !canvas.isMoveable()) return;
+        if(isDragging() || !canvas.isMoveable() || !canvas.isUserZoomable()) return;
         final ViewConfiguration cfg = canvas.getViewConfiguration();
         cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
       }
