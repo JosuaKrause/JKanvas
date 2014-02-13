@@ -1,6 +1,9 @@
 package jkanvas.painter;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Objects;
 
@@ -41,19 +44,22 @@ public class OverviewHUD extends HUDRenderpass {
   public void drawHUD(final Graphics2D gfx, final KanvasContext ctx) {
     final Graphics2D g = (Graphics2D) gfx.create();
     final Rectangle2D view = ctx.getVisibleComponent();
-    final Rectangle2D canvasView = ctx.toCanvasCoordinates(view);
     final Rectangle2D bbox = new Rectangle2D.Double();
     rp.getBoundingBox(bbox);
-    final double s = PaintUtil.fitIntoPixelScale((int) view.getWidth(),
-        (int) view.getHeight(),
+    final double s = PaintUtil.fitIntoPixelScale(
+        (int) view.getWidth(), (int) view.getHeight(),
         bbox.getWidth(), bbox.getHeight(), true);
-    final CacheContext gCtx = new CacheContext(canvasView);
+    final CacheContext gCtx = new CacheContext(bbox);
+    PaintUtil.setAlpha(g, alpha.get());
     gCtx.doScale(s);
     g.scale(s, s);
-    PaintUtil.setAlpha(g, alpha.get());
     rp.draw(g, gCtx);
     g.dispose();
-    // TODO draw viewport
+    gfx.setColor(Color.RED);
+    final Rectangle2D canvasView = ctx.toCanvasCoordinates(view);
+    final Rectangle2D vis = canvasView.createIntersection(bbox);
+    vis.setFrame(vis.getX() * s, vis.getY() * s, vis.getWidth() * s, vis.getHeight() * s);
+    gfx.draw(vis);
   }
 
   public static final void setupOverviewAndContext(final Canvas c,
@@ -63,11 +69,27 @@ public class OverviewHUD extends HUDRenderpass {
       @Override
       public void animationFinished() {
         final Rectangle2D bbox = new Rectangle2D.Double();
-        rp.getBoundingBox(bbox);
-        c.setRestriction(bbox, AnimationTiming.NO_ANIMATION);
-        c.setUserZoomable(false);
-        c.showOnly(bbox);
+        RenderpassPainter.getTopLevelBounds(bbox, rp);
+        c.setRestriction(bbox, AnimationTiming.NO_ANIMATION, new AnimationAction() {
+
+          @Override
+          public void animationFinished() {
+            c.setUserZoomable(false);
+            c.showOnly(bbox);
+          }
+
+        });
         ap.addHUDPass(new OverviewHUD(c, rp));
+        c.addComponentListener(new ComponentAdapter() {
+
+          @Override
+          public void componentResized(final ComponentEvent e) {
+            final Rectangle2D bbox = new Rectangle2D.Double();
+            RenderpassPainter.getTopLevelBounds(bbox, rp);
+            c.showOnly(bbox);
+          }
+
+        });
       }
 
     }, 0);

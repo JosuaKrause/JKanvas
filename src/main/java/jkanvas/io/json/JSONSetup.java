@@ -160,7 +160,7 @@ public final class JSONSetup {
       ap.addRefreshable(c);
     }
     if(rest != null && !autoRest) {
-      c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
+      c.setRestriction(rest, AnimationTiming.NO_ANIMATION, null);
     }
     final List<JSONThunk> passes = new ArrayList<>();
     {
@@ -242,7 +242,7 @@ public final class JSONSetup {
     // ### auto restriction ###
     if(rest != null && autoRest) {
       rp.getBoundingBox(rest);
-      c.setRestriction(rest, AnimationTiming.NO_ANIMATION);
+      c.setRestriction(rest, AnimationTiming.NO_ANIMATION, null);
     }
     return c;
   }

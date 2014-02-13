@@ -596,12 +596,15 @@ public class Canvas extends JComponent implements Refreshable {
    * @param restriction Sets the restriction rectangle.
    * @param timing How the transition to the restriction rectangle should be
    *          performed.
+   * @param onFinish The action that is performed after the restriction is set
+   *          or <code>null</code>.
    * @throws IllegalStateException When the canvas is not restricted. The canvas
    *           can be restricted only with the constructor.
    * @see #isRestricted()
    */
-  public void setRestriction(final Rectangle2D restriction, final AnimationTiming timing) {
-    cfg.setRestriction(restriction, timing, getMargin());
+  public void setRestriction(final Rectangle2D restriction,
+      final AnimationTiming timing, final AnimationAction onFinish) {
+    cfg.setRestriction(restriction, timing, getMargin(), onFinish);
   }
 
   /**

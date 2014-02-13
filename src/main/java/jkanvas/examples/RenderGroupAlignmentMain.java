@@ -120,7 +120,7 @@ public class RenderGroupAlignmentMain extends MatrixMain {
       public void animationFinished() {
         final Rectangle2D rect = new Rectangle2D.Double();
         p.getBoundingBox(rect);
-        c.setRestriction(rect, AnimationTiming.SMOOTH);
+        c.setRestriction(rect, AnimationTiming.SMOOTH, null);
         group.setOnFinish(null);
       }
 

@@ -120,12 +120,14 @@ public class ViewConfiguration {
    * @param timing How the transition to the restriction rectangle should be
    *          performed.
    * @param margin The margin added to the rectangle.
+   * @param onFinish The action that is performed after the restriction has been
+   *          set or <code>null</code>.
    * @throws IllegalStateException When the canvas is not restricted. The canvas
    *           can be restricted only with the constructor.
    * @see #isRestricted()
    */
   public void setRestriction(final Rectangle2D restriction,
-      final AnimationTiming timing, final double margin) {
+      final AnimationTiming timing, final double margin, final AnimationAction onFinish) {
     if(!isRestricted()) throw new IllegalStateException("not restricted");
     this.restriction = null;
     if(restriction != null) {
@@ -137,6 +139,9 @@ public class ViewConfiguration {
         public void animationFinished() {
           if(!zui.inAnimation()) {
             setRestrictionDirectly(rest);
+          }
+          if(onFinish != null) {
+            onFinish.animationFinished();
           }
         }
 
