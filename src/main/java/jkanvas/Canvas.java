@@ -30,6 +30,8 @@ import jkanvas.animation.AnimationBarrier.CloseBlock;
 import jkanvas.animation.AnimationList;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.animation.Animator;
+import jkanvas.painter.HUDRenderpass;
+import jkanvas.painter.Renderpass;
 import jkanvas.util.Stopwatch;
 
 /**
@@ -52,6 +54,13 @@ public class Canvas extends JComponent implements Refreshable {
    * interpret.
    */
   public static boolean DEBUG_CACHE;
+
+  /**
+   * When set allows {@link IgnoreInteractionException} and
+   * {@link AcceptDraggingException} to generate stack traces. This can be
+   * useful when they are used incorrectly.
+   */
+  public static boolean ALLOW_INTERACTION_DIAGNOSTIC;
 
   /** Disables render pass caching. */
   public static boolean DISABLE_CACHING;
@@ -117,6 +126,42 @@ public class Canvas extends JComponent implements Refreshable {
    */
   public static final void preventPeerInteraction() {
     throw IgnoreInteractionException.INSTANCE;
+  }
+
+  /**
+   * Initiates a call to
+   * {@link KanvasInteraction#acceptDrag(Point2D, MouseEvent)} for the given
+   * render item. This can be used for an otherwise consuming
+   * {@link KanvasInteraction#click(Camera, Point2D, MouseEvent)} operation to
+   * provide an additional dragging operation.
+   * <p>
+   * This method can only be called before the actual
+   * {@link KanvasInteraction#acceptDrag(Point2D, MouseEvent)} method is called.
+   * 
+   * @param rp The render item.
+   * @see HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)
+   * @see HUDInteraction#acceptDragHUD(Point2D, MouseEvent)
+   * @see KanvasInteraction#click(Camera, Point2D, MouseEvent)
+   */
+  public static final void acceptDragging(final Renderpass rp) {
+    throw new AcceptDraggingException(rp);
+  }
+
+  /**
+   * Initiates a call to
+   * {@link HUDInteraction#acceptDragHUD(Point2D, MouseEvent)} for the given HUD
+   * item. This can be used for an otherwise consuming
+   * {@link HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)} operation to
+   * provide an additional dragging operation.
+   * <p>
+   * This method can only be called before the actual
+   * {@link HUDInteraction#acceptDragHUD(Point2D, MouseEvent)} method is called.
+   * 
+   * @param hrp The HUD item.
+   * @see HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)
+   */
+  public static final void acceptHUDDragging(final HUDRenderpass hrp) {
+    throw new AcceptDraggingException(hrp);
   }
 
   /**
@@ -850,6 +895,10 @@ public class Canvas extends JComponent implements Refreshable {
       /** Whether the drag is on the HUD. */
       private boolean hudDrag;
 
+      private Renderpass directDrag;
+
+      private HUDRenderpass directHUDDrag;
+
       @Override
       public void mousePressed(final MouseEvent e) {
         canvas.getFocusComponent().grabFocus();
@@ -862,6 +911,8 @@ public class Canvas extends JComponent implements Refreshable {
             canvas.refresh();
             return;
           }
+        } catch(final AcceptDraggingException ad) {
+          if(handleAcceptDragging(p, e, ad, true)) return;
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
@@ -872,6 +923,8 @@ public class Canvas extends JComponent implements Refreshable {
             canvas.refresh();
             return;
           }
+        } catch(final AcceptDraggingException ad) {
+          if(handleAcceptDragging(p, e, ad, false)) return;
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
@@ -882,6 +935,8 @@ public class Canvas extends JComponent implements Refreshable {
             canvas.refresh();
             return;
           }
+        } catch(final AcceptDraggingException ad) {
+          if(handleAcceptDragging(p, e, ad, false)) return;
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
@@ -892,6 +947,8 @@ public class Canvas extends JComponent implements Refreshable {
             canvas.refresh();
             return;
           }
+        } catch(final AcceptDraggingException ad) {
+          wrongAcceptDragging(ad);
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
@@ -913,6 +970,8 @@ public class Canvas extends JComponent implements Refreshable {
             canvas.refresh();
             return;
           }
+        } catch(final AcceptDraggingException ad) {
+          wrongAcceptDragging(ad);
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
@@ -923,6 +982,8 @@ public class Canvas extends JComponent implements Refreshable {
             canvas.refresh();
             return;
           }
+        } catch(final AcceptDraggingException ad) {
+          wrongAcceptDragging(ad);
         } catch(final IgnoreInteractionException i) {
           // nothing to do
         }
@@ -936,12 +997,15 @@ public class Canvas extends JComponent implements Refreshable {
           return;
         }
         final ViewConfiguration cfg = canvas.getViewConfiguration();
-        final KanvasPainter painter = cfg.getPainter();
         final Point2D start = getStartPoint();
         final Point2D p = e.getPoint();
         if(hudDrag) {
+          final HUDInteraction painter =
+              directHUDDrag != null ? directHUDDrag : cfg.getPainter();
           painter.dragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
         } else {
+          final KanvasInteraction painter =
+              directDrag != null ? directDrag : cfg.getPainter();
           final CameraZUI zui = cfg.getZUI();
           final Point2D cur = zui.getForScreen(p);
           painter.drag(start, cur, cur.getX() - start.getX(), cur.getY() - start.getY());
@@ -958,16 +1022,21 @@ public class Canvas extends JComponent implements Refreshable {
           return;
         }
         final ViewConfiguration cfg = canvas.getViewConfiguration();
-        final KanvasPainter painter = cfg.getPainter();
         final Point2D p = e.getPoint();
         final Point2D start = stopPointDrag();
         if(hudDrag) {
+          final HUDInteraction painter =
+              directHUDDrag != null ? directHUDDrag : cfg.getPainter();
           painter.endDragHUD(start, p, p.getX() - start.getX(), p.getY() - start.getY());
         } else {
+          final KanvasInteraction painter =
+              directDrag != null ? directDrag : cfg.getPainter();
           final CameraZUI zui = cfg.getZUI();
           final Point2D c = zui.getForScreen(p);
           painter.endDrag(start, c, c.getX() - start.getX(), c.getY() - start.getY());
         }
+        directHUDDrag = null;
+        directDrag = null;
         canvas.refresh();
       }
 
@@ -977,9 +1046,43 @@ public class Canvas extends JComponent implements Refreshable {
        * @param x The mouse x position.
        * @param y The mouse y position.
        */
-      protected void move(final int x, final int y) {
+      private void move(final int x, final int y) {
         final ViewConfiguration cfg = canvas.getViewConfiguration();
         cfg.getZUI().setOffset(getMoveX(x), getMoveY(y));
+      }
+
+      private boolean handleAcceptDragging(final Point2D p, final MouseEvent e,
+          final AcceptDraggingException ad, final boolean allowHUD) {
+        if(ad.isRenderpass()) {
+          final Renderpass r = ad.getRenderpass();
+          final ViewConfiguration cfg = canvas.getViewConfiguration();
+          final CameraZUI zui = cfg.getZUI();
+          final Point2D c = zui.getForScreen(p);
+          if(!r.acceptDrag(c, e)) return false;
+          startDragging(c);
+          directDrag = r;
+          directHUDDrag = null;
+          hudDrag = false;
+        } else {
+          if(!allowHUD) {
+            wrongAcceptDragging(ad);
+          }
+          final HUDRenderpass hr = ad.getHUDRenderpass();
+          if(!hr.acceptDragHUD(p, e)) return false;
+          startDragging(p);
+          directHUDDrag = hr;
+          directDrag = null;
+          hudDrag = true;
+        }
+        canvas.refresh();
+        return true;
+      }
+
+      private void wrongAcceptDragging(final AcceptDraggingException ad) {
+        final String method = ad.isRenderpass() ? "acceptDragging" : "acceptHUDDragging";
+        throw new IllegalArgumentException(
+            "inappropriate use of " + method + "("
+                + HUDRenderpass.class.getSimpleName() + ")", ad);
       }
 
       @Override
@@ -996,6 +1099,8 @@ public class Canvas extends JComponent implements Refreshable {
         final CameraZUI zui = cfg.getZUI();
         try {
           if(!painter.moveMouse(zui.getForScreen(e.getPoint()))) return;
+        } catch(final AcceptDraggingException ad) {
+          wrongAcceptDragging(ad);
         } catch(final IgnoreInteractionException i) {
           // better refresh also in this case --
           // some method may have returned true

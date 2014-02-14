@@ -98,7 +98,7 @@ public class ViewConfiguration {
    * 
    * @return The current canvas context.
    */
-  public ViewContext getContext() {
+  public KanvasContext getContext() {
     return new ViewContext(zui, true, 0, 0);
   }
 
@@ -109,7 +109,7 @@ public class ViewConfiguration {
    * 
    * @return The current head-up display context.
    */
-  public ViewContext getHUDContext() {
+  public KanvasContext getHUDContext() {
     return new ViewContext(zui, false, 0, 0);
   }
 
