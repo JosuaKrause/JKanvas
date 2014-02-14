@@ -99,7 +99,6 @@ public class OverviewHUD extends HUDRenderpass {
 
   protected void setView(final double x) {
     final KanvasContext ctx = c.getHUDContext();
-    final Rectangle2D view = ctx.getVisibleCanvas();
     final Rectangle2D comp = ctx.getVisibleComponent();
     final Rectangle2D bbox = new Rectangle2D.Double();
     RenderpassPainter.getTopLevelBounds(bbox, rp);
@@ -107,17 +106,18 @@ public class OverviewHUD extends HUDRenderpass {
     final double offX = x * f;
     final double w = bbox.getWidth() * f;
     final double h = bbox.getHeight();
-    view.setFrame(offX - w * 0.5, 0, w, h);
-    c.showOnly(view);
+    bbox.setFrame(offX - w * 0.5, 0, w, h);
+    c.showOnly(bbox);
   }
 
   private double originalDrag;
 
   @Override
   public boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
+    final Rectangle2D frame = new Rectangle2D.Double();
+    getFullFrame(frame, c.getHUDContext());
+    if(!frame.contains(p)) return false;
     final Rectangle2D view = getViewFrame(c.getHUDContext());
-    if(!view.contains(p)) return false;
-    System.out.println("hi");
     originalDrag = view.getCenterX();
     return true;
   }
@@ -129,18 +129,19 @@ public class OverviewHUD extends HUDRenderpass {
   }
 
   public static final void setupOverviewAndContext(final Canvas c,
-      final AnimatedPainter ap, final Renderpass rp) {
+      final AnimatedPainter ap, final Renderpass rp, final boolean preventUserZoom) {
     c.scheduleAction(new AnimationAction() {
 
       @Override
       public void animationFinished() {
-        setup(c, ap, rp);
+        setup(c, ap, rp, preventUserZoom);
       }
 
     }, 0);
   }
 
-  static final void setup(final Canvas c, final RenderpassPainter ap, final Renderpass rp) {
+  static final void setup(final Canvas c, final RenderpassPainter ap,
+      final Renderpass rp, final boolean preventUserZoom) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     RenderpassPainter.getTopLevelBounds(bbox, rp);
     final OverviewHUD overview = new OverviewHUD(c, rp);
@@ -148,7 +149,9 @@ public class OverviewHUD extends HUDRenderpass {
 
       @Override
       public void animationFinished() {
-        c.setUserZoomable(false);
+        if(preventUserZoom) {
+          c.setUserZoomable(false);
+        }
         final Rectangle2D bbox = new Rectangle2D.Double();
         RenderpassPainter.getTopLevelBounds(bbox, rp);
         c.showOnly(bbox);
