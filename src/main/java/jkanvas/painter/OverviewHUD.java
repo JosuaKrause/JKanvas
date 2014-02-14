@@ -103,10 +103,11 @@ public class OverviewHUD extends HUDRenderpass {
     final Rectangle2D comp = ctx.getVisibleComponent();
     final Rectangle2D bbox = new Rectangle2D.Double();
     RenderpassPainter.getTopLevelBounds(bbox, rp);
-    final double offX = x * bbox.getWidth() / comp.getWidth();
-    final double w = view.getWidth();
-    final double h = view.getHeight();
-    view.setFrame(offX - w * 0.5, view.getY(), w, h);
+    final double f = bbox.getWidth() / comp.getWidth();
+    final double offX = x * f;
+    final double w = bbox.getWidth() * f;
+    final double h = bbox.getHeight();
+    view.setFrame(offX - w * 0.5, 0, w, h);
     c.showOnly(view);
   }
 
