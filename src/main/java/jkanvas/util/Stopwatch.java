@@ -50,6 +50,17 @@ public class Stopwatch {
   }
 
   /**
+   * Prints the given message and the current duration of the task to the given
+   * output stream. The timer is reset afterwards.
+   * 
+   * @param msg The message.
+   * @param out The output stream.
+   */
+  public void status(final String msg, final java.io.PrintStream out) {
+    out.println(msg + reset());
+  }
+
+  /**
    * Formats the given time in nano seconds.
    * 
    * @param nano The time in nano seconds.
