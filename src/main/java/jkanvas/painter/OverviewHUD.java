@@ -33,16 +33,20 @@ public class OverviewHUD extends HUDRenderpass {
   private final Renderpass rp;
   /** The alpha value of the overview. */
   private final AnimatedDouble alpha;
+  /** The maximal allowed height. */
+  private final double maxHeight;
 
   /**
    * Creates an overview.
    * 
    * @param c The canvas.
    * @param rp The render item.
+   * @param maxHeight The maximal allowed height.
    */
-  protected OverviewHUD(final Canvas c, final Renderpass rp) {
+  protected OverviewHUD(final Canvas c, final Renderpass rp, final double maxHeight) {
     this.c = Objects.requireNonNull(c);
     this.rp = Objects.requireNonNull(rp);
+    this.maxHeight = maxHeight;
     alpha = new AnimatedDouble(1.0);
     c.getAnimator().getAnimationList().addAnimated(alpha);
   }
@@ -85,9 +89,11 @@ public class OverviewHUD extends HUDRenderpass {
     final Rectangle2D view = ctx.getVisibleComponent();
     final Rectangle2D bbox = new Rectangle2D.Double();
     rp.getBoundingBox(bbox);
-    return PaintUtil.fitIntoPixelScale(
+    final double s = PaintUtil.fitIntoPixelScale(
         (int) view.getWidth(), (int) view.getHeight(),
         bbox.getWidth(), bbox.getHeight(), true);
+    if(bbox.getHeight() * s > maxHeight) return maxHeight / bbox.getHeight();
+    return s;
   }
 
   /**
@@ -253,7 +259,7 @@ public class OverviewHUD extends HUDRenderpass {
       final Renderpass rp, final boolean preventUserZoom) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     RenderpassPainter.getTopLevelBounds(bbox, rp);
-    final OverviewHUD overview = new OverviewHUD(c, rp);
+    final OverviewHUD overview = new OverviewHUD(c, rp, 100.0);
     c.setRestriction(bbox, AnimationTiming.NO_ANIMATION, new AnimationAction() {
 
       @Override
