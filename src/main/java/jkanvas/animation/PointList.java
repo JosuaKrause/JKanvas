@@ -5,6 +5,7 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * A list of circular shaped points with filling and border color.
@@ -285,6 +286,16 @@ public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return false;
     setShape(shape, index, x, y, s);
     return shape.contains(point);
+  }
+
+  public Rectangle2D getBoundingBoxFor(final int index) {
+    final int pos = getPosition(index);
+    final double x = get(X_COORD, pos);
+    final double y = get(Y_COORD, pos);
+    final double s = get(SIZE, pos);
+    final T obj = createDrawObject();
+    setShape(obj, index, x, y, s);
+    return obj.getBounds2D();
   }
 
 }
