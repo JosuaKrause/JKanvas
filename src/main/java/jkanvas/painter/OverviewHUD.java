@@ -145,10 +145,11 @@ public class OverviewHUD extends HUDRenderpass {
 
   @Override
   public boolean clickHUD(final Camera cam, final Point2D p, final MouseEvent e) {
-    final Rectangle2D view = getViewFrame(c.getHUDContext());
+    final KanvasContext ctx = c.getHUDContext();
+    final Rectangle2D view = getViewFrame(ctx);
     if(view.contains(p)) return false; // let dragging handle it
     final Rectangle2D frame = new Rectangle2D.Double();
-    getFullFrame(frame, c.getHUDContext());
+    getFullFrame(frame, ctx);
     if(!frame.contains(p)) return false;
     setView(p.getX());
     Canvas.acceptHUDDragging(this);
@@ -164,9 +165,10 @@ public class OverviewHUD extends HUDRenderpass {
   protected void setView(final double x) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     RenderpassPainter.getTopLevelBounds(bbox, rp);
-    final double f = getScreenPositionScale();
-    final double offX = x * f;
-    final double w = bbox.getWidth() * f;
+    final KanvasContext ctx = c.getHUDContext();
+    final double s = getScale(ctx);
+    final double offX = x / s;
+    final double w = bbox.getWidth() / s;
     final double h = bbox.getHeight();
     bbox.setFrame(offX - w * 0.5, 0, w, h);
     c.showOnly(bbox);
@@ -175,14 +177,12 @@ public class OverviewHUD extends HUDRenderpass {
   /**
    * Getter.
    * 
-   * @return The scale for screen positions.
+   * @return The current horizontal coordinate on which the view is centered on.
    */
-  private double getScreenPositionScale() {
+  protected double getView() {
     final KanvasContext ctx = c.getHUDContext();
-    final Rectangle2D comp = ctx.getVisibleComponent();
-    final Rectangle2D bbox = new Rectangle2D.Double();
-    RenderpassPainter.getTopLevelBounds(bbox, rp);
-    return bbox.getWidth() / comp.getWidth();
+    final Rectangle2D view = getViewFrame(ctx);
+    return view.getCenterX();
   }
 
   /** Whether the view is moved or set directly. */
@@ -197,9 +197,10 @@ public class OverviewHUD extends HUDRenderpass {
   @Override
   public boolean acceptDragHUD(final Point2D p, final MouseEvent e) {
     final Rectangle2D frame = new Rectangle2D.Double();
-    getFullFrame(frame, c.getHUDContext());
+    final KanvasContext ctx = c.getHUDContext();
+    getFullFrame(frame, ctx);
     if(!frame.contains(p)) return false;
-    final Rectangle2D view = getViewFrame(c.getHUDContext());
+    final Rectangle2D view = getViewFrame(ctx);
     if(view.contains(p)) {
       moveView = true;
       lastX = 0;
@@ -267,9 +268,6 @@ public class OverviewHUD extends HUDRenderpass {
         if(preventUserZoom) {
           c.setUserZoomable(false);
         }
-        final Rectangle2D bbox = new Rectangle2D.Double();
-        RenderpassPainter.getTopLevelBounds(bbox, rp);
-        c.showOnly(bbox);
         overview.setView(0);
       }
 
@@ -279,9 +277,7 @@ public class OverviewHUD extends HUDRenderpass {
 
       @Override
       public void componentResized(final ComponentEvent e) {
-        final Rectangle2D bbox = new Rectangle2D.Double();
-        RenderpassPainter.getTopLevelBounds(bbox, rp);
-        c.showOnly(bbox);
+        overview.setView(overview.getView());
       }
 
     });

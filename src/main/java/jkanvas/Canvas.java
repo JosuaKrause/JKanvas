@@ -655,6 +655,18 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Getter.
    * 
+   * @return The current restriction or <code>null</code> if no restriction is
+   *         currently set.
+   */
+  public Rectangle2D getRestriction() {
+    final Rectangle2D res = new Rectangle2D.Double();
+    cfg.getRestriction(res);
+    return res.isEmpty() ? null : res;
+  }
+
+  /**
+   * Getter.
+   * 
    * @return Whether the canvas is restricted.
    */
   public boolean isRestricted() {

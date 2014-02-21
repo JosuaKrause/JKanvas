@@ -132,6 +132,8 @@ public class ViewConfiguration {
     this.restriction = null;
     if(restriction != null) {
       final Rectangle2D rest = jkanvas.util.PaintUtil.addPadding(restriction, margin);
+      if(rest.isEmpty()) throw new IllegalArgumentException(
+          "no empty restriction allowed");
       // TODO #43 -- Java 8 simplification
       zui.toView(rest, timing, new AnimationAction() {
 
@@ -165,7 +167,23 @@ public class ViewConfiguration {
    *          be used internally.
    */
   void setRestrictionDirectly(final Rectangle2D restriction) {
+    if(restriction.isEmpty()) throw new IllegalArgumentException(
+        "no empty restriction allowed");
     this.restriction = restriction;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param restriction Sets this rectangle to the current restriction. If no
+   *          restriction is set this rectangle is set to an empty rectangle.
+   */
+  public void getRestriction(final Rectangle2D restriction) {
+    if(this.restriction == null) {
+      restriction.setFrame(0, 0, 0, 0);
+      return;
+    }
+    restriction.setFrame(this.restriction);
   }
 
   /**
