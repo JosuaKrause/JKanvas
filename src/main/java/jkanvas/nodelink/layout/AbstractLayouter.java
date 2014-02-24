@@ -2,6 +2,7 @@ package jkanvas.nodelink.layout;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.Canvas;
@@ -167,7 +168,7 @@ public abstract class AbstractLayouter<T extends AnimatedPosition> {
    * @param bbox The rectangle in which the bounding box of the layout will be
    *          stored.
    */
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     bbox.setFrame(rect == null ? canvas.getVisibleCanvas() : rect);
   }
 

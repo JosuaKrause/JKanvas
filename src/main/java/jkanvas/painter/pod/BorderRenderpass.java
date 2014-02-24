@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 import jkanvas.KanvasContext;
 import jkanvas.painter.Renderpass;
@@ -106,7 +107,7 @@ public class BorderRenderpass<T extends Renderpass> extends Renderpod<T> {
   }
 
   @Override
-  protected void addOwnBox(final Rectangle2D bbox) {
+  protected void addOwnBox(final RectangularShape bbox) {
     bbox.setFrame(bbox.getX() - width, bbox.getY() - width,
         bbox.getWidth() + 2 * width, bbox.getHeight() + 2 * width);
   }

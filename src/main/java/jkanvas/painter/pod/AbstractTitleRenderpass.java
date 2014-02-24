@@ -3,6 +3,7 @@ package jkanvas.painter.pod;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -302,7 +303,7 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
   }
 
   @Override
-  protected void addOwnBox(final Rectangle2D bbox) {
+  protected void addOwnBox(final RectangularShape bbox) {
     final double add = textHeight + space;
     switch(pos) {
       case LEFT:

@@ -3,6 +3,7 @@ package jkanvas.matrix;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -173,7 +174,7 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     double h = 0;
     for(int i = 0; i < matrix.rows(); ++i) {
       h += matrix.getHeight(i);

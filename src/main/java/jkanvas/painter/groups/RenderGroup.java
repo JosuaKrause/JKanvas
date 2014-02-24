@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -779,17 +780,13 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     ensureLayout();
     boolean change = false;
     RenderpassPainter.getBoundingBox(bbox, nlFront);
     final Rectangle2D rect = new Rectangle2D.Double();
     RenderpassPainter.getBoundingBox(rect, nlBack);
-    if(bbox.isEmpty()) {
-      bbox.setFrame(rect);
-    } else if(!rect.isEmpty()) {
-      bbox.add(rect);
-    }
+    RenderpassPainter.addToRect(bbox, rect);
     for(final RenderpassPosition<T> p : members) {
       if(!p.pass.isVisible()) {
         continue;
@@ -797,12 +794,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
       if(p.checkBBoxChange()) {
         change = true;
       }
-      final Rectangle2D box = p.getPassBBox();
-      if(bbox.isEmpty()) {
-        bbox.setFrame(box);
-      } else if(!box.isEmpty()) {
-        bbox.add(box);
-      }
+      RenderpassPainter.addToRect(bbox, p.getPassBBox());
     }
     if(change) {
       invalidate();

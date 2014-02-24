@@ -1,7 +1,7 @@
 package jkanvas.painter.pod;
 
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 import jkanvas.KanvasContext;
 import jkanvas.painter.Renderpass;
@@ -24,7 +24,7 @@ public final class WrapperRenderpass<T extends Renderpass> extends Renderpod<T> 
   }
 
   @Override
-  protected void addOwnBox(final Rectangle2D bbox) {
+  protected void addOwnBox(final RectangularShape bbox) {
     // nothing to add
   }
 

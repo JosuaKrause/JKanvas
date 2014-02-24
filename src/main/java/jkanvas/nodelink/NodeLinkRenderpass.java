@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Objects;
@@ -212,7 +213,7 @@ public class NodeLinkRenderpass<T extends AnimatedPosition> extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D rect) {
+  public void getBoundingBox(final RectangularShape rect) {
     if(layout == null) {
       rect.setFrame(bbox);
     } else {

@@ -288,7 +288,14 @@ public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
     return shape.contains(point);
   }
 
+  /**
+   * Computes the bounding box of the item with the given index.
+   * 
+   * @param index The index.
+   * @return The bounding box.
+   */
   public Rectangle2D getBoundingBoxFor(final int index) {
+    // FIXME find a better way than creating everything new
     final int pos = getPosition(index);
     final double x = get(X_COORD, pos);
     final double y = get(Y_COORD, pos);

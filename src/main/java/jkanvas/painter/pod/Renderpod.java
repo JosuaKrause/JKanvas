@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -123,7 +124,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
    * 
    * @param bbox The bounding box to store the result in.
    */
-  public void unwrapBoundingBox(final Rectangle2D bbox) {
+  public void unwrapBoundingBox(final RectangularShape bbox) {
     unwrap().getBoundingBox(bbox);
   }
 
@@ -174,12 +175,12 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
    * 
    * @param bbox The bounding box of the wrapped render passed.
    */
-  protected abstract void addOwnBox(Rectangle2D bbox);
+  protected abstract void addOwnBox(RectangularShape bbox);
 
   @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
-    RenderpassPainter.draw(list, g, ctx);
     drawOwn(g, ctx);
+    RenderpassPainter.draw(list, g, ctx);
   }
 
   /**
@@ -191,32 +192,31 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   protected abstract void drawOwn(Graphics2D g, KanvasContext ctx);
 
   @Override
-  public final void getBoundingBox(final Rectangle2D bbox) {
+  public final void getBoundingBox(final RectangularShape bbox) {
     final Renderpass pass = list.get(0);
     pass.getBoundingBox(bbox);
     addOwnBox(bbox);
   }
 
   @Override
-  public final boolean click(final Camera cam, final Point2D position, final MouseEvent e) {
+  public boolean click(final Camera cam, final Point2D position, final MouseEvent e) {
     return RenderpassPainter.click(list, cam, position, e);
   }
 
   @Override
-  public final boolean doubleClick(
-      final Camera cam, final Point2D position, final MouseEvent e) {
+  public boolean doubleClick(final Camera cam, final Point2D position, final MouseEvent e) {
     if(RenderpassPainter.doubleClick(list, cam, position, e)) return true;
     if(USE_DOUBLE_CLICK_DEFAULT) return defaultDoubleClick(this, cam, e);
     return false;
   }
 
   @Override
-  public final String getTooltip(final Point2D position) {
+  public String getTooltip(final Point2D position) {
     return RenderpassPainter.getTooltip(list, position);
   }
 
   @Override
-  public final boolean moveMouse(final Point2D cur) {
+  public boolean moveMouse(final Point2D cur) {
     return RenderpassPainter.moveMouse(list, cur);
   }
 
@@ -224,7 +224,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   private Point2D start = null;
 
   @Override
-  public final boolean acceptDrag(final Point2D position, final MouseEvent e) {
+  public boolean acceptDrag(final Point2D position, final MouseEvent e) {
     final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, position);
     final Rectangle2D bbox = new Rectangle2D.Double();
@@ -236,8 +236,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public final void drag(final Point2D _, final Point2D cur,
-      final double dx, final double dy) {
+  public void drag(final Point2D _, final Point2D cur, final double dx, final double dy) {
     // dx and dy do not change
     final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, cur);
@@ -245,8 +244,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public final void endDrag(final Point2D _, final Point2D end,
-      final double dx, final double dy) {
+  public void endDrag(final Point2D _, final Point2D end, final double dx, final double dy) {
     // dx and dy do not change
     final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, end);
@@ -254,7 +252,7 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public final boolean isChanging() {
+  public boolean isChanging() {
     final Renderpass pass = list.get(0);
     return pass.isChanging();
   }
