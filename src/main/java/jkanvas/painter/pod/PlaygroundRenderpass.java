@@ -53,10 +53,11 @@ public class PlaygroundRenderpass<T extends Renderpass> extends
         pos = new Point2D.Double(topRight.getX(), topRight.getY());
         topRight.setLocation(topRight.getX() + w + border, topRight.getY());
       }
-      m.set(pos);
       p.getBoundingBox(rect);
-      groups.put(group,
-          new Point2D.Double(pos.getX(), pos.getY() + border + rect.getHeight()));
+      final double x = pos.getX();
+      pos.setLocation(pos.getX() + (w - rect.getWidth()) * 0.5, pos.getY());
+      m.set(pos);
+      groups.put(group, new Point2D.Double(x, pos.getY() + border + rect.getHeight()));
     }
   }
 
