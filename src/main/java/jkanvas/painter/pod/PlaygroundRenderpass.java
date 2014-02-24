@@ -2,7 +2,9 @@ package jkanvas.painter.pod;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkanvas.animation.Animator;
 import jkanvas.painter.Renderpass;
@@ -15,21 +17,47 @@ public class PlaygroundRenderpass<T extends Renderpass> extends
     super(animator);
   }
 
+  public double getBorder() {
+    return 5;
+  }
+
   @Override
   protected void doLayout(
       final List<RenderpassPosition<PlaygroundPod<T>>> members) {
-    // no layout
-  }
-
-  private final Point2D last = new Point2D.Double();
-
-  @Override
-  protected void addedRenderpass(final RenderpassPosition<PlaygroundPod<T>> rp) {
-    super.addedRenderpass(rp);
-    rp.set(new Point2D.Double(last.getX(), last.getY()));
+    final Map<String, Double> widths = new HashMap<>();
     final Rectangle2D rect = new Rectangle2D.Double();
-    rp.pass.getBoundingBox(rect);
-    last.setLocation(last.getX(), last.getY() + rect.getHeight() + 5);
+    for(final RenderpassPosition<PlaygroundPod<T>> m : members) {
+      final PlaygroundPod<T> p = m.pass;
+      final String group = p.getGroup();
+      if(group == null) {
+        continue;
+      }
+      p.getBoundingBox(rect);
+      final Double d = widths.get(group);
+      if(d == null || d < rect.getWidth()) {
+        widths.put(group, rect.getWidth());
+      }
+    }
+    final double border = getBorder();
+    final Point2D topRight = new Point2D.Double();
+    final Map<String, Point2D> groups = new HashMap<>();
+    for(final RenderpassPosition<PlaygroundPod<T>> m : members) {
+      final PlaygroundPod<T> p = m.pass;
+      final String group = p.getGroup();
+      if(group == null) {
+        continue;
+      }
+      Point2D pos = groups.get(group);
+      final double w = widths.get(group);
+      if(pos == null) {
+        pos = new Point2D.Double(topRight.getX(), topRight.getY());
+        topRight.setLocation(topRight.getX() + w + border, topRight.getY());
+      }
+      m.set(pos);
+      p.getBoundingBox(rect);
+      groups.put(group,
+          new Point2D.Double(pos.getX(), pos.getY() + border + rect.getHeight()));
+    }
   }
 
 }

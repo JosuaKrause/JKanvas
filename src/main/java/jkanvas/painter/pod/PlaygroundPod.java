@@ -15,6 +15,10 @@ import jkanvas.util.PaintUtil;
 
 public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
+  private String group;
+
+  private boolean moveable = true;
+
   private double border = 5.0;
 
   private double stroke = 1.0;
@@ -25,6 +29,14 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   public PlaygroundPod(final Renderpod<T> rp) {
     super(rp);
+  }
+
+  public void setGroup(final String group) {
+    this.group = group;
+  }
+
+  public String getGroup() {
+    return group;
   }
 
   public void setBorder(final double border) {
@@ -44,6 +56,14 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     return stroke;
   }
 
+  public void setMoveable(final boolean moveable) {
+    this.moveable = moveable;
+  }
+
+  public boolean isMoveable() {
+    return moveable;
+  }
+
   private Color back;
 
   public void setColor(final Color back) {
@@ -54,40 +74,38 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     return back;
   }
 
-  private Point2D lastPos;
+  private Point2D firstPos;
 
   @Override
   public boolean acceptDrag(final Point2D pos, final MouseEvent e) {
-    if(!hit(pos)) {
-      lastPos = null;
+    if(!hit(pos) || !moveable) {
+      firstPos = null;
       return super.acceptDrag(pos, e);
     }
-    lastPos = pos;
+    group = null;
+    firstPos = new Point2D.Double(getOffsetX(), getOffsetY());
     return true;
   }
 
   @Override
   public void drag(final Point2D start, final Point2D cur,
       final double dx, final double dy) {
-    if(lastPos == null) {
+    if(firstPos == null) {
       super.drag(start, cur, dx, dy);
       return;
     }
-    final double x = cur.getX() - lastPos.getX();
-    final double y = cur.getY() - lastPos.getY();
-    setOffset(getOffsetX() + x, getOffsetY() + y);
-    lastPos = cur;
+    setOffset(firstPos.getX() + dx, firstPos.getY() + dy);
   }
 
   @Override
   public void endDrag(final Point2D start, final Point2D end,
       final double dx, final double dy) {
-    if(lastPos == null) {
+    if(firstPos == null) {
       super.endDrag(start, end, dx, dy);
       return;
     }
     drag(start, end, dx, dy);
-    lastPos = null;
+    firstPos = null;
   }
 
   public boolean hit(final Point2D pos) {
@@ -129,4 +147,5 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     g.setColor(Color.BLACK);
     g.draw(rect);
   }
+
 }
