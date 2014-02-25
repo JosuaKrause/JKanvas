@@ -12,6 +12,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.awt.geom.RoundRectangle2D;
 
+import jkanvas.KanvasContext;
+
 /**
  * Utility methods for painting.
  * 
@@ -213,6 +215,7 @@ public final class PaintUtil {
    */
   public static Color interpolate(final Color from, final Color to, final double t) {
     if(Double.isNaN(t)) throw new IllegalArgumentException("NaN");
+    if(t > 1 || t < 0) throw new IllegalArgumentException("" + t);
     final float[] fromRGBA = new float[4];
     final float[] toRGBA = new float[4];
     from.getRGBComponents(fromRGBA);
@@ -310,6 +313,15 @@ public final class PaintUtil {
     }
     System.err.println("Warning: cannot derive composite: " + comp);
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alpha));
+  }
+
+  public static void drawShape(final Graphics2D g, final Rectangle2D rect,
+      final KanvasContext ctx, final Color other) {
+    g.setColor(other);
+    g.fill(rect);
+    final double t = Math.min(1 / ctx.toComponentLength(1), 1);
+    g.setColor(PaintUtil.interpolate(Color.BLACK, other, t));
+    g.draw(rect);
   }
 
 }
