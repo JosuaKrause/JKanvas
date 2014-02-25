@@ -315,11 +315,14 @@ public final class PaintUtil {
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alpha));
   }
 
+  private static final double DISSAPPEAR = 0.5;
+
   public static void drawShape(final Graphics2D g, final Rectangle2D rect,
       final KanvasContext ctx, final Color other) {
     g.setColor(other);
     g.fill(rect);
-    final double t = Math.min(1 / ctx.toComponentLength(1), 1);
+    final double t = Math.min(
+        Math.log((Math.E - 1) * DISSAPPEAR / ctx.toComponentLength(1) + 1), 1);
     g.setColor(PaintUtil.interpolate(Color.BLACK, other, t));
     g.draw(rect);
   }
