@@ -17,6 +17,8 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   private String group;
 
+  private boolean subtle;
+
   private boolean moveable = true;
 
   private double border = 5.0;
@@ -46,6 +48,14 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   public double getBorder() {
     return border;
+  }
+
+  public void setSubtle(final boolean subtle) {
+    this.subtle = subtle;
+  }
+
+  public boolean isSubtle() {
+    return subtle;
   }
 
   public void setStrokeWidth(final double stroke) {
@@ -134,6 +144,10 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     return border / (Math.sqrt(2) - 1);
   }
 
+  private double innerArc() {
+    return (border - stroke) / (Math.sqrt(2) - 1);
+  }
+
   @Override
   protected void drawOwn(final Graphics2D g, final KanvasContext ctx) {
     final RoundRectangle2D rect = new RoundRectangle2D.Double();
@@ -141,11 +155,22 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     PaintUtil.addPaddingInplace(rect, -stroke * 0.5);
     g.setStroke(new BasicStroke((float) stroke));
     if(back != null) {
-      g.setColor(back);
-      g.fill(rect);
+      if(subtle) {
+        final double arc = innerArc();
+        final RoundRectangle2D inner = new RoundRectangle2D.Double();
+        inner.setRoundRect(rect.getX(), rect.getY(),
+            rect.getWidth(), rect.getHeight(), arc, arc);
+        PaintUtil.addPaddingInplace(inner, -stroke);
+        g.setColor(Color.WHITE);
+        g.fill(inner);
+        g.setColor(back);
+        g.draw(inner);
+      } else {
+        g.setColor(back);
+        g.fill(rect);
+      }
     }
     g.setColor(Color.BLACK);
     g.draw(rect);
   }
-
 }
