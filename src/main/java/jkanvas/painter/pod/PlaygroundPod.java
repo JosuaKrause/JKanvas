@@ -86,6 +86,8 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   private Point2D firstPos;
 
+  private boolean hitAll;
+
   @Override
   public boolean acceptDrag(final Point2D pos, final MouseEvent e) {
     if(!hit(pos) || !moveable) {
@@ -118,10 +120,18 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     firstPos = null;
   }
 
+  public void hitAll(final boolean hitAll) {
+    this.hitAll = hitAll;
+  }
+
+  public boolean isHitAll() {
+    return hitAll;
+  }
+
   public boolean hit(final Point2D pos) {
-    // TODO do the math
     final RoundRectangle2D rect = new RoundRectangle2D.Double();
     getRoundRect(rect);
+    if(hitAll) return rect.contains(pos);
     final Rectangle2D inner = new Rectangle2D.Double();
     getInnerBoundingBox(inner);
     return rect.contains(pos) && !inner.contains(pos);
@@ -173,4 +183,5 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     g.setColor(Color.BLACK);
     g.draw(rect);
   }
+
 }
