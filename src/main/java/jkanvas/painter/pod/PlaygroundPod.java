@@ -145,17 +145,7 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   protected void getRoundRect(final RoundRectangle2D rect) {
     getBoundingBox(rect);
-    final double arc = arc();
-    rect.setRoundRect(rect.getX(), rect.getY(),
-        rect.getWidth(), rect.getHeight(), arc, arc);
-  }
-
-  private double arc() {
-    return border / (Math.sqrt(2) - 1);
-  }
-
-  private double innerArc() {
-    return (border - stroke) / (Math.sqrt(2) - 1);
+    PaintUtil.setArc(rect, border);
   }
 
   @Override
@@ -166,10 +156,8 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     g.setStroke(new BasicStroke((float) stroke));
     if(back != null) {
       if(subtle) {
-        final double arc = innerArc();
         final RoundRectangle2D inner = new RoundRectangle2D.Double();
-        inner.setRoundRect(rect.getX(), rect.getY(),
-            rect.getWidth(), rect.getHeight(), arc, arc);
+        inner.setRoundRect(rect);
         PaintUtil.addPaddingInplace(inner, -stroke);
         g.setColor(Color.WHITE);
         g.fill(inner);

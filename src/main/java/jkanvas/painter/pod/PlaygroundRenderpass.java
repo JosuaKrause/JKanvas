@@ -68,12 +68,12 @@ public class PlaygroundRenderpass<T extends Renderpass> extends
       for(final RenderpassPosition<PlaygroundPod<T>> m : e.getValue()) {
         if(curCol == 0) {
           cur.setLocation(topRight);
-          topRight.setLocation(topRight.getX() + w + gap, topRight.getY());
+          topRight.setLocation(topRight.getX(), topRight.getY() + h + gap);
         }
         m.pass.getBoundingBox(rect);
         m.set(new Point2D.Double(cur.getX() + (w - rect.getWidth()) * 0.5,
             cur.getY() + (h - rect.getHeight()) * 0.5));
-        cur.setLocation(cur.getX(), cur.getY() + h + gap);
+        cur.setLocation(cur.getX() + w + gap, cur.getY());
         ++curCol;
         if(rows > 0 && curCol >= rows) {
           curCol = 0;

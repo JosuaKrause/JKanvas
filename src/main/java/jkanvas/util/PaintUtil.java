@@ -84,6 +84,30 @@ public final class PaintUtil {
         rect.getWidth() + p2, rect.getHeight() + p2);
   }
 
+  private static final double RADIUS_FACTOR = Math.sqrt(2) - 1;
+
+  public static void encloseRect(final RoundRectangle2D dest,
+      final RectangularShape rect, final double border) {
+    final double b2 = border * 2;
+    final double arc = border / RADIUS_FACTOR;
+    dest.setRoundRect(rect.getX() - border, rect.getY() - border,
+        rect.getWidth() + b2, rect.getHeight() + b2, arc, arc);
+  }
+
+  public static void setArc(final RoundRectangle2D rect, final double border) {
+    final double arc = border / RADIUS_FACTOR;
+    rect.setRoundRect(rect.getX(), rect.getY(),
+        rect.getWidth(), rect.getHeight(), arc, arc);
+  }
+
+  public static void addPaddingInplace(final RoundRectangle2D rect, final double padding) {
+    final double p2 = padding * 2;
+    final double arc = padding / RADIUS_FACTOR;
+    rect.setRoundRect(rect.getX() - padding, rect.getY() - padding,
+        rect.getWidth() + p2, rect.getHeight() + p2,
+        arc + rect.getArcWidth(), arc + rect.getArcHeight());
+  }
+
   /**
    * Converts a rectangle to a round rectangle.
    * 
@@ -321,9 +345,13 @@ public final class PaintUtil {
       final KanvasContext ctx, final Color other) {
     g.setColor(other);
     g.fill(rect);
-    final double t = Math.min(
-        Math.log((Math.E - 1) * DISSAPPEAR / ctx.toComponentLength(1) + 1), 1);
-    g.setColor(PaintUtil.interpolate(Color.BLACK, other, t));
+    final double ratio = DISSAPPEAR / ctx.toComponentLength(1);
+    if(ratio >= 1) {
+      g.setColor(other);
+    } else {
+      final double t = Math.log((Math.E - 1) * ratio + 1);
+      g.setColor(PaintUtil.interpolate(Color.BLACK, other, t));
+    }
     g.draw(rect);
   }
 
