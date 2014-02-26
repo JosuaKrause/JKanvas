@@ -90,7 +90,7 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   @Override
   public boolean acceptDrag(final Point2D pos, final MouseEvent e) {
-    if(!hit(pos) || !moveable) {
+    if(!hit(pos) || !moveable || !e.isShiftDown()) {
       firstPos = null;
       return super.acceptDrag(pos, e);
     }
