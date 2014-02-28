@@ -12,6 +12,7 @@ import java.util.Objects;
 import jkanvas.Camera;
 import jkanvas.KanvasContext;
 import jkanvas.animation.AnimationList;
+import jkanvas.painter.CachedRenderpass;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 
@@ -22,7 +23,7 @@ import jkanvas.painter.RenderpassPainter;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
-public abstract class Renderpod<T extends Renderpass> extends Renderpass {
+public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /** The render pass in a list for easier handling. */
   private final List<Renderpass> list;
@@ -31,6 +32,8 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
    * handed in.
    */
   private final T pass;
+
+  private final CachedRenderpass cache;
   /** Another wrapper if render pass is <code>null</code>. */
   private final Renderpod<T> wrapper;
 
@@ -44,9 +47,11 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   public Renderpod(final T wrap) {
     if(wrap instanceof Renderpod) {
       wrapper = (Renderpod<T>) Objects.requireNonNull(wrap);
+      cache = wrapper.hasCache() ? wrapper : null;
       pass = null;
     } else {
       pass = Objects.requireNonNull(wrap);
+      cache = wrap instanceof CachedRenderpass ? (CachedRenderpass) wrap : null;
       wrapper = null;
     }
     list = Collections.singletonList((Renderpass) wrap);
@@ -63,8 +68,14 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   public Renderpod(final Renderpod<T> wrap) {
     wrapper = Objects.requireNonNull(wrap);
     wrapper.setParent(this);
+    cache = wrap.hasCache() ? wrap : null;
     list = Collections.singletonList((Renderpass) wrapper);
     pass = null;
+  }
+
+  @Override
+  public boolean hasCache() {
+    return cache != null;
   }
 
   /**
@@ -178,9 +189,13 @@ public abstract class Renderpod<T extends Renderpass> extends Renderpass {
   protected abstract void addOwnBox(RectangularShape bbox);
 
   @Override
-  public final void draw(final Graphics2D g, final KanvasContext ctx) {
+  protected void doDraw(final Graphics2D g, final KanvasContext ctx) {
     drawOwn(g, ctx);
-    RenderpassPainter.draw(list, g, ctx);
+    if(cache != null) {
+      CachedRenderpass.doDraw(cache, g, ctx);
+    } else {
+      RenderpassPainter.draw(list, g, ctx);
+    }
   }
 
   /**

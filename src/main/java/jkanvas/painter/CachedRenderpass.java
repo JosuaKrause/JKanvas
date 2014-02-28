@@ -7,6 +7,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import jkanvas.KanvasContext;
+import jkanvas.util.PaintUtil;
 
 /**
  * Caches the current render pass as long as it is small in component
@@ -38,6 +39,11 @@ public abstract class CachedRenderpass extends Renderpass {
 
   @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
+    if(!hasCache() || jkanvas.Canvas.DISABLE_CACHING) {
+      invalidateCache();
+      doDraw(g, ctx);
+      return;
+    }
     final Rectangle2D bbox = new Rectangle2D.Double();
     getBoundingBox(bbox);
     final boolean chg = isChanging();
@@ -46,14 +52,14 @@ public abstract class CachedRenderpass extends Renderpass {
     final Rectangle2D comp = ctx.toComponentCoordinates(bbox);
     final boolean drawSelf = noCache ||
         (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE);
-    if((!isForceCaching() && drawSelf) || jkanvas.Canvas.DISABLE_CACHING) {
+    if(!isForceCaching() && drawSelf) {
       invalidateCache();
       doDraw(g, ctx);
       return;
     }
     createCache(bbox);
-    g.scale(scale, scale);
     g.translate(bbox.getX(), bbox.getY());
+    g.scale(scale, scale);
     g.drawImage(cache, 0, 0, null);
     if(jkanvas.Canvas.DEBUG_CACHE) {
       jkanvas.util.PaintUtil.setAlpha(g, 0.3);
@@ -79,15 +85,38 @@ public abstract class CachedRenderpass extends Renderpass {
     final Graphics2D g = img.createGraphics();
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     final CacheContext cc = new CacheContext(bbox);
-    g.translate(-bbox.getX(), -bbox.getY());
-    cc.doTranslate(-bbox.getX(), -bbox.getY());
     g.scale(s, s);
     cc.doScale(s);
+    g.translate(-bbox.getX(), -bbox.getY());
+    cc.doTranslate(-bbox.getX(), -bbox.getY());
     g.clip(bbox);
     doDraw(g, cc);
     g.dispose();
     cache = img;
     scale = 1 / s;
+  }
+
+  public static final void doDraw(
+      final CachedRenderpass r, final Graphics2D gfx, final KanvasContext ctx) {
+    final Rectangle2D view = ctx.getVisibleCanvas();
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    if(!r.isVisible()) return;
+    RenderpassPainter.getPassBoundingBox(bbox, r);
+    if(!view.intersects(bbox)) return;
+    final Graphics2D g = (Graphics2D) gfx.create();
+    g.clip(bbox);
+    final double dx = r.getOffsetX();
+    final double dy = r.getOffsetY();
+    g.translate(dx, dy);
+    final KanvasContext c = RenderpassPainter.getContextFor(r, ctx);
+    r.doDraw(g, c);
+    g.dispose();
+    if(jkanvas.Canvas.DEBUG_BBOX) {
+      final Graphics2D g2 = (Graphics2D) gfx.create();
+      PaintUtil.setAlpha(g2, 0.3);
+      g2.fill(bbox);
+      g2.dispose();
+    }
   }
 
   /**
@@ -102,6 +131,10 @@ public abstract class CachedRenderpass extends Renderpass {
   @Override
   public abstract boolean isChanging();
 
+  protected boolean hasCache() {
+    return true;
+  }
+
   /** Invalidates the cache. */
   protected void invalidate() {
     invalidateCache();
@@ -109,10 +142,9 @@ public abstract class CachedRenderpass extends Renderpass {
 
   /** Invalidates only the cache. */
   protected final void invalidateCache() {
-    if(cache != null) {
-      cache.flush();
-      cache = null;
-    }
+    if(cache == null) return;
+    cache.flush();
+    cache = null;
   }
 
 }
