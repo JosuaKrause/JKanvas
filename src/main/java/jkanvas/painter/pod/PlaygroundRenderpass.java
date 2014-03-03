@@ -3,6 +3,8 @@ package jkanvas.painter.pod;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +14,7 @@ import jkanvas.animation.Animator;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.groups.RenderGroup;
 
-public class PlaygroundRenderpass<T extends Renderpass> extends
+public abstract class PlaygroundRenderpass<T extends Renderpass> extends
     RenderGroup<PlaygroundPod<T>> {
 
   private int rows = 0;
@@ -59,13 +61,27 @@ public class PlaygroundRenderpass<T extends Renderpass> extends
     final double gap = getGap();
     final Point2D topRight = new Point2D.Double();
     final Point2D cur = new Point2D.Double();
-    int curCol = 0;
+    final Comparator<RenderpassPosition<PlaygroundPod<T>>> cmp = new Comparator<RenderpassPosition<PlaygroundPod<T>>>() {
+
+      private final Comparator<T> order = order();
+
+      @Override
+      public int compare(final RenderpassPosition<PlaygroundPod<T>> rp1,
+          final RenderpassPosition<PlaygroundPod<T>> rp2) {
+        final T t1 = rp1.pass.unwrap();
+        final T t2 = rp2.pass.unwrap();
+        return order.compare(t1, t2);
+      }
+
+    };
     for(final Entry<String, List<RenderpassPosition<PlaygroundPod<T>>>> e : groups.entrySet()) {
       final String group = e.getKey();
       final double w = widths.get(group);
       final double h = heights.get(group);
-      curCol = 0;
-      for(final RenderpassPosition<PlaygroundPod<T>> m : e.getValue()) {
+      int curCol = 0;
+      final List<RenderpassPosition<PlaygroundPod<T>>> l = e.getValue();
+      Collections.sort(l, cmp);
+      for(final RenderpassPosition<PlaygroundPod<T>> m : l) {
         if(curCol == 0) {
           cur.setLocation(topRight);
           topRight.setLocation(topRight.getX(), topRight.getY() + h + gap);
@@ -81,5 +97,7 @@ public class PlaygroundRenderpass<T extends Renderpass> extends
       }
     }
   }
+
+  protected abstract Comparator<T> order();
 
 }

@@ -339,7 +339,7 @@ public final class PaintUtil {
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alpha));
   }
 
-  private static final double DISSAPPEAR = 0.5;
+  private static final double DISSAPPEAR = 1.2;
 
   public static void drawShape(final Graphics2D g, final Rectangle2D rect,
       final KanvasContext ctx, final Color other) {

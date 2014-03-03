@@ -90,7 +90,7 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   @Override
   public boolean acceptDrag(final Point2D pos, final MouseEvent e) {
-    if(!hit(pos) || !moveable || !e.isShiftDown()) {
+    if(!hit(pos) || !isMoveable() || !e.isShiftDown()) {
       firstPos = null;
       return super.acceptDrag(pos, e);
     }
@@ -131,7 +131,7 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
   public boolean hit(final Point2D pos) {
     final RoundRectangle2D rect = new RoundRectangle2D.Double();
     getRoundRect(rect);
-    if(hitAll) return rect.contains(pos);
+    if(isHitAll()) return rect.contains(pos);
     final Rectangle2D inner = new Rectangle2D.Double();
     getInnerBoundingBox(inner);
     return rect.contains(pos) && !inner.contains(pos);
@@ -139,23 +139,26 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   @Override
   protected void addOwnBox(final RectangularShape bbox) {
+    final double border = getBorder();
     bbox.setFrame(bbox.getX() - border, bbox.getY() - border,
         bbox.getWidth() + 2 * border, bbox.getHeight() + 2 * border);
   }
 
   protected void getRoundRect(final RoundRectangle2D rect) {
     getBoundingBox(rect);
-    PaintUtil.setArc(rect, border);
+    PaintUtil.setArc(rect, getBorder());
   }
 
   @Override
   protected void drawOwn(final Graphics2D g, final KanvasContext ctx) {
     final RoundRectangle2D rect = new RoundRectangle2D.Double();
     getRoundRect(rect);
+    final double stroke = getStrokeWidth();
     PaintUtil.addPaddingInplace(rect, -stroke * 0.5);
     g.setStroke(new BasicStroke((float) stroke));
+    final Color back = getColor();
     if(back != null) {
-      if(subtle) {
+      if(isSubtle()) {
         final RoundRectangle2D inner = new RoundRectangle2D.Double();
         inner.setRoundRect(rect);
         PaintUtil.addPaddingInplace(inner, -stroke);
