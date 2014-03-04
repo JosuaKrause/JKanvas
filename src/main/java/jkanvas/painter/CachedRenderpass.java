@@ -1,9 +1,10 @@
 package jkanvas.painter;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 import jkanvas.KanvasContext;
@@ -29,7 +30,7 @@ public abstract class CachedRenderpass extends Renderpass {
   public static int CACHE_SIZE = 512;
 
   /** The cached image. */
-  private Image cache;
+  private BufferedImage cache;
 
   /** The scaling of the image. */
   private double scale;
@@ -59,12 +60,16 @@ public abstract class CachedRenderpass extends Renderpass {
     }
     createCache(bbox);
     g.translate(bbox.getX(), bbox.getY());
-    g.scale(scale, scale);
-    g.drawImage(cache, 0, 0, null);
+    final AffineTransform sc = AffineTransform.getScaleInstance(scale, scale);
+    // FIXME experimental
+    final AffineTransformOp op = new AffineTransformOp(sc,
+        AffineTransformOp.TYPE_BILINEAR);
+    g.drawImage(cache, op, 0, 0);
     if(jkanvas.Canvas.DEBUG_CACHE) {
       jkanvas.util.PaintUtil.setAlpha(g, 0.3);
       g.setColor(java.awt.Color.MAGENTA);
       // we do not use a shape because we want to be as precise as the cache
+      g.transform(sc);
       g.fillRect(0, 0, cache.getWidth(null), cache.getHeight(null));
     }
     return;
