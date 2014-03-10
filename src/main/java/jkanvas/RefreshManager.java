@@ -51,4 +51,6 @@ public interface RefreshManager extends Refreshable {
    */
   void endBulkOperation();
 
+  boolean inBulkOperation();
+
 }

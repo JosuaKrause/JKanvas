@@ -189,6 +189,13 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
   protected abstract void addOwnBox(RectangularShape bbox);
 
   @Override
+  public void beforeDraw() {
+    if(cache != null) {
+      cache.beforeDraw();
+    }
+  }
+
+  @Override
   protected void doDraw(final Graphics2D g, final KanvasContext ctx) {
     drawOwn(g, ctx);
     if(cache != null) {

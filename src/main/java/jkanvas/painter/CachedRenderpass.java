@@ -38,8 +38,13 @@ public abstract class CachedRenderpass extends Renderpass {
   /** Whether the render pass has changed during the last draw. */
   private boolean lastChanging;
 
+  public void beforeDraw() {
+    // nothing to do
+  }
+
   @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
+    beforeDraw();
     if(!hasCache() || jkanvas.Canvas.DISABLE_CACHING) {
       invalidateCache();
       doDraw(g, ctx);
