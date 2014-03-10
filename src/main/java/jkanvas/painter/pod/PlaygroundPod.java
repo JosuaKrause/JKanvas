@@ -84,6 +84,16 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     return back;
   }
 
+  private boolean fadeBorder;
+
+  public void setFadeBorder(final boolean fadeBorder) {
+    this.fadeBorder = fadeBorder;
+  }
+
+  public boolean isFadingBorder() {
+    return fadeBorder;
+  }
+
   private Point2D firstPos;
 
   private boolean hitAll;
@@ -151,6 +161,7 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
 
   @Override
   protected void drawOwn(final Graphics2D g, final KanvasContext ctx) {
+    final boolean fb = isFadingBorder();
     final RoundRectangle2D rect = new RoundRectangle2D.Double();
     getRoundRect(rect);
     final double stroke = getStrokeWidth();
@@ -164,15 +175,23 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
         PaintUtil.addPaddingInplace(inner, -stroke);
         g.setColor(Color.WHITE);
         g.fill(inner);
-        g.setColor(back);
-        g.draw(inner);
+        if(fb) {
+          PaintUtil.drawShape(g, inner, ctx, back, null);
+        } else {
+          g.setColor(back);
+          g.draw(inner);
+        }
       } else {
         g.setColor(back);
         g.fill(rect);
       }
     }
-    g.setColor(Color.BLACK);
-    g.draw(rect);
+    if(fb) {
+      PaintUtil.drawShape(g, rect, ctx, Color.BLACK, null);
+    } else {
+      g.setColor(Color.BLACK);
+      g.draw(rect);
+    }
   }
 
 }
