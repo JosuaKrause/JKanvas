@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Comparator;
@@ -229,6 +230,19 @@ public class LineList extends GenericPaintList<Line2D> {
   @Override
   protected boolean contains(final Point2D point, final Line2D obj,
       final int index, final int pos) {
+    return false;
+  }
+
+  /**
+   * {@inheritDoc}
+   * <p>
+   * If this method returns a different value than <code>false</code> optimizing
+   * via {@link #optimize()} will result in wrong results for
+   * {@link #hit(Point2D)} when using a {@link LineMapper}.
+   */
+  @Override
+  protected boolean intersects(
+      final Area area, final Line2D obj, final int index, final int pos) {
     return false;
   }
 
