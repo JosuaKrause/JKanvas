@@ -33,7 +33,7 @@ import jkanvas.util.VecUtil;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
-public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
+public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * The offset of a render pass as {@link AnimatedPosition}.
@@ -41,7 +41,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @author Joschi <josua.krause@gmail.com>
    * @param <T> The type of the render pass.
    */
-  protected static final class RenderpassPosition<T extends Renderpass>
+  public static final class RenderpassPosition<T extends Renderpass>
       extends GenericAnimated<Point2D> {
 
     /** The render pass. */
@@ -517,7 +517,22 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * 
    * @param members The positions of the render passes.
    */
-  protected abstract void doLayout(List<RenderpassPosition<T>> members);
+  protected void doLayout(final List<RenderpassPosition<T>> members) {
+    if(layout != null) {
+      layout.doLayout(members);
+    }
+  }
+
+  private RenderpassLayout<T> layout;
+
+  public void setLayout(final RenderpassLayout<T> layout) {
+    this.layout = layout;
+    invalidate();
+  }
+
+  public RenderpassLayout<T> getLayout() {
+    return layout;
+  }
 
   /** Immediately computes the current layout. */
   public void forceLayout() {

@@ -10,29 +10,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jkanvas.animation.Animator;
 import jkanvas.painter.Renderpass;
-import jkanvas.painter.groups.RenderGroup;
+import jkanvas.painter.groups.RenderGroup.RenderpassPosition;
+import jkanvas.painter.groups.RenderpassLayout;
 
-public abstract class PlaygroundRenderpass<T extends Renderpass> extends
-    RenderGroup<PlaygroundPod<T>> {
+public abstract class PodGroupLayout<T extends Renderpass>
+    implements RenderpassLayout<PlaygroundPod<T>> {
 
   private int rows = 0;
-
-  public PlaygroundRenderpass(final Animator animator) {
-    super(animator);
-  }
 
   public void setRowCount(final int rows) {
     this.rows = rows;
   }
+
+  protected abstract Comparator<T> order();
 
   public double getGap() {
     return 5;
   }
 
   @Override
-  protected void doLayout(
+  public void doLayout(
       final List<RenderpassPosition<PlaygroundPod<T>>> members) {
     final Map<String, Double> widths = new HashMap<>();
     final Map<String, Double> heights = new HashMap<>();
@@ -97,7 +95,5 @@ public abstract class PlaygroundRenderpass<T extends Renderpass> extends
       }
     }
   }
-
-  protected abstract Comparator<T> order();
 
 }
