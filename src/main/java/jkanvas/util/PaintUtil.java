@@ -341,11 +341,11 @@ public final class PaintUtil {
 
   private static final double DISSAPPEAR = 1.2;
 
-  public static void drawShape(final Graphics2D g, final Shape rect,
+  public static void drawShape(final Graphics2D g, final Shape shape,
       final KanvasContext ctx, final Color border, final Color fill) {
     if(fill != null) {
       g.setColor(fill);
-      g.fill(rect);
+      g.fill(shape);
     }
     final double ratio = DISSAPPEAR / ctx.toComponentLength(1);
     if(ratio >= 1) {
@@ -356,7 +356,19 @@ public final class PaintUtil {
       final double t = Math.log((Math.E - 1) * ratio + 1);
       g.setColor(PaintUtil.interpolate(border, f, t));
     }
-    g.draw(rect);
+    g.draw(shape);
+  }
+
+  public static void fillShape(final Graphics2D g, final Shape shape,
+      final KanvasContext ctx, final Color near, final Color far) {
+    final double ratio = DISSAPPEAR / ctx.toComponentLength(1);
+    if(ratio >= 1) {
+      g.setColor(far);
+    } else {
+      final double t = Math.log((Math.E - 1) * ratio + 1);
+      g.setColor(PaintUtil.interpolate(near, far, t));
+    }
+    g.fill(shape);
   }
 
 }
