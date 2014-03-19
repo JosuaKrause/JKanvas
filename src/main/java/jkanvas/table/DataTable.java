@@ -238,6 +238,14 @@ public abstract class DataTable {
     return (getAt(row, col) - min) / (max - min);
   }
 
+  public double getZeroMaxScaled(final int row, final int col) {
+    // final double min = ColumnAggregation.MINIMUM.getValue(this, col);
+    // if(min < 0) return getAt(row, col) / min;
+    final double max = ColumnAggregation.MAXIMUM.getValue(this, col);
+    if(max == 0) return 0;
+    return getAt(row, col) / max;
+  }
+
   /**
    * Converts the given string array into a categorical column.
    * 

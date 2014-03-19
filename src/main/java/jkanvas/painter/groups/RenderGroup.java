@@ -567,6 +567,13 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     ensureLayout();
+    if(layout != null) {
+      final Graphics2D g = (Graphics2D) gfx.create();
+      final Rectangle2D bbox = new Rectangle2D.Double();
+      getBoundingBox(bbox);
+      layout.drawBackground(g, ctx, bbox, members);
+      g.dispose();
+    }
     gfx.setColor(java.awt.Color.GREEN);
     RenderpassPainter.draw(nlBack, gfx, ctx);
     final Rectangle2D view = ctx.getVisibleCanvas();
@@ -802,14 +809,18 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
     final Rectangle2D rect = new Rectangle2D.Double();
     RenderpassPainter.getBoundingBox(rect, nlBack);
     RenderpassPainter.addToRect(bbox, rect);
-    for(final RenderpassPosition<T> p : members) {
-      if(!p.pass.isVisible()) {
-        continue;
+    if(layout != null) {
+      change = layout.addBoundingBox(bbox, members);
+    } else {
+      for(final RenderpassPosition<T> p : members) {
+        if(!p.pass.isVisible()) {
+          continue;
+        }
+        if(p.checkBBoxChange()) {
+          change = true;
+        }
+        RenderpassPainter.addToRect(bbox, p.getPassBBox());
       }
-      if(p.checkBBoxChange()) {
-        change = true;
-      }
-      RenderpassPainter.addToRect(bbox, p.getPassBBox());
     }
     if(change) {
       invalidate();

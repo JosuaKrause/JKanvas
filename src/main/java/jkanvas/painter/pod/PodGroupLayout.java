@@ -15,7 +15,7 @@ import jkanvas.painter.groups.RenderGroup.RenderpassPosition;
 import jkanvas.painter.groups.RenderpassLayout;
 
 public abstract class PodGroupLayout<T extends Renderpass>
-    implements RenderpassLayout<PlaygroundPod<T>> {
+    extends RenderpassLayout<PlaygroundPod<T>> {
 
   private int rows = 0;
 
