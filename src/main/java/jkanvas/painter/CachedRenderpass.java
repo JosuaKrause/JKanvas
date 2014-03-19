@@ -59,8 +59,7 @@ public abstract class CachedRenderpass extends Renderpass {
     if(noCache) {
       invalidateCache();
     }
-    final boolean drawSelf = noCache ||
-        (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE);
+    final boolean drawSelf = (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE);
     if(!isForceCaching() && drawSelf) {
       doDraw(g, ctx);
       return;
