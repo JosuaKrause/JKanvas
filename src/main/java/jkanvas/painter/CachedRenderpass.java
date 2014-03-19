@@ -1,11 +1,15 @@
 package jkanvas.painter;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import jkanvas.KanvasContext;
 import jkanvas.util.PaintUtil;
@@ -23,11 +27,23 @@ import jkanvas.util.PaintUtil;
  */
 public abstract class CachedRenderpass extends Renderpass {
 
+  private static ExecutorService POOL = Executors.newCachedThreadPool();
+
   /** The visible size at which the caching comes into effect. */
   public static int CACHE_VISIBLE = 256;
 
   /** The orientation for the size of the cache. */
   public static int CACHE_SIZE = 512;
+
+  private static int NO_CACHE = 0b00001;
+
+  private static int IN_QUEUE = 0b00010;
+
+  private static int STARTED = 0b00100;
+
+  private static int DONE = 0b01000;
+
+  private final AtomicInteger state = new AtomicInteger(NO_CACHE);
 
   /** The cached image. */
   private BufferedImage cache;
@@ -64,19 +80,36 @@ public abstract class CachedRenderpass extends Renderpass {
       doDraw(g, ctx);
       return;
     }
-    createCache(bbox);
-    g.translate(bbox.getX(), bbox.getY());
-    final AffineTransform sc = AffineTransform.getScaleInstance(scale, scale);
-    // FIXME experimental
-    final AffineTransformOp op = new AffineTransformOp(sc,
-        AffineTransformOp.TYPE_BILINEAR);
-    g.drawImage(cache, op, 0, 0);
-    if(jkanvas.Canvas.DEBUG_CACHE) {
+    if(cache == null || state.get() == NO_CACHE) {
+      state.set(IN_QUEUE);
+      POOL.execute(new Runnable() {
+
+        @Override
+        public void run() {
+          createCache(bbox);
+        }
+
+      });
+    }
+    final BufferedImage img = cache;
+    if(img != null && state.get() == DONE) {
+      g.translate(bbox.getX(), bbox.getY());
+      final AffineTransform sc = AffineTransform.getScaleInstance(scale, scale);
+      // FIXME experimental
+      final AffineTransformOp op = new AffineTransformOp(sc,
+          AffineTransformOp.TYPE_BILINEAR);
+      g.drawImage(img, op, 0, 0);
+      if(jkanvas.Canvas.DEBUG_CACHE) {
+        jkanvas.util.PaintUtil.setAlpha(g, 0.3);
+        g.setColor(java.awt.Color.MAGENTA);
+        // we do not use a shape because we want to be as precise as the cache
+        g.transform(sc);
+        g.fillRect(0, 0, img.getWidth(null), img.getHeight(null));
+      }
+    } else {
       jkanvas.util.PaintUtil.setAlpha(g, 0.3);
-      g.setColor(java.awt.Color.MAGENTA);
-      // we do not use a shape because we want to be as precise as the cache
-      g.transform(sc);
-      g.fillRect(0, 0, cache.getWidth(null), cache.getHeight(null));
+      g.setColor(Color.GRAY);
+      g.fill(bbox);
     }
     return;
   }
@@ -86,8 +119,8 @@ public abstract class CachedRenderpass extends Renderpass {
    * 
    * @param bbox The bounding box of the render pass.
    */
-  private void createCache(final Rectangle2D bbox) {
-    if(cache != null) return;
+  void createCache(final Rectangle2D bbox) {
+    state.set(STARTED);
     final double s = CACHE_SIZE / Math.max(bbox.getWidth(), bbox.getHeight());
     final double w = bbox.getWidth() * s;
     final double h = bbox.getHeight() * s;
@@ -103,6 +136,7 @@ public abstract class CachedRenderpass extends Renderpass {
     g.clip(bbox);
     doDraw(g, cc);
     g.dispose();
+    if(!state.compareAndSet(STARTED, DONE)) return;
     cache = img;
     scale = 1 / s;
   }
@@ -154,6 +188,9 @@ public abstract class CachedRenderpass extends Renderpass {
   /** Invalidates only the cache. */
   protected final void invalidateCache() {
     if(cache == null) return;
+    if((state.get() & (DONE | STARTED)) != 0) {
+      state.set(NO_CACHE);
+    }
     cache.flush();
     cache = null;
   }
