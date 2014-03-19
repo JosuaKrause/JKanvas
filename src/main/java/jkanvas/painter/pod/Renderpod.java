@@ -81,7 +81,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   public void setActive(final boolean active) {
     this.active = active;
-    invalidate();
+    invalidateCache();
   }
 
   @Override

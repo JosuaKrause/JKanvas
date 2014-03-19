@@ -56,10 +56,12 @@ public abstract class CachedRenderpass extends Renderpass {
     final boolean noCache = chg || lastChanging;
     lastChanging = chg;
     final Rectangle2D comp = ctx.toComponentCoordinates(bbox);
+    if(noCache) {
+      invalidateCache();
+    }
     final boolean drawSelf = noCache ||
         (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE);
     if(!isForceCaching() && drawSelf) {
-      invalidateCache();
       doDraw(g, ctx);
       return;
     }
