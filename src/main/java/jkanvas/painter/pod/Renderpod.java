@@ -37,6 +37,8 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
   /** Another wrapper if render pass is <code>null</code>. */
   private final Renderpod<T> wrapper;
 
+  private boolean active = true;
+
   /**
    * Creates a thin wrapper around the given render pass. You may set the offset
    * of the render pass via {@link #setChildOffset(double, double)} after the
@@ -71,6 +73,15 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
     cache = wrap.hasCache() ? wrap : null;
     list = Collections.singletonList((Renderpass) wrapper);
     pass = null;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(final boolean active) {
+    this.active = active;
+    invalidate();
   }
 
   @Override
@@ -197,7 +208,9 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   @Override
   protected void doDraw(final Graphics2D g, final KanvasContext ctx) {
-    drawOwn(g, ctx);
+    if(isActive()) {
+      drawOwn(g, ctx);
+    }
     if(cache != null) {
       CachedRenderpass.doDraw(cache, g, ctx);
     } else {

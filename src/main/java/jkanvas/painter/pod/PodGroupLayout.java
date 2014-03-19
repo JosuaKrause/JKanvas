@@ -38,6 +38,7 @@ public abstract class PodGroupLayout<T extends Renderpass>
     final Rectangle2D rect = new Rectangle2D.Double();
     for(final RenderpassPosition<PlaygroundPod<T>> m : members) {
       final PlaygroundPod<T> p = m.pass;
+      p.setVisible(true);
       final String group = p.getGroup();
       if(group == null) {
         continue;
