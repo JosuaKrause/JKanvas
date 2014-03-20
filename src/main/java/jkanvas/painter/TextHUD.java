@@ -210,11 +210,16 @@ public abstract class TextHUD extends HUDRenderpass {
       if(sd == null) {
         continue;
       }
-      sd.draw(cur,
+      drawLine(gfx, cur, sd, i,
           (hpos == LEFT ? StringDrawer.LEFT : StringDrawer.RIGHT),
           (vpos == TOP ? StringDrawer.TOP : StringDrawer.BOTTOM));
       cur.setLocation(cur.getX(), cur.getY() + sd.getHeight() * dirV);
     }
+  }
+
+  protected void drawLine(final Graphics2D gfx, final Point2D cur,
+      final StringDrawer sd, final int index, final int hpos, final int vpos) {
+    sd.draw(cur, hpos, vpos);
   }
 
 }
