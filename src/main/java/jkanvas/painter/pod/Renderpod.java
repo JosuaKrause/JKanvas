@@ -175,7 +175,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
    * 
    * @param bbox The bounding box in which can be drawn.
    */
-  protected final void getInnerBoundingBox(final Rectangle2D bbox) {
+  public final void getInnerBoundingBox(final Rectangle2D bbox) {
     double x = 0;
     double y = 0;
     Renderpod<T> t = this;
