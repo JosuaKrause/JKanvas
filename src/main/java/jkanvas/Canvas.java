@@ -1099,9 +1099,19 @@ public class Canvas extends JComponent implements Refreshable {
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
-        if(isDragging() || !canvas.isMoveable() || !canvas.isUserZoomable()) return;
+        if(!canvas.isUserZoomable()) {
+          final ViewConfiguration cfg = canvas.getViewConfiguration();
+          final CameraZUI zui = cfg.getZUI();
+          // FIXME horizontal mouse wheel?
+          final double amount = -e.getPreciseWheelRotation() * 10;
+          final double dx = e.isShiftDown() ? amount : 0;
+          final double dy = e.isShiftDown() ? 0 : amount;
+          zui.setOffset(zui.getOffsetX() + dx, zui.getOffsetY() + dy);
+          return;
+        }
+        if(isDragging() || !canvas.isMoveable()) return;
         final ViewConfiguration cfg = canvas.getViewConfiguration();
-        cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
+        cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getPreciseWheelRotation());
       }
 
       @Override

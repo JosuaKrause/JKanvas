@@ -174,7 +174,7 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
-  public void zoomTicks(final double x, final double y, final int zooming) {
+  public void zoomTicks(final double x, final double y, final double zooming) {
     stopAnimation();
     zui.zoomTicks(x, y, zooming);
   }
