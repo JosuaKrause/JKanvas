@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
+import jkanvas.animation.AnimationTiming;
 import jkanvas.painter.Renderpass;
 import jkanvas.painter.groups.RenderGroup.RenderpassPosition;
 import jkanvas.painter.groups.RenderpassLayout;
@@ -28,6 +30,8 @@ public abstract class PodGroupLayout<T extends Renderpass>
   public double getGap() {
     return 5;
   }
+
+  private AnimationTiming timing = AnimationTiming.NO_ANIMATION;
 
   @Override
   public void doLayout(
@@ -86,8 +90,9 @@ public abstract class PodGroupLayout<T extends Renderpass>
           topRight.setLocation(topRight.getX(), topRight.getY() + h + gap);
         }
         m.pass.getBoundingBox(rect);
-        m.set(new Point2D.Double(cur.getX() + (w - rect.getWidth()) * 0.5,
-            cur.getY() + (h - rect.getHeight()) * 0.5));
+        final Point2D pos = new Point2D.Double(cur.getX() + (w - rect.getWidth()) * 0.5,
+            cur.getY() + (h - rect.getHeight()) * 0.5);
+        m.startAnimationTo(pos, timing);
         cur.setLocation(cur.getX() + w + gap, cur.getY());
         ++curCol;
         if(rows > 0 && curCol >= rows) {
@@ -95,6 +100,14 @@ public abstract class PodGroupLayout<T extends Renderpass>
         }
       }
     }
+  }
+
+  public void setTiming(final AnimationTiming timing) {
+    this.timing = Objects.requireNonNull(timing);
+  }
+
+  public AnimationTiming getTiming() {
+    return timing;
   }
 
 }
