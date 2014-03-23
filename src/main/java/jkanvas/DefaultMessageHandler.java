@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import jkanvas.animation.AnimatedPainter;
@@ -88,14 +89,13 @@ public class DefaultMessageHandler implements CanvasMessageHandler {
       } else {
         before = false;
       }
-      final File png = Screenshot.save(
-          photoFolder(), photoPrefix(),
-          (window && frame != null) ? frame.getRootPane() : canvas);
+      final JComponent comp = (window && frame != null) ? frame.getRootPane() : canvas;
+      final File png = Screenshot.save(photoFolder(), photoPrefix(), comp);
       photoSuccess(png);
       if(PDFScreenshot.hasITextPdf()) {
         final ScreenshotAlgorithm algo = Screenshot.getAlgorithm();
         Screenshot.setAlgorithm(PDFScreenshot.getInstance());
-        final File pdf = Screenshot.save(photoFolder(), photoPrefix(), canvas);
+        final File pdf = Screenshot.save(photoFolder(), photoPrefix(), comp);
         photoSuccess(pdf);
         Screenshot.setAlgorithm(algo);
       }
