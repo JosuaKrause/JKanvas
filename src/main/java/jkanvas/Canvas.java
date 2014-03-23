@@ -1111,7 +1111,7 @@ public class Canvas extends JComponent implements Refreshable {
         }
         if(isDragging() || !canvas.isMoveable()) return;
         final ViewConfiguration cfg = canvas.getViewConfiguration();
-        cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getPreciseWheelRotation());
+        cfg.getZUI().zoomTicks(e.getX(), e.getY(), e.getWheelRotation());
       }
 
       @Override
