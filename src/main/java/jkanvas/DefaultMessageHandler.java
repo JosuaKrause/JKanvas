@@ -8,12 +8,14 @@ import javax.swing.JFrame;
 
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.Animator;
+import jkanvas.optional.PDFScreenshot;
 import jkanvas.painter.FrameRateHUD;
 import jkanvas.painter.HUDRenderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
 import jkanvas.util.Screenshot;
+import jkanvas.util.ScreenshotAlgorithm;
 
 /**
  * Processes some messages for a canvas.
@@ -90,6 +92,13 @@ public class DefaultMessageHandler implements CanvasMessageHandler {
           photoFolder(), photoPrefix(),
           (window && frame != null) ? frame.getRootPane() : canvas);
       photoSuccess(png);
+      if(PDFScreenshot.hasITextPdf()) {
+        final ScreenshotAlgorithm algo = Screenshot.getAlgorithm();
+        Screenshot.setAlgorithm(PDFScreenshot.getInstance());
+        final File pdf = Screenshot.save(photoFolder(), photoPrefix(), canvas);
+        photoSuccess(pdf);
+        Screenshot.setAlgorithm(algo);
+      }
       if(ap != null) {
         ap.setStopped(before);
       }
