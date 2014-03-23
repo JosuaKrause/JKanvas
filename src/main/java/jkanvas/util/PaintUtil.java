@@ -343,11 +343,16 @@ public final class PaintUtil {
 
   public static void drawShape(final Graphics2D g, final Shape shape,
       final KanvasContext ctx, final Color border, final Color fill) {
+    drawShape(g, shape, ctx.toComponentLength(1), border, fill);
+  }
+
+  public static void drawShape(final Graphics2D g, final Shape shape,
+      final double zoom, final Color border, final Color fill) {
     if(fill != null) {
       g.setColor(fill);
       g.fill(shape);
     }
-    final double ratio = DISSAPPEAR / ctx.toComponentLength(1);
+    final double ratio = DISSAPPEAR / zoom;
     if(ratio >= 1) {
       if(fill == null) return;
       g.setColor(fill);
@@ -361,7 +366,12 @@ public final class PaintUtil {
 
   public static void fillShape(final Graphics2D g, final Shape shape,
       final KanvasContext ctx, final Color near, final Color far) {
-    final double ratio = DISSAPPEAR / ctx.toComponentLength(1);
+    fillShape(g, shape, ctx.toComponentLength(1), near, far);
+  }
+
+  public static void fillShape(final Graphics2D g, final Shape shape,
+      final double zoom, final Color near, final Color far) {
+    final double ratio = DISSAPPEAR / zoom;
     if(ratio >= 1) {
       g.setColor(far);
     } else {
