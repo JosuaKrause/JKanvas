@@ -215,17 +215,28 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    * @return The render pod.
    */
   public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
-      createTitledMatrixRenderpass(
-          final MatrixRenderpass<T> rp, final double textHeight, final double space) {
+      createTitledMatrixRenderpass(final MatrixRenderpass<T> rp,
+          final double textHeight, final double space) {
+    return createTitledMatrixRenderpass(rp, textHeight, space,
+        Orientation.VERTICAL, Alignment.LEFT,
+        Orientation.HORIZONTAL, Alignment.RIGHT);
+  }
+
+  public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
+      createTitledMatrixRenderpass(final MatrixRenderpass<T> rp,
+          final double textHeight, final double space,
+          final Orientation upperO, final Alignment upperA,
+          final Orientation sideO, final Alignment sideA) {
     final MatrixTitleRenderpass<MatrixRenderpass<T>> top =
         new MatrixTitleRenderpass<>(new BorderRenderpass<>(rp), textHeight, space);
     top.setPosition(Position.ABOVE);
-    top.setOrientation(Orientation.VERTICAL);
-    top.setAlignment(Alignment.LEFT);
+    top.setOrientation(upperO);
+    top.setAlignment(upperA);
     final MatrixTitleRenderpass<MatrixRenderpass<T>> left =
         new MatrixTitleRenderpass<>(top, textHeight, space);
     left.setPosition(Position.LEFT);
-    left.setAlignment(Alignment.RIGHT);
+    left.setAlignment(sideA);
+    left.setOrientation(sideO);
     return left;
   }
 

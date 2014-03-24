@@ -506,7 +506,8 @@ public class Canvas extends JComponent implements Refreshable {
     final Rectangle2D bbox = new Rectangle2D.Double();
     cfg.getPainter().getBoundingBox(bbox);
     if(!bbox.isEmpty()) {
-      bbox.setFrame(bbox.getX(), bbox.getY(), bbox.getWidth(), 1.0);
+      bbox.setFrame(bbox.getX(), bbox.getY() + bbox.getHeight() * 0.5,
+          bbox.getWidth(), 1.0);
       reset(bbox);
     }
   }
@@ -515,7 +516,8 @@ public class Canvas extends JComponent implements Refreshable {
     final Rectangle2D bbox = new Rectangle2D.Double();
     cfg.getPainter().getBoundingBox(bbox);
     if(!bbox.isEmpty()) {
-      bbox.setFrame(bbox.getX(), bbox.getY(), 1.0, bbox.getHeight());
+      bbox.setFrame(bbox.getX() + bbox.getWidth() * 0.5, bbox.getY(),
+          1.0, bbox.getHeight());
       reset(bbox);
     }
   }
@@ -1120,7 +1122,6 @@ public class Canvas extends JComponent implements Refreshable {
         if(!canvas.isUserZoomable()) {
           final ViewConfiguration cfg = canvas.getViewConfiguration();
           final CameraZUI zui = cfg.getZUI();
-          // FIXME horizontal mouse wheel?
           final double amount = -e.getPreciseWheelRotation() * 10;
           final double dx = e.isShiftDown() ? amount : 0;
           final double dy = e.isShiftDown() ? 0 : amount;
