@@ -502,6 +502,24 @@ public class Canvas extends JComponent implements Refreshable {
     }
   }
 
+  public void resetToWidth() {
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    cfg.getPainter().getBoundingBox(bbox);
+    if(!bbox.isEmpty()) {
+      bbox.setFrame(bbox.getX(), bbox.getY(), bbox.getWidth(), 1.0);
+      reset(bbox);
+    }
+  }
+
+  public void resetToHeight() {
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    cfg.getPainter().getBoundingBox(bbox);
+    if(!bbox.isEmpty()) {
+      bbox.setFrame(bbox.getX(), bbox.getY(), 1.0, bbox.getHeight());
+      reset(bbox);
+    }
+  }
+
   /**
    * Resets the viewport to fit the bounding box. If the bounding box is empty
    * the viewport will not be changed.
