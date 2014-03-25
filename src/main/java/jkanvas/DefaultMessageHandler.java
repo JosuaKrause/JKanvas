@@ -1,7 +1,8 @@
 package jkanvas;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JComponent;
@@ -74,54 +75,70 @@ public class DefaultMessageHandler implements CanvasMessageHandler {
    * @param window Whether the complete window should be printed.
    */
   protected void makeScreenshot(final Canvas canvas, final boolean window) {
-    try {
-      final boolean before;
-      final Animator a = canvas.getAnimator();
-      final AnimatedPainter ap;
-      if(a instanceof AnimatedPainter) {
-        ap = (AnimatedPainter) a;
-      } else {
-        ap = null;
+    final boolean before;
+    final Animator a = canvas.getAnimator();
+    final AnimatedPainter ap;
+    if(a instanceof AnimatedPainter) {
+      ap = (AnimatedPainter) a;
+    } else {
+      ap = null;
+    }
+    if(ap != null) {
+      before = ap.isStopped();
+      ap.setStopped(true);
+    } else {
+      before = false;
+    }
+    int i = 0;
+    for(final JComponent comp : photoComponents(frame, canvas, window)) {
+      final File folder = photoFolder(i);
+      final String prefix = photoPrefix(i);
+      try {
+        final File png = Screenshot.save(folder, prefix, comp);
+        photoSuccess(png);
+      } catch(final Exception e) {
+        e.printStackTrace();
       }
-      if(ap != null) {
-        before = ap.isStopped();
-        ap.setStopped(true);
-      } else {
-        before = false;
-      }
-      final JComponent comp = (window && frame != null) ? frame.getRootPane() : canvas;
-      final File png = Screenshot.save(photoFolder(), photoPrefix(), comp);
-      photoSuccess(png);
       if(PDFScreenshot.hasITextPdf()) {
         final ScreenshotAlgorithm algo = Screenshot.getAlgorithm();
         Screenshot.setAlgorithm(PDFScreenshot.getInstance());
-        final File pdf = Screenshot.save(photoFolder(), photoPrefix(), comp);
-        photoSuccess(pdf);
+        try {
+          final File pdf = Screenshot.save(folder, prefix, comp);
+          photoSuccess(pdf);
+        } catch(final Exception e) {
+          e.printStackTrace();
+        }
         Screenshot.setAlgorithm(algo);
       }
-      if(ap != null) {
-        ap.setStopped(before);
-      }
-    } catch(final IOException e) {
-      e.printStackTrace();
+      ++i;
     }
+    if(ap != null) {
+      ap.setStopped(before);
+    }
+  }
+
+  protected List<JComponent> photoComponents(
+      final JFrame frame, final Canvas canvas, final boolean window) {
+    return Arrays.asList((window && frame != null) ? frame.getRootPane() : canvas);
   }
 
   /**
    * Getter.
    * 
+   * @param i The index of the component that is saved.
    * @return The folder to save photos.
    */
-  protected File photoFolder() {
+  protected File photoFolder(@SuppressWarnings("unused") final int i) {
     return new File("pics");
   }
 
   /**
    * Getter.
    * 
+   * @param i The index of the component that is saved.
    * @return The photo prefix.
    */
-  protected String photoPrefix() {
+  protected String photoPrefix(@SuppressWarnings("unused") final int i) {
     if(frame == null) return "pic";
     final String title = frame.getTitle().trim().replace(' ', '_');
     if(title.isEmpty()) return "pic";
