@@ -167,6 +167,10 @@ public class RenderpassPainter implements KanvasPainter {
   public boolean doubleClick(final Camera cam, final Point2D p, final MouseEvent e) {
     if(doubleClick(back, cam, p, e)) return true;
     if(!Renderpass.USE_DOUBLE_CLICK_DEFAULT) return false;
+    return doubleClickDefault(cam, e);
+  }
+
+  protected boolean doubleClickDefault(final Camera cam, final MouseEvent e) {
     final Rectangle2D box = new Rectangle2D.Double();
     getBoundingBox(box, back);
     return Renderpass.defaultDoubleClick(box, cam, e);
@@ -490,7 +494,7 @@ public class RenderpassPainter implements KanvasPainter {
   }
 
   @Override
-  public final void getBoundingBox(final RectangularShape bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     getBoundingBox(bbox, back);
   }
 
