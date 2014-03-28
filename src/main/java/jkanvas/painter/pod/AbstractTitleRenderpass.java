@@ -135,7 +135,7 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
    * 
    * @return The alignment of the titles w.r.t. the drawing direction.
    */
-  public Alignment getAlignment() {
+  public Alignment getAlignment(@SuppressWarnings("unused") final int index) {
     return align;
   }
 
@@ -262,7 +262,7 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
         cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
       }
       if(view.intersects(cur)) {
-        StringDrawer.drawInto(g, t, cur, orientation, align.getAlignment());
+        StringDrawer.drawInto(g, t, cur, orientation, getAlignment(i).getAlignment());
       }
       x += w + getTitleSpace(i);
     }
