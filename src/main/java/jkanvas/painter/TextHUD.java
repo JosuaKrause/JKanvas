@@ -206,11 +206,12 @@ public abstract class TextHUD extends HUDRenderpass {
     }
     gfx.setColor(text);
     for(int i = 0; i < sds.length; ++i) {
-      final StringDrawer sd = sds[isTop ? i : sds.length - 1 - i];
+      final int index = isTop ? i : sds.length - 1 - i;
+      final StringDrawer sd = sds[index];
       if(sd == null) {
         continue;
       }
-      drawLine(gfx, cur, sd, i,
+      drawLine(gfx, cur, sd, index,
           (hpos == LEFT ? StringDrawer.LEFT : StringDrawer.RIGHT),
           (vpos == TOP ? StringDrawer.TOP : StringDrawer.BOTTOM));
       cur.setLocation(cur.getX(), cur.getY() + sd.getHeight() * dirV);
