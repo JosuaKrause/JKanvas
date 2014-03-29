@@ -381,4 +381,10 @@ public final class PaintUtil {
     g.fill(shape);
   }
 
+  public static Color getFontColor(final Color back) {
+    final float[] rgb = back.getRGBColorComponents(null);
+    if(0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2] > 0.5) return Color.BLACK;
+    return Color.WHITE;
+  }
+
 }

@@ -315,9 +315,13 @@ public final class ArrayUtil {
    * @param arr The array to reverse.
    */
   public static <T> void reverse(final T[] arr) {
-    final int mid = arr.length / 2;
-    for(int i = 0; i < mid; ++i) {
-      swap(arr, i, arr.length - i - 1);
+    reverseRange(arr, 0, arr.length);
+  }
+
+  public static <T> void reverseRange(final T[] arr, final int from, final int to) {
+    final int mid = (to - from) / 2 + from;
+    for(int i = from; i < mid; ++i) {
+      swap(arr, i, to - i - 1);
     }
   }
 
