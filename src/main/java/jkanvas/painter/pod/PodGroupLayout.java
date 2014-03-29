@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import jkanvas.animation.AnimationTiming;
 import jkanvas.painter.Renderpass;
@@ -38,7 +39,7 @@ public abstract class PodGroupLayout<T extends Renderpass>
       final List<RenderpassPosition<PlaygroundPod<T>>> members) {
     final Map<String, Double> widths = new HashMap<>();
     final Map<String, Double> heights = new HashMap<>();
-    final Map<String, List<RenderpassPosition<PlaygroundPod<T>>>> groups = new HashMap<>();
+    final Map<String, List<RenderpassPosition<PlaygroundPod<T>>>> groups = new TreeMap<>();
     final Rectangle2D rect = new Rectangle2D.Double();
     for(final RenderpassPosition<PlaygroundPod<T>> m : members) {
       final PlaygroundPod<T> p = m.pass;
