@@ -3,10 +3,12 @@ package jkanvas.util;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  * Utility functions for arrays.
@@ -389,6 +391,112 @@ public final class ArrayUtil {
 
           @Override
           // TODO #43 -- Java 8 simplification
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+
+        };
+      }
+
+    };
+  }
+
+  public static <T> Iterable<T> rotate(final Iterable<T> c, final int by) {
+    if(by < 0) throw new IllegalArgumentException("not supported for iterables");
+    if(by == 0) return c;
+    return new Iterable<T>() {
+
+      @Override
+      public Iterator<T> iterator() {
+        return new Iterator<T>() {
+
+          private Iterator<T> it = c.iterator();
+
+          private List<T> remain = new ArrayList<>();
+
+          {
+            int i = 0;
+            while(it.hasNext()) {
+              remain.add(it.next());
+              ++i;
+              if(i >= by) {
+                break;
+              }
+            }
+            if(remain.size() < by) {
+              it = rotate(remain, by).iterator();
+              remain = null;
+            }
+          }
+
+          @Override
+          public boolean hasNext() {
+            return it.hasNext() || remain != null;
+          }
+
+          @Override
+          public T next() {
+            if(!it.hasNext()) {
+              if(remain == null) throw new NoSuchElementException();
+              it = remain.iterator();
+              remain = null;
+            }
+            return it.next();
+          }
+
+          @Override
+          // TODO #43 -- Java 8 simplification
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+
+        };
+      }
+
+    };
+  }
+
+  public static <T> Iterable<T> rotate(final Collection<T> c, final int by) {
+    final int size = c.size();
+    final int skip = ((by < 0) ? size + by % size : by) % size;
+    if(skip == 0) return c;
+    return new Iterable<T>() {
+
+      @Override
+      public Iterator<T> iterator() {
+        return new Iterator<T>() {
+
+          private Iterator<T> it = c.iterator();
+
+          private List<T> remain = new ArrayList<>(skip);
+
+          {
+            int i = 0;
+            while(it.hasNext()) {
+              remain.add(it.next());
+              ++i;
+              if(i >= skip) {
+                break;
+              }
+            }
+          }
+
+          @Override
+          public boolean hasNext() {
+            return it.hasNext() || remain != null;
+          }
+
+          @Override
+          public T next() {
+            if(!it.hasNext()) {
+              if(remain == null) throw new NoSuchElementException();
+              it = remain.iterator();
+              remain = null;
+            }
+            return it.next();
+          }
+
+          @Override
           public void remove() {
             throw new UnsupportedOperationException();
           }
