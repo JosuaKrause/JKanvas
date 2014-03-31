@@ -199,6 +199,10 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
     return textHeight;
   }
 
+  protected double getIndividualTextHeight(final int index) {
+    return textHeight;
+  }
+
   /**
    * Getter.
    * 
@@ -256,10 +260,11 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
     for(int i = 0; i < getTitleCount(); ++i) {
       final String t = getTitle(i);
       final double w = getWidth(totalW, i);
+      final double h = getIndividualTextHeight(i);
       if(hor) {
-        cur.setFrame(box.getX() + x, box.getY(), w, box.getHeight());
+        cur.setFrame(box.getX() + x, box.getY(), w, h);
       } else {
-        cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
+        cur.setFrame(box.getX(), box.getY() + x, h, w);
       }
       if(view.intersects(cur)) {
         StringDrawer.drawInto(g, t, cur, orientation, getAlignment(i).getAlignment());

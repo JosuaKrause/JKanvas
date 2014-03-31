@@ -69,4 +69,9 @@ public class AxisTitleRenderpass<T extends Renderpass> extends TitleRenderpass<T
     return index == 0 ? Alignment.LEFT : Alignment.RIGHT;
   }
 
+  @Override
+  protected double getIndividualTextHeight(final int index) {
+    return (index == 1 ? 1 : 0.75) * getTextHeight();
+  }
+
 }
