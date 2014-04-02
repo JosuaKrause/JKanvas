@@ -84,8 +84,17 @@ public final class PaintUtil {
         rect.getWidth() + p2, rect.getHeight() + p2);
   }
 
+  /** Factor for changing radii correctly. */
   private static final double RADIUS_FACTOR = Math.sqrt(2) - 1;
 
+  /**
+   * Encloses the given rectangle with a rounded rectangle whose rounded corners
+   * touch the corners of the rectangle.
+   * 
+   * @param dest The destination rectangle.
+   * @param rect The rectangle to enclose.
+   * @param border The size of the border.
+   */
   public static void encloseRect(final RoundRectangle2D dest,
       final RectangularShape rect, final double border) {
     final double b2 = border * 2;
@@ -94,12 +103,25 @@ public final class PaintUtil {
         rect.getWidth() + b2, rect.getHeight() + b2, arc, arc);
   }
 
+  /**
+   * Sets the arc of a rounded rectangle.
+   * 
+   * @param rect The rounded rectangle to alter.
+   * @param border The border. The arc touches the corner of a rectangle that
+   *          would be created by adding the border as padding.
+   */
   public static void setArc(final RoundRectangle2D rect, final double border) {
     final double arc = border / RADIUS_FACTOR;
     rect.setRoundRect(rect.getX(), rect.getY(),
         rect.getWidth(), rect.getHeight(), arc, arc);
   }
 
+  /**
+   * Adds padding to the rectangle by altering the rectangle.
+   * 
+   * @param rect The rectangle.
+   * @param padding The padding to add.
+   */
   public static void addPaddingInplace(final RoundRectangle2D rect, final double padding) {
     final double p2 = padding * 2;
     final double arc = padding / RADIUS_FACTOR;
@@ -339,6 +361,7 @@ public final class PaintUtil {
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alpha));
   }
 
+  /** The zooming factor when detail lines disappear. */
   private static final double DISSAPPEAR = 1.2;
 
   public static void drawShape(final Graphics2D g, final Shape shape,

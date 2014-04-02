@@ -320,6 +320,14 @@ public final class ArrayUtil {
     reverseRange(arr, 0, arr.length);
   }
 
+  /**
+   * Reverses the order of a range of the array in place.
+   * 
+   * @param <T> The array type.
+   * @param arr The array.
+   * @param from The lowest included index.
+   * @param to The highest excluded index.
+   */
   public static <T> void reverseRange(final T[] arr, final int from, final int to) {
     final int mid = (to - from) / 2 + from;
     for(int i = from; i < mid; ++i) {
@@ -401,6 +409,18 @@ public final class ArrayUtil {
     };
   }
 
+  /**
+   * Rotates the content of an iterable.
+   * 
+   * @param <T> The content type.
+   * @param c The iterable to rotate.
+   * @param by The number of items to skip and reappend to the end. Only
+   *          non-negative values are allowed. Values that are larger than the
+   *          content of the iterable are allowed and rotate modulo to the size,
+   *          but may consume more resources than smaller values. If you know
+   *          the size beforehand use modulo for this argument.
+   * @return A rotated iterable.
+   */
   public static <T> Iterable<T> rotate(final Iterable<T> c, final int by) {
     if(by < 0) throw new IllegalArgumentException("not supported for iterables");
     if(by == 0) return c;
@@ -456,6 +476,16 @@ public final class ArrayUtil {
     };
   }
 
+  /**
+   * Rotates a collection. This means the first part of the collection will be
+   * skipped and appended to the end of the collection.
+   * 
+   * @param <T> The content type.
+   * @param c The collection.
+   * @param by The number of items to skip and append. Negative values are
+   *          allowed and rotate in the other direction.
+   * @return The resulting iterable.
+   */
   public static <T> Iterable<T> rotate(final Collection<T> c, final int by) {
     final int size = c.size();
     final int skip = ((by < 0) ? size + by % size : by) % size;
