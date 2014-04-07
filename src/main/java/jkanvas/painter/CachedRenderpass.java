@@ -1,14 +1,14 @@
 package jkanvas.painter;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
-import jkanvas.AbstractKanvasContext;
 import jkanvas.KanvasContext;
+import jkanvas.util.PaintUtil;
 
 /**
  * Caches the current render pass as long as it is small in component
@@ -30,7 +30,7 @@ public abstract class CachedRenderpass extends Renderpass {
   public static int CACHE_SIZE = 512;
 
   /** The cached image. */
-  private Image cache;
+  private BufferedImage cache;
 
   /** The scaling of the image. */
   private double scale;
@@ -38,29 +38,48 @@ public abstract class CachedRenderpass extends Renderpass {
   /** Whether the render pass has changed during the last draw. */
   private boolean lastChanging;
 
+  /**
+   * This method is called before any drawing of the cached render pass happens.
+   */
+  public void beforeDraw() {
+    // nothing to do
+  }
+
   @Override
   public final void draw(final Graphics2D g, final KanvasContext ctx) {
+    beforeDraw();
+    if(!hasCache() || jkanvas.Canvas.DISABLE_CACHING) {
+      invalidateCache();
+      doDraw(g, ctx);
+      return;
+    }
     final Rectangle2D bbox = new Rectangle2D.Double();
     getBoundingBox(bbox);
     final boolean chg = isChanging();
     final boolean noCache = chg || lastChanging;
     lastChanging = chg;
     final Rectangle2D comp = ctx.toComponentCoordinates(bbox);
+    if(noCache) {
+      invalidateCache();
+    }
     final boolean drawSelf = noCache ||
         (comp.getWidth() >= CACHE_VISIBLE && comp.getHeight() >= CACHE_VISIBLE);
-    if((!isForceCaching() && drawSelf) || jkanvas.Canvas.DISABLE_CACHING) {
-      invalidateCache();
+    if(!isForceCaching() && drawSelf) {
       doDraw(g, ctx);
       return;
     }
     createCache(bbox);
-    g.scale(scale, scale);
     g.translate(bbox.getX(), bbox.getY());
-    g.drawImage(cache, 0, 0, null);
+    final AffineTransform sc = AffineTransform.getScaleInstance(scale, scale);
+    // FIXME experimental
+    final AffineTransformOp op = new AffineTransformOp(sc,
+        AffineTransformOp.TYPE_BILINEAR);
+    g.drawImage(cache, op, 0, 0);
     if(jkanvas.Canvas.DEBUG_CACHE) {
       jkanvas.util.PaintUtil.setAlpha(g, 0.3);
       g.setColor(java.awt.Color.MAGENTA);
       // we do not use a shape because we want to be as precise as the cache
+      g.transform(sc);
       g.fillRect(0, 0, cache.getWidth(null), cache.getHeight(null));
     }
     return;
@@ -81,15 +100,45 @@ public abstract class CachedRenderpass extends Renderpass {
     final Graphics2D g = img.createGraphics();
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     final CacheContext cc = new CacheContext(bbox);
-    g.translate(-bbox.getX(), -bbox.getY());
-    cc.doTranslate(-bbox.getX(), -bbox.getY());
     g.scale(s, s);
     cc.doScale(s);
+    g.translate(-bbox.getX(), -bbox.getY());
+    cc.doTranslate(-bbox.getX(), -bbox.getY());
     g.clip(bbox);
     doDraw(g, cc);
     g.dispose();
     cache = img;
     scale = 1 / s;
+  }
+
+  /**
+   * Performs the actual drawing.
+   * 
+   * @param r The render pass.
+   * @param gfx The graphics context.
+   * @param ctx The context.
+   */
+  public static final void doDraw(
+      final CachedRenderpass r, final Graphics2D gfx, final KanvasContext ctx) {
+    final Rectangle2D view = ctx.getVisibleCanvas();
+    final Rectangle2D bbox = new Rectangle2D.Double();
+    if(!r.isVisible()) return;
+    RenderpassPainter.getPassBoundingBox(bbox, r);
+    if(!view.intersects(bbox)) return;
+    final Graphics2D g = (Graphics2D) gfx.create();
+    g.clip(bbox);
+    final double dx = r.getOffsetX();
+    final double dy = r.getOffsetY();
+    g.translate(dx, dy);
+    final KanvasContext c = RenderpassPainter.getContextFor(r, ctx);
+    r.doDraw(g, c);
+    g.dispose();
+    if(jkanvas.Canvas.DEBUG_BBOX) {
+      final Graphics2D g2 = (Graphics2D) gfx.create();
+      PaintUtil.setAlpha(g2, 0.3);
+      g2.fill(bbox);
+      g2.dispose();
+    }
   }
 
   /**
@@ -104,6 +153,15 @@ public abstract class CachedRenderpass extends Renderpass {
   @Override
   public abstract boolean isChanging();
 
+  /**
+   * Getter.
+   * 
+   * @return Whether this render pass uses caching.
+   */
+  protected boolean hasCache() {
+    return true;
+  }
+
   /** Invalidates the cache. */
   protected void invalidate() {
     invalidateCache();
@@ -111,96 +169,9 @@ public abstract class CachedRenderpass extends Renderpass {
 
   /** Invalidates only the cache. */
   protected final void invalidateCache() {
-    if(cache != null) {
-      cache.flush();
-      cache = null;
-    }
+    if(cache == null) return;
+    cache.flush();
+    cache = null;
   }
-
-  /**
-   * The {@link KanvasContext} that is used during cache creation.
-   * 
-   * @author Joschi <josua.krause@gmail.com>
-   */
-  private static final class CacheContext extends AbstractKanvasContext {
-
-    /** The transformation to canvas coordinates. */
-    private final AffineTransform toCanvas;
-    /** The transformation to component coordinates. */
-    private final AffineTransform toComponent;
-    /** The bounding box of the render pass. */
-    private final Rectangle2D bbox;
-
-    /**
-     * Creates the cache context with the identity as transformation.
-     * 
-     * @param bbox The bounding box.
-     */
-    public CacheContext(final Rectangle2D bbox) {
-      this(0, 0, new AffineTransform(), new AffineTransform(), bbox);
-    }
-
-    /**
-     * Copies a cache context.
-     * 
-     * @param offX The x offset.
-     * @param offY The y offset.
-     * @param toCanvas The transformation to canvas coordinates.
-     * @param toComponent The transformation to component coordinates.
-     * @param bbox The bounding box.
-     */
-    private CacheContext(final double offX, final double offY,
-        final AffineTransform toCanvas, final AffineTransform toComponent,
-        final Rectangle2D bbox) {
-      super(true, offX, offY);
-      this.toCanvas = toCanvas;
-      this.toComponent = toComponent;
-      this.bbox = bbox;
-    }
-
-    /**
-     * Directly alters the scaling.
-     * 
-     * @param s Scales the transformation.
-     */
-    protected void doScale(final double s) {
-      toComponent.scale(s, s);
-      toCanvas.scale(1 / s, 1 / s);
-    }
-
-    /**
-     * Directly alters the translation.
-     * 
-     * @param x Translates the transformation in x direction.
-     * @param y Translates the transformation in y direction.
-     */
-    protected void doTranslate(final double x, final double y) {
-      toComponent.translate(x, y);
-      toCanvas.translate(-x, -y);
-    }
-
-    @Override
-    protected KanvasContext create(final boolean inCanvasSpace,
-        final double offX, final double offY) {
-      if(!inCanvasSpace) throw new IllegalStateException();
-      return new CacheContext(offX, offY, toCanvas, toComponent, bbox);
-    }
-
-    @Override
-    protected Rectangle2D createVisibleComponent() {
-      return toComponentCoordinates(bbox);
-    }
-
-    @Override
-    protected void transform(final AffineTransform at) {
-      at.concatenate(toComponent);
-    }
-
-    @Override
-    protected void transformBack(final AffineTransform at) {
-      at.concatenate(toCanvas);
-    }
-
-  } // CacheContext
 
 }

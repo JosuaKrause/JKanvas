@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,7 @@ import jkanvas.util.VecUtil;
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
-public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
+public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * The offset of a render pass as {@link AnimatedPosition}.
@@ -40,7 +41,7 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * @author Joschi <josua.krause@gmail.com>
    * @param <T> The type of the render pass.
    */
-  protected static final class RenderpassPosition<T extends Renderpass>
+  public static final class RenderpassPosition<T extends Renderpass>
       extends GenericAnimated<Point2D> {
 
     /** The render pass. */
@@ -516,7 +517,35 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
    * 
    * @param members The positions of the render passes.
    */
-  protected abstract void doLayout(List<RenderpassPosition<T>> members);
+  protected void doLayout(final List<RenderpassPosition<T>> members) {
+    if(layout != null) {
+      layout.doLayout(members);
+    }
+  }
+
+  /** The layout of the group. */
+  private RenderpassLayout<T> layout;
+
+  /**
+   * Setter.
+   * 
+   * @param layout The layout of the group or <code>null</code> if the default
+   *          layout should be used.
+   */
+  public void setLayout(final RenderpassLayout<T> layout) {
+    this.layout = layout;
+    invalidate();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The layout of the group or <code>null</code> if the default layout
+   *         should be used.
+   */
+  public RenderpassLayout<T> getLayout() {
+    return layout;
+  }
 
   /** Immediately computes the current layout. */
   public void forceLayout() {
@@ -551,6 +580,13 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
   @Override
   public void draw(final Graphics2D gfx, final KanvasContext ctx) {
     ensureLayout();
+    if(layout != null) {
+      final Graphics2D g = (Graphics2D) gfx.create();
+      final Rectangle2D bbox = new Rectangle2D.Double();
+      getBoundingBox(bbox);
+      layout.drawBackground(g, ctx, bbox, members);
+      g.dispose();
+    }
     gfx.setColor(java.awt.Color.GREEN);
     RenderpassPainter.draw(nlBack, gfx, ctx);
     final Rectangle2D view = ctx.getVisibleCanvas();
@@ -779,29 +815,24 @@ public abstract class RenderGroup<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     ensureLayout();
     boolean change = false;
     RenderpassPainter.getBoundingBox(bbox, nlFront);
     final Rectangle2D rect = new Rectangle2D.Double();
     RenderpassPainter.getBoundingBox(rect, nlBack);
-    if(bbox.isEmpty()) {
-      bbox.setFrame(rect);
-    } else if(!rect.isEmpty()) {
-      bbox.add(rect);
-    }
-    for(final RenderpassPosition<T> p : members) {
-      if(!p.pass.isVisible()) {
-        continue;
-      }
-      if(p.checkBBoxChange()) {
-        change = true;
-      }
-      final Rectangle2D box = p.getPassBBox();
-      if(bbox.isEmpty()) {
-        bbox.setFrame(box);
-      } else if(!box.isEmpty()) {
-        bbox.add(box);
+    RenderpassPainter.addToRect(bbox, rect);
+    if(layout != null) {
+      change = layout.addBoundingBox(bbox, members);
+    } else {
+      for(final RenderpassPosition<T> p : members) {
+        if(!p.pass.isVisible()) {
+          continue;
+        }
+        if(p.checkBBoxChange()) {
+          change = true;
+        }
+        RenderpassPainter.addToRect(bbox, p.getPassBBox());
       }
     }
     if(change) {

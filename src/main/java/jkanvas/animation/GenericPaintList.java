@@ -4,9 +4,11 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 import jkanvas.util.BitSetIterable;
 
@@ -344,6 +346,31 @@ public abstract class GenericPaintList<T extends Shape> {
   }
 
   /**
+   * Fills the given list with elements hit by the given area.
+   * 
+   * @param area The area.
+   * @param elements The element indices.
+   */
+  public void hit(final Shape area, final List<Integer> elements) {
+    final T drawObject = createDrawObject();
+    final Area a = new Area(area);
+    for(int i = visibles.length() - 1; i >= 0; i = visibles.previousSetBit(i - 1)) {
+      int pos = getPosition(i);
+      // we know the current index is set, so we can start looking one below
+      final int endOfRun = visibles.previousClearBit(i - 1);
+      do {
+        if(intersects(a, drawObject, i, pos)) {
+          elements.add(i);
+        }
+        pos -= dims;
+      } while(--i > endOfRun);
+      if(i < 1) {
+        break;
+      }
+    }
+  }
+
+  /**
    * Checks whether the given point is contained in the given element. No bounds
    * need to be checked and the index is guaranteed to be active.
    * 
@@ -354,6 +381,18 @@ public abstract class GenericPaintList<T extends Shape> {
    * @return Whether the element contains the point.
    */
   protected abstract boolean contains(Point2D point, T obj, int index, int pos);
+
+  /**
+   * Checks whether the given area intersects with the given element. No bounds
+   * need to be checked and the index is guaranteed to be active.
+   * 
+   * @param area The area.
+   * @param obj The element. The shape must be set to the correct values.
+   * @param index The index of the element.
+   * @param pos The position in the array.
+   * @return Whether the element intersects the area.
+   */
+  protected abstract boolean intersects(Area area, T obj, int index, int pos);
 
   /**
    * Getter.

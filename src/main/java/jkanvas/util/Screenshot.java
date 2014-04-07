@@ -170,8 +170,11 @@ public final class Screenshot {
   public static void paint(final JComponent comp, final Graphics2D g) {
     final boolean isCacheDisabled = jkanvas.Canvas.DISABLE_CACHING;
     jkanvas.Canvas.DISABLE_CACHING = true;
-    comp.paintAll(g);
-    jkanvas.Canvas.DISABLE_CACHING = isCacheDisabled;
+    try {
+      comp.paintAll(g);
+    } finally {
+      jkanvas.Canvas.DISABLE_CACHING = isCacheDisabled;
+    }
   }
 
   /**

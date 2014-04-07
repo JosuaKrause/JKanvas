@@ -239,6 +239,22 @@ public abstract class DataTable {
   }
 
   /**
+   * Normalize the value at the given position with taking zero as minimum.
+   * 
+   * @param row The row.
+   * @param col The column.
+   * @return The value at the given position normalized for the column taking
+   *         zero as minimum.
+   */
+  public double getZeroMaxScaled(final int row, final int col) {
+    // final double min = ColumnAggregation.MINIMUM.getValue(this, col);
+    // if(min < 0) return getAt(row, col) / min;
+    final double max = ColumnAggregation.MAXIMUM.getValue(this, col);
+    if(max == 0) return 0;
+    return getAt(row, col) / max;
+  }
+
+  /**
    * Converts the given string array into a categorical column.
    * 
    * @param array The array that will be the column. The column is categorical

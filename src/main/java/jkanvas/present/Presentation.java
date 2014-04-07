@@ -75,7 +75,7 @@ public class Presentation extends LinearGroup<Slide> {
         setSlide(curSlide);
       }
     } else {
-      canvas.setRestriction(null, AnimationTiming.NO_ANIMATION);
+      canvas.setRestriction(null, AnimationTiming.NO_ANIMATION, null);
     }
   }
 
@@ -131,7 +131,7 @@ public class Presentation extends LinearGroup<Slide> {
     final Slide slide = getRenderpass(curSlide);
     final Rectangle2D box = new Rectangle2D.Double();
     RenderpassPainter.getTopLevelBounds(box, slide);
-    canvas.setRestriction(box, timing);
+    canvas.setRestriction(box, timing, null);
   }
 
   /**

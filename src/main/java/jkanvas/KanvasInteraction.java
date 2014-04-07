@@ -3,7 +3,7 @@ package jkanvas;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 /**
  * Paints and interacts with a Kanvas in canvas coordinates.
@@ -123,7 +123,7 @@ public interface KanvasInteraction {
    * 
    * @param bbox The rectangle where the bounding box is stored.
    */
-  void getBoundingBox(Rectangle2D bbox);
+  void getBoundingBox(RectangularShape bbox);
 
   /**
    * Processes a message handed in via the {@link Canvas#postMessage(String)}

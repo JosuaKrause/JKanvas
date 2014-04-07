@@ -27,6 +27,14 @@ public interface Camera {
       AnimationAction onFinish, boolean useMargin);
 
   /**
+   * Moves the view by the given amount.
+   * 
+   * @param dx The horizontal movement in component coordinates.
+   * @param dy The vertical movement in component coordinates.
+   */
+  void move(double dx, double dy);
+
+  /**
    * Scrolls to the specified render pass. The bounding box of the render pass
    * will be completely visible afterwards. If the render pass has no bounding
    * box the finish action will be scheduled normally but otherwise nothing

@@ -1,4 +1,4 @@
-package jkanvas.examples;
+package jkanvas;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -8,23 +8,20 @@ import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import jkanvas.Canvas;
-import jkanvas.CanvasMessageHandler;
-import jkanvas.DefaultMessageHandler;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.SimpleTextHUD;
 import jkanvas.painter.TextHUD;
 
 /**
- * Common tasks for example applications.
+ * Setting up a canvas.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public final class ExampleUtil {
+public final class CanvasSetup {
 
   /** Nothing to create. */
-  private ExampleUtil() {
+  private CanvasSetup() {
     throw new AssertionError();
   }
 
@@ -64,8 +61,30 @@ public final class ExampleUtil {
    * @return The info HUD to enable more actions.
    */
   public static SimpleTextHUD setupCanvas(final JFrame frame, final Canvas c,
-      final RenderpassPainter p, final boolean fps,
-      final boolean pause, final boolean reset, final boolean frameScreenshot) {
+      final RenderpassPainter p, final boolean fps, final boolean pause,
+      final boolean reset, final boolean frameScreenshot) {
+    return setupCanvas(frame, c, p, fps, pause, reset, frameScreenshot, true);
+  }
+
+  /**
+   * Sets up the canvas with standard actions.
+   * 
+   * @param frame The frame for the canvas.
+   * @param c The canvas.
+   * @param p The render pass painter.
+   * @param fps Whether to give the option to show fps.
+   * @param pause Whether to give the option to pause animations. This is only
+   *          possible when the render pass painter can animation.
+   * @param reset Whether to give the option to reset the view.
+   * @param frameScreenshot Whether to take screenshots from the frame or the
+   *          canvas.
+   * @param layout Whether to add the canvas and lay out the component and frame
+   *          afterwards.
+   * @return The info HUD to enable more actions.
+   */
+  public static SimpleTextHUD setupCanvas(final JFrame frame, final Canvas c,
+      final RenderpassPainter p, final boolean fps, final boolean pause,
+      final boolean reset, final boolean frameScreenshot, final boolean layout) {
     Objects.requireNonNull(frame);
     c.setBackground(Color.WHITE);
     if(p instanceof AnimatedPainter) {
@@ -99,12 +118,14 @@ public final class ExampleUtil {
     c.addMessageAction(KeyEvent.VK_H, "info#visible:toggle");
     info.addLine("H: Toggle Help");
     p.addHUDPass(info);
-    // pack and show window
-    frame.add(c);
-    frame.pack();
-    frame.setLocationRelativeTo(null);
-    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    frame.setVisible(true);
+    if(layout) {
+      // pack and show window
+      frame.add(c);
+      frame.pack();
+      frame.setLocationRelativeTo(null);
+      frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+      frame.setVisible(true);
+    }
     final WindowAdapter wnd = Canvas.getWindowAdapter(frame, c);
     frame.addWindowListener(wnd);
     frame.addWindowStateListener(wnd);

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,7 +168,7 @@ public class RenderpassPainter implements KanvasPainter {
     if(doubleClick(back, cam, p, e)) return true;
     if(!Renderpass.USE_DOUBLE_CLICK_DEFAULT) return false;
     final Rectangle2D box = new Rectangle2D.Double();
-    getBoundingBox(box, back);
+    getBoundingBox(box);
     return Renderpass.defaultDoubleClick(box, cam, e);
   }
 
@@ -457,7 +458,7 @@ public class RenderpassPainter implements KanvasPainter {
    * @param passes The render passes.
    */
   public static final void getBoundingBox(
-      final Rectangle2D rect, final Iterable<Renderpass> passes) {
+      final RectangularShape rect, final Iterable<Renderpass> passes) {
     final Rectangle2D bbox = new Rectangle2D.Double();
     // clear rect
     rect.setFrame(bbox);
@@ -466,16 +467,30 @@ public class RenderpassPainter implements KanvasPainter {
         continue;
       }
       getPassBoundingBox(bbox, r);
-      if(rect.isEmpty()) {
-        rect.setFrame(bbox);
-      } else if(!bbox.isEmpty()) {
-        rect.add(bbox);
-      }
+      addToRect(rect, bbox);
     }
   }
 
+  /**
+   * Adds the other rectangle to the given rectangular shape.
+   * 
+   * @param rect The rectangle to extend.
+   * @param other The rectangle to add.
+   */
+  public static final void addToRect(final RectangularShape rect, final Rectangle2D other) {
+    if(rect.isEmpty()) {
+      rect.setFrame(other);
+      return;
+    } else if(other.isEmpty()) return;
+    final double x1 = Math.min(rect.getMinX(), other.getMinX());
+    final double x2 = Math.max(rect.getMaxX(), other.getMaxX());
+    final double y1 = Math.min(rect.getMinY(), other.getMinY());
+    final double y2 = Math.max(rect.getMaxY(), other.getMaxY());
+    rect.setFrame(x1, y1, x2 - x1, y2 - y1);
+  }
+
   @Override
-  public final void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     getBoundingBox(bbox, back);
   }
 

@@ -1,7 +1,7 @@
 package jkanvas.painter;
 
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -49,7 +49,7 @@ public class ParallelRenderpass extends CachedRenderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     bbox.setFrame(0, 0, width, height);
   }
 
