@@ -30,7 +30,7 @@ public interface ZoomableView {
    * @param zooming The amount of zooming.
    */
   // TODO #43 -- Java 8 simplification
-  void zoomTicks(final double x, final double y, final int zooming);
+  void zoomTicks(final double x, final double y, final double zooming);
 
   /**
    * Zooms to the on screen (in component coordinates) position.

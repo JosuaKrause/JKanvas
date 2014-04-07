@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import javax.swing.SwingUtilities;
@@ -158,7 +159,7 @@ public abstract class Renderpass implements KanvasInteraction {
    * @see #getOffsetY()
    */
   @Override
-  public abstract void getBoundingBox(Rectangle2D bbox);
+  public abstract void getBoundingBox(RectangularShape bbox);
 
   /** The parent. */
   private Renderpass parent;

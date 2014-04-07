@@ -3,6 +3,7 @@ package jkanvas.matrix;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -173,7 +174,7 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     double h = 0;
     for(int i = 0; i < matrix.rows(); ++i) {
       h += matrix.getHeight(i);
@@ -214,17 +215,41 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
    * @return The render pod.
    */
   public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
-      createTitledMatrixRenderpass(
-          final MatrixRenderpass<T> rp, final double textHeight, final double space) {
+      createTitledMatrixRenderpass(final MatrixRenderpass<T> rp,
+          final double textHeight, final double space) {
+    return createTitledMatrixRenderpass(rp, textHeight, space,
+        Orientation.VERTICAL, Alignment.LEFT,
+        Orientation.HORIZONTAL, Alignment.RIGHT);
+  }
+
+  /**
+   * Creates a titled matrix render pass.
+   * 
+   * @param <T> The matrix type.
+   * @param rp The render pass to wrap.
+   * @param textHeight The title text height.
+   * @param space The space between title and matrix.
+   * @param upperO Upper title orientation.
+   * @param upperA Upper title alignment.
+   * @param sideO Side title orientation.
+   * @param sideA Side title alignment.
+   * @return The render pod.
+   */
+  public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
+      createTitledMatrixRenderpass(final MatrixRenderpass<T> rp,
+          final double textHeight, final double space,
+          final Orientation upperO, final Alignment upperA,
+          final Orientation sideO, final Alignment sideA) {
     final MatrixTitleRenderpass<MatrixRenderpass<T>> top =
         new MatrixTitleRenderpass<>(new BorderRenderpass<>(rp), textHeight, space);
     top.setPosition(Position.ABOVE);
-    top.setOrientation(Orientation.VERTICAL);
-    top.setAlignment(Alignment.LEFT);
+    top.setOrientation(upperO);
+    top.setAlignment(upperA);
     final MatrixTitleRenderpass<MatrixRenderpass<T>> left =
         new MatrixTitleRenderpass<>(top, textHeight, space);
     left.setPosition(Position.LEFT);
-    left.setAlignment(Alignment.RIGHT);
+    left.setAlignment(sideA);
+    left.setOrientation(sideO);
     return left;
   }
 

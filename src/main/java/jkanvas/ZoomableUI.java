@@ -106,7 +106,7 @@ public final class ZoomableUI implements ZoomableView {
   }
 
   @Override
-  public void zoomTicks(final double x, final double y, final int zooming) {
+  public void zoomTicks(final double x, final double y, final double zooming) {
     final double factor = Math.pow(1.1, -zooming);
     zoomTo(x, y, factor);
   }

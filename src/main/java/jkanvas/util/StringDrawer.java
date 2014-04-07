@@ -225,6 +225,11 @@ public class StringDrawer {
     g.translate(pos.getX() + getHorizontalOffset(hpos),
         pos.getY() - bbox.getHeight() + getVerticalOffset(vpos, false));
     g.drawString(str, 0, 0);
+    if(jkanvas.Canvas.DEBUG_BBOX) {
+      g.setColor(java.awt.Color.RED);
+      jkanvas.util.PaintUtil.setAlpha(g, 0.4);
+      g.fill(bbox);
+    }
     g.dispose();
   }
 
@@ -269,6 +274,11 @@ public class StringDrawer {
     g.translate(getHorizontalOffset(hpos),
         getVerticalOffset(vpos, false) - bbox.getHeight());
     g.drawString(str, 0, 0);
+    if(jkanvas.Canvas.DEBUG_BBOX) {
+      g.setColor(java.awt.Color.RED);
+      jkanvas.util.PaintUtil.setAlpha(g, 0.4);
+      g.fill(bbox);
+    }
     g.dispose();
   }
 

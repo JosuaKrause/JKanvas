@@ -12,6 +12,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.awt.geom.RoundRectangle2D;
 
+import jkanvas.KanvasContext;
+
 /**
  * Utility methods for painting.
  * 
@@ -80,6 +82,52 @@ public final class PaintUtil {
     final double p2 = padding * 2;
     rect.setFrame(rect.getX() - padding, rect.getY() - padding,
         rect.getWidth() + p2, rect.getHeight() + p2);
+  }
+
+  /** Factor for changing radii correctly. */
+  private static final double RADIUS_FACTOR = Math.sqrt(2) - 1;
+
+  /**
+   * Encloses the given rectangle with a rounded rectangle whose rounded corners
+   * touch the corners of the rectangle.
+   * 
+   * @param dest The destination rectangle.
+   * @param rect The rectangle to enclose.
+   * @param border The size of the border.
+   */
+  public static void encloseRect(final RoundRectangle2D dest,
+      final RectangularShape rect, final double border) {
+    final double b2 = border * 2;
+    final double arc = border / RADIUS_FACTOR;
+    dest.setRoundRect(rect.getX() - border, rect.getY() - border,
+        rect.getWidth() + b2, rect.getHeight() + b2, arc, arc);
+  }
+
+  /**
+   * Sets the arc of a rounded rectangle.
+   * 
+   * @param rect The rounded rectangle to alter.
+   * @param border The border. The arc touches the corner of a rectangle that
+   *          would be created by adding the border as padding.
+   */
+  public static void setArc(final RoundRectangle2D rect, final double border) {
+    final double arc = border / RADIUS_FACTOR;
+    rect.setRoundRect(rect.getX(), rect.getY(),
+        rect.getWidth(), rect.getHeight(), arc, arc);
+  }
+
+  /**
+   * Adds padding to the rectangle by altering the rectangle.
+   * 
+   * @param rect The rectangle.
+   * @param padding The padding to add.
+   */
+  public static void addPaddingInplace(final RoundRectangle2D rect, final double padding) {
+    final double p2 = padding * 2;
+    final double arc = padding / RADIUS_FACTOR;
+    rect.setRoundRect(rect.getX() - padding, rect.getY() - padding,
+        rect.getWidth() + p2, rect.getHeight() + p2,
+        arc + rect.getArcWidth(), arc + rect.getArcHeight());
   }
 
   /**
@@ -213,6 +261,7 @@ public final class PaintUtil {
    */
   public static Color interpolate(final Color from, final Color to, final double t) {
     if(Double.isNaN(t)) throw new IllegalArgumentException("NaN");
+    if(t > 1 || t < 0) throw new IllegalArgumentException("" + t);
     final float[] fromRGBA = new float[4];
     final float[] toRGBA = new float[4];
     from.getRGBComponents(fromRGBA);
@@ -310,6 +359,99 @@ public final class PaintUtil {
     }
     System.err.println("Warning: cannot derive composite: " + comp);
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alpha));
+  }
+
+  /** The zooming factor when detail lines disappear. */
+  private static final double DISSAPPEAR = 1.2;
+
+  /**
+   * Draws a shape with a zoom dependent fading of the outline.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape to draw.
+   * @param ctx The context.
+   * @param border The border color.
+   * @param fill The color used to fill and used when the zoom level is to
+   *          small.
+   */
+  public static void drawShape(final Graphics2D g, final Shape shape,
+      final KanvasContext ctx, final Color border, final Color fill) {
+    drawShape(g, shape, ctx.toComponentLength(1), border, fill);
+  }
+
+  /**
+   * Draws a shape with a zoom dependent fading of the outline.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape to draw.
+   * @param zoom The zoom level.
+   * @param border The border color.
+   * @param fill The color used to fill and used when the zoom level is to
+   *          small.
+   */
+  public static void drawShape(final Graphics2D g, final Shape shape,
+      final double zoom, final Color border, final Color fill) {
+    if(fill != null) {
+      g.setColor(fill);
+      g.fill(shape);
+    }
+    final double ratio = DISSAPPEAR / zoom;
+    if(ratio >= 1) {
+      if(fill == null) return;
+      g.setColor(fill);
+    } else {
+      final Color f = fill != null ? fill : Color.WHITE;
+      final double t = Math.log((Math.E - 1) * ratio + 1);
+      g.setColor(PaintUtil.interpolate(border, f, t));
+    }
+    g.draw(shape);
+  }
+
+  /**
+   * Fills a shape with a zoom dependent fading.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape.
+   * @param ctx The context.
+   * @param near The color used when being near.
+   * @param far The color used when being far.
+   */
+  public static void fillShape(final Graphics2D g, final Shape shape,
+      final KanvasContext ctx, final Color near, final Color far) {
+    fillShape(g, shape, ctx.toComponentLength(1), near, far);
+  }
+
+  /**
+   * Fills a shape with a zoom dependent fading.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape.
+   * @param zoom The zoom level.
+   * @param near The color used when being near.
+   * @param far The color used when being far.
+   */
+  public static void fillShape(final Graphics2D g, final Shape shape,
+      final double zoom, final Color near, final Color far) {
+    final double ratio = DISSAPPEAR / zoom;
+    if(ratio >= 1) {
+      g.setColor(far);
+    } else {
+      final double t = Math.log((Math.E - 1) * ratio + 1);
+      g.setColor(PaintUtil.interpolate(near, far, t));
+    }
+    g.fill(shape);
+  }
+
+  /**
+   * Computes a color visible on the given background.
+   * 
+   * @param back The background color.
+   * @return The color recommended for fonts.
+   */
+  public static Color getFontColor(final Color back) {
+    final float[] rgb = back.getRGBColorComponents(null);
+    if(0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2] > 0.5) return Color.BLACK;
+    return Color.WHITE;
   }
 
 }

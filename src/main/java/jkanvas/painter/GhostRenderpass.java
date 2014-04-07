@@ -3,7 +3,7 @@ package jkanvas.painter;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.Camera;
@@ -160,7 +160,7 @@ public class GhostRenderpass<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     final Renderpass old = start();
     try {
       entity.getBoundingBox(bbox);

@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.io.IOException;
 import java.util.Random;
 
@@ -165,7 +166,7 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
   }
 
   @Override
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     final NodeRealizer<AnimatedPosition> n = getNodeRealizer();
     bbox.setFrame(0, 0, 0, 0);
     for(final AnimatedPosition p : view.nodes()) {
@@ -173,17 +174,13 @@ public final class NodeLinkMain extends NodeLinkRenderpass<AnimatedPosition> {
       final double y = p.getY();
       final Shape shape = n.createNodeShape(p, x, y);
       final Rectangle2D b = shape.getBounds2D();
-      if(bbox.isEmpty()) {
-        bbox.setFrame(b);
-      } else if(!b.isEmpty()) {
-        bbox.add(b);
-      }
+      RenderpassPainter.addToRect(bbox, b);
       // include the end of the animation in the bounding box
       if(p.inAnimation()) {
         final double px = p.getPredictX();
         final double py = p.getPredictY();
         final Shape endShape = n.createNodeShape(p, px, py);
-        bbox.add(endShape.getBounds2D());
+        RenderpassPainter.addToRect(bbox, endShape.getBounds2D());
       }
     }
   }

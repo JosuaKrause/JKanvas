@@ -94,6 +94,11 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
+  public void move(final double dx, final double dy) {
+    setOffset(getOffsetX() - dx, getOffsetY() - dy);
+  }
+
+  @Override
   public void toView(final Rectangle2D rect, final AnimationTiming timing,
       final AnimationAction onFinish, final boolean useMargin) {
     Objects.requireNonNull(rect);
@@ -169,7 +174,7 @@ class CameraZUI implements ZoomableView, Camera, Animated {
   }
 
   @Override
-  public void zoomTicks(final double x, final double y, final int zooming) {
+  public void zoomTicks(final double x, final double y, final double zooming) {
     stopAnimation();
     zui.zoomTicks(x, y, zooming);
   }

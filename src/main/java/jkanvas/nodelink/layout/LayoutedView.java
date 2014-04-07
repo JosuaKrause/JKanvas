@@ -1,6 +1,6 @@
 package jkanvas.nodelink.layout;
 
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 import jkanvas.animation.AnimatedPosition;
 import jkanvas.nodelink.NodeLinkView;
@@ -32,6 +32,6 @@ public interface LayoutedView<T extends AnimatedPosition> extends NodeLinkView<T
    * 
    * @param bbox The rectangle in which the bounding box will be stored.
    */
-  void getBoundingBox(Rectangle2D bbox);
+  void getBoundingBox(RectangularShape bbox);
 
 }

@@ -47,7 +47,8 @@ public class ScatterplotMatrix {
     for(int row = 0; row < t.cols(); ++row) {
       final int off = indexOfRow(t, row) - row;
       for(int col = row; col < t.cols(); ++col) {
-        final PointMapper pm = new PointMapper(t, row, col, size, pointSize);
+        final PointMapper pm = new PointMapper(
+            t, row, col, size, pointSize, pointSize * 2);
         if(factory != null) {
           pm.setPointListFactory(factory);
         }

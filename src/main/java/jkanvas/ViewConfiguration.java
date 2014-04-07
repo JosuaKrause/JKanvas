@@ -98,7 +98,7 @@ public class ViewConfiguration {
    * 
    * @return The current canvas context.
    */
-  public ViewContext getContext() {
+  public KanvasContext getContext() {
     return new ViewContext(zui, true, 0, 0);
   }
 
@@ -109,7 +109,7 @@ public class ViewConfiguration {
    * 
    * @return The current head-up display context.
    */
-  public ViewContext getHUDContext() {
+  public KanvasContext getHUDContext() {
     return new ViewContext(zui, false, 0, 0);
   }
 
@@ -120,16 +120,20 @@ public class ViewConfiguration {
    * @param timing How the transition to the restriction rectangle should be
    *          performed.
    * @param margin The margin added to the rectangle.
+   * @param onFinish The action that is performed after the restriction has been
+   *          set or <code>null</code>.
    * @throws IllegalStateException When the canvas is not restricted. The canvas
    *           can be restricted only with the constructor.
    * @see #isRestricted()
    */
   public void setRestriction(final Rectangle2D restriction,
-      final AnimationTiming timing, final double margin) {
+      final AnimationTiming timing, final double margin, final AnimationAction onFinish) {
     if(!isRestricted()) throw new IllegalStateException("not restricted");
     this.restriction = null;
     if(restriction != null) {
       final Rectangle2D rest = jkanvas.util.PaintUtil.addPadding(restriction, margin);
+      if(rest.isEmpty()) throw new IllegalArgumentException(
+          "no empty restriction allowed");
       // TODO #43 -- Java 8 simplification
       zui.toView(rest, timing, new AnimationAction() {
 
@@ -137,6 +141,9 @@ public class ViewConfiguration {
         public void animationFinished() {
           if(!zui.inAnimation()) {
             setRestrictionDirectly(rest);
+          }
+          if(onFinish != null) {
+            onFinish.animationFinished();
           }
         }
 
@@ -160,7 +167,23 @@ public class ViewConfiguration {
    *          be used internally.
    */
   void setRestrictionDirectly(final Rectangle2D restriction) {
+    if(restriction.isEmpty()) throw new IllegalArgumentException(
+        "no empty restriction allowed");
     this.restriction = restriction;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param restriction Sets this rectangle to the current restriction. If no
+   *          restriction is set this rectangle is set to an empty rectangle.
+   */
+  public void getRestriction(final Rectangle2D restriction) {
+    if(this.restriction == null) {
+      restriction.setFrame(0, 0, 0, 0);
+      return;
+    }
+    restriction.setFrame(this.restriction);
   }
 
   /**

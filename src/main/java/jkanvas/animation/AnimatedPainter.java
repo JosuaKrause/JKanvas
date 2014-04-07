@@ -153,6 +153,11 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   }
 
   @Override
+  public boolean inBulkOperation() {
+    return animator.inBulkOperation();
+  }
+
+  @Override
   public Refreshable[] getRefreshables() {
     return animator.getRefreshables();
   }

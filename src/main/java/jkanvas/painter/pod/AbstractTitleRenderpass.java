@@ -3,6 +3,7 @@ package jkanvas.painter.pod;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.Objects;
 
 import jkanvas.KanvasContext;
@@ -132,9 +133,10 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
   /**
    * Getter.
    * 
+   * @param index The index of the title.
    * @return The alignment of the titles w.r.t. the drawing direction.
    */
-  public Alignment getAlignment() {
+  public Alignment getAlignment(@SuppressWarnings("unused") final int index) {
     return align;
   }
 
@@ -201,6 +203,16 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
   /**
    * Getter.
    * 
+   * @param index The index of the title.
+   * @return The text height of the title.
+   */
+  protected double getIndividualTextHeight(@SuppressWarnings("unused") final int index) {
+    return textHeight;
+  }
+
+  /**
+   * Getter.
+   * 
    * @return The space.
    */
   public double getSpace() {
@@ -255,13 +267,14 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
     for(int i = 0; i < getTitleCount(); ++i) {
       final String t = getTitle(i);
       final double w = getWidth(totalW, i);
+      final double h = getIndividualTextHeight(i);
       if(hor) {
-        cur.setFrame(box.getX() + x, box.getY(), w, box.getHeight());
+        cur.setFrame(box.getX() + x, box.getY(), w, h);
       } else {
-        cur.setFrame(box.getX(), box.getY() + x, box.getWidth(), w);
+        cur.setFrame(box.getX(), box.getY() + x, h, w);
       }
       if(view.intersects(cur)) {
-        StringDrawer.drawInto(g, t, cur, orientation, align.getAlignment());
+        StringDrawer.drawInto(g, t, cur, orientation, getAlignment(i).getAlignment());
       }
       x += w + getTitleSpace(i);
     }
@@ -302,7 +315,7 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
   }
 
   @Override
-  protected void addOwnBox(final Rectangle2D bbox) {
+  protected void addOwnBox(final RectangularShape bbox) {
     final double add = textHeight + space;
     switch(pos) {
       case LEFT:

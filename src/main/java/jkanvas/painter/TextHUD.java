@@ -206,15 +206,33 @@ public abstract class TextHUD extends HUDRenderpass {
     }
     gfx.setColor(text);
     for(int i = 0; i < sds.length; ++i) {
-      final StringDrawer sd = sds[isTop ? i : sds.length - 1 - i];
+      final int index = isTop ? i : sds.length - 1 - i;
+      final StringDrawer sd = sds[index];
       if(sd == null) {
         continue;
       }
-      sd.draw(cur,
+      drawLine(gfx, cur, sd, index,
           (hpos == LEFT ? StringDrawer.LEFT : StringDrawer.RIGHT),
           (vpos == TOP ? StringDrawer.TOP : StringDrawer.BOTTOM));
       cur.setLocation(cur.getX(), cur.getY() + sd.getHeight() * dirV);
     }
+  }
+
+  /**
+   * Draws a text line.
+   * 
+   * @param gfx The graphics context.
+   * @param cur The current position.
+   * @param sd The string drawer.
+   * @param index The current index.
+   * @param hpos The horizontal position.
+   * @param vpos The vertical position.
+   */
+  protected void drawLine(
+      @SuppressWarnings("unused") final Graphics2D gfx, final Point2D cur,
+      final StringDrawer sd, @SuppressWarnings("unused") final int index,
+      final int hpos, final int vpos) {
+    sd.draw(cur, hpos, vpos);
   }
 
 }

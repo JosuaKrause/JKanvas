@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Area;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * A list of circular shaped points with filling and border color.
@@ -285,6 +287,37 @@ public abstract class PointList<T extends Shape> extends GenericPaintList<T> {
     if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return false;
     setShape(shape, index, x, y, s);
     return shape.contains(point);
+  }
+
+  @Override
+  protected boolean intersects(
+      final Area area, final T shape, final int index, final int pos) {
+    final double x = get(X_COORD, pos);
+    final double y = get(Y_COORD, pos);
+    final double s = get(SIZE, pos);
+    if(Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(s)) return false;
+    setShape(shape, index, x, y, s);
+    if(!area.intersects(shape.getBounds2D())) return false;
+    final Area a = new Area(shape);
+    a.intersect(area);
+    return !a.isEmpty();
+  }
+
+  /**
+   * Computes the bounding box of the item with the given index.
+   * 
+   * @param index The index.
+   * @return The bounding box.
+   */
+  public Rectangle2D getBoundingBoxFor(final int index) {
+    // FIXME find a better way than creating everything new
+    final int pos = getPosition(index);
+    final double x = get(X_COORD, pos);
+    final double y = get(Y_COORD, pos);
+    final double s = get(SIZE, pos);
+    final T obj = createDrawObject();
+    setShape(obj, index, x, y, s);
+    return obj.getBounds2D();
   }
 
 }

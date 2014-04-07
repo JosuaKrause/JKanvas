@@ -20,6 +20,7 @@ class IgnoreInteractionException extends RuntimeException {
 
   @Override
   public synchronized Throwable fillInStackTrace() {
+    if(Canvas.ALLOW_INTERACTION_DIAGNOSTIC) return super.fillInStackTrace();
     // we wont use the stack trace so we save the costs of creating it
     return this;
   }

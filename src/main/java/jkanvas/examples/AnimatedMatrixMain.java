@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 
 import jkanvas.Camera;
 import jkanvas.Canvas;
+import jkanvas.CanvasSetup;
 import jkanvas.animation.AnimatedPainter;
 import jkanvas.animation.AnimationTiming;
 import jkanvas.matrix.AnimatedMatrix;
@@ -102,7 +103,7 @@ public class AnimatedMatrixMain {
         MatrixRenderpass.createTitledMatrixRenderpass(mr, 10, 10);
     ap.addPass(pod);
     final Canvas c = new Canvas(ap, 500, 500);
-    ExampleUtil.setupCanvas("animated-matrix", c, ap, true, true, true, false);
+    CanvasSetup.setupCanvas("animated-matrix", c, ap, true, true, true, false);
   }
 
 }

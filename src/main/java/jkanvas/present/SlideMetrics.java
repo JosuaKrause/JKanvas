@@ -1,7 +1,7 @@
 package jkanvas.present;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 import jkanvas.io.json.JSONElement;
 
@@ -163,7 +163,7 @@ public abstract class SlideMetrics {
    * 
    * @param bbox The rectangle in which the bounding box of the slide is stored.
    */
-  public void getBoundingBox(final Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape bbox) {
     bbox.setFrame(0, 0, slideWidth(), slideHeight());
   }
 
