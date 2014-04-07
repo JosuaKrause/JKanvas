@@ -10,6 +10,11 @@ import java.util.List;
 import jkanvas.util.PaintUtil;
 import jkanvas.util.StringDrawer;
 
+/**
+ * A HUD showing a color key.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class ColorKeyHUD extends SimpleTextHUD {
 
   /**
@@ -45,8 +50,10 @@ public class ColorKeyHUD extends SimpleTextHUD {
     super(text, back, alpha, padding, hpos, vpos);
   }
 
+  /** The padding for the text. */
   private final String pad = "    ";
 
+  /** The list of colors. */
   private final List<Color> colors = new ArrayList<>();
 
   @Override
@@ -59,11 +66,24 @@ public class ColorKeyHUD extends SimpleTextHUD {
     addKey(line, null);
   }
 
+  /**
+   * Inserts a color key at the given position.
+   * 
+   * @param pos The index.
+   * @param line The text line to add.
+   * @param color The color.
+   */
   public void insertKey(final int pos, final String line, final Color color) {
     colors.add(pos, color);
     super.insertLine(pos, pad + line);
   }
 
+  /**
+   * Adds a color key.
+   * 
+   * @param line The text line.
+   * @param color The color.
+   */
   public void addKey(final String line, final Color color) {
     colors.add(color);
     super.addLine(pad + line);

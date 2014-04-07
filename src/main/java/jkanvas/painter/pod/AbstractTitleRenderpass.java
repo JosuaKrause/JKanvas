@@ -133,6 +133,7 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
   /**
    * Getter.
    * 
+   * @param index The index of the title.
    * @return The alignment of the titles w.r.t. the drawing direction.
    */
   public Alignment getAlignment(@SuppressWarnings("unused") final int index) {
@@ -199,7 +200,13 @@ public abstract class AbstractTitleRenderpass<T extends Renderpass> extends Rend
     return textHeight;
   }
 
-  protected double getIndividualTextHeight(final int index) {
+  /**
+   * Getter.
+   * 
+   * @param index The index of the title.
+   * @return The text height of the title.
+   */
+  protected double getIndividualTextHeight(@SuppressWarnings("unused") final int index) {
     return textHeight;
   }
 

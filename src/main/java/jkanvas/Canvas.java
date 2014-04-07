@@ -502,6 +502,7 @@ public class Canvas extends JComponent implements Refreshable {
     }
   }
 
+  /** Zooms to fit the width of the bounding box. */
   public void resetToWidth() {
     final Rectangle2D bbox = new Rectangle2D.Double();
     cfg.getPainter().getBoundingBox(bbox);
@@ -512,6 +513,7 @@ public class Canvas extends JComponent implements Refreshable {
     }
   }
 
+  /** Zooms to fit the height of the bounding box. */
   public void resetToHeight() {
     final Rectangle2D bbox = new Rectangle2D.Double();
     cfg.getPainter().getBoundingBox(bbox);

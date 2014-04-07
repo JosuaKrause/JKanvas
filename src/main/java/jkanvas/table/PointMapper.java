@@ -21,7 +21,7 @@ public class PointMapper extends ListMapper<PointList<? extends Shape>> {
   private final double size;
   /** The size of the points. */
   private final double pointSize;
-
+  /** The border of the area. */
   private final double border;
 
   /**
@@ -32,6 +32,7 @@ public class PointMapper extends ListMapper<PointList<? extends Shape>> {
    * @param f2 The second feature.
    * @param size The size of the area of points.
    * @param pointSize The size of the points.
+   * @param border The border of the area.
    */
   public PointMapper(final DataTable table, final int f1, final int f2,
       final double size, final double pointSize, final double border) {
@@ -56,22 +57,44 @@ public class PointMapper extends ListMapper<PointList<? extends Shape>> {
     this.factory = factory;
   }
 
+  /** The default color. */
   private Color defaultColor = Color.BLACK;
 
+  /**
+   * Setter.
+   * 
+   * @param defaultColor The default color.
+   */
   public void setDefaultColor(final Color defaultColor) {
     this.defaultColor = defaultColor;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The default color.
+   */
   public Color getDefaultColor() {
     return defaultColor;
   }
 
+  /** The default border color. */
   private Color defaultBorder = null;
 
+  /**
+   * Setter.
+   * 
+   * @param defaultBorder The default border color.
+   */
   public void setDefaultBorder(final Color defaultBorder) {
     this.defaultBorder = defaultBorder;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The default border color.
+   */
   public Color getDefaultBorder() {
     return defaultBorder;
   }

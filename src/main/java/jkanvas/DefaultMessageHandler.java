@@ -117,6 +117,14 @@ public class DefaultMessageHandler implements CanvasMessageHandler {
     }
   }
 
+  /**
+   * Returns a list of all components that should be used to create a photo.
+   * 
+   * @param frame The frame.
+   * @param canvas The canvas.
+   * @param window Whether to use the frame.
+   * @return A list of components.
+   */
   protected List<JComponent> photoComponents(
       final JFrame frame, final Canvas canvas, final boolean window) {
     return Arrays.asList((window && frame != null) ? frame.getRootPane() : canvas);

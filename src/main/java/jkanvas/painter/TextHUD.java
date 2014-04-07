@@ -218,8 +218,20 @@ public abstract class TextHUD extends HUDRenderpass {
     }
   }
 
-  protected void drawLine(final Graphics2D gfx, final Point2D cur,
-      final StringDrawer sd, final int index, final int hpos, final int vpos) {
+  /**
+   * Draws a text line.
+   * 
+   * @param gfx The graphics context.
+   * @param cur The current position.
+   * @param sd The string drawer.
+   * @param index The current index.
+   * @param hpos The horizontal position.
+   * @param vpos The vertical position.
+   */
+  protected void drawLine(
+      @SuppressWarnings("unused") final Graphics2D gfx, final Point2D cur,
+      final StringDrawer sd, @SuppressWarnings("unused") final int index,
+      final int hpos, final int vpos) {
     sd.draw(cur, hpos, vpos);
   }
 

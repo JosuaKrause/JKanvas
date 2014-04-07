@@ -345,6 +345,12 @@ public abstract class GenericPaintList<T extends Shape> {
     return -1;
   }
 
+  /**
+   * Fills the given list with elements hit by the given area.
+   * 
+   * @param area The area.
+   * @param elements The element indices.
+   */
   public void hit(final Shape area, final List<Integer> elements) {
     final T drawObject = createDrawObject();
     final Area a = new Area(area);
@@ -376,6 +382,16 @@ public abstract class GenericPaintList<T extends Shape> {
    */
   protected abstract boolean contains(Point2D point, T obj, int index, int pos);
 
+  /**
+   * Checks whether the given area intersects with the given element. No bounds
+   * need to be checked and the index is guaranteed to be active.
+   * 
+   * @param area The area.
+   * @param obj The element. The shape must be set to the correct values.
+   * @param index The index of the element.
+   * @param pos The position in the array.
+   * @return Whether the element intersects the area.
+   */
   protected abstract boolean intersects(Area area, T obj, int index, int pos);
 
   /**

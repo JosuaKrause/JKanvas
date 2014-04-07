@@ -51,6 +51,11 @@ public interface RefreshManager extends Refreshable {
    */
   void endBulkOperation();
 
+  /**
+   * Getter.
+   * 
+   * @return Whether a bulk operation is currently in progress.
+   */
   boolean inBulkOperation();
 
 }

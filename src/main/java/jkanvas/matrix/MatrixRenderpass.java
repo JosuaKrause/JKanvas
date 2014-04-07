@@ -222,6 +222,19 @@ public class MatrixRenderpass<T extends Matrix<?>> extends Renderpass {
         Orientation.HORIZONTAL, Alignment.RIGHT);
   }
 
+  /**
+   * Creates a titled matrix render pass.
+   * 
+   * @param <T> The matrix type.
+   * @param rp The render pass to wrap.
+   * @param textHeight The title text height.
+   * @param space The space between title and matrix.
+   * @param upperO Upper title orientation.
+   * @param upperA Upper title alignment.
+   * @param sideO Side title orientation.
+   * @param sideA Side title alignment.
+   * @return The render pod.
+   */
   public static final <T extends Matrix<?>> Renderpod<MatrixRenderpass<T>>
       createTitledMatrixRenderpass(final MatrixRenderpass<T> rp,
           final double textHeight, final double space,

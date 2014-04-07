@@ -364,11 +364,31 @@ public final class PaintUtil {
   /** The zooming factor when detail lines disappear. */
   private static final double DISSAPPEAR = 1.2;
 
+  /**
+   * Draws a shape with a zoom dependent fading of the outline.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape to draw.
+   * @param ctx The context.
+   * @param border The border color.
+   * @param fill The color used to fill and used when the zoom level is to
+   *          small.
+   */
   public static void drawShape(final Graphics2D g, final Shape shape,
       final KanvasContext ctx, final Color border, final Color fill) {
     drawShape(g, shape, ctx.toComponentLength(1), border, fill);
   }
 
+  /**
+   * Draws a shape with a zoom dependent fading of the outline.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape to draw.
+   * @param zoom The zoom level.
+   * @param border The border color.
+   * @param fill The color used to fill and used when the zoom level is to
+   *          small.
+   */
   public static void drawShape(final Graphics2D g, final Shape shape,
       final double zoom, final Color border, final Color fill) {
     if(fill != null) {
@@ -387,11 +407,29 @@ public final class PaintUtil {
     g.draw(shape);
   }
 
+  /**
+   * Fills a shape with a zoom dependent fading.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape.
+   * @param ctx The context.
+   * @param near The color used when being near.
+   * @param far The color used when being far.
+   */
   public static void fillShape(final Graphics2D g, final Shape shape,
       final KanvasContext ctx, final Color near, final Color far) {
     fillShape(g, shape, ctx.toComponentLength(1), near, far);
   }
 
+  /**
+   * Fills a shape with a zoom dependent fading.
+   * 
+   * @param g The graphics context.
+   * @param shape The shape.
+   * @param zoom The zoom level.
+   * @param near The color used when being near.
+   * @param far The color used when being far.
+   */
   public static void fillShape(final Graphics2D g, final Shape shape,
       final double zoom, final Color near, final Color far) {
     final double ratio = DISSAPPEAR / zoom;
@@ -404,6 +442,12 @@ public final class PaintUtil {
     g.fill(shape);
   }
 
+  /**
+   * Computes a color visible on the given background.
+   * 
+   * @param back The background color.
+   * @return The color recommended for fonts.
+   */
   public static Color getFontColor(final Color back) {
     final float[] rgb = back.getRGBColorComponents(null);
     if(0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2] > 0.5) return Color.BLACK;

@@ -523,13 +523,26 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
     }
   }
 
+  /** The layout of the group. */
   private RenderpassLayout<T> layout;
 
+  /**
+   * Setter.
+   * 
+   * @param layout The layout of the group or <code>null</code> if the default
+   *          layout should be used.
+   */
   public void setLayout(final RenderpassLayout<T> layout) {
     this.layout = layout;
     invalidate();
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The layout of the group or <code>null</code> if the default layout
+   *         should be used.
+   */
   public RenderpassLayout<T> getLayout() {
     return layout;
   }

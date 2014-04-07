@@ -238,6 +238,14 @@ public abstract class DataTable {
     return (getAt(row, col) - min) / (max - min);
   }
 
+  /**
+   * Normalize the value at the given position with taking zero as minimum.
+   * 
+   * @param row The row.
+   * @param col The column.
+   * @return The value at the given position normalized for the column taking
+   *         zero as minimum.
+   */
   public double getZeroMaxScaled(final int row, final int col) {
     // final double min = ColumnAggregation.MINIMUM.getValue(this, col);
     // if(min < 0) return getAt(row, col) / min;

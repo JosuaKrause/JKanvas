@@ -38,6 +38,9 @@ public abstract class CachedRenderpass extends Renderpass {
   /** Whether the render pass has changed during the last draw. */
   private boolean lastChanging;
 
+  /**
+   * This method is called before any drawing of the cached render pass happens.
+   */
   public void beforeDraw() {
     // nothing to do
   }
@@ -108,6 +111,13 @@ public abstract class CachedRenderpass extends Renderpass {
     scale = 1 / s;
   }
 
+  /**
+   * Performs the actual drawing.
+   * 
+   * @param r The render pass.
+   * @param gfx The graphics context.
+   * @param ctx The context.
+   */
   public static final void doDraw(
       final CachedRenderpass r, final Graphics2D gfx, final KanvasContext ctx) {
     final Rectangle2D view = ctx.getVisibleCanvas();
@@ -143,6 +153,11 @@ public abstract class CachedRenderpass extends Renderpass {
   @Override
   public abstract boolean isChanging();
 
+  /**
+   * Getter.
+   * 
+   * @return Whether this render pass uses caching.
+   */
   protected boolean hasCache() {
     return true;
   }

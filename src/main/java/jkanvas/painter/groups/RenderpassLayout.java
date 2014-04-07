@@ -10,10 +10,29 @@ import jkanvas.painter.Renderpass;
 import jkanvas.painter.RenderpassPainter;
 import jkanvas.painter.groups.RenderGroup.RenderpassPosition;
 
+/**
+ * A layout for render passes in a render group.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ * @param <T> The render pass type.
+ */
 public abstract class RenderpassLayout<T extends Renderpass> {
 
+  /**
+   * Computes the actual layout.
+   * 
+   * @param members The elements of the group.
+   */
   public abstract void doLayout(List<RenderpassPosition<T>> members);
 
+  /**
+   * Adds the bounding boxes of the members to the given bounding box.
+   * 
+   * @param bbox The bounding box storing the result. An empty rectangle is
+   *          handled correctly.
+   * @param members The members to add to the bounding box.
+   * @return Whether some bounding boxes were added.
+   */
   public boolean addBoundingBox(
       final RectangularShape bbox, final List<RenderpassPosition<T>> members) {
     boolean change = false;
@@ -29,8 +48,19 @@ public abstract class RenderpassLayout<T extends Renderpass> {
     return change;
   }
 
-  public void drawBackground(final Graphics2D g, final KanvasContext ctx,
-      final Rectangle2D bbox, final List<RenderpassPosition<T>> members) {
+  /**
+   * Draws the background for the render group.
+   * 
+   * @param g The graphics context.
+   * @param ctx The context.
+   * @param bbox The bounding box.
+   * @param members The members.
+   */
+  public void drawBackground(
+      @SuppressWarnings("unused") final Graphics2D g,
+      @SuppressWarnings("unused") final KanvasContext ctx,
+      @SuppressWarnings("unused") final Rectangle2D bbox,
+      @SuppressWarnings("unused") final List<RenderpassPosition<T>> members) {
     // nothing to draw
   }
 
