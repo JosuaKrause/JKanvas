@@ -13,90 +13,178 @@ import jkanvas.KanvasContext;
 import jkanvas.painter.Renderpass;
 import jkanvas.util.PaintUtil;
 
-public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
+/**
+ * A card like render pass container.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ * @param <T> The contained render pass.
+ */
+public class CardPod<T extends Renderpass> extends Renderpod<T> {
 
+  /** The group name of the card. */
   private String group;
-
+  /** Whether colors should be subtle. */
   private boolean subtle;
-
+  /** Whether the card is moveable. */
   private boolean moveable = true;
-
+  /** The border of the card. */
   private double border = 5.0;
-
+  /** The stroke width of the border. */
   private double stroke = 1.0;
 
-  public PlaygroundPod(final T rp) {
+  /**
+   * Creates a card pod.
+   * 
+   * @param rp The render pass to wrap.
+   */
+  public CardPod(final T rp) {
     super(rp);
   }
 
-  public PlaygroundPod(final Renderpod<T> rp) {
+  /**
+   * Creates a card pod.
+   * 
+   * @param rp The render pod to wrap.
+   */
+  public CardPod(final Renderpod<T> rp) {
     super(rp);
   }
 
+  /**
+   * Setter.
+   * 
+   * @param group The group name of the card or <code>null</code>.
+   */
   public void setGroup(final String group) {
     this.group = group;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The group name of the card or <code>null</code>.
+   */
   public String getGroup() {
     return group;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param border The width of the border.
+   */
   public void setBorder(final double border) {
     this.border = border;
     setOffset(-border, -border);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The width of the border.
+   */
   public double getBorder() {
     return border;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param subtle Whether colors are subtle.
+   */
   public void setSubtle(final boolean subtle) {
     this.subtle = subtle;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether colors are subtle.
+   */
   public boolean isSubtle() {
     return subtle;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param stroke The stroke width of the border.
+   */
   public void setStrokeWidth(final double stroke) {
     this.stroke = stroke;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The stroke width of the border.
+   */
   public double getStrokeWidth() {
     return stroke;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param moveable Whether the card is moveable.
+   */
   public void setMoveable(final boolean moveable) {
     this.moveable = moveable;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether the card is moveable.
+   */
   public boolean isMoveable() {
     return moveable;
   }
 
+  /** The background color. */
   private Color back;
 
+  /**
+   * Setter.
+   * 
+   * @param back The background color or <code>null</code>.
+   */
   public void setColor(final Color back) {
     this.back = back;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The background color or <code>null</code>.
+   */
   public Color getColor() {
     return back;
   }
 
+  /** Whether to fade the border when zooming. */
   private boolean fadeBorder;
 
+  /**
+   * Setter.
+   * 
+   * @param fadeBorder Whether to fade the border when zooming out.
+   */
   public void setFadeBorder(final boolean fadeBorder) {
     this.fadeBorder = fadeBorder;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether to fade the border when zooming out.
+   */
   public boolean isFadingBorder() {
     return fadeBorder;
   }
 
+  /** The first drag position. */
   private Point2D firstPos;
-
-  private boolean hitAll;
 
   @Override
   public boolean acceptDrag(final Point2D pos, final MouseEvent e) {
@@ -130,14 +218,33 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
     firstPos = null;
   }
 
-  public void hitAll(final boolean hitAll) {
+  /** Whether the whole card should be hit. */
+  private boolean hitAll;
+
+  /**
+   * Setter.
+   * 
+   * @param hitAll Whether to hit the whole card.
+   */
+  public void setHitAll(final boolean hitAll) {
     this.hitAll = hitAll;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether to hit the whole card.
+   */
   public boolean isHitAll() {
     return hitAll;
   }
 
+  /**
+   * Getter.
+   * 
+   * @param pos The position.
+   * @return Whether the position hits the card.
+   */
   public boolean hit(final Point2D pos) {
     final RoundRectangle2D rect = new RoundRectangle2D.Double();
     getRoundRect(rect);
@@ -154,6 +261,11 @@ public class PlaygroundPod<T extends Renderpass> extends Renderpod<T> {
         bbox.getWidth() + 2 * border, bbox.getHeight() + 2 * border);
   }
 
+  /**
+   * Getter.
+   * 
+   * @param rect The rectangle to set.
+   */
   protected void getRoundRect(final RoundRectangle2D rect) {
     getBoundingBox(rect);
     PaintUtil.setArc(rect, getBorder());

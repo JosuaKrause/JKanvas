@@ -32,11 +32,11 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
    * handed in.
    */
   private final T pass;
-
+  /** The cached render pass responsible for drawing. */
   private final CachedRenderpass cache;
   /** Another wrapper if render pass is <code>null</code>. */
   private final Renderpod<T> wrapper;
-
+  /** Whether this pod is active. */
   private boolean active = true;
 
   /**
@@ -75,10 +75,20 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
     pass = null;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return Whether this pod is active.
+   */
   public boolean isActive() {
     return active;
   }
 
+  /**
+   * Setter.
+   * 
+   * @param active Whether this pod is active.
+   */
   public void setActive(final boolean active) {
     this.active = active;
     invalidateCache();
