@@ -9,7 +9,7 @@ in other Maven projects (see [below] (#maven-integration)).
 
 In order to create a ZUI component you can use the following snippet:
 
-```
+```java
 Renderpass renderpass = new Renderpass() {
 
   @Override
@@ -48,18 +48,22 @@ In order to use JKanvas within a Maven project you can use the following depende
 (in the `<dependencies>` section -- note that the *X.X.X* in the version tag
 must be replaced with the current version):
 
-    <dependency>
-      <groupId>joschi-mvn</groupId>
-      <artifactId>JKanvas</artifactId>
-      <version>X.X.X</version>
-    </dependency>
+```xml
+<dependency>
+  <groupId>joschi-mvn</groupId>
+  <artifactId>JKanvas</artifactId>
+  <version>X.X.X</version>
+</dependency>
+```
 
 However, this requires an additional repository in the repositories section (`<repositories>`) of the pom.xml file:
 
-    <repository>
-      <id>joschi</id>
-      <url>http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
-    </repository>
+```xml
+<repository>
+  <id>joschi</id>
+  <url>http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
+</repository>
+```
 
 When using [Eclipse] (http://www.eclipse.org/) the current snapshot can be used
 by having the JKanvas project open and altering the version of the dependency
