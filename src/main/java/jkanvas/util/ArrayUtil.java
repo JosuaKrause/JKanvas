@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Utility functions for arrays.
- * 
+ *
  * @author Leonard Woerteler <leo@woerteler.de>
  * @author Joschi <josua.krause@gmail.com>
  */
@@ -26,7 +26,7 @@ public final class ArrayUtil {
   /**
    * Fills the given two-dimensional {@code double} array with the value
    * {@code val}.
-   * 
+   *
    * @param arr array to fill
    * @param val value to fill the array with
    * @return filled array
@@ -40,7 +40,7 @@ public final class ArrayUtil {
 
   /**
    * Getter.
-   * 
+   *
    * @param arr The array.
    * @return The maximal value of the array.
    */
@@ -57,7 +57,7 @@ public final class ArrayUtil {
 
   /**
    * Getter.
-   * 
+   *
    * @param arr The array.
    * @return The maximal value of the array.
    */
@@ -74,7 +74,7 @@ public final class ArrayUtil {
 
   /**
    * Getter.
-   * 
+   *
    * @param arr The array.
    * @return The minimal value of the array.
    */
@@ -91,7 +91,7 @@ public final class ArrayUtil {
 
   /**
    * Getter.
-   * 
+   *
    * @param arr The array.
    * @return The minimal value of the array.
    */
@@ -108,7 +108,7 @@ public final class ArrayUtil {
 
   /**
    * Copies the given two-dimensional {@code double} array.
-   * 
+   *
    * @param arr array to copy
    * @return deep-copy of the array
    */
@@ -123,7 +123,7 @@ public final class ArrayUtil {
   /**
    * Converts a primitive <code>int</code> array to a boxed {@link Integer}
    * array.
-   * 
+   *
    * @param arr The array to convert.
    * @return The converted array.
    */
@@ -138,7 +138,7 @@ public final class ArrayUtil {
   /**
    * Converts a boxed {@link Integer} array to a primitive <code>int</code>
    * array.
-   * 
+   *
    * @param arr The array to convert.
    * @return The converted array.
    */
@@ -153,7 +153,7 @@ public final class ArrayUtil {
   /**
    * Swaps two entries in a <code>T</code> array. For lists use
    * {@link java.util.Collections#swap(List, int, int)}.
-   * 
+   *
    * @param <T> The type of the array.
    * @param arr array
    * @param i position of first element
@@ -167,7 +167,7 @@ public final class ArrayUtil {
 
   /**
    * Swaps two entries in a <code>double</code> array.
-   * 
+   *
    * @param arr array
    * @param i position of first element
    * @param j position of second element
@@ -181,7 +181,7 @@ public final class ArrayUtil {
 
   /**
    * Swaps two entries in an <code>int</code> array.
-   * 
+   *
    * @param arr array
    * @param i position of first element
    * @param j position of second element
@@ -195,7 +195,7 @@ public final class ArrayUtil {
 
   /**
    * Sort a given number of elements via their index.
-   * 
+   *
    * @param cmp The comparator to sort the elements. The index of the elements
    *          are handed in.
    * @param size The number of elements.
@@ -213,7 +213,7 @@ public final class ArrayUtil {
   /**
    * Applies a permutation to a list. The running time is
    * <code>&theta;(2n)</code> and a copy of the list is created.
-   * 
+   *
    * @param <T> The element type.
    * @param list The list to permute.
    * @param perm The permutation.
@@ -241,7 +241,7 @@ public final class ArrayUtil {
    * corrupted. To fix a possibly corrupted array use the
    * {@link #repairPermutationArray(int[])} method (This is only necessary after
    * an exception was thrown).
-   * 
+   *
    * @param <T> The element type.
    * @param list A data structure allowing only swap operations to permute.
    * @param pos The permutation array. This array is modified internally. This
@@ -276,7 +276,7 @@ public final class ArrayUtil {
    * of calling this method implies that either the {@link Swapable}
    * implementation is incorrect or the permutation array was inconsistent. This
    * method is only provided to prevent cascading exceptions from happening.
-   * 
+   *
    * @param pos The possibly corrupted permutation array.
    */
   public static void repairPermutationArray(final int[] pos) {
@@ -289,7 +289,7 @@ public final class ArrayUtil {
 
   /**
    * Converts an {@link Iterable} to an array.
-   * 
+   *
    * @param <T> The type.
    * @param it The {@link Iterable}.
    * @return The array.
@@ -298,6 +298,7 @@ public final class ArrayUtil {
     Class<T> curClass = null;
     final List<T> list = new ArrayList<>();
     for(final T e : it) {
+      @SuppressWarnings("unchecked")
       final Class<T> clazz = (Class<T>) e.getClass();
       if(curClass == null) {
         curClass = clazz;
@@ -306,13 +307,19 @@ public final class ArrayUtil {
       }
       list.add(e);
     }
-    if(curClass == null) return (T[]) list.toArray(); // list is empty
-    return list.toArray((T[]) Array.newInstance(curClass, list.size()));
+    if(curClass == null) {
+      @SuppressWarnings("unchecked")
+      final T[] res = (T[]) list.toArray();
+      return res;
+    } // list is empty
+    @SuppressWarnings("unchecked")
+    final T[] res = (T[]) Array.newInstance(curClass, list.size());
+    return list.toArray(res);
   }
 
   /**
    * Reverses the order of the array in place.
-   * 
+   *
    * @param <T> The array type.
    * @param arr The array to reverse.
    */
@@ -322,7 +329,7 @@ public final class ArrayUtil {
 
   /**
    * Reverses the order of a range of the array in place.
-   * 
+   *
    * @param <T> The array type.
    * @param arr The array.
    * @param from The lowest included index.
@@ -337,7 +344,7 @@ public final class ArrayUtil {
 
   /**
    * Reverses the given list for iteration. The actual list is not modified.
-   * 
+   *
    * @param <T> The content type.
    * @param list The list to reverse.
    * @return The reversed list.
@@ -373,7 +380,7 @@ public final class ArrayUtil {
 
   /**
    * Reverses the given array for iteration. The actual array is not modified.
-   * 
+   *
    * @param <T> The content type.
    * @param arr The array to reverse.
    * @return The reversed array.
@@ -411,7 +418,7 @@ public final class ArrayUtil {
 
   /**
    * Rotates the content of an iterable.
-   * 
+   *
    * @param <T> The content type.
    * @param c The iterable to rotate.
    * @param by The number of items to skip and reappend to the end. Only
@@ -479,7 +486,7 @@ public final class ArrayUtil {
   /**
    * Rotates a collection. This means the first part of the collection will be
    * skipped and appended to the end of the collection.
-   * 
+   *
    * @param <T> The content type.
    * @param c The collection.
    * @param by The number of items to skip and append. Negative values are
@@ -541,7 +548,7 @@ public final class ArrayUtil {
    * Draws <code>k</code> distinct random samples from an iterator. The
    * algorithm used is called Reservoir Sampling and runs in <code>O(n)</code>
    * time and <code>O(k)</code> space.
-   * 
+   *
    * @param <T> The list content type.
    * @param reservoir The reservoir.
    * @param k The number of samples.
@@ -569,7 +576,7 @@ public final class ArrayUtil {
    * Draws <code>k</code> distinct random samples from an {@link Iterable}. The
    * algorithm used is called Reservoir Sampling and runs in <code>O(n)</code>
    * time and <code>O(k)</code> space.
-   * 
+   *
    * @param <T> The list content type.
    * @param reservoir The reservoir.
    * @param k The number of samples.
@@ -584,7 +591,7 @@ public final class ArrayUtil {
    * given array. The array may contain less items when the iterator has fewer
    * items. The algorithm used is called Reservoir Sampling and runs in
    * <code>O(n)</code> time and no additional space.
-   * 
+   *
    * @param <T> The list content type.
    * @param reservoir The reservoir.
    * @param array The array to store the samples in. The number of samples is
@@ -614,7 +621,7 @@ public final class ArrayUtil {
    * into the given array. The array may contain less items when the
    * {@link Iterable} has fewer items. The algorithm used is called Reservoir
    * Sampling and runs in <code>O(n)</code> time and no additional space.
-   * 
+   *
    * @param <T> The list content type.
    * @param reservoir The reservoir.
    * @param array The array to store the samples in. The number of samples is

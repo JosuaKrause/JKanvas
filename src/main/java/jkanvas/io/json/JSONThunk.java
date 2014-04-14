@@ -16,7 +16,7 @@ import java.util.Set;
 
 /**
  * A lazy evaluated JSON object.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class JSONThunk implements ObjectCreator {
@@ -49,7 +49,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Creates a complex thunk.
-   * 
+   *
    * @param mng The manager.
    * @param id The id of the thunk if any. Must be non-<code>null</code> if
    *          <code>hasId</code> is <code>true</code>.
@@ -64,7 +64,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Creates a simple thunk.
-   * 
+   *
    * @param mng The manager.
    * @param str The creation string.
    */
@@ -77,7 +77,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Creates an array thunk.
-   * 
+   *
    * @param mng The manager.
    * @param arr The array.
    */
@@ -90,7 +90,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Creates an already evaluated thunk.
-   * 
+   *
    * @param obj The evaluated object.
    * @param mng The manager.
    * @param id The id of the thunk. Must be non-<code>null</code>.
@@ -105,7 +105,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Getter.
-   * 
+   *
    * @return The id of the thunk or <code>null</code> if it has none.
    */
   public String getId() {
@@ -124,7 +124,7 @@ public class JSONThunk implements ObjectCreator {
   /**
    * Sets the creation type of the object. The type cannot be set when the
    * creation string is present.
-   * 
+   *
    * @param type The type.
    */
   public void setType(final Class<?> type) {
@@ -189,7 +189,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Adds a field to the thunk.
-   * 
+   *
    * @param name The name of the field.
    * @param id The id reference.
    */
@@ -222,7 +222,7 @@ public class JSONThunk implements ObjectCreator {
   /**
    * Finds and loads the class for the given name. This also finds inner
    * classes.
-   * 
+   *
    * @param name The name of the class.
    * @return The class.
    * @throws ClassNotFoundException If the class cannot be found.
@@ -242,7 +242,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Casts the object to the given type.
-   * 
+   *
    * @param <T> The type.
    * @param o The object.
    * @param type The type to cast.
@@ -271,7 +271,7 @@ public class JSONThunk implements ObjectCreator {
   /**
    * Evaluates the thunk and returns the content. If the thunk is already
    * evaluated the content is returned directly.
-   * 
+   *
    * @param <T> The expected type.
    * @param <C> The component type if it is an array.
    * @param type The expected type of the content.
@@ -285,7 +285,9 @@ public class JSONThunk implements ObjectCreator {
     if(arr != null) {
       if(!type.isArray()) throw new IOException(
           "expected array type: " + type.getSimpleName());
+      @SuppressWarnings("unchecked")
       final Class<C> comp = (Class<C>) type.getComponentType();
+      @SuppressWarnings("unchecked")
       final C[] res = (C[]) Array.newInstance(comp, arr.length);
       for(int i = 0; i < res.length; ++i) {
         final C cur = arr[i].get(comp);
@@ -338,7 +340,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Interpret string as constant.
-   * 
+   *
    * @param str The string to interpret as constant.
    * @param type The type.
    * @return The constant.
@@ -362,7 +364,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Finds a constructor for the given type with the given number of arguments.
-   * 
+   *
    * @param type The type.
    * @param args The names of the arguments.
    * @param hints The constructor hints.
@@ -371,7 +373,7 @@ public class JSONThunk implements ObjectCreator {
    */
   private static Constructor<?> findConstructor(final Class<?> type,
       final List<String> args, final Map<String, Class<?>> hints)
-      throws IOException {
+          throws IOException {
     outer: for(final Constructor<?> c : type.getConstructors()) {
       final Class<?>[] params = c.getParameterTypes();
       if(params.length != args.size()) {
@@ -388,12 +390,12 @@ public class JSONThunk implements ObjectCreator {
       }
       return c;
     }
-    throw new IOException("could not find constructor: " + type.getSimpleName());
+  throw new IOException("could not find constructor: " + type.getSimpleName());
   }
 
   /**
    * Creates an object of the given type. The specified constructor is used.
-   * 
+   *
    * @param type The type.
    * @return The object.
    * @throws IOException I/O Exception.
@@ -417,7 +419,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Constructs the setter name for the given field.
-   * 
+   *
    * @param name The field name.
    * @return The name of the setter method.
    */
@@ -428,7 +430,7 @@ public class JSONThunk implements ObjectCreator {
   /**
    * Finds a method with one argument and a setter typical name for the given
    * field.
-   * 
+   *
    * @param type The type.
    * @param name The field name.
    * @return The setter method.
@@ -454,7 +456,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Calls setters on an object.
-   * 
+   *
    * @param o The object.
    * @param setters The setters.
    * @throws IOException I/O Exception.
@@ -475,7 +477,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Evaluates the thunk.
-   * 
+   *
    * @param type The expected type.
    * @return The object.
    * @throws IOException I/O Exception.
@@ -499,7 +501,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Reads a thunk from JSON input.
-   * 
+   *
    * @param el The root element.
    * @param mng The manager.
    * @return The thunk.
@@ -528,7 +530,7 @@ public class JSONThunk implements ObjectCreator {
 
   /**
    * Adds all fields from the given object to the thunk.
-   * 
+   *
    * @param thunk The object creator.
    * @param el The object.
    * @param mng The manager.

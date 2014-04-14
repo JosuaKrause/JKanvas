@@ -15,7 +15,7 @@ import jkanvas.util.SnapshotList.Snapshot;
  * An animation list holds all animated objects. Animated objects by themselves
  * must not hold other animated objects. A flat view is required to perform
  * suitable optimizations.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class AnimationList implements AnimationToken {
@@ -33,7 +33,7 @@ public final class AnimationList implements AnimationToken {
   /**
    * Adds an animatable object. Elements are guaranteed to appear only once in
    * the list.
-   * 
+   *
    * @param animate The object.
    */
   public void addAnimated(final Animated animate) {
@@ -49,7 +49,7 @@ public final class AnimationList implements AnimationToken {
    * Suggests the deep of a parallel computation tree. This method is copied
    * from <code>java.concurrent.ForkJoinUtils</code> which does not exist in
    * Java 7.
-   * 
+   *
    * @param size The size of the array to split.
    * @return The depth of the parallel computation tree.
    */
@@ -68,7 +68,7 @@ public final class AnimationList implements AnimationToken {
   /**
    * A worker animating objects when under a certain threshold or splitting the
    * task further.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   private static final class Worker extends RecursiveAction {
@@ -90,7 +90,7 @@ public final class AnimationList implements AnimationToken {
 
     /**
      * Creates a worker to animate objects.
-     * 
+     *
      * @param list The current snapshot of animated objects.
      * @param token The animation token.
      * @param currentTime The current time in milliseconds.
@@ -126,7 +126,7 @@ public final class AnimationList implements AnimationToken {
 
     /**
      * Getter.
-     * 
+     *
      * @return Whether the computation has changed any animated object.
      */
     public boolean hasChanged() {
@@ -137,7 +137,7 @@ public final class AnimationList implements AnimationToken {
 
   /**
    * Animates a range of animated objects.
-   * 
+   *
    * @param s The current list snapshot.
    * @param token The animation token.
    * @param from The start index inclusive.
@@ -162,7 +162,7 @@ public final class AnimationList implements AnimationToken {
 
   /**
    * Computes one step for all animated.
-   * 
+   *
    * @param currentTime The current time in milliseconds.
    * @return Whether a redraw is needed.
    */
@@ -190,7 +190,7 @@ public final class AnimationList implements AnimationToken {
 
   /**
    * A timed action that is executed when its due.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   private static final class TimedAction {
@@ -204,7 +204,7 @@ public final class AnimationList implements AnimationToken {
 
     /**
      * Creates a timed action.
-     * 
+     *
      * @param action The action. Must not be <code>null</code>.
      * @param wait The time to wait in milliseconds.
      */
@@ -217,7 +217,7 @@ public final class AnimationList implements AnimationToken {
     /**
      * Converts a relative action in to an absolute action. If the action is due
      * it gets executed and needs not be to rescheduled any more.
-     * 
+     *
      * @param currentTime The current time.
      * @return Whether to reschedule.
      */
@@ -234,12 +234,12 @@ public final class AnimationList implements AnimationToken {
   } // TimedAction
 
   /** The queue containing all actions. */
-  private final Queue<TimedAction> actionQueue = new ConcurrentLinkedQueue<TimedAction>();
+  private final Queue<TimedAction> actionQueue = new ConcurrentLinkedQueue<>();
 
   /**
    * Schedules the given action to be executed after the specified time in
    * milliseconds.
-   * 
+   *
    * @param action The action to be executed. May be <code>null</code> when no
    *          action needs to be executed.
    * @param timing The timing to infer the duration.
@@ -251,7 +251,7 @@ public final class AnimationList implements AnimationToken {
   /**
    * Schedules the given action to be executed after the specified time in
    * milliseconds.
-   * 
+   *
    * @param action The action to be executed. May be <code>null</code> when no
    *          action needs to be executed.
    * @param wait The time to wait in milliseconds.
@@ -263,7 +263,7 @@ public final class AnimationList implements AnimationToken {
 
   /**
    * Processes the actions.
-   * 
+   *
    * @param currentTime The current time.
    */
   private void processActions(final long currentTime) {
@@ -299,7 +299,7 @@ public final class AnimationList implements AnimationToken {
   @Override
   public void register(final List<AnimationAction> list) {
     Objects.requireNonNull(list);
-    tokenQueue.add(new WeakReference<List<AnimationAction>>(list));
+    tokenQueue.add(new WeakReference<>(list));
   }
 
   @Override

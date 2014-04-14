@@ -37,7 +37,7 @@ import jkanvas.util.Stopwatch;
 /**
  * A simple class adding panning and zooming functionality to a
  * {@link JComponent}.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Canvas extends JComponent implements Refreshable {
@@ -73,7 +73,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Creates an unrestricted canvas for the given painter.
-   * 
+   *
    * @param p The painter.
    * @param width The initial width of the component.
    * @param height The initial height of the component.
@@ -84,7 +84,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Creates a canvas for the given painter. The component is opaque by default.
-   * 
+   *
    * @param p The painter.
    * @param restricted Whether the canvas should be restricted.
    * @param width The initial width of the component.
@@ -115,7 +115,7 @@ public class Canvas extends JComponent implements Refreshable {
    * calls this method for example
    * {@link KanvasInteraction#acceptDrag(Point2D, MouseEvent)} will still be
    * called.
-   * 
+   *
    * @see HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)
    * @see HUDInteraction#acceptDragHUD(Point2D, MouseEvent)
    * @see KanvasInteraction#click(Camera, Point2D, MouseEvent)
@@ -137,7 +137,7 @@ public class Canvas extends JComponent implements Refreshable {
    * <p>
    * This method can only be called before the actual
    * {@link KanvasInteraction#acceptDrag(Point2D, MouseEvent)} method is called.
-   * 
+   *
    * @param rp The render item.
    * @see HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)
    * @see HUDInteraction#acceptDragHUD(Point2D, MouseEvent)
@@ -156,7 +156,7 @@ public class Canvas extends JComponent implements Refreshable {
    * <p>
    * This method can only be called before the actual
    * {@link HUDInteraction#acceptDragHUD(Point2D, MouseEvent)} method is called.
-   * 
+   *
    * @param hrp The HUD item.
    * @see HUDInteraction#clickHUD(Camera, Point2D, MouseEvent)
    */
@@ -166,7 +166,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param focus The component to focus when clicked.
    */
   public void setFocusComponent(final JComponent focus) {
@@ -175,7 +175,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The component to focus when clicked.
    */
   public JComponent getFocusComponent() {
@@ -184,7 +184,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Computes the position of a {@link MouseEvent} on the canvas.
-   * 
+   *
    * @param e The mouse event.
    * @return The position of the event on the canvas.
    */
@@ -205,7 +205,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Adds a keyboard action event.
-   * 
+   *
    * @param key The key id, given by {@link java.awt.event.KeyEvent}. (Constants
    *          beginning with <code>VK</code>)
    * @param a The action that is performed.
@@ -226,7 +226,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Adds a keyboard message.
-   * 
+   *
    * @param key The key id, given by {@link java.awt.event.KeyEvent}. (Constants
    *          beginning with <code>VK</code>)
    * @param message The message that is posted.
@@ -274,7 +274,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Processes messages for an action command.
-   * 
+   *
    * @param cmd The action command.
    */
   void processForActionCommand(final String cmd) {
@@ -288,7 +288,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Adds the message for the given command.
-   * 
+   *
    * @param cmd The command.
    * @param message The message.
    */
@@ -304,7 +304,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param frameRateDisplayer Sets the frame rate displayer. <code>null</code>
    *          stops time measuring.
    */
@@ -318,7 +318,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The current frame rate displayer or <code>null</code>.
    */
   public FrameRateDisplayer getFrameRateDisplayer() {
@@ -327,7 +327,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether frame time is measured.
    */
   public boolean isMeasuringFrameTime() {
@@ -357,7 +357,12 @@ public class Canvas extends JComponent implements Refreshable {
       }
     }
     if(mft) {
-      final long nano = watch != null ? watch.currentNano() : barrier.lastCycle();
+      final long nano;
+      if(barrier != null) {
+        nano = barrier.lastCycle();
+      } else if(watch != null) {
+        nano = watch.currentNano();
+      } else throw new AssertionError();
       frameRateDisplayer.setLastFrameTime(nano);
       frameRateDisplayer.drawFrameRate(g, getCanvasRect());
     }
@@ -368,7 +373,7 @@ public class Canvas extends JComponent implements Refreshable {
    * Returns the current canvas context. Note that it is not guaranteed that the
    * context returns correct values if the viewport changes after a call to this
    * method.
-   * 
+   *
    * @return The current canvas context.
    */
   public KanvasContext getContext() {
@@ -379,7 +384,7 @@ public class Canvas extends JComponent implements Refreshable {
    * Returns the current head-up display context. Note that it is not guaranteed
    * that the context returns correct values if the viewport changes after a
    * call to this method.
-   * 
+   *
    * @return The current head-up display context.
    */
   public KanvasContext getHUDContext() {
@@ -394,7 +399,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param animator The animator or <code>null</code> if no animation is used.
    *          If the animator is non-<code>null</code> a new barrier is
    *          installed.
@@ -421,7 +426,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The animator or <code>null</code> if no animation is used.
    */
   public Animator getAnimator() {
@@ -431,7 +436,7 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Schedules the given action to be executed after the specified time in
    * milliseconds.
-   * 
+   *
    * @param action The action to be executed. May be <code>null</code> when no
    *          action needs to be executed.
    * @param timing The timing to infer the duration.
@@ -445,7 +450,7 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Schedules the given action to be executed after the specified time in
    * milliseconds.
-   * 
+   *
    * @param action The action to be executed. May be <code>null</code> when no
    *          action needs to be executed.
    * @param delay The time to wait in milliseconds.
@@ -461,7 +466,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The associated camera.
    */
   public Camera getCamera() {
@@ -470,7 +475,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param cfg Sets the active view configuration.
    */
   public void setViewConfiguration(final ViewConfiguration cfg) {
@@ -483,7 +488,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The active view configuration.
    */
   public ViewConfiguration getViewConfiguration() {
@@ -527,7 +532,7 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Resets the viewport to fit the bounding box. If the bounding box is empty
    * the viewport will not be changed.
-   * 
+   *
    * @param timing The timing.
    * @param onFinish The action to perform when the viewport was set or when the
    *          method returns <code>false</code>. This method may be
@@ -544,7 +549,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The margin for viewport resets.
    */
   public double getMargin() {
@@ -553,7 +558,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param margin Sets the margin for viewport resets.
    */
   public void setMargin(final double margin) {
@@ -563,7 +568,7 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Resets the viewport to show exactly the given rectangle expanded by the
    * margin given by {@link #getMargin()}.
-   * 
+   *
    * @param bbox The rectangle that is visible.
    */
   public void reset(final RectangularShape bbox) {
@@ -573,7 +578,7 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Resets the viewport to show exactly the given rectangle expanded by the
    * margin.
-   * 
+   *
    * @param bbox The rectangle that is visible.
    * @param margin The margin.
    */
@@ -586,7 +591,7 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Shows only the given rectangle. This may lead to parts of the rectangle
    * that are not shown.
-   * 
+   *
    * @param bbox The rectangle.
    */
   public void showOnly(final RectangularShape bbox) {
@@ -599,7 +604,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param isUserZoomable Whether the user is allowed to zoom via scrolling.
    */
   public void setUserZoomable(final boolean isUserZoomable) {
@@ -608,7 +613,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether the user is allowed to zoom via scrolling.
    */
   public boolean isUserZoomable() {
@@ -620,7 +625,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Sets whether the canvas is moveable, ie whether it can be panned or zoomed.
-   * 
+   *
    * @param isMoveable If it is moveable.
    */
   public void setMoveable(final boolean isMoveable) {
@@ -629,7 +634,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return Is <code>true</code>, when the canvas can be panned and zoomed.
    */
   public boolean isMoveable() {
@@ -638,7 +643,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The currently visible portion of the canvas.
    */
   public Rectangle2D getVisibleCanvas() {
@@ -647,7 +652,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The canvas in component coordinates.
    */
   public Rectangle2D getCanvasRect() {
@@ -659,7 +664,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param restriction Sets the restriction rectangle.
    * @param timing How the transition to the restriction rectangle should be
    *          performed.
@@ -676,7 +681,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The current restriction or <code>null</code> if no restriction is
    *         currently set.
    */
@@ -688,7 +693,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether the canvas is restricted.
    */
   public boolean isRestricted() {
@@ -697,7 +702,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Returns the minimal zoom value.
-   * 
+   *
    * @return The minimal zoom value. If the value is non-positive then no
    *         restrictions are made.
    */
@@ -707,7 +712,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether zoom has a minimum.
    */
   public boolean hasMinZoom() {
@@ -716,7 +721,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Sets the current minimal zoom value.
-   * 
+   *
    * @param zoom The new minimal zoom value. Non-positive values indicate no
    *          restriction.
    */
@@ -728,7 +733,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Returns the maximal zoom value.
-   * 
+   *
    * @return The maximal zoom value. If the value is non-positive then no
    *         restrictions are made.
    */
@@ -738,7 +743,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether zoom has a maximum.
    */
   public boolean hasMaxZoom() {
@@ -747,7 +752,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Sets the current maximal zoom value.
-   * 
+   *
    * @param zoom The new maximal zoom value. Non-positive values indicate no
    *          restriction.
    */
@@ -763,7 +768,7 @@ public class Canvas extends JComponent implements Refreshable {
    * message. The id is separated from the message via the character '
    * <code>#</code>'. Multiple ids may be passed by separating them with space '
    * <code> </code>'
-   * 
+   *
    * @param msg The message to post.
    * @param timing The timing to infer the duration.
    * @throws IllegalArgumentException If the message part is empty.
@@ -778,7 +783,7 @@ public class Canvas extends JComponent implements Refreshable {
    * message. The id is separated from the message via the character '
    * <code>#</code>'. Multiple ids may be passed by separating them with space '
    * <code> </code>'
-   * 
+   *
    * @param msg The message to post.
    * @param delay The time in milliseconds until the message is processed.
    * @throws IllegalArgumentException If the message part is empty.
@@ -800,7 +805,7 @@ public class Canvas extends JComponent implements Refreshable {
    * consists of two parts: The optional id part and the actual message. The id
    * is separated from the message via the character '<code>#</code>'. Multiple
    * ids may be passed by separating them with space '<code> </code>'
-   * 
+   *
    * @param msg The message to post.
    * @throws IllegalArgumentException If the message part is empty.
    */
@@ -842,7 +847,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Validates the given message.
-   * 
+   *
    * @param msg The message.
    * @return The index of the id delimiter.
    */
@@ -858,7 +863,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The currently installed message handler or <code>null</code>.
    */
   public CanvasMessageHandler getMessageHandler() {
@@ -867,7 +872,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Setter.
-   * 
+   *
    * @param msgHnd The message handler or <code>null</code>.
    */
   public void setMessageHandler(final CanvasMessageHandler msgHnd) {
@@ -876,7 +881,7 @@ public class Canvas extends JComponent implements Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return The painter.
    */
   public KanvasPainter getPainter() {
@@ -891,7 +896,7 @@ public class Canvas extends JComponent implements Refreshable {
    * on MAC OS (
    * {@link javax.swing.JFrame#addWindowStateListener(java.awt.event.WindowStateListener)}
    * ).
-   * 
+   *
    * @param frame The frame.
    * @param canvas The canvas.
    * @return The adapter.
@@ -919,7 +924,7 @@ public class Canvas extends JComponent implements Refreshable {
   /**
    * Creates the mouse interaction for the given canvas. This method should only
    * be called once in the constructor of the canvas.
-   * 
+   *
    * @param canvas The canvas.
    * @return The mouse interaction.
    */
@@ -1076,7 +1081,7 @@ public class Canvas extends JComponent implements Refreshable {
 
       /**
        * Sets the offset according to the mouse position.
-       * 
+       *
        * @param x The mouse x position.
        * @param y The mouse y position.
        */

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package jkanvas.io.csv;
 
@@ -15,7 +15,7 @@ import jkanvas.util.Resource;
 /**
  * An easy to use csv reader. During the reading events are generated and passed
  * to the {@link CSVHandler} set by {@link #setHandler(CSVHandler)}.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class CSVReader {
@@ -25,7 +25,7 @@ public class CSVReader {
 
   /**
    * The context of the CSV cursor.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   private final class Context implements CSVContext {
@@ -50,7 +50,7 @@ public class CSVReader {
 
     /**
      * Creates a context.
-     * 
+     *
      * @param hasColNames Whether column names are present.
      * @param hasRowNames Whether row names are present.
      * @param trimFields Whether to trim fields.
@@ -59,7 +59,7 @@ public class CSVReader {
         final boolean trimFields) {
       this.hasRowNames = hasRowNames;
       trim = trimFields;
-      colNames = hasColNames ? new LinkedList<String>() : null;
+      colNames = hasColNames ? new LinkedList<>() : null;
       rowName = null;
       row = hasColNames ? -1 : 0;
       col = hasRowNames ? -1 : 0;
@@ -67,7 +67,7 @@ public class CSVReader {
 
     /**
      * Getter.
-     * 
+     *
      * @return Whether to trim fields.
      */
     public boolean trimFields() {
@@ -76,7 +76,7 @@ public class CSVReader {
 
     /**
      * Adds a column name.
-     * 
+     *
      * @param name The name.
      */
     public void addColName(final String name) {
@@ -85,7 +85,7 @@ public class CSVReader {
 
     /**
      * Sets the current row name.
-     * 
+     *
      * @param rowName The name.
      */
     public void setRowName(final String rowName) {
@@ -165,7 +165,7 @@ public class CSVReader {
 
   /**
    * Creates a csv reader.
-   * 
+   *
    * @param delimiter The cell delimiter.
    * @param string The string delimiter.
    */
@@ -175,7 +175,7 @@ public class CSVReader {
 
   /**
    * Creates a csv reader.
-   * 
+   *
    * @param delimiter The cell delimiter.
    * @param string The string delimiter.
    * @param columnTitles Whether to interpret the first row as column titles.
@@ -189,7 +189,7 @@ public class CSVReader {
 
   /**
    * Creates a csv reader.
-   * 
+   *
    * @param delimiter The cell delimiter.
    * @param string The string delimiter.
    * @param columnTitles Whether to interpret the first row as column titles.
@@ -209,7 +209,7 @@ public class CSVReader {
 
   /**
    * Creates a lazy representation of the rows of a resource.
-   * 
+   *
    * @param resource The resource.
    * @param reader The CSV reader.
    * @return A lazy collection of rows.
@@ -234,7 +234,7 @@ public class CSVReader {
 
   /**
    * Reads rows from a reader.
-   * 
+   *
    * @param r The reader.
    * @param reader The CSV reader.
    * @return A lazy iterator.
@@ -296,7 +296,7 @@ public class CSVReader {
 
   /**
    * Reads from a reader.
-   * 
+   *
    * @param r The reader.
    * @throws IOException If an I/O Exception occurs.
    */
@@ -373,7 +373,7 @@ public class CSVReader {
 
   /**
    * Handles a cell.
-   * 
+   *
    * @param hnd The handler.
    * @param content The content.
    * @param ctx The context.
@@ -413,7 +413,7 @@ public class CSVReader {
 
   /**
    * Advances the current line.
-   * 
+   *
    * @param ctx The context.
    */
   private static void line(final Context ctx) {
@@ -422,7 +422,7 @@ public class CSVReader {
 
   /**
    * Sets the csv handler.
-   * 
+   *
    * @param handler The handler.
    */
   public void setHandler(final CSVHandler handler) {
@@ -431,7 +431,7 @@ public class CSVReader {
 
   /**
    * Setter.
-   * 
+   *
    * @param colTitle Whether to interpret the first row as column titles.
    */
   public void setReadColTitles(final boolean colTitle) {
@@ -440,7 +440,7 @@ public class CSVReader {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether the first row is interpreted as column titles.
    */
   public boolean readColTitles() {
@@ -449,7 +449,7 @@ public class CSVReader {
 
   /**
    * Setter.
-   * 
+   *
    * @param rowTitle Whether to interpret the first column as row titles.
    */
   public void setReadRowTitles(final boolean rowTitle) {
@@ -458,7 +458,7 @@ public class CSVReader {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether the first column is interpreted as row titles.
    */
   public boolean readRowTitles() {
@@ -467,7 +467,7 @@ public class CSVReader {
 
   /**
    * Setter.
-   * 
+   *
    * @param trimFields Whether to trim fields.
    */
   public void setTrimFields(final boolean trimFields) {
@@ -476,7 +476,7 @@ public class CSVReader {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether to trim fields.
    */
   public boolean trimFields() {

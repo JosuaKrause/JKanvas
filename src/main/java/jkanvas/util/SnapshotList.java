@@ -18,7 +18,7 @@ import java.util.Set;
  * <code>null</code> pointers to indicate that this element no longer exists or
  * is invalid. To reduce the number of <code>null</code> pointers garbage
  * collection is performed when needed.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The element type.
  */
@@ -43,7 +43,7 @@ public class SnapshotList<T> {
 
   /**
    * Adds an object. Elements are guaranteed to appear only once in the list.
-   * 
+   *
    * @param elem The object. Must be non-<code>null</code>.
    */
   public final void add(final T elem) {
@@ -55,7 +55,7 @@ public class SnapshotList<T> {
 
   /**
    * Getter.
-   * 
+   *
    * @param el The element to check or <code>null</code> if it does not exist
    *          anymore.
    * @return Whether the element is still valid. If the element was
@@ -69,13 +69,13 @@ public class SnapshotList<T> {
    * A snapshot of the given list. Getter methods may return <code>null</code>
    * pointers to indicate that the element in question has been removed from
    * memory recently. The snapshot is best used as a resource:
-   * 
+   *
    * <pre>
    * try (Snapshot<...> s = snapshotList.getSnapshot()) {
    *   // ... do stuff
    * }
    * </pre>
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    * @param <T> The element type.
    */
@@ -90,7 +90,7 @@ public class SnapshotList<T> {
 
     /**
      * Creates a snapshot.
-     * 
+     *
      * @param list The snapshot list.
      * @param content The snapshot content.
      */
@@ -107,7 +107,7 @@ public class SnapshotList<T> {
 
     /**
      * Getter.
-     * 
+     *
      * @param index The index.
      * @return Returns the element at the given position. The result may be
      *         <code>null</code> indicating that the element was just recently
@@ -127,7 +127,7 @@ public class SnapshotList<T> {
 
     /**
      * Getter.
-     * 
+     *
      * @return The size of the list.
      */
     public int size() {
@@ -183,7 +183,7 @@ public class SnapshotList<T> {
 
   /**
    * Actually adds the elements of the waiting list.
-   * 
+   *
    * @param gc Whether to also remove all <code>null</code> pointers.
    */
   private final void addAll(final boolean gc) {
@@ -218,7 +218,7 @@ public class SnapshotList<T> {
       if(contained.contains(add)) {
         continue;
       }
-      list.add(new WeakReference<T>(add));
+      list.add(new WeakReference<>(add));
       contained.add(add);
     }
     toBeAdded.clear();
@@ -236,7 +236,7 @@ public class SnapshotList<T> {
 
   /**
    * Ends a snapshot.
-   * 
+   *
    * @param gc Whether to remove all <code>null</code> pointers when this
    *          snapshot was the last.
    */
@@ -252,13 +252,13 @@ public class SnapshotList<T> {
    * Creates a snapshot. Getter methods may return <code>null</code> pointers to
    * indicate that the element in question has been removed from memory
    * recently. The snapshot is best used as a resource:
-   * 
+   *
    * <pre>
    * try (Snapshot<...> s = snapshotList.getSnapshot()) {
    *   // ... do stuff
    * }
    * </pre>
-   * 
+   *
    * @return Creates a snapshot.
    */
   public final Snapshot<T> getSnapshot() {
@@ -267,7 +267,7 @@ public class SnapshotList<T> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The number of currently active snapshots.
    */
   public final int activeSnapshots() {

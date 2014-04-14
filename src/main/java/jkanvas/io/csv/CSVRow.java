@@ -8,13 +8,13 @@ import java.util.Set;
 
 /**
  * A CSV row.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class CSVRow {
 
   /** The title map. */
-  private final Map<String, String> map = new HashMap<String, String>();
+  private final Map<String, String> map = new HashMap<>();
   /** The index map. */
   private String[] indexed;
   /** The column titles. */
@@ -25,7 +25,7 @@ public final class CSVRow {
   /**
    * Creates a row with a predefined number of columns. The number may but
    * should not be different.
-   * 
+   *
    * @param numCols The estimated number of columns.
    */
   public CSVRow(final int numCols) {
@@ -35,7 +35,7 @@ public final class CSVRow {
 
   /**
    * Adds a cell to the row.
-   * 
+   *
    * @param index The index of the cell.
    * @param name The name/title of the column.
    * @param value The content of the cell.
@@ -54,7 +54,7 @@ public final class CSVRow {
 
   /**
    * Whether the given title is present.
-   * 
+   *
    * @param name The title.
    * @return Whether the title is present.
    */
@@ -64,7 +64,7 @@ public final class CSVRow {
 
   /**
    * Checks whether the given index exists.
-   * 
+   *
    * @param i The index.
    * @return Whether the index exists.
    */
@@ -74,7 +74,7 @@ public final class CSVRow {
 
   /**
    * Getter.
-   * 
+   *
    * @return The highest used index.
    */
   public int highestIndex() {
@@ -83,7 +83,7 @@ public final class CSVRow {
 
   /**
    * Getter.
-   * 
+   *
    * @param index The index.
    * @return The content at the given index.
    */
@@ -95,7 +95,7 @@ public final class CSVRow {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The title.
    * @return The content of the cell with the given column name.
    */
@@ -105,7 +105,7 @@ public final class CSVRow {
 
   /**
    * Getter.
-   * 
+   *
    * @param index The index.
    * @return The title of the given index.
    */
@@ -115,7 +115,7 @@ public final class CSVRow {
 
   /**
    * Getter.
-   * 
+   *
    * @return A set of available names.
    */
   public Set<String> names() {

@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Accesses the static <code>loadFromJSON</code> method from a class to create
  * objects via JSON description.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class JSONLoader {
@@ -21,7 +21,7 @@ public final class JSONLoader {
 
   /**
    * Prepends the JSON element to the front of the argument list.
-   * 
+   *
    * @param el The JSON element.
    * @param argValues The argument list.
    * @return The new argument list.
@@ -35,7 +35,7 @@ public final class JSONLoader {
 
   /**
    * Computes the types of the argument list.
-   * 
+   *
    * @param argValues The arguments.
    * @return The types of the arguments.
    */
@@ -53,7 +53,7 @@ public final class JSONLoader {
    * method must accept the JSON element as first argument and the other
    * arguments in the given order. The result of the method must be of the
    * result type.
-   * 
+   *
    * @param <T> The type of the resulting object.
    * @param el The JSON element to construct the object.
    * @param result The result type.
@@ -72,7 +72,9 @@ public final class JSONLoader {
       final Method m = clz.getDeclaredMethod("loadFromJSON", argTypes(args));
       if(!result.isAssignableFrom(m.getReturnType())) throw new IllegalArgumentException(
           "return type of method must be a " + clz.getName());
-      return (T) m.invoke(null, args);
+      @SuppressWarnings("unchecked")
+      final T res = (T) m.invoke(null, args);
+      return res;
     } catch(final ClassNotFoundException | NoSuchMethodException | SecurityException
         | IllegalAccessException | InvocationTargetException e) {
       throw new IllegalArgumentException(e);
@@ -81,7 +83,7 @@ public final class JSONLoader {
 
   /**
    * Reads a rectangle from JSON.
-   * 
+   *
    * @param el The element.
    * @return The rectangle.
    */
@@ -96,7 +98,7 @@ public final class JSONLoader {
 
   /**
    * Reads a point from JSON.
-   * 
+   *
    * @param el The element.
    * @return The point.
    */

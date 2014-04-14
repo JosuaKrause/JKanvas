@@ -19,7 +19,7 @@ import jkanvas.painter.RenderpassPainter;
 /**
  * A thin wrapper around a render pass. Thin wrapper do ignore each other
  * allowing to stack them on top of each other.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The innermost wrapped type.
  */
@@ -43,9 +43,10 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
    * Creates a thin wrapper around the given render pass. You may set the offset
    * of the render pass via {@link #setChildOffset(double, double)} after the
    * initialization.
-   * 
+   *
    * @param wrap The render pass to wrap.
    */
+  @SuppressWarnings("unchecked")
   public Renderpod(final T wrap) {
     if(wrap instanceof Renderpod) {
       wrapper = (Renderpod<T>) Objects.requireNonNull(wrap);
@@ -64,7 +65,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
    * Creates a thin wrapper around the given render pass. You may set the offset
    * of the render pass via {@link #setChildOffset(double, double)} after the
    * initialization.
-   * 
+   *
    * @param wrap The wrapper to wrap.
    */
   public Renderpod(final Renderpod<T> wrap) {
@@ -77,7 +78,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether this pod is active.
    */
   public boolean isActive() {
@@ -86,7 +87,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Setter.
-   * 
+   *
    * @param active Whether this pod is active.
    */
   public void setActive(final boolean active) {
@@ -101,7 +102,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return Gets the innermost wrapped render pass.
    */
   public T unwrap() {
@@ -114,7 +115,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return The x offset of the inner render pass in relation to the parent of
    *         this render pod.
    */
@@ -133,7 +134,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return The y offset of the inner render pass in relation to the parent of
    *         this render pod.
    */
@@ -153,7 +154,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
   /**
    * Computes the bounding box of the inner render pass in relation to the
    * parent of this render pod.
-   * 
+   *
    * @param bbox The bounding box to store the result in.
    */
   public void unwrapBoundingBox(final RectangularShape bbox) {
@@ -162,7 +163,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return The parent pod or <code>null</code> if this is the final pod.
    */
   public Renderpod<T> getChildPod() {
@@ -171,7 +172,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Sets the offset of the wrapped render pass.
-   * 
+   *
    * @param x The x offset.
    * @param y The y offset.
    */
@@ -182,7 +183,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Computes the inner bounding box ignoring all other wrap render passes.
-   * 
+   *
    * @param bbox The bounding box in which can be drawn.
    */
   public final void getInnerBoundingBox(final Rectangle2D bbox) {
@@ -204,7 +205,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Adds the own bounds to the given bounding box.
-   * 
+   *
    * @param bbox The bounding box of the wrapped render passed.
    */
   protected abstract void addOwnBox(RectangularShape bbox);
@@ -230,7 +231,7 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
 
   /**
    * Draws the wrapper.
-   * 
+   *
    * @param g The graphics context.
    * @param ctx The canvas context.
    */
@@ -281,7 +282,8 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
   }
 
   @Override
-  public void drag(final Point2D _, final Point2D cur, final double dx, final double dy) {
+  public void drag(final Point2D _start, final Point2D cur,
+      final double dx, final double dy) {
     // dx and dy do not change
     final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, cur);
@@ -289,7 +291,8 @@ public abstract class Renderpod<T extends Renderpass> extends CachedRenderpass {
   }
 
   @Override
-  public void endDrag(final Point2D _, final Point2D end, final double dx, final double dy) {
+  public void endDrag(final Point2D _start, final Point2D end,
+      final double dx, final double dy) {
     // dx and dy do not change
     final Renderpass pass = list.get(0);
     final Point2D pos = RenderpassPainter.getPositionFromCanvas(pass, end);
