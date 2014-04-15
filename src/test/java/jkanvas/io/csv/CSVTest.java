@@ -13,14 +13,14 @@ import org.junit.Test;
 
 /**
  * Tests for the csv reader.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class CSVTest {
 
   /**
    * The event type.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   public static enum EventType {
@@ -39,7 +39,7 @@ public class CSVTest {
 
   /**
    * An CSV event.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   private static final class Event {
@@ -64,7 +64,7 @@ public class CSVTest {
 
     /**
      * Creates an event without content.
-     * 
+     *
      * @param type The event type.
      * @param r The row index.
      * @param c The column index.
@@ -75,7 +75,7 @@ public class CSVTest {
 
     /**
      * Creates an event with content.
-     * 
+     *
      * @param type The event type.
      * @param r The row index.
      * @param c The column index.
@@ -87,7 +87,7 @@ public class CSVTest {
 
     /**
      * Creates an event with row and column title.
-     * 
+     *
      * @param type The event type.
      * @param r The row index.
      * @param c The column index.
@@ -137,17 +137,17 @@ public class CSVTest {
 
   /**
    * The handler for tests.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   protected final class TestHandler implements CSVHandler {
 
     /** The list with events. */
-    private final List<Event> events = new ArrayList<Event>();
+    private final List<Event> events = new ArrayList<>();
 
     /**
      * Checks whether the received events are correct.
-     * 
+     *
      * @param es The events.
      */
     public void test(final Event[] es) {
@@ -319,7 +319,7 @@ public class CSVTest {
 
   /**
    * Does the actual test.
-   * 
+   *
    * @param reader The reader.
    * @param in The input string.
    * @param valid Valid events in the correct order.
@@ -335,7 +335,7 @@ public class CSVTest {
 
   /**
    * Tests types of cells.
-   * 
+   *
    * @throws Exception Exception.
    */
   @Test
@@ -345,7 +345,7 @@ public class CSVTest {
 
   /**
    * Tests different line endings.
-   * 
+   *
    * @throws Exception Exception.
    */
   @Test
@@ -357,7 +357,7 @@ public class CSVTest {
 
   /**
    * Tests delimiters in cells.
-   * 
+   *
    * @throws Exception Exception.
    */
   @Test
@@ -367,7 +367,7 @@ public class CSVTest {
 
   /**
    * Tests different title modes.
-   * 
+   *
    * @throws Exception Exception.
    */
   @Test
@@ -383,7 +383,7 @@ public class CSVTest {
 
   /**
    * Tests csv writing.
-   * 
+   *
    * @throws Exception Exception.
    */
   @Test
@@ -392,42 +392,42 @@ public class CSVTest {
     final String test = "abc;\";\";\"\"\"\"" + NL + "def;ghu;\"" + NL
         + "\";" + NL;
     final StringWriter out = new StringWriter();
-    final CSVWriter cw = new CSVWriter(new PrintWriter(out) {
+    try (final CSVWriter cw = new CSVWriter(new PrintWriter(out) {
 
       @Override
       public void println() {
         print(NL);
       }
 
-    });
-    csv.setHandler(new CSVAdapter() {
+    })) {
+      csv.setHandler(new CSVAdapter() {
 
-      @Override
-      public void cell(final CSVContext ctx, final String content) {
-        cw.writeCell(content);
-      }
-
-      @Override
-      public void row(final CSVContext ctx) {
-        if(ctx.row() > 0) {
-          cw.writeRow();
+        @Override
+        public void cell(final CSVContext ctx, final String content) {
+          cw.writeCell(content);
         }
-      }
 
-      @Override
-      public void end(final CSVContext ctx) {
-        try {
-          cw.close();
-        } catch(final IOException e) {
-          throw new RuntimeException(e);
+        @Override
+        public void row(final CSVContext ctx) {
+          if(ctx.row() > 0) {
+            cw.writeRow();
+          }
         }
-      }
 
-    });
-    csv.read(new StringReader(test));
-    if(!out.toString().equals(test)) throw new IllegalStateException(
-        "expected \"" + test + "\" got \""
-            + out.toString() + "\"");
+        @Override
+        public void end(final CSVContext ctx) {
+          try {
+            cw.close();
+          } catch(final IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+
+      });
+      csv.read(new StringReader(test));
+      if(!out.toString().equals(test)) throw new IllegalStateException(
+          "expected \"" + test + "\" got \""
+              + out.toString() + "\"");
+    }
   }
-
 }

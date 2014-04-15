@@ -29,7 +29,7 @@ import jkanvas.util.VecUtil;
  * subclasses. Render passes without bounding boxes may or may not be allowed
  * depending of the implementation of the subclass. Transitions between layouts
  * can be animated.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  * @param <T> The type of layouted render passes.
  */
@@ -37,12 +37,12 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * The offset of a render pass as {@link AnimatedPosition}.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    * @param <T> The type of the render pass.
    */
   public static final class RenderpassPosition<T extends Renderpass>
-      extends GenericAnimated<Point2D> {
+  extends GenericAnimated<Point2D> {
 
     /** The render pass. */
     public final T pass;
@@ -52,7 +52,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
     /**
      * Creates a render pass position.
-     * 
+     *
      * @param pass The render pass.
      * @param list The animation list.
      */
@@ -98,7 +98,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
     /**
      * Checks whether the bounding box has changed since the last call and sets
      * the current bounding box.
-     * 
+     *
      * @return Whether the bounding box has changed.
      */
     public boolean checkBBoxChange() {
@@ -110,7 +110,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
     /**
      * Getter.
-     * 
+     *
      * @return The bounding box of the pass. The box must not be changed. The
      *         value is refreshed by calling {@link #checkBBoxChange()}.
      */
@@ -120,7 +120,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
     /**
      * Getter.
-     * 
+     *
      * @param rect When the position is in animation the resulting frame is the
      *          destination bounding-box of the render pass. Otherwise the
      *          current bounding box is used.
@@ -151,7 +151,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Creates a new render pass group.
-   * 
+   *
    * @param animator The underlying animator.
    */
   public RenderGroup(final Animator animator) {
@@ -162,7 +162,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return The animator for this render group.
    */
   public Animator getAnimator() {
@@ -181,7 +181,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
    * with {@link #remove(RenderpassPosition)}. This method is a convenience
    * method for methods that have direct access to the member list like
    * {@link #doLayout(List)}.
-   * 
+   *
    * @param pass The render pass.
    * @return The converted render pass position.
    */
@@ -196,7 +196,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
    * Safely removes a render pass position directly without altering the member
    * list. This method is a convenience method for methods that have direct
    * access to the member list like {@link #doLayout(List)}.
-   * 
+   *
    * @param rp The render pass position.
    */
   protected void remove(final RenderpassPosition<T> rp) {
@@ -206,7 +206,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * This method is called before a render pass is added. It can be used to
    * prepare the render pass to be added.
-   * 
+   *
    * @param pass The render pass that will be added.
    */
   protected void beforeAdding(@SuppressWarnings("unused") final T pass) {
@@ -215,19 +215,19 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Converts a render pass to a render pass position.
-   * 
+   *
    * @param pass The render pass.
    * @return The position.
    */
   private RenderpassPosition<T> convert(final T pass) {
     if(this == pass) throw new IllegalArgumentException("cannot add itself");
     beforeAdding(Objects.requireNonNull(pass));
-    return new RenderpassPosition<T>(pass, animator.getAnimationList());
+    return new RenderpassPosition<>(pass, animator.getAnimationList());
   }
 
   /**
    * This method is called after a render pass is added.
-   * 
+   *
    * @param rp The render pass position.
    */
   protected void addedRenderpass(
@@ -237,7 +237,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * This method is always called after a render pass is added.
-   * 
+   *
    * @param p The render pass position.
    */
   private void addedRenderpassIntern(final RenderpassPosition<T> p) {
@@ -247,7 +247,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * This method is called after a render pass is removed.
-   * 
+   *
    * @param rp The render pass position.
    */
   protected void removedRenderpass(
@@ -257,7 +257,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * This method is always called after a render pass is removed.
-   * 
+   *
    * @param p The render pass position.
    */
   private void removedRenderpassIntern(final RenderpassPosition<T> p) {
@@ -267,7 +267,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Adds a render pass.
-   * 
+   *
    * @param pass The render pass.
    */
   public void addRenderpass(final T pass) {
@@ -279,7 +279,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Inserts a render pass.
-   * 
+   *
    * @param index The index where the render pass will be inserted.
    * @param pass The render pass.
    */
@@ -292,7 +292,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @param r The abstract render pass to find.
    * @return The index of the given render pass or <code>-1</code> if the pass
    *         could not be found. Equality is defined by identity.
@@ -307,7 +307,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Removes the render pass at the given index.
-   * 
+   *
    * @param index The index.
    */
   public void removeRenderpass(final int index) {
@@ -328,7 +328,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return The number of render passes.
    */
   public int renderpassCount() {
@@ -337,7 +337,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @param index The index.
    * @return The render pass at the given position.
    */
@@ -348,7 +348,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * Sets the position of the given render pass and executes the given action
    * afterwards.
-   * 
+   *
    * @param pass The render pass.
    * @param pos The new position.
    * @param onFinish The (optional) action to execute afterwards.
@@ -360,7 +360,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * Sets the position of the given render pass and executes the given action
    * afterwards.
-   * 
+   *
    * @param index The index of the render pass.
    * @param pos The new position.
    * @param onFinish The (optional) action to execute afterwards.
@@ -373,7 +373,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * Transitions a render pass to the given position and executes the given
    * action afterwards.
-   * 
+   *
    * @param pass The render pass.
    * @param pos The new position.
    * @param timing The animation timing.
@@ -387,7 +387,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * Transitions a render pass to the given position and executes the given
    * action afterwards.
-   * 
+   *
    * @param index The index of the render pass.
    * @param pos The new position.
    * @param timing The animation timing.
@@ -400,7 +400,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Setter.
-   * 
+   *
    * @param index The index.
    * @param pass The render pass.
    */
@@ -414,7 +414,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Adds a render pass that is not used for the layout.
-   * 
+   *
    * @param pass The render pass.
    * @param front Whether this pass is added in front of the layouted passes.
    */
@@ -429,7 +429,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Inserts a render pass that is not used for the layout.
-   * 
+   *
    * @param index The index where the render pass will be inserted.
    * @param pass The render pass.
    * @param front Whether this pass is added in front of the layouted passes.
@@ -445,7 +445,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Removes a render pass that is not used for the layout.
-   * 
+   *
    * @param index The index of the render pass.
    * @param front Whether this pass is found in front of the layouted passes.
    */
@@ -460,7 +460,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Sets the render pass that is not used for the layout at the given position.
-   * 
+   *
    * @param index The index.
    * @param pass The render pass.
    * @param front Whether this method addresses passes in front of the layouted
@@ -477,7 +477,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @param index The index.
    * @param front Whether this method addresses passes in front of the layouted
    *          passes.
@@ -496,7 +496,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @param front Whether this method addresses passes in front of the layouted
    *          passes.
    * @return The number of render passes that are not used for the layout.
@@ -514,7 +514,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * Computes the current layout. The implementation may decide whether to allow
    * render passes without bounding box.
-   * 
+   *
    * @param members The positions of the render passes.
    */
   protected void doLayout(final List<RenderpassPosition<T>> members) {
@@ -528,7 +528,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Setter.
-   * 
+   *
    * @param layout The layout of the group or <code>null</code> if the default
    *          layout should be used.
    */
@@ -539,7 +539,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return The layout of the group or <code>null</code> if the default layout
    *         should be used.
    */
@@ -563,7 +563,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Enables to draw between two adjacent render passes.
-   * 
+   *
    * @param gfx The graphics context. This context must be copied implementation
    *          side and must therefore <em>not</em> be altered without creating a
    *          copy.
@@ -644,7 +644,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Copies the member list for iterations that allow modifications to the list.
-   * 
+   *
    * @return The member list as array.
    */
   private RenderpassPosition<T>[] members() {
@@ -730,7 +730,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
 
   /**
    * Picks a layouted render pass.
-   * 
+   *
    * @param position The position.
    * @return The render pass at the given position or <code>null</code> if there
    *         is none.
@@ -761,7 +761,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   /**
    * Checks whether the given render pass accepts the drag. When the render pass
    * accepts the drag everything is set up properly.
-   * 
+   *
    * @param r The render pass to check.
    * @param position The position in canvas coordinates.
    * @param e The mouse event.
@@ -796,7 +796,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public final void drag(final Point2D _, final Point2D cur,
+  public final void drag(final Point2D _start, final Point2D cur,
       final double dx, final double dy) {
     if(dragging == null) return;
     // dx and dy do not change
@@ -805,7 +805,7 @@ public class RenderGroup<T extends Renderpass> extends Renderpass {
   }
 
   @Override
-  public final void endDrag(final Point2D _, final Point2D end,
+  public final void endDrag(final Point2D _start, final Point2D end,
       final double dx, final double dy) {
     if(dragging == null) return;
     // dx and dy do not change

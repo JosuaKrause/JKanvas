@@ -15,7 +15,7 @@ import javax.swing.JComponent;
 
 /**
  * Saves screenshots.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class Screenshot {
@@ -30,7 +30,7 @@ public final class Screenshot {
 
   /**
    * Ensures that a directory exists.
-   * 
+   *
    * @param dir The directory.
    */
   private static void ensureDir(final File dir) {
@@ -43,7 +43,7 @@ public final class Screenshot {
 
   /**
    * Finds an unused file in the given directory.
-   * 
+   *
    * @param dir The directory.
    * @param prefix The name prefix.
    * @param postfix The name postfix. The dot before the extension is needed.
@@ -65,7 +65,7 @@ public final class Screenshot {
 
   /**
    * Saves a screenshot.
-   * 
+   *
    * @param dir The directory.
    * @param prefix The name prefix.
    * @param comp The component to draw.
@@ -79,7 +79,7 @@ public final class Screenshot {
 
   /**
    * Saves a screenshot.
-   * 
+   *
    * @param dir The directory.
    * @param prefix The name prefix.
    * @param postfix The name extension.
@@ -90,7 +90,9 @@ public final class Screenshot {
   public static File save(final File dir, final String prefix,
       final String postfix, final JComponent comp) throws IOException {
     final File out = findFile(dir, prefix, postfix);
-    save(new FileOutputStream(out), comp);
+    try (OutputStream os = new FileOutputStream(out)) {
+      save(os, comp);
+    }
     return out;
   }
 
@@ -122,7 +124,7 @@ public final class Screenshot {
 
   /**
    * Saves a screenshot.
-   * 
+   *
    * @param out The output.
    * @param comp The component.
    * @throws IOException I/O Exception.
@@ -135,7 +137,7 @@ public final class Screenshot {
 
   /**
    * Setter.
-   * 
+   *
    * @param algo The screenshot algorithm to use.
    */
   public static void setAlgorithm(final ScreenshotAlgorithm algo) {
@@ -144,7 +146,7 @@ public final class Screenshot {
 
   /**
    * Getter.
-   * 
+   *
    * @return The currently used screenshot algorithm.
    */
   public static ScreenshotAlgorithm getAlgorithm() {
@@ -153,7 +155,7 @@ public final class Screenshot {
 
   /**
    * Getter.
-   * 
+   *
    * @param comp The component to take a screenshot of.
    * @return The size of the screenshot.
    */
@@ -163,7 +165,7 @@ public final class Screenshot {
 
   /**
    * Paints a screenshot of the given component to the graphics context.
-   * 
+   *
    * @param comp The component.
    * @param g The graphics context.
    */
@@ -179,7 +181,7 @@ public final class Screenshot {
 
   /**
    * Pads the given positive number with zeros.
-   * 
+   *
    * @param number The number to pad.
    * @param figures The number of figures allowed.
    * @return The padded number.

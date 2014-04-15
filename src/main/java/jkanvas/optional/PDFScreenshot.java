@@ -20,7 +20,7 @@ import jkanvas.util.ScreenshotAlgorithm;
  * Provides a method to create PDF screenshots. This class depends on <a
  * href="http://itextpdf.com/">iText<sup>&#174;</sup></a> which must be included
  * in the class-path. With Maven you can use the following dependency:
- * 
+ *
  * <pre>
  * &lt;dependency&gt;
  *   &lt;groupId&gt;com.itextpdf&lt;/groupId&gt;
@@ -29,7 +29,7 @@ import jkanvas.util.ScreenshotAlgorithm;
  *   &lt;type&gt;jar&lt;/type&gt;
  * &lt;/dependency&gt;
  * </pre>
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class PDFScreenshot implements ScreenshotAlgorithm {
@@ -54,7 +54,7 @@ public final class PDFScreenshot implements ScreenshotAlgorithm {
   /**
    * Creates the PDF screenshot instance. All necessary classes and methods are
    * loaded here.
-   * 
+   *
    * @throws ClassNotFoundException When a class could not be found.
    * @throws NoSuchMethodException When a method does not exist.
    * @throws SecurityException Security exception.
@@ -72,6 +72,7 @@ public final class PDFScreenshot implements ScreenshotAlgorithm {
     writerContent = writer.getMethod("getDirectContent");
     writerClose = writer.getMethod("close");
     final Class<?> cb = Class.forName("com.itextpdf.text.pdf.PdfContentByte");
+    @SuppressWarnings("unchecked")
     final Class<Graphics2D> pdfGfx = (Class<Graphics2D>) Class.forName("com.itextpdf.awt.PdfGraphics2D");
     pdfGfxNew = pdfGfx.getConstructor(cb, Float.TYPE, Float.TYPE);
   }
@@ -130,7 +131,7 @@ public final class PDFScreenshot implements ScreenshotAlgorithm {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether this class can be used.
    */
   public static boolean hasITextPdf() {
@@ -148,7 +149,7 @@ public final class PDFScreenshot implements ScreenshotAlgorithm {
 
   /**
    * Getter.
-   * 
+   *
    * @return The PDF screenshot algorithm instance if the library could be
    *         loaded.
    */

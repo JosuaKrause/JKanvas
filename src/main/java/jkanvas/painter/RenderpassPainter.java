@@ -19,7 +19,7 @@ import jkanvas.util.PaintUtil;
 
 /**
  * A render pass painter renders render passes.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class RenderpassPainter implements KanvasPainter {
@@ -43,7 +43,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Adds a new render pass on top.
-   * 
+   *
    * @param r The render pass.
    */
   public void addPass(final Renderpass r) {
@@ -52,7 +52,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Removes a render pass.
-   * 
+   *
    * @param r The render pass.
    */
   public void removePass(final Renderpass r) {
@@ -61,7 +61,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Adds a new HUD render pass on top.
-   * 
+   *
    * @param r The HUD render pass.
    */
   public void addHUDPass(final HUDRenderpass r) {
@@ -70,7 +70,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Removes a HUD render pass.
-   * 
+   *
    * @param r The HUD render pass.
    */
   public void removeHUDPass(final HUDRenderpass r) {
@@ -87,7 +87,7 @@ public class RenderpassPainter implements KanvasPainter {
    * Draws all render passes given by the list. This method obeys
    * {@link jkanvas.Canvas#DEBUG_BBOX} by using the current color to draw the
    * bounding boxes.
-   * 
+   *
    * @param passes The render passes to draw.
    * @param gfx The graphics context.
    * @param ctx The canvas context.
@@ -138,7 +138,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Clicks on render passes.
-   * 
+   *
    * @param passes The list of render passes.
    * @param cam The camera on which the interaction happened.
    * @param p The clicked point in canvas coordinates.
@@ -174,7 +174,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Double clicks on render passes.
-   * 
+   *
    * @param passes The list of render passes.
    * @param cam The camera on which the interaction happened.
    * @param p The double clicked point in canvas coordinates.
@@ -206,7 +206,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Returns the tool-tip from the first render pass returning one.
-   * 
+   *
    * @param passes The render passes.
    * @param p The point in canvas coordinates.
    * @return The tool-tip text or null if no tool-tip was returned by any render
@@ -237,7 +237,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Moves the mouse. This method is always called on every render pass.
-   * 
+   *
    * @param passes The render passes.
    * @param cur The current position.
    * @return Whether any render pass has been affected by the mouse move.
@@ -285,7 +285,7 @@ public class RenderpassPainter implements KanvasPainter {
   }
 
   @Override
-  public final void drag(final Point2D _, final Point2D cur,
+  public final void drag(final Point2D _start, final Point2D cur,
       final double dx, final double dy) {
     if(dragging == null) return;
     // dx and dy do not change
@@ -294,7 +294,7 @@ public class RenderpassPainter implements KanvasPainter {
   }
 
   @Override
-  public final void endDrag(final Point2D _, final Point2D end,
+  public final void endDrag(final Point2D _start, final Point2D end,
       final double dx, final double dy) {
     if(dragging == null) return;
     // dx and dy do not change
@@ -385,7 +385,7 @@ public class RenderpassPainter implements KanvasPainter {
   /**
    * Converts a position in canvas coordinates to the position of the given
    * render pass.
-   * 
+   *
    * @param r The render pass.
    * @param pos The position in canvas coordinates.
    * @return The position in render pass coordinates.
@@ -397,7 +397,7 @@ public class RenderpassPainter implements KanvasPainter {
   /**
    * Converts a position in component coordinates to the position of the given
    * render pass.
-   * 
+   *
    * @param r The render pass.
    * @param ctx The current (non render pass adjusted) context.
    * @param pos The position in components coordinates.
@@ -411,7 +411,7 @@ public class RenderpassPainter implements KanvasPainter {
   /**
    * Converts the given context to represent the context of the given render
    * pass.
-   * 
+   *
    * @param r The render pass.
    * @param ctx The context.
    * @return The transformed context.
@@ -424,7 +424,7 @@ public class RenderpassPainter implements KanvasPainter {
   /**
    * Converts the given context to represent the context of the given render
    * pass from the top level.
-   * 
+   *
    * @param r The render pass.
    * @param ctx The context.
    * @return The transformed context.
@@ -438,7 +438,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Getter.
-   * 
+   *
    * @param rect The rectangle in which the bounding box of the render pass in
    *          canvas coordinates is stored.
    * @param r The render pass.
@@ -452,7 +452,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Calculates the joined bounding boxes of the given render passes.
-   * 
+   *
    * @param rect The rectangle where the result is stored. Note that the result
    *          may be empty.
    * @param passes The render passes.
@@ -473,7 +473,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Adds the other rectangle to the given rectangular shape.
-   * 
+   *
    * @param rect The rectangle to extend.
    * @param other The rectangle to add.
    */
@@ -504,7 +504,7 @@ public class RenderpassPainter implements KanvasPainter {
    * Processes a message handed in via the
    * {@link jkanvas.Canvas#postMessage(String)} method. This method forwards the
    * message to all visible children.
-   * 
+   *
    * @param passes The children.
    * @param ids The ids that accept the message.
    * @param msg The message.
@@ -520,7 +520,7 @@ public class RenderpassPainter implements KanvasPainter {
    * Processes a message handed in via the
    * {@link jkanvas.Canvas#postMessage(String)} method. This method forwards the
    * message to all visible children.
-   * 
+   *
    * @param passes The children.
    * @param ids The ids that accept the message.
    * @param msg The message.
@@ -534,7 +534,7 @@ public class RenderpassPainter implements KanvasPainter {
 
   /**
    * Whether the render pass is visible at top level.
-   * 
+   *
    * @param pass The render pass.
    * @return Whether it is actually visible.
    */
@@ -546,7 +546,7 @@ public class RenderpassPainter implements KanvasPainter {
   /**
    * Computes the top level bounding box position of the given render pass in
    * canvas coordinates.
-   * 
+   *
    * @param bbox The rectangle in which the result will be stored.
    * @param pass The render pass.
    */
@@ -558,7 +558,7 @@ public class RenderpassPainter implements KanvasPainter {
   /**
    * Converts a rectangle in render pass local coordinates into top level canvas
    * coordinates.
-   * 
+   *
    * @param rect The rectangle to transform.
    * @param pass The render pass.
    */
@@ -575,7 +575,7 @@ public class RenderpassPainter implements KanvasPainter {
   /**
    * Computes the top level offset of the given render pass in canvas
    * coordinates.
-   * 
+   *
    * @param pass The render pass.
    * @return The offset of the render pass in top level canvas coordinates.
    */

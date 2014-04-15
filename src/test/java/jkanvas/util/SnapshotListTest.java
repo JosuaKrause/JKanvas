@@ -11,14 +11,14 @@ import org.junit.Test;
 
 /**
  * Tests for the {@link SnapshotList}.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class SnapshotListTest {
 
   /**
    * Whether the snapshot and the given list are equal.
-   * 
+   *
    * @param s The snapshot.
    * @param list The list.
    */
@@ -126,6 +126,7 @@ public class SnapshotListTest {
     final String a = "a";
     final SnapshotList<String> sl = new SnapshotList<>();
     sl.add(a);
+    @SuppressWarnings("resource")
     final Snapshot<String> s = sl.getSnapshot();
     final Iterator<String> it = s.iterator();
     assertTrue(it.hasNext());
@@ -140,7 +141,7 @@ public class SnapshotListTest {
 
   /**
    * Tests whether automatic removal via garbage collection works fine.
-   * 
+   *
    * @param numVolatile The number of volatile objects that will be removed.
    * @param numConst The number of constant objects that must no be removed.
    * @param add Whether to add during the snapshot.
