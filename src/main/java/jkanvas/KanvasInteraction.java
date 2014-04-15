@@ -7,7 +7,7 @@ import java.awt.geom.RectangularShape;
 
 /**
  * Paints and interacts with a Kanvas in canvas coordinates.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public interface KanvasInteraction {
@@ -15,7 +15,7 @@ public interface KanvasInteraction {
   /**
    * Draw on a canvas. The panning and zooming of the canvas is transparent to
    * this method and needs no further investigation.
-   * 
+   *
    * @param g The graphics context.
    * @param ctx The canvas context.
    */
@@ -30,7 +30,7 @@ public interface KanvasInteraction {
    * this method peers can be prevented to get processed by calling
    * {@link Canvas#preventPeerInteraction()}. In contrast to returning
    * <code>true</code> other interaction types still get processed.
-   * 
+   *
    * @param cam The camera on which the interaction happened.
    * @param p The click position in canvas coordinates.
    * @param e The original event.
@@ -47,7 +47,7 @@ public interface KanvasInteraction {
    * other clicks or drags. In this method peers can be prevented to get
    * processed by calling {@link Canvas#preventPeerInteraction()}. In contrast
    * to returning <code>true</code> other interaction types still get processed.
-   * 
+   *
    * @param cam The camera on which the interaction happened.
    * @param p The double click position in canvas coordinates.
    * @param e The original event.
@@ -61,7 +61,7 @@ public interface KanvasInteraction {
    * {@link HUDInteraction#getTooltipHUD(Point2D)} has returned
    * <code>null</code>. This method returns the tool-tip that should be
    * displayed at the given canvas position.
-   * 
+   *
    * @param p The mouse position in canvas coordinates.
    * @return The tool-tip text or <code>null</code> if no tool-tip should be
    *         displayed.
@@ -75,7 +75,7 @@ public interface KanvasInteraction {
    * peers can be prevented to get processed by calling
    * {@link Canvas#preventPeerInteraction()}. In contrast to returning
    * <code>true</code> other interaction types still get processed.
-   * 
+   *
    * @param p The position where the drag starts in canvas coordinates.
    * @param e The mouse event.
    * @return Whether the drag is accepted and the dragging should start.
@@ -87,7 +87,7 @@ public interface KanvasInteraction {
    * Is called subsequently after {@link #acceptDrag(Point2D, MouseEvent)}
    * returned <code>true</code> on every mouse movement until the user releases
    * the mouse button.
-   * 
+   *
    * @param start The position where the drag started in canvas coordinates.
    * @param cur The current drag position in canvas coordinates.
    * @param dx The x distance of the drag in canvas coordinates.
@@ -97,21 +97,23 @@ public interface KanvasInteraction {
 
   /**
    * Is called when the user releases the mouse in drag operation.
-   * 
+   *
    * @param start The position where the drag started in canvas coordinates.
    * @param end The end position of the drag in canvas coordinates.
    * @param dx The x distance of the drag in canvas coordinates.
    * @param dy The y distance of the drag in canvas coordinates.
    */
-  // TODO #43 -- Java 8 simplification
-  void endDrag(Point2D start, Point2D end, double dx, double dy);
+  default void endDrag(final Point2D start, final Point2D end,
+      final double dx, final double dy) {
+    drag(start, end, dx, dy);
+  }
 
   /**
    * Is called when the mouse was moved. In this method peers can be prevented
    * to get processed by calling {@link Canvas#preventPeerInteraction()}.
    * Returning <code>true</code> on the other hand does not prevent peers from
    * being executed in this method.
-   * 
+   *
    * @param cur The current position in canvas coordinates.
    * @return Whether this event has affected the render pass.
    * @see Canvas#preventPeerInteraction()
@@ -120,7 +122,7 @@ public interface KanvasInteraction {
 
   /**
    * Calculates the bounding box of the canvas.
-   * 
+   *
    * @param bbox The rectangle where the bounding box is stored.
    */
   void getBoundingBox(RectangularShape bbox);
@@ -128,7 +130,7 @@ public interface KanvasInteraction {
   /**
    * Processes a message handed in via the {@link Canvas#postMessage(String)}
    * method.
-   * 
+   *
    * @param ids A list of ids the message is for. Only objects with at least one
    *          of those ids should consume the message. Due to technical reasons
    *          the characters '<code>#</code>' and '<code> </code>' cannot be in

@@ -20,7 +20,7 @@ import jkanvas.painter.pod.Renderpod;
 /**
  * Render passes can be used to dynamically change what is rendered on a canvas
  * and define an order.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class Renderpass implements KanvasInteraction {
@@ -30,7 +30,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Setter.
-   * 
+   *
    * @param forceCache Force caching. This can be useful when the render pass is
    *          moving and caching is supported.
    */
@@ -40,7 +40,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether to force caching when caching is supported.
    */
   public boolean isForceCaching() {
@@ -52,7 +52,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * The double click default action.
-   * 
+   *
    * @param rp The render pass.
    * @param cam The camera.
    * @param e The mouse event.
@@ -71,7 +71,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * The double click default action.
-   * 
+   *
    * @param rect The rectangle.
    * @param cam The camera.
    * @param e The mouse event.
@@ -95,7 +95,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether this pass is currently visible.
    */
   public boolean isVisible() {
@@ -106,7 +106,7 @@ public abstract class Renderpass implements KanvasInteraction {
    * Setter. Implementations may override this method with an
    * {@link UnsupportedOperationException} when they provide the value by
    * themselves.
-   * 
+   *
    * @param isVisible Sets the visibility of this pass.
    */
   public void setVisible(final boolean isVisible) {
@@ -121,7 +121,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Setter.
-   * 
+   *
    * @param x Sets the x offset in canvas coordinates.
    * @param y Sets the y offset in canvas coordinates.
    */
@@ -132,7 +132,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Getter.
-   * 
+   *
    * @return The x offset of this pass in canvas coordinates.
    */
   public double getOffsetX() {
@@ -141,7 +141,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Getter.
-   * 
+   *
    * @return The y offset of this pass in canvas coordinates.
    */
   public double getOffsetY() {
@@ -153,7 +153,7 @@ public abstract class Renderpass implements KanvasInteraction {
    * <em>not</em> account for the offset. To get information about the offset of
    * the render pass use {@link #getOffsetX()} and {@link #getOffsetY()}
    * respectively.
-   * 
+   *
    * @param bbox The rectangle in which the bounding box is stored.
    * @see #getOffsetX()
    * @see #getOffsetY()
@@ -166,7 +166,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Setter.
-   * 
+   *
    * @param parent Sets the parent of this render pass. Parents can not be
    *          switched directly.
    */
@@ -178,7 +178,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Getter.
-   * 
+   *
    * @return The parent of this render pass. The parent is used to calculate
    *         correct top level canvas positions when render passes are combined
    *         in groups.
@@ -196,7 +196,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Setter.
-   * 
+   *
    * @param ids The ids associated with this render pass. Multiple ids may be
    *          separated with space '<code> </code>'.
    */
@@ -206,7 +206,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Getter.
-   * 
+   *
    * @return The ids associated with this render pass. Multiple ids may be
    *         separated with space '<code> </code>'.
    */
@@ -215,7 +215,6 @@ public abstract class Renderpass implements KanvasInteraction {
   }
 
   @Override
-  // TODO #43 -- Java 8 simplification
   public void processMessage(final String[] ids, final String msg) {
     for(final String id : ids) {
       if(this.ids.contains(id) && this.ids.contains(" " + id + " ")) {
@@ -231,7 +230,7 @@ public abstract class Renderpass implements KanvasInteraction {
    * <p>
    * This implementation handles the messages "<code>visible:true</code> ", "
    * <code>visible:false</code>", and "<code>visible:toggle</code>".
-   * 
+   *
    * @param msg The message to be processed. Due to technical reasons the
    *          character '<code>#</code>' cannot be in messages. Messages cannot
    *          be the empty string.
@@ -278,13 +277,6 @@ public abstract class Renderpass implements KanvasInteraction {
   }
 
   @Override
-  // TODO #43 -- Java 8 simplification
-  public void endDrag(final Point2D start, final Point2D end,
-      final double dx, final double dy) {
-    drag(start, end, dx, dy);
-  }
-
-  @Override
   public boolean moveMouse(final Point2D cur) {
     // do nothing
     return false;
@@ -292,7 +284,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Setter.
-   * 
+   *
    * @param list Sets the animation list so that the render pass can add and
    *          remove animated objects. If the render pass has nothing to add to
    *          the list this method can be ignored.
@@ -303,7 +295,7 @@ public abstract class Renderpass implements KanvasInteraction {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether the render pass may be altered until the next call of
    *         {@link #draw(java.awt.Graphics2D, jkanvas.KanvasContext)}.
    */

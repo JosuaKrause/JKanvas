@@ -12,7 +12,7 @@ import jkanvas.util.Resource;
 
 /**
  * Reads a CSV file and represents it as numerical table.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class CSVTable extends DataTable {
@@ -34,7 +34,7 @@ public class CSVTable extends DataTable {
 
   /**
    * Creates a CSV reader table.
-   * 
+   *
    * @param reader The CSV reader.
    * @param r The source.
    * @param missing The missing value string.
@@ -137,7 +137,7 @@ public class CSVTable extends DataTable {
 
   /**
    * Writes the contents of the table to the writer.
-   * 
+   *
    * @param table The table.
    * @param out The writer.
    * @param titles Whether to include titles.

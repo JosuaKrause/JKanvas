@@ -6,14 +6,14 @@ import java.util.NoSuchElementException;
 
 /**
  * Iterates over the given bit set.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class BitSetIterable implements Iterable<Integer> {
 
   /**
    * The iterator for the given bit set.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   private class BitSetIterator implements Iterator<Integer> {
@@ -25,7 +25,7 @@ public final class BitSetIterable implements Iterable<Integer> {
 
     /**
      * Creates a bit set iterator.
-     * 
+     *
      * @param start The start index.
      */
     public BitSetIterator(final int start) {
@@ -53,12 +53,6 @@ public final class BitSetIterable implements Iterable<Integer> {
       return ret;
     }
 
-    @Override
-    // TODO #43 -- Java 8 simplification
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-
   } // BitSetIterator
 
   /** The bit set. */
@@ -72,7 +66,7 @@ public final class BitSetIterable implements Iterable<Integer> {
 
   /**
    * Creates a bit set iterable.
-   * 
+   *
    * @param set The bit set.
    */
   public BitSetIterable(final BitSet set) {
@@ -81,7 +75,7 @@ public final class BitSetIterable implements Iterable<Integer> {
 
   /**
    * Creates a bit set iterable.
-   * 
+   *
    * @param set The bit set.
    * @param start The start index.
    */
@@ -91,7 +85,7 @@ public final class BitSetIterable implements Iterable<Integer> {
 
   /**
    * Creates a bit set iterable.
-   * 
+   *
    * @param set The bit set.
    * @param start The start index.
    * @param end The exclusive end index.

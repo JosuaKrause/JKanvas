@@ -404,12 +404,6 @@ public final class ArrayUtil {
             return arr[--pos];
           }
 
-          @Override
-          // TODO #43 -- Java 8 simplification
-          public void remove() {
-            throw new UnsupportedOperationException();
-          }
-
         };
       }
 
@@ -469,12 +463,6 @@ public final class ArrayUtil {
               remain = null;
             }
             return it.next();
-          }
-
-          @Override
-          // TODO #43 -- Java 8 simplification
-          public void remove() {
-            throw new UnsupportedOperationException();
           }
 
         };

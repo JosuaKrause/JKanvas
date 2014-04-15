@@ -11,7 +11,7 @@ import jkanvas.painter.RenderpassPainter;
 
 /**
  * An animated painter.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class AnimatedPainter extends RenderpassPainter implements Animator {
@@ -49,7 +49,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
 
   /**
    * Getter.
-   * 
+   *
    * @return Returns the current time. This method can be overwritten to gain
    *         full control over animation timing. This method is called exactly
    *         once every step, once when the {@link #setStopped(boolean)} is
@@ -61,7 +61,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether the animation is currently paused.
    */
   public boolean isStopped() {
@@ -70,7 +70,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
 
   /**
    * Setter.
-   * 
+   *
    * @param stopped Stops or resumes the animation.
    */
   public void setStopped(final boolean stopped) {
@@ -94,7 +94,7 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
 
   /**
    * Setter.
-   * 
+   *
    * @param framerate Sets the framerate of the animator.
    */
   public void setFramerate(final long framerate) {
@@ -165,12 +165,6 @@ public class AnimatedPainter extends RenderpassPainter implements Animator {
   @Override
   public void refreshAll() {
     animator.refreshAll();
-  }
-
-  @Override
-  // TODO #43 -- Java 8 simplification
-  public void refresh() {
-    refreshAll();
   }
 
   /** Disposes this painter and stops the animator. */

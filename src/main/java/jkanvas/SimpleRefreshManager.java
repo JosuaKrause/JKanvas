@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A simple implementation of a {@link RefreshManager}.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class SimpleRefreshManager implements RefreshManager {
@@ -42,12 +42,6 @@ public class SimpleRefreshManager implements RefreshManager {
   @Override
   public boolean inBulkOperation() {
     return bulkOps > 0;
-  }
-
-  @Override
-  // TODO #43 -- Java 8 simplification
-  public void refresh() {
-    refreshAll();
   }
 
   @Override

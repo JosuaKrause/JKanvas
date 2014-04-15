@@ -2,7 +2,7 @@ package jkanvas;
 
 /**
  * Manages refreshing of various resources.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public interface RefreshManager extends Refreshable {
@@ -10,7 +10,7 @@ public interface RefreshManager extends Refreshable {
   /**
    * Adds a {@link Refreshable} that is refreshed each time a value gets
    * updated. If the {@link Refreshable} is already in the list this is a no-op.
-   * 
+   *
    * @param r The {@link Refreshable}.
    */
   void addRefreshable(Refreshable r);
@@ -18,14 +18,14 @@ public interface RefreshManager extends Refreshable {
   /**
    * Removes a {@link Refreshable}. If the {@link Refreshable} is not in the
    * list this is a no-op.
-   * 
+   *
    * @param r The {@link Refreshable}.
    */
   void removeRefreshable(Refreshable r);
 
   /**
    * Getter.
-   * 
+   *
    * @return An array of the installed {@link Refreshable Refreshables}.
    *         Modifications to the array are not reflected in the actual
    *         {@link Refreshable Refreshables}.
@@ -38,6 +38,11 @@ public interface RefreshManager extends Refreshable {
    * method is a no-op.
    */
   void refreshAll();
+
+  @Override
+  default void refresh() {
+    refreshAll();
+  }
 
   /**
    * Starts a bulk operation. During a bulk operation every call to
@@ -53,7 +58,7 @@ public interface RefreshManager extends Refreshable {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether a bulk operation is currently in progress.
    */
   boolean inBulkOperation();

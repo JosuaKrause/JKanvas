@@ -217,18 +217,12 @@ public class CSVReader {
   public static final Iterable<CSVRow> readRows(
       final Resource resource, final CSVReader reader) {
     if(!resource.hasContent()) return null;
-    // TODO #43 -- Java 8 simplification
-    return new Iterable<CSVRow>() {
-
-      @Override
-      public Iterator<CSVRow> iterator() {
-        try {
-          return readRows(resource.reader(), reader);
-        } catch(final IOException e) {
-          throw new IllegalStateException(e);
-        }
+    return () -> {
+      try {
+        return readRows(resource.reader(), reader);
+      } catch(final IOException e) {
+        throw new IllegalStateException(e);
       }
-
     };
   }
 

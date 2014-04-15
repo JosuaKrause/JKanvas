@@ -7,7 +7,7 @@ import jkanvas.Refreshable;
 
 /**
  * An animator refreshes a {@link Refreshable} successively.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public interface Animator extends RefreshManager {
@@ -20,7 +20,7 @@ public interface Animator extends RefreshManager {
 
   /**
    * Adds a {@link Refreshable} that is refreshed each step. {@inheritDoc}
-   * 
+   *
    * @param r The {@link Refreshable}.
    */
   @Override
@@ -28,7 +28,7 @@ public interface Animator extends RefreshManager {
 
   /**
    * Getter.
-   * 
+   *
    * @return The animation list.
    */
   AnimationList getAnimationList();
@@ -37,7 +37,7 @@ public interface Animator extends RefreshManager {
    * Installs the given animation barrier for the given canvas. The validity of
    * the barrier must be checked with
    * {@link AnimationBarrier#ensureValidity(Canvas)}.
-   * 
+   *
    * @param barrier The animation barrier to install.
    * @param canvas The canvas connected to the barrier.
    */
@@ -45,7 +45,7 @@ public interface Animator extends RefreshManager {
 
   /**
    * Setter.
-   * 
+   *
    * @param frd Sets the frame rate displayer. <code>null</code> stops time
    *          measuring.
    */

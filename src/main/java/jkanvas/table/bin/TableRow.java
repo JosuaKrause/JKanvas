@@ -8,7 +8,7 @@ import jkanvas.table.DataTable;
 
 /**
  * A row of a table. Tha values are binned.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
@@ -22,7 +22,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * Creates a table row.
-   * 
+   *
    * @param t The table.
    * @param row The row.
    * @param bins The bins per column. This array must not be altered from
@@ -46,7 +46,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The number of columns.
    */
   public int cols() {
@@ -55,7 +55,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * Getter.
-   * 
+   *
    * @param col The column.
    * @return The number of bins in the given column.
    */
@@ -65,7 +65,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * Getter.
-   * 
+   *
    * @param col The column.
    * @return The bin in which the value at the given position is in.
    */
@@ -75,7 +75,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The row.
    */
   public int getRow() {
@@ -84,7 +84,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The table. This may be a cached version of the original table.
    */
   public DataTable getTable() {
@@ -93,7 +93,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * The lowest value of the given bin.
-   * 
+   *
    * @param col The column.
    * @param bin The bin in the column.
    * @return The lowest value of the bin.
@@ -104,7 +104,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
 
   /**
    * The highest value of the given bin.
-   * 
+   *
    * @param col The column.
    * @param bin The bin in the column.
    * @return The highest value of the bin. The value is exclusive unless it is
@@ -129,12 +129,6 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
       public Integer next() {
         if(!hasNext()) throw new NoSuchElementException();
         return get(c++);
-      }
-
-      @Override
-      // TODO #43 -- Java 8 simplification
-      public void remove() {
-        throw new UnsupportedOperationException();
       }
 
     };
@@ -186,7 +180,7 @@ public class TableRow implements Iterable<Integer>, Comparable<TableRow> {
   /**
    * Whether both rows have the same content. This is independent from the row
    * number.
-   * 
+   *
    * @param a The first row.
    * @param b The second row.
    * @return Whether both rows have equal content.
