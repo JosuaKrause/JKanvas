@@ -89,6 +89,10 @@ public class FeatureTable extends DataTable {
     return outFeatures;
   }
 
+  public IndirectFeature[] getIndirectFeatures() {
+    return features();
+  }
+
   @Override
   public boolean hasCachedFeatures() {
     return true;
