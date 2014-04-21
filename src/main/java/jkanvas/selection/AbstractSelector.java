@@ -18,7 +18,7 @@ import jkanvas.util.PaintUtil;
 
 /**
  * Allows for arbitrary shaped selections.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class AbstractSelector extends HUDRenderpass {
@@ -43,7 +43,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
 
   /**
    * Creates an abstract selector.
-   * 
+   *
    * @param canvas The canvas the selector operates on.
    * @param color The color.
    */
@@ -51,9 +51,13 @@ public abstract class AbstractSelector extends HUDRenderpass {
     this(canvas, color, 1, color, 0.6);
   }
 
+  public AbstractSelector(final Canvas canvas) {
+    this(canvas, new Color(0xa6bddb), 0.6, new Color(0x2b8cbe), 1);
+  }
+
   /**
    * Creates an abstract selector.
-   * 
+   *
    * @param canvas The canvas the selector operates on.
    * @param inner The inner color.
    * @param outer The outer color.
@@ -64,7 +68,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
 
   /**
    * Creates an abstract selector.
-   * 
+   *
    * @param canvas The canvas the selector operates on.
    * @param inner The inner color.
    * @param alphaInner The alpha value of the inner color.
@@ -95,7 +99,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
 
   /**
    * Draws the selection.
-   * 
+   *
    * @param gfx The graphics context.
    * @param color The color.
    * @param alpha The alpha value.
@@ -117,7 +121,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
 
   /**
    * Setter.
-   * 
+   *
    * @param isActive Whether this selector is active.
    */
   public void setActive(final boolean isActive) {
@@ -126,7 +130,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether this selector is active.
    */
   public boolean isActive() {
@@ -136,7 +140,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
   /**
    * Adds a selectable render pass. If the render pass is already added nothing
    * happens.
-   * 
+   *
    * @param selectable The render pass.
    */
   public void addSelectable(final Selectable selectable) {
@@ -147,7 +151,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
   /**
    * Removes a selectable render pass. If the render pass is not contained
    * nothing happens.
-   * 
+   *
    * @param selectable The render pass.
    */
   public void removeSelectable(final Selectable selectable) {
@@ -157,7 +161,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
   /**
    * Does the actual selection of the given shape on all select-able render
    * passes.
-   * 
+   *
    * @param s The shape in component coordinates.
    * @param preview Whether the selection should only be a preview.
    */
@@ -178,7 +182,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
 
   /**
    * Begins the creation of the selection shape.
-   * 
+   *
    * @param start The start point.
    * @param cur The first other point.
    * @return The initial shape.
@@ -189,7 +193,7 @@ public abstract class AbstractSelector extends HUDRenderpass {
 
   /**
    * Grows the selection shape.
-   * 
+   *
    * @param start The original start point.
    * @param cur The next point.
    * @return The current shape.
