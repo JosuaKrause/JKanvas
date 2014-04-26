@@ -11,14 +11,14 @@ import java.util.Set;
 
 /**
  * A JSON element.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * The type of an {@link JSONElement}.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   public static enum JSONType {
@@ -45,7 +45,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Creates a <code>null</code> value.
-   * 
+   *
    * @param name The name, may be <code>null</code>.
    */
   JSONElement(final String name) {
@@ -58,7 +58,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Creates a string element.
-   * 
+   *
    * @param name The name, may be <code>null</code>.
    * @param str The string content.
    */
@@ -72,7 +72,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Creates either an array or object.
-   * 
+   *
    * @param name The name of the element, may be <code>null</code>.
    * @param isObject Whether to create an object.
    */
@@ -92,7 +92,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Adds an element to the array.
-   * 
+   *
    * @param el The element to add.
    * @return The element.
    * @throws IllegalStateException If the type is not right.
@@ -102,14 +102,14 @@ public class JSONElement implements Iterable<JSONElement> {
     if(array == null) throw new IllegalStateException(
         "attempt to add an array element to a non array");
     if(el.name() != null) throw new IllegalArgumentException(
-        "el must nameless: " + el.name());
+        "el must be nameless: " + el.name());
     array.add(el);
     return el;
   }
 
   /**
    * Adds an element to the object.
-   * 
+   *
    * @param el The element.
    * @return The element.
    * @throws IllegalStateException If the type is not right.
@@ -128,7 +128,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Ensures that the element has the given type.
-   * 
+   *
    * @param type The expected type.
    * @throws IllegalStateException When the type is not correct.
    */
@@ -139,7 +139,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Expects the <code>null</code> type.
-   * 
+   *
    * @throws IllegalStateException When the type is not correct.
    */
   public void expectNull() {
@@ -148,7 +148,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Expects an object.
-   * 
+   *
    * @throws IllegalStateException When the type is not correct.
    */
   public void expectObject() {
@@ -157,7 +157,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Expects an array.
-   * 
+   *
    * @throws IllegalStateException When the type is not correct.
    */
   public void expectArray() {
@@ -166,7 +166,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Expects a string.
-   * 
+   *
    * @throws IllegalStateException When the type is not correct.
    */
   public void expectString() {
@@ -175,7 +175,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Whether the type of the element is the <code>null</code> type.
-   * 
+   *
    * @return Whether it is a <code>null</code> type.
    */
   public boolean isNull() {
@@ -184,7 +184,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Whether the type of the element is an object.
-   * 
+   *
    * @return Whether it is an object.
    */
   public boolean isObject() {
@@ -193,7 +193,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Whether the type of the element is an array.
-   * 
+   *
    * @return Whether it is an array.
    */
   public boolean isArray() {
@@ -202,7 +202,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Whether the type of the element is a string.
-   * 
+   *
    * @return Whether it is a string.
    */
   public boolean isString() {
@@ -211,7 +211,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The name of the element or <code>null</code> if it has none.
    */
   public String name() {
@@ -220,7 +220,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The type of the element.
    */
   protected JSONType type() {
@@ -229,7 +229,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The string content of the element.
    * @throws IllegalStateException If the type is not right.
    */
@@ -240,7 +240,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The number of elements in this element. The <code>null</code> type
    *         has the size 0.
    * @throws IllegalStateException If the type is not an array or an object.
@@ -252,7 +252,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param pos The position.
    * @return The element at the given position.
    * @throws IllegalStateException If the type is not right.
@@ -264,7 +264,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param key The key / name.
    * @return The element with the given name.
    * @throws IllegalStateException If the type is not right.
@@ -276,7 +276,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @return The keys in this object.
    * @throws IllegalStateException If the type is not right.
    */
@@ -287,7 +287,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Whether the key is present.
-   * 
+   *
    * @param key The key / name.
    * @return Whether there exist a key with the given name.
    * @throws IllegalStateException If the type is not right.
@@ -302,25 +302,25 @@ public class JSONElement implements Iterable<JSONElement> {
     if(isNull()) return Collections.emptyIterator();
     final Iterator<JSONElement> it =
         array != null ? array.iterator() : object.values().iterator();
-    return new Iterator<JSONElement>() {
+        return new Iterator<JSONElement>() {
 
-      @Override
-      public boolean hasNext() {
-        return it.hasNext();
-      }
+          @Override
+          public boolean hasNext() {
+            return it.hasNext();
+          }
 
-      @Override
-      public JSONElement next() {
-        return it.next();
-      }
+          @Override
+          public JSONElement next() {
+            return it.next();
+          }
 
-      // TODO #43 -- Java 8 simplification
-      @Override
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
+          // TODO #43 -- Java 8 simplification
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
 
-    };
+        };
   }
 
   @Override
@@ -332,7 +332,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Appends the string representation of this element to the string builder.
-   * 
+   *
    * @param indent The indentation for lines.
    * @param sb The string builder.
    */
@@ -342,10 +342,16 @@ public class JSONElement implements Iterable<JSONElement> {
       case ARRAY: {
         sb.append("[\n");
         final String innerIndent = indent + "  ";
+        boolean first = true;
         for(final JSONElement el : this) {
+          if(first) {
+            first = false;
+          } else {
+            sb.append(",\n");
+          }
           el.toString(innerIndent, sb);
-          sb.append(",\n");
         }
+        sb.append("\n");
         sb.append(indent);
         sb.append("]");
         break;
@@ -353,13 +359,19 @@ public class JSONElement implements Iterable<JSONElement> {
       case OBJECT: {
         sb.append("{\n");
         final String innerIndent = indent + "  ";
+        boolean first = true;
         for(final JSONElement el : this) {
+          if(first) {
+            first = false;
+          } else {
+            sb.append(",\n");
+          }
           sb.append(indent);
           str(sb, el.name());
           sb.append(":\n");
           el.toString(innerIndent, sb);
-          sb.append(",\n");
         }
+        sb.append("\n");
         sb.append(indent);
         sb.append("}");
         break;
@@ -378,7 +390,7 @@ public class JSONElement implements Iterable<JSONElement> {
   /**
    * Appends an escaped string representation for the given string to the given
    * string builder.
-   * 
+   *
    * @param sb The string builder.
    * @param str The string.
    */
@@ -409,7 +421,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @param defaultValue The default value.
    * @return The double value of the given child.
@@ -421,7 +433,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @return The double value of the given child.
    */
@@ -431,7 +443,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @param defaultValue The default value.
    * @return The integer value of the given child.
@@ -443,7 +455,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @return The integer value of the given child.
    */
@@ -453,7 +465,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @param defaultValue The default value.
    * @return The long value of the given child.
@@ -465,7 +477,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @return The long value of the given child.
    */
@@ -475,7 +487,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @param defaultValue The default value.
    * @return The string value of the given child.
@@ -487,7 +499,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @return The string value of the given child.
    */
@@ -498,7 +510,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @param defaultValue The default value.
    * @return The boolean value of the given child.
@@ -510,7 +522,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @return The boolean value of the given child.
    */
@@ -523,7 +535,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Whether the given child has a percentage value.
-   * 
+   *
    * @param name The name of the element.
    * @return Whether the given child has a percentage value.
    */
@@ -536,7 +548,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @param defaultPercentage The default value.
    * @return The percentage value of the child as ratio between 0.0 and 1.0. A
@@ -549,7 +561,7 @@ public class JSONElement implements Iterable<JSONElement> {
 
   /**
    * Getter.
-   * 
+   *
    * @param name The name of the value.
    * @return The percentage value of the child as ratio between 0.0 and 1.0. A
    *         '%' is expected at the end of the string.
@@ -559,6 +571,32 @@ public class JSONElement implements Iterable<JSONElement> {
     if(!str.endsWith("%")) throw new IllegalArgumentException(
         "value must end in %: " + str);
     return Double.parseDouble(str.substring(0, str.length() - 1)) * 0.01;
+  }
+
+  public static final JSONElement createNull(final String name) {
+    return new JSONElement(name);
+  }
+
+  public static final JSONElement createString(final String name, final String text) {
+    return new JSONElement(name, text);
+  }
+
+  public static final JSONElement createArray(
+      final String name, final Iterable<JSONElement> elements) {
+    final JSONElement res = new JSONElement(name, false);
+    for(final JSONElement e : elements) {
+      res.addElement(e);
+    }
+    return res;
+  }
+
+  public static final JSONElement createObject(
+      final String name, final Iterable<JSONElement> values) {
+    final JSONElement res = new JSONElement(name, true);
+    for(final JSONElement v : values) {
+      res.addValue(v);
+    }
+    return res;
   }
 
 }
