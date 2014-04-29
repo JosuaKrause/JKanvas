@@ -288,6 +288,20 @@ public final class ArrayUtil {
   }
 
   /**
+   * Shuffles a swapable.
+   * 
+   * @param s The swapable.
+   * @param length The length of the swapable.
+   */
+  public static void shuffle(final Swapable s, final int length) {
+    final java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+    int i = length;
+    while(--i >= 0) {
+      s.swap(i, rnd.nextInt(i + 1));
+    }
+  }
+
+  /**
    * Converts an {@link Iterable} to an array.
    *
    * @param <T> The type.
