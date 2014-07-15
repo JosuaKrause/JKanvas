@@ -19,12 +19,12 @@ Renderpass renderpass = new Renderpass() {
   }
 
   @Override
-  public boolean click(final Point2D p, final MouseEvent e) {
+  public boolean click(final Camera cam, final Point2D p, final MouseEvent e) {
     // react to events
   }
 
   @Override
-  public void getBoundingBox(Rectangle2D bbox) {
+  public void getBoundingBox(final RectangularShape rectangularShape) {
     // set bounding box for the render pass
   }
 
