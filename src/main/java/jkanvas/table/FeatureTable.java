@@ -35,8 +35,8 @@ public class FeatureTable extends DataTable {
       } else if(rows != l) throw new IllegalArgumentException(
           "inconsistent row count: " + rows + " " + l);
     }
-    this.rows = rows >= 0 ? rows : 0;
     this.features = features.clone();
+    this.rows = rows >= 0 ? rows : 0;
     this.caching = caching;
   }
 
@@ -71,22 +71,31 @@ public class FeatureTable extends DataTable {
   }
 
   /** The features that are handed outwards. */
-  private Feature[] outFeatures;
+  private IndirectFeature[] outFeatures;
 
   @Override
-  public Feature getFeature(final int col) {
+  public IndirectFeature getFeature(final int col) {
     return features()[col];
   }
 
   @Override
-  protected Feature[] features() {
+  protected IndirectFeature[] features() {
     if(outFeatures == null) {
-      outFeatures = new Feature[features.length];
+      outFeatures = new IndirectFeature[features.length];
       for(int c = 0; c < outFeatures.length; ++c) {
-        outFeatures[c] = new Feature(this, c);
+        outFeatures[c] = new IndirectFeature(this, c, features[c]);
       }
     }
     return outFeatures;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return All features as indirect features.
+   */
+  public IndirectFeature[] getIndirectFeatures() {
+    return features();
   }
 
   @Override

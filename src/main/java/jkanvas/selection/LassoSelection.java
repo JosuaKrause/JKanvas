@@ -9,14 +9,23 @@ import jkanvas.Canvas;
 
 /**
  * A lasso selection.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class LassoSelection extends AbstractSelector {
 
   /**
-   * Creates a lasso selection.
+   * Creates a lasso selection using default colors.
    * 
+   * @param canvas The canvas the selection operates on.
+   */
+  public LassoSelection(final Canvas canvas) {
+    super(canvas);
+  }
+
+  /**
+   * Creates a lasso selection.
+   *
    * @param canvas The canvas the selection operates on.
    * @param color The color.
    */
@@ -26,7 +35,7 @@ public abstract class LassoSelection extends AbstractSelector {
 
   /**
    * Creates a lasso selection.
-   * 
+   *
    * @param canvas The canvas the selection operates on.
    * @param inner The inner color.
    * @param outer The outer color.
@@ -37,7 +46,7 @@ public abstract class LassoSelection extends AbstractSelector {
 
   /**
    * Creates a lasso selection.
-   * 
+   *
    * @param canvas The canvas the selection operates on.
    * @param inner The inner color.
    * @param alphaInner The alpha value of the inner color.
