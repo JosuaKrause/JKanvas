@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * A table representing a collection of features.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class FeatureTable extends DataTable {
@@ -18,7 +18,7 @@ public class FeatureTable extends DataTable {
 
   /**
    * Creates a table from given features.
-   *
+   * 
    * @param features The features. All features must have the same number of
    *          rows.
    */
@@ -89,6 +89,11 @@ public class FeatureTable extends DataTable {
     return outFeatures;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return All features as indirect features.
+   */
   public IndirectFeature[] getIndirectFeatures() {
     return features();
   }
