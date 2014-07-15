@@ -51,6 +51,11 @@ public abstract class AbstractSelector extends HUDRenderpass {
     this(canvas, color, 1, color, 0.6);
   }
 
+  /**
+   * Creates an abstract selector with default colors.
+   * 
+   * @param canvas The canvas the selector operates on.
+   */
   public AbstractSelector(final Canvas canvas) {
     this(canvas, new Color(0xa6bddb), 0.6, new Color(0x2b8cbe), 1);
   }
