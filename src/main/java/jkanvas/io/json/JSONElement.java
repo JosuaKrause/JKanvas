@@ -302,25 +302,25 @@ public class JSONElement implements Iterable<JSONElement> {
     if(isNull()) return Collections.emptyIterator();
     final Iterator<JSONElement> it =
         array != null ? array.iterator() : object.values().iterator();
-        return new Iterator<JSONElement>() {
+    return new Iterator<JSONElement>() {
 
-          @Override
-          public boolean hasNext() {
-            return it.hasNext();
-          }
+      @Override
+      public boolean hasNext() {
+        return it.hasNext();
+      }
 
-          @Override
-          public JSONElement next() {
-            return it.next();
-          }
+      @Override
+      public JSONElement next() {
+        return it.next();
+      }
 
-          // TODO #43 -- Java 8 simplification
-          @Override
-          public void remove() {
-            throw new UnsupportedOperationException();
-          }
+      // TODO #43 -- Java 8 simplification
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
 
-        };
+    };
   }
 
   @Override
@@ -573,14 +573,34 @@ public class JSONElement implements Iterable<JSONElement> {
     return Double.parseDouble(str.substring(0, str.length() - 1)) * 0.01;
   }
 
+  /**
+   * Creates a null element.
+   * 
+   * @param name The name of the element.
+   * @return The element.
+   */
   public static final JSONElement createNull(final String name) {
     return new JSONElement(name);
   }
 
+  /**
+   * Creates a text element.
+   * 
+   * @param name The name of the element.
+   * @param text The text.
+   * @return The text element.
+   */
   public static final JSONElement createString(final String name, final String text) {
     return new JSONElement(name, text);
   }
 
+  /**
+   * Creates an array element.
+   * 
+   * @param name The name of the element.
+   * @param elements The child elements.
+   * @return The array element.
+   */
   public static final JSONElement createArray(
       final String name, final Iterable<JSONElement> elements) {
     final JSONElement res = new JSONElement(name, false);
@@ -590,6 +610,13 @@ public class JSONElement implements Iterable<JSONElement> {
     return res;
   }
 
+  /**
+   * Creates an object element.
+   * 
+   * @param name THe name of the element.
+   * @param values The child elements.
+   * @return The object element.
+   */
   public static final JSONElement createObject(
       final String name, final Iterable<JSONElement> values) {
     final JSONElement res = new JSONElement(name, true);
