@@ -14,6 +14,11 @@ import jkanvas.Canvas;
  */
 public abstract class LassoSelection extends AbstractSelector {
 
+  /**
+   * Creates a lasso selection using default colors.
+   * 
+   * @param canvas The canvas the selection operates on.
+   */
   public LassoSelection(final Canvas canvas) {
     super(canvas);
   }
