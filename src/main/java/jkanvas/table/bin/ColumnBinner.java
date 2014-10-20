@@ -8,7 +8,7 @@ import jkanvas.table.Feature;
 
 /**
  * Aggregates a column into bins.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class ColumnBinner {
@@ -20,7 +20,7 @@ public abstract class ColumnBinner {
 
   /**
    * Creates bins for the given feature.
-   * 
+   *
    * @param feature The feature.
    */
   public ColumnBinner(final Feature feature) {
@@ -30,7 +30,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @return The total number of bins. This value must always be larger than
    *         zero.
    */
@@ -38,7 +38,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @param bin The bin.
    * @return The inclusive minimal value of the given bin. The minima of the
    *         bins must be increasing monotonously.
@@ -47,7 +47,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @param bin The bin. When <code>bin == bins()</code>, {@link #getMaxValue()}
    *          is returned.
    * @return The inclusive minimal value of the bin. The minimum of the bins
@@ -62,7 +62,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @return The overall maximum value. This value is inclusive.
    */
   public double getMaxValue() {
@@ -71,7 +71,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @param bin The bin.
    * @return The width of the bin.
    */
@@ -85,7 +85,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @return The total width of all bins.
    */
   public double getTotalWidth() {
@@ -94,7 +94,7 @@ public abstract class ColumnBinner {
 
   /**
    * Finds the bin for the given value.
-   * 
+   *
    * @param value The value.
    * @return The first bin the value belongs to.
    */
@@ -115,7 +115,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @return Creates an array with the number of elements per bin.
    */
   private int[] getBinCount() {
@@ -141,7 +141,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @param bin The bin.
    * @return The number of elements in the bin.
    */
@@ -151,7 +151,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @return The highest number of elements in one bin.
    */
   public int getMaxCount() {
@@ -165,7 +165,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @return The entropy in nat
    *         (http://en.wikipedia.org/wiki/Nat_%28information%29).
    */
@@ -187,7 +187,7 @@ public abstract class ColumnBinner {
 
   /**
    * Getter.
-   * 
+   *
    * @return The feature that is represented.
    */
   public Feature getFeature() {
@@ -196,7 +196,7 @@ public abstract class ColumnBinner {
 
   /**
    * Creates column bins for the given feature.
-   * 
+   *
    * @param f The feature.
    * @param choice The bin count choice. This will be ignored if the feature is
    *          categorical.
@@ -210,7 +210,7 @@ public abstract class ColumnBinner {
 
   /**
    * Iterates over all rows.
-   * 
+   *
    * @param table The table.
    * @param defaultChoice The default bin choice.
    * @return All rows.
