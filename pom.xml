@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>joschi-mvn</groupId>
 	<artifactId>JKanvas</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
+	<version>1.3.0</version>
 	<name>JKanvas</name>
 	<description>A ZUI framework</description>
 	<properties>
