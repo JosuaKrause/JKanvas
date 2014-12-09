@@ -61,7 +61,7 @@ However, this requires an additional repository in the repositories section (`<r
 ```xml
 <repository>
   <id>joschi</id>
-  <url>http://merkur57.inf.uni-konstanz.de/~krause/mvn/releases</url>
+  <url>http://josuakrause.github.io/info/mvn-repo/releases</url>
 </repository>
 ```
 
