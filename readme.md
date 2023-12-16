@@ -5,7 +5,7 @@ An easy-to-use ZUI (Zoomable User Interface) implementation for Java.
 
 This project is build with Maven. Use `mvn install` to generate it as a jar
 in the *target/* directory. Alternatively the project can be used as dependency
-in other Maven projects (see [below] (#maven-integration)).
+in other Maven projects (see [below](#maven-integration)).
 
 In order to create a ZUI component you can use the following snippet:
 
@@ -39,7 +39,7 @@ canvas.reset(); // scrolls the bounding-box of the painter into view
 
 In the package `jkanvas.examples` are examples that show
 how to use the canvas for various tasks.
-Furthermore the [wiki] (https://github.com/JosuaKrause/Kanvas/wiki) is meant to explain how to
+Furthermore the [wiki](https://github.com/JosuaKrause/Kanvas/wiki) is meant to explain how to
 use various classes and interfaces.
 
 ### Maven Integration
@@ -61,10 +61,10 @@ However, this requires an additional repository in the repositories section (`<r
 ```xml
 <repository>
   <id>joschi</id>
-  <url>http://josuakrause.github.io/info/mvn-repo/releases</url>
+  <url>http://www.josuakrause.com/mvn-repo/releases</url>
 </repository>
 ```
 
-When using [Eclipse] (http://www.eclipse.org/) the current snapshot can be used
+When using [Eclipse](http://www.eclipse.org/) the current snapshot can be used
 by having the JKanvas project open and altering the version of the dependency
 to *X.X.X-SNAPSHOT* where *X.X.X* is the upcoming version.
