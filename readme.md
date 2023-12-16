@@ -39,7 +39,7 @@ canvas.reset(); // scrolls the bounding-box of the painter into view
 
 In the package `jkanvas.examples` are examples that show
 how to use the canvas for various tasks.
-Furthermore the [wiki](https://github.com/JosuaKrause/Kanvas/wiki) is meant to explain how to
+Furthermore the [wiki](https://github.com/JosuaKrause/JKanvas/wiki) is meant to explain how to
 use various classes and interfaces.
 
 ### Maven Integration
