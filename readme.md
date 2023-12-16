@@ -61,7 +61,7 @@ However, this requires an additional repository in the repositories section (`<r
 ```xml
 <repository>
   <id>joschi</id>
-  <url>http://www.josuakrause.com/mvn-repo/releases</url>
+  <url>https://www.josuakrause.com/mvn-repo/releases</url>
 </repository>
 ```
 
